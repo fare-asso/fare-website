@@ -4,7 +4,8 @@
 
 :root {
   --foreground-rgb: #2D2924;
-  --background-rgb: #ECE4B7;
+  /* --background-rgb: #ECE4B7; */
+  --background-rgb: #ffffff;
   --secondary: #D4D883;
   --teritary: #EABE7C;
 }
