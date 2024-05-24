@@ -27,7 +27,7 @@ export default function HeaderLink({title, href , runnerRef} : {title: string, h
 
     return(
         <Link href={href} passHref legacyBehavior>
-            <a className="z-20 rounded-full flex items-center justify-center text-black px-5 font-bold uppercase hover:text-white transition-all delay-75" onMouseEnter={hoverHandler} onMouseLeave={unhoverHandler}>{title}</a>
+            <a className="z-20 rounded-full flex items-center justify-center text-black px-5 font-semibold uppercase hover:text-white transition-all delay-75" onMouseEnter={hoverHandler} onMouseLeave={unhoverHandler}>{title}</a>
         </Link>
     )
 }

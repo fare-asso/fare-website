@@ -8,7 +8,7 @@ export default function HeaderLinks() {
     const runner = useRef<HTMLDivElement>(null);
 
     return(
-        <nav className="border-black border-2 rounded-full py-2 flex flex-row relative items-center">
+        <nav className="border-black border-2 rounded-full py-3 flex flex-row relative items-center">
             <div ref={runner} className="bg-black z-10 rounded-full absolute h-full opacity-0 transition-all delay-75 ease-out"></div>
             
             <HeaderLink title={"NOS ASSOS"} href={'#'} runnerRef={runner}/>
