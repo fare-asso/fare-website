@@ -26,6 +26,10 @@ AlertDialogTrigger,
 import { ReactElement } from "react";
 import { Button } from "@/components/ui/button";
 
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+
+import deleteEventAction from "./deleteEventAction";
+
 
 export type Event = {
     id: number;
@@ -34,11 +38,14 @@ export type Event = {
     endTime: Date;
     location: string;
     category: {
+        id: number
         name: string;
     };
     createdBy: {
+        id : number
         name: string;
     };
+    visibility : boolean
 }
 
 export const columns: ColumnDef<Event>[] = [
@@ -106,8 +113,41 @@ export const columns: ColumnDef<Event>[] = [
         accessorKey: "category",
         header: "Catégorie",
         cell: ({row}) => {
-            const category : { name : string } = row.getValue('category');
+            const category : { id: number, name : string } = row.getValue('category');
             return category.name;
+        }
+    },
+    {
+        accessorKey: "visibility",
+        header: "Visibilité",
+        cell: ({row}) => {
+            if(row.getValue('visibility')) {
+                return(
+                    <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                            <TooltipTrigger className="flex flex-row items-center justify-center w-full">
+                                <MdVisibility size={17}/>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Visible au public</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )
+            } else {
+                return (
+                    <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                            <TooltipTrigger className="flex flex-row items-center justify-center w-full">
+                                <MdVisibilityOff size={17}/>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Caché au public</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )
+            }
         }
     },
     {
@@ -136,7 +176,7 @@ export const columns: ColumnDef<Event>[] = [
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                         <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction>Supprimer</AlertDialogAction>
+                        <AlertDialogAction onClick={() => deleteEventAction({eventId: row.getValue('id')})}>Supprimer</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>

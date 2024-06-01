@@ -18,8 +18,12 @@ PopoverContent,
 PopoverTrigger,
 } from "@/components/ui/popover"
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+
+import { Switch } from "@/components/ui/switch"
 
 import { Textarea } from "@/components/ui/textarea"
 
@@ -31,13 +35,39 @@ import { fr } from "date-fns/locale"
 import TimePicker from "../ui/timePicker";
 import createEventAction from "@/app/dashboard/events/createEventAction";
 import LocationPicker from "../ui/location/locationPicker";
+import CategorySelect from "../ui/category/categorySelect";
+import { useFormState } from "react-dom";
+import { useEffect, useCallback } from "react";
 
 export default function CreateEventButton() {
+
+
+    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(createEventAction, undefined)
+    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
     const [startDate, setStartDate] = useState<Date>();
     const [endDate, setEndDate] = useState<Date>();
+
+    const handleOpenChange = useCallback(
+        (open: boolean) => {
+          setDialogIsOpen(open);
+          if (!open) {
+            // Réinitialiser le formulaire lorsque le dialogue est fermé
+            setStartDate(undefined);
+            setEndDate(undefined);
+          }
+        },
+        [setDialogIsOpen, setStartDate, setEndDate]
+      );
     
+    // Fermer le dialogue lorsque l'action du formulaire indique un succès
+    useEffect(() => {
+    if (formState?.success) {
+        handleOpenChange(false);
+    }
+    }, [formState, handleOpenChange]);
+
     return(
-        <Dialog>
+        <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
                 <Button >Créer un nouvel évènement</Button>
@@ -53,7 +83,7 @@ export default function CreateEventButton() {
                 </DialogHeader>
 
                 {/* Form */}
-                <form action={createEventAction} id="createEventForm" className="space-y-3">
+                <form action={formAction} id="createEventForm" className="space-y-3">
                     <div>
                         <Label>Nom</Label>
                         <Input type="text" id="name" name="name" placeholder="Nom de l'évènement"/>
@@ -61,7 +91,7 @@ export default function CreateEventButton() {
 
                     <div>
                         <Label>Description</Label>
-                        <Textarea id="description" name="description" maxLength={500} placeholder="(Max: 500 caractères)"/>
+                        <Textarea id="description" name="description" maxLength={500} placeholder="(Max: 500 caractères)" className="max-h-[170px]"/>
                     </div>
 
                     <div>
@@ -69,62 +99,89 @@ export default function CreateEventButton() {
                         <Input type="file" id="picture" name="picture"/>
                     </div>
 
-                    <div>
-                        <Label>Date de début</Label>
-                        <Popover>
-                            <PopoverTrigger asChild className="flex flex-col">
-                                <Button variant="outline" className="flex flex-row">
-                                    <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                                    {startDate ? format(startDate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent>
-                                <Calendar mode="single" selected={startDate} onSelect={setStartDate} className="mb-3"/>
-                            </PopoverContent>
-                        </Popover>
+                    <div className="flex flex-row w-full space-x-4">
+                        <div>
+                            <Label>Date de début</Label>
+                            <Popover>
+                                <PopoverTrigger asChild className="flex flex-col">
+                                    <Button variant="outline" className="flex flex-row">
+                                        <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                                        {startDate ? format(startDate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <Calendar mode="single" selected={startDate} onSelect={setStartDate} className="mb-3"/>
+                                </PopoverContent>
+                            </Popover>
+                            <input type="hidden" name ="startDate" value={startDate ? startDate.toString() : ""}/>
+                        </div>
+
+                        <div>
+                            <Label htmlFor="startHour">Heure de début</Label>
+                            <TimePicker defaultValue={{hours: 0, minutes: 0}} hoursInputName="startHour" minutesInputName="startMinute"/>
+                        </div>
+                    </div>
+                    
+
+                    <div className="flex flex-row w-full space-x-4">
+                        <div>
+                            <Label>Date de fin</Label>
+                            <Popover>
+                                <PopoverTrigger asChild className="flex flex-col">
+                                    <Button variant="outline" className="flex flex-row">
+                                        <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                                        {endDate ? format(endDate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <Calendar mode="single" selected={endDate} onSelect={setEndDate} className="mb-4"/>
+                                </PopoverContent>
+                            </Popover>
+                            <input type="hidden" name="endDate" value={endDate ? endDate.toString() : ""}/>
+                        </div>
+
+                        <div>
+                            <Label htmlFor="endHours">Heure de fin</Label>
+                            <TimePicker defaultValue={{hours: 0, minutes: 0}} hoursInputName="endHour" minutesInputName="endMinute"/>
+                        </div>
                     </div>
 
-                    <div>
-                        <Label htmlFor="startHour">Heure de début</Label>
-                        <TimePicker defaultValue={{hours: 0, minutes: 0}} hoursInputName="startHours" minutesInputName="startMinutes"/>
-                    </div>
+                    
 
                     <div>
-                        <Label>Date de fin</Label>
-                        <Popover>
-                            <PopoverTrigger asChild className="flex flex-col">
-                                <Button variant="outline" className="flex flex-row">
-                                    <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                                    {endDate ? format(endDate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent>
-                                <Calendar mode="single" selected={endDate} onSelect={setEndDate} className="mb-4"/>
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-
-                    <div>
-                        <Label htmlFor="endHours">Heure de fin</Label>
-                        <TimePicker defaultValue={{hours: 0, minutes: 0}} hoursInputName="endHours" minutesInputName="endMinutes"/>
-                    </div>
-
-                    <div>
-                        <Label>Lieu</Label>
+                        <Label htmlFor="location">Lieu</Label>
                         <LocationPicker/>
                     </div>
 
+                    <div >
+                            <Label htmlFor="category">Catégorie</Label>
+                            <div className="flex flex-row items-center justify-between space-x-4">
+                                <CategorySelect/>
+                                <div className="flex flex-row items-center space-x-2 flex-1">
+                                    <Switch id="visibility" name="visibility"/>
+                                    <Label htmlFor="visibility">Visible au public</Label>
+                                </div>
+                                
+                            </div>
+                            
+                    </div>
+
                     
 
-
-                        
-                    
-                    
+                    { formState?.error ? 
+                    <Alert variant="destructive">
+                        <AlertTitle>Erreur</AlertTitle>
+                        <AlertDescription>
+                            {formState.error}
+                        </AlertDescription>
+                    </Alert>
+                    : null 
+                    }
 
                 </form>
 
                 <DialogFooter>
-                <Button type="submit" form="createEventForm">Créer</Button>
+                    <Button type="submit" form="createEventForm">Créer</Button>
                 </DialogFooter>
             </DialogContent>
             </Dialog>

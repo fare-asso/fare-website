@@ -17,9 +17,9 @@ type Time = {
 export default function TimePicker({defaultValue, hoursInputName, minutesInputName} : {defaultValue: Time, hoursInputName : string, minutesInputName : string}) {
     return(
         <div className="flex flex-row items-center justify-start space-x-2">
-            <Input type="text" id="hours" name={hoursInputName} placeholder="00" pattern="\d*" defaultValue={defaultValue.hours.toString().padStart(2, '0')} className="w-1/6 text-center"/>
+            <Input type="text" id="hours" name={hoursInputName} placeholder="00" pattern="\d*" defaultValue={defaultValue.hours.toString().padStart(2, '0')} className="w-11 text-center"/>
             <span className="text-xl">:</span>
-            <Input type="text" id="minutes" name={minutesInputName} placeholder="00" pattern="\d*" defaultValue={defaultValue.minutes.toString().padStart(2, '0')} className="w-1/6 flex flex-col items-center text-center"/>
+            <Input type="text" id="minutes" name={minutesInputName} placeholder="00" pattern="\d*" defaultValue={defaultValue.minutes.toString().padStart(2, '0')} className="w-11 text-center"/>
         </div>
     )
 }

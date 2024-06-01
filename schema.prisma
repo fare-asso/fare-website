@@ -56,11 +56,12 @@ model Event {
   categoryId  Int
   createdBy User      @relation(fields: [creatorId], references: [id])
   creatorId Int
+  visibility  Boolean @default(false)
 }
 
 model Category {
   id    Int    @id @default(autoincrement())
-  name  String
+  name  String  @unique
   events Event[]
 }
 

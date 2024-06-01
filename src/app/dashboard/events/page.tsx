@@ -23,14 +23,17 @@ async function getData() : Promise<Event[]> {
             location: true,
             category: {
                 select: {
+                    id: true,
                     name: true
                 }
             },
             createdBy: {
                 select: {
+                    id: true,
                     name: true
                 }
             },
+            visibility: true
 
         },
         orderBy: {
