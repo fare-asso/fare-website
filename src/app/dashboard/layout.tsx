@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="flex flex-row">
           <SideBar/>
-          <main className="min-h-screen flex flex-col items-center p-8 w-full">
+          <main className="min-h-screen flex flex-col items-center p-8 w-full h-full max-h-full">
             {children}
           </main>
           <Toaster/>

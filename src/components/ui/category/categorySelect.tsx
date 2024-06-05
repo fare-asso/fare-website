@@ -15,7 +15,7 @@ interface Category {
     name: string
 }
 
-export default function CategorySelect() {
+export default function CategorySelect({defaultValue} : {defaultValue : string}) {
 
     const [categoryItems, setCategoryItems] = useState<JSX.Element>(<></>);
 
@@ -44,7 +44,7 @@ export default function CategorySelect() {
     // const categoriesItems = categories.map((category) => <SelectItem key={category.id} value={category.name}>{category.name}</SelectItem>)    
 
     return(
-        <Select name="category">
+        <Select name="category" defaultValue={defaultValue}>
             <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Catégorie" />
             </SelectTrigger>

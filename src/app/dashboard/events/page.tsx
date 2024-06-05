@@ -1,6 +1,5 @@
 import CreateEventButton from "@/components/dashboard/createEventButton";
-import { Event, columns } from "./columns"
-import { DataTable } from "./data-table"
+import EventDataTable from "@/components/dashboard/eventDataTable";
 
 import {
 Card,
@@ -11,51 +10,21 @@ CardHeader,
 CardTitle,
 } from "@/components/ui/card"
 
-import prisma from "@/helpers/db"
-
-async function getData() : Promise<Event[]> {
-    const events = await prisma.event.findMany({
-        select: {
-            id: true,
-            name: true,
-            startTime : true,
-            endTime: true,
-            location: true,
-            category: {
-                select: {
-                    id: true,
-                    name: true
-                }
-            },
-            createdBy: {
-                select: {
-                    id: true,
-                    name: true
-                }
-            },
-            visibility: true
-
-        },
-        orderBy: {
-            startTime: "desc"
-        },
-    });
-    return events
-}
-
+import { Suspense } from "react";
 
 
 export default async function EventsPage() {
-    const data: Event[] = await getData();
 
     return(
-        <Card className="w-full h-full">
+        <Card className="w-full h-screen flex-1">
             <CardHeader>
                 <CardTitle>Evènements</CardTitle>
                 <CardDescription>Espace de gestion des évènements de la Fédération</CardDescription>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={data} />
+                <Suspense fallback={<p>Chargements...</p>}>
+                    <EventDataTable/>
+                </Suspense>
             </CardContent>
             <CardFooter>
                 <CreateEventButton/>

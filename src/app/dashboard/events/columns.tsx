@@ -29,11 +29,13 @@ import { Button } from "@/components/ui/button";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 import deleteEventAction from "./deleteEventAction";
+import EditEventButtonClient from "@/components/dashboard/editEventButton";
 
 
 export type Event = {
     id: number;
     name: string;
+    desc : string;
     startTime: Date;
     endTime: Date;
     location: string;
@@ -88,6 +90,15 @@ export const columns: ColumnDef<Event>[] = [
                 </TooltipProvider>
             )
         }
+    },
+    {
+        accessorKey: "desc",
+        header: "Description",
+        cell: ({row}) => {
+            const desc: string = row.getValue('desc');
+            return desc.slice(0, 15) + "..."
+        }
+        
     },
     {
         accessorKey: "startTime",
@@ -159,11 +170,22 @@ export const columns: ColumnDef<Event>[] = [
         }
     },
     {
-        id: "editAndDelete",
+        id: "editAndDelete",  
         cell: ({row}) => {
             return <div className="flex flex-row space-x-3">
 
-                <Button variant="outline">Modifier</Button>
+                <EditEventButtonClient eventInfo={{
+                    id: row.getValue('id'),
+                    name: row.getValue('name'),
+                    desc: row.getValue('desc'),
+                    image: "",
+                    startTime: row.getValue('startTime'),
+                    endTime: row.getValue('endTime'),
+                    location: row.getValue('location'),
+                    visibility: row.getValue('visibility'),
+                    category: row.getValue('category')
+
+                }}/>
 
                 <AlertDialog>
                     <AlertDialogTrigger asChild><Button variant="destructive">Supprimer</Button></AlertDialogTrigger>
