@@ -32,13 +32,13 @@ import { ChangeEvent, useState } from "react";
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import TimePicker from "../ui/timePicker";
-import LocationPicker from "../ui/location/locationPicker";
-import CategorySelect from "../ui/category/categorySelect";
+import TimePicker from "../../ui/timePicker";
+import LocationPicker from "../../ui/location/locationPicker";
+import CategorySelect from "../../ui/category/categorySelect";
 import { useFormState, useFormStatus } from "react-dom";
 import { useEffect, useCallback } from "react";
 
-import editEventAction from "@/app/dashboard/events/editEventAction";
+import editEventAction from "@/actions/events/editEventAction";
 import Image from "next/image";
 
 export interface EventInfo {
@@ -158,7 +158,7 @@ export default function EditEventButtonClient({eventInfo} : {eventInfo : EventIn
                     <div>
                         <Label htmlFor="picture">Image</Label>
                         { imageUrl ? <Image src={imageUrl} width={400} height={200} alt="Image de l'évènement" className="rounded-lg outline outline-2 outline-offset-2 outline-black w-32 h-auto my-3"/> : null}
-                        <Input type="file" id="picture" name="picture" onChange={handleImageInputChange}/>
+                        <Input type="file" id="picture" name="picture" onChange={handleImageInputChange} accept="image/*"/>
                         { previousPath ? <input type="hidden" name="previousPath" value={previousPath}/> : null }
                     </div>
 
@@ -213,7 +213,7 @@ export default function EditEventButtonClient({eventInfo} : {eventInfo : EventIn
 
                     <div>
                         <Label htmlFor="location">Lieu</Label>
-                        <LocationPicker defaultValue={eventInfo.location}/>
+                        <LocationPicker defaultValue={eventInfo.location} name="location"/>
                     </div>
 
                     <div >

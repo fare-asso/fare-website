@@ -2,7 +2,7 @@
 
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import loginAction from "@/app/login/loginAction";
+import loginAction from "@/actions/auth/loginAction";
 
 import { useFormState } from "react-dom";
 import LoginButton from "./loginButton";

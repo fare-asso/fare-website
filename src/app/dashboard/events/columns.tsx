@@ -28,8 +28,8 @@ import { Button } from "@/components/ui/button";
 
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
-import deleteEventAction from "./deleteEventAction";
-import EditEventButtonClient from "@/components/dashboard/editEventButton";
+import deleteEventAction from "@/actions/events/deleteEventAction";
+import EditEventButtonClient from "@/components/dashboard/event/editEventButton";
 
 
 export type Event = {
@@ -44,8 +44,8 @@ export type Event = {
         name: string;
     };
     createdBy: {
-        id : number
-        name: string;
+        id : string
+        name: string | null;
     };
     visibility : boolean
 }
@@ -165,8 +165,13 @@ export const columns: ColumnDef<Event>[] = [
         accessorKey: "createdBy",
         header: "Créé par",
         cell: ({row}) => {
-            const user : { name : string } = row.getValue('createdBy');
-            return user.name;
+            const user : { name : string | null } = row.getValue('createdBy');
+            if(user.name != null) {
+                return user.name;
+            } else {
+                return "?"
+            }
+            
         }
     },
     {

@@ -2,12 +2,11 @@
 
 import prisma from "@/helpers/db";
 import { revalidatePath } from "next/cache";
-
 import { createClient } from "@/helpers/supabase/server";
 import { randomUUID } from "crypto";
+import getCurrentUserId from "@/helpers/user/id";
 
 interface Event {
-    id?: number,
     name?: string,
     desc?: string,
     image?: string,
@@ -19,21 +18,15 @@ interface Event {
     visibility?: boolean
 }
 
-export default async function editEventAction(prevState: {error? : string, success? : boolean} | undefined, formData: FormData) {
+export default async function createEventAction(prevState: {error? : string, success? : boolean} | undefined, formData: FormData) {
 
-    // create supabase client
+    // instantiate supabase client
     const supabase = createClient();
 
-
-    // retrieve formdata fields
-    const id = formData.get('id');
-
+    // retrieve form data fields
     const name = formData.get('name'); 
     const description = formData.get('description');
-
     const picture = formData.get('picture');
-    const previousPath = formData.get('previousPath');
-
     const location = formData.get('location');
     const category = formData.get('category');
 
@@ -47,32 +40,14 @@ export default async function editEventAction(prevState: {error? : string, succe
 
     const visibility = formData.get('visibility');
 
-
     // create a temp variable to gradually store each data after their validation
     const data: Event = {}
 
 
 
-    /* Data validation */
+    /* Data Validation */
 
-    //id
-    if(id != null && typeof id == 'string') {
-        const idStr : string = id.toString();
-        const idNumber : number =  Number(idStr);
-        if(isNaN(idNumber)) {
-            return {
-                error : "L'identifiant n'est pas un nombre..."
-            }
-        } else {
-            data.id = idNumber;
-        }
-    } else {
-        return {
-            error: "L'identifiant de l'évènement n'est pas correct"
-        }
-    }
-
-    // name
+    // check name validity
     if(name != null && typeof name == 'string') {
         const nameStr: string = name.toString();
         if(nameStr.length < 3) {
@@ -86,6 +61,7 @@ export default async function editEventAction(prevState: {error? : string, succe
         }
     }
 
+    // check description validity
     if(description != null && typeof description == 'string') {
         const descriptionStr: string = description.toString();
         if(descriptionStr.length < 10) {
@@ -95,51 +71,11 @@ export default async function editEventAction(prevState: {error? : string, succe
         } else data.desc = descriptionStr;
     } else {
         return {
-            error: "La description n'est pas valide ou n'est pas du bon format"
+            error : "La description n'est pas valide ou n'est pas du bon format"
         }
     }
 
-    if(picture != null && picture instanceof File) { // if there is a new file
-        const pictureFile: File = picture;
-        if(pictureFile.size != 0 && ((pictureFile.size / (1024*1024)) <= 10)) { // valid picture file and size < 10mb
-            // TODO : Some Logic to remove previous file from S3 and reupload another one
-
-            // Remove Old Path if its possible
-            if(previousPath != null && typeof previousPath == "string") {
-                const res = await supabase.storage.from('EventPictures').remove([previousPath.toString()]);
-            }
-
-            // Upload new picture
-            const response = await supabase.storage.from('EventPictures').upload(data.name + ":" + randomUUID(), pictureFile);
-
-            if(response.error) { // Upload Failed
-                console.log(response.error)
-                return {
-                    error : "L'upload de l'image à échoué, veuillez réessayer"
-                }
-            } else { // Upload Success
-                data.image = response.data.path;
-            }
-            
-        } else { // keep old picture
-            if(previousPath != null && typeof previousPath == 'string') {
-                data.image = previousPath.toString();
-            } else {
-                return {
-                    error: "L'image n'est pas valide ou la taille de l'image excède 10 mo"
-                }
-            }
-        }
-    } else {
-        if(previousPath != null && typeof previousPath == 'string') {
-            data.image = previousPath.toString();
-        } else {
-            return {
-                error: "L'image n'est pas valide ou n'est pas du bon format"
-            }
-        }
-    }
-
+    // check location validity
     if(location != null && typeof location == 'string') {
         if(location.length > 0) { // non null string
             data.location = location.toString();
@@ -150,10 +86,11 @@ export default async function editEventAction(prevState: {error? : string, succe
         }
     } else {
         return {
-            error: "Le lieu n'est pas valide ou n'est pas du bon format"
+            error : "Le lieu n'est pas valide ou n'est pas du bon format"
         }
     }
 
+    // check category validity
     if(category != null && typeof category == 'string') {
 
         const categoryStr: string = category.toString();
@@ -186,7 +123,7 @@ export default async function editEventAction(prevState: {error? : string, succe
         
     } else {
         return {
-            error: "La catégorie n'est pas valide ou n'est pas du bon format"
+            error : "La catégorie n'est pas valide ou n'est pas du bon format"
         }
     }
 
@@ -231,6 +168,7 @@ export default async function editEventAction(prevState: {error? : string, succe
         }
     }
 
+    // check visibility validity
     if(visibility != null && typeof visibility == 'string') {
         const visibilityStr : string = visibility.toString();
         switch (visibilityStr) {
@@ -245,24 +183,58 @@ export default async function editEventAction(prevState: {error? : string, succe
             }
         }
     } else {
+        // false if null
         data.visibility = false;
+    }
+
+    // check picture validity and size
+    if(picture != null && picture instanceof File) {
+        const pictureFile: File = picture;
+        if(pictureFile.size != 0 && ((pictureFile.size / (1024*1024)) <= 10)) { // valid picture file and size < 10mb
+            // Some Logic to upload file to S3 and get its path
+            const res = await supabase.storage.from('EventPictures').upload(data.name + ":" + randomUUID(), pictureFile);
+
+            if(res.error) { // Upload Failed
+                console.log(res.error)
+                return {
+                    error : "L'upload de l'image à échoué, veuillez réessayer"
+                }
+            } else { // Upload Success
+                data.image = res.data.path;
+            }
+            
+        } else {
+            return {
+                error: "L'image n'est pas valide ou la taille de l'image excède 10 mo"
+            }
+        }
+    } else {
+        return {
+            error : "L'image n'est pas valide ou n'est pas du bon format"
+        }
+    }
+
+    // fetch current user id
+    const res = await getCurrentUserId();
+
+    if(res.error) {
+        return {
+            error : "res.error"
+        }
     }
 
     // create event record in the DB
     try {
-        const record = await prisma.event.update({
-            where: {
-                id : data.id,
-            },
+        const record = await prisma.event.create({
             data : {
                 name: data.name!,
                 desc: data.desc!,
                 categoryId: data.categoryId!,
-                image: data.image, 
+                image: data.image,
                 startTime: data.startTime,
                 endTime: data.endTime,
                 location: data.location!,
-                creatorId: 1,
+                creatorId: res.userId!,
                 visibility: data.visibility
             }
         })
@@ -274,14 +246,14 @@ export default async function editEventAction(prevState: {error? : string, succe
 
         
     } catch (error: any) {
+        const res = await supabase.storage.from('EventPictures').remove([data.image])
+        if(res.error) {
+            console.error('Failed to delete the previously uploaded picture on the storage')
+        }
+        
         return {
-            error : "La modification de l'évènement à échoué, veuillez réessayer"
+            error : "La création de l'évènement à échoué, veuillez réessayer"
         }
     }
-    
-
-    console.log(data);
-
-
-        
+       
 }

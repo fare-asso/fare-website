@@ -32,12 +32,13 @@ import { useState } from "react";
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import TimePicker from "../ui/timePicker";
-import createEventAction from "@/app/dashboard/events/createEventAction";
-import LocationPicker from "../ui/location/locationPicker";
-import CategorySelect from "../ui/category/categorySelect";
+import TimePicker from "../../ui/timePicker";
+import createEventAction from "@/actions/events/createEventAction";
+import LocationPicker from "../../ui/location/locationPicker";
+import CategorySelect from "../../ui/category/categorySelect";
 import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
+import LoadingRing from "../loadingRing";
 
 export default function CreateEventButton() {
 
@@ -46,6 +47,7 @@ export default function CreateEventButton() {
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
     const [startDate, setStartDate] = useState<Date>();
     const [endDate, setEndDate] = useState<Date>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
@@ -66,6 +68,16 @@ export default function CreateEventButton() {
     }
     }, [formState, handleOpenChange]);
 
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.currentTarget);
+
+        setIsLoading(true);
+
+        formAction(formData);
+    };
+
     return(
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
@@ -83,7 +95,7 @@ export default function CreateEventButton() {
                 </DialogHeader>
 
                 {/* Form */}
-                <form action={formAction} id="createEventForm" className="space-y-3">
+                <form onSubmit={handleSubmit} id="createEventForm" className="space-y-3">
                     <div>
                         <Label>Nom</Label>
                         <Input type="text" id="name" name="name" placeholder="Nom de l'évènement"/>
@@ -96,7 +108,7 @@ export default function CreateEventButton() {
 
                     <div>
                         <Label htmlFor="picture">Image</Label>
-                        <Input type="file" id="picture" name="picture"/>
+                        <Input type="file" id="picture" name="picture" accept="image/*"/>
                     </div>
 
                     <div className="flex flex-row w-full space-x-4">
@@ -150,7 +162,7 @@ export default function CreateEventButton() {
 
                     <div>
                         <Label htmlFor="location">Lieu</Label>
-                        <LocationPicker defaultValue=""/>
+                        <LocationPicker defaultValue="" name="location"/>
                     </div>
 
                     <div >
@@ -166,8 +178,6 @@ export default function CreateEventButton() {
                             
                     </div>
 
-                    
-
                     { formState?.error ? 
                     <Alert variant="destructive">
                         <AlertTitle>Erreur</AlertTitle>
@@ -181,7 +191,7 @@ export default function CreateEventButton() {
                 </form>
 
                 <DialogFooter>
-                    <Button type="submit" form="createEventForm">Créer</Button>
+                    <Button type="submit" form="createEventForm" disabled={isLoading}>{isLoading ? <LoadingRing/> : null } Créer</Button>
                 </DialogFooter>
             </DialogContent>
             </Dialog>

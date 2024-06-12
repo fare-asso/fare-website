@@ -45,9 +45,16 @@ export default async function loginAction(currentState: {emailError? : string, p
     const { error }  = await supabase.auth.signInWithPassword({email: credentials.email, password: credentials.password})
 
     if(error) {
-        return {
-            passwordError: "Mot de passe ou nom d'utilisateur invalide"
+        if(error.message == "Invalid login credentials") {
+            return {
+                passwordError: "Mot de passe ou nom d'utilisateur invalide"
+            }
+        } else {
+            return {
+                passwordError: "Une erreur inattendue est survenue"
+            }
         }
+        
     } else {
         revalidatePath('../dashboard')
         redirect("../dashboard")

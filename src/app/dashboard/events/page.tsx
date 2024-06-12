@@ -1,5 +1,5 @@
-import CreateEventButton from "@/components/dashboard/createEventButton";
-import EventDataTable from "@/components/dashboard/eventDataTable";
+import CreateEventButton from "@/components/dashboard/event/createEventButton";
+import EventDataTable from "@/components/dashboard/event/eventDataTable";
 
 import {
 Card,
@@ -16,12 +16,12 @@ import { Suspense } from "react";
 export default async function EventsPage() {
 
     return(
-        <Card className="w-full h-screen flex-1">
+        <Card className="w-full h-full flex-1 flex flex-col">
             <CardHeader>
                 <CardTitle>Evènements</CardTitle>
                 <CardDescription>Espace de gestion des évènements de la Fédération</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="overflow-y-auto">
                 <Suspense fallback={<p>Chargements...</p>}>
                     <EventDataTable/>
                 </Suspense>

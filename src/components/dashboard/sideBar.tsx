@@ -1,5 +1,6 @@
-import Link from "next/link"
+import CurrentUser from "./currentUser"
 import SideBarLink from "./sideBarLink"
+import SignOutButton from "./signOutButton"
 
 export default function SideBar() {
     return(
@@ -8,13 +9,23 @@ export default function SideBar() {
                 Dashboard
             </div>
 
-            <div className="flex flex-col items-center space-y-2  mt-10">
-                <SideBarLink href="/dashboard/events" title="Evènements"/>
-                <SideBarLink href="/dashboard/associations" title="Associations"/>
-                <SideBarLink href="/dashboard/articles" title="Articles"/>
-                <SideBarLink href="/dashboard/communiques-de-presse" title="Communiqués de presse"/>
-                <SideBarLink href="/dashboard/membres" title="Membres"/>
+            <div className="flex flex-col items-center space-y-2  mt-10 h-full justify-between">
+                <div className="flex flex-col space-y-2">
+                    <SideBarLink href="/dashboard/events" title="Evènements"/>
+                    <SideBarLink href="/dashboard/associations" title="Associations"/>
+                    <SideBarLink href="/dashboard/articles" title="Articles"/>
+                    <SideBarLink href="/dashboard/communiques-de-presse" title="Communiqués de presse"/>
+                    <SideBarLink href="/dashboard/membres" title="Membres"/>
+                </div>
+
+                <div className="flex flex-col items-center justify-center space-y-2">
+                    <CurrentUser/>
+                    <SignOutButton/>
+                </div>
+                
             </div>
+
+            
             
         </div>
     )
