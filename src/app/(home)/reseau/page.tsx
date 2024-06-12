@@ -1,14 +1,20 @@
-import AssoCard from "@/components/assoCard";
+import AssociationCard from "@/components/dashboard/associations/associationCard";
 import prisma from "@/helpers/db";
+import { createClient } from "@/helpers/supabase/server";
 
 export default async function Reseau() {
 
+    const supabase = createClient();
+
     const assos = await prisma.association.findMany();
-    const assosCards = assos.map((asso) => <AssoCard key={asso.id} name={asso.name} major={asso.major} location={asso.location} logo={asso.logoPath[0]} />)
+    const assoCards = assos.map((asso) => <AssociationCard key={asso.id} association={asso} logoUrl={supabase.storage.from('association-pictures').getPublicUrl(asso.logoPath[0]).data.publicUrl}/>)
     return(
-        <>
-        Le réseau associatif
-        {assosCards}
-        </>
+        <div className="flex flex-col items-center justify-start">
+            <h1 className="py-44 text-3xl font-semibold">Le Réseau Associatif</h1>
+            <div className="grid grid-cols-4 gap-8 w-3/4 h-full">
+                {assoCards}
+            </div>
+        </div>
+        
     )
 }

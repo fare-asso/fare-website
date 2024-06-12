@@ -1,13 +1,19 @@
 import prisma from "@/helpers/db";
+import { createClient } from "@/helpers/supabase/server";
 
-export default async function Agenda() {
+export default async function Reseau() {
+
+    const supabase = createClient();
+
     const events = await prisma.event.findMany();
-    const eventsElements = events.map((event) => <div key={event.id} className="text-black">{event.name}</div>)
+    const eventCards = events.map((event) => <div key={event.id}>{event.name}</div>)
     return(
-        <>
-            Les évènements
-            {eventsElements}
-        </>
+        <div className="flex flex-col items-center justify-start">
+            <h1 className="py-44 text-3xl font-semibold">{"L'Agenda du réseau"}</h1>
+            <div className="grid grid-cols-4 gap-8 w-3/4 h-full">
+                {eventCards}
+            </div>
+        </div>
         
     )
 }

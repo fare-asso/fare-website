@@ -1,5 +1,6 @@
 
 import AddAssociationButton from "@/components/dashboard/associations/addAssociationButton";
+import AssociationList from "@/components/dashboard/associations/associationList";
 import {
     Card,
     CardContent,
@@ -21,7 +22,7 @@ import {
                 </CardHeader>
                 <CardContent className="flex-1 h-1/2">
                     <Suspense fallback={<p>Chargements...</p>}>
-                        {/* <MemberList /> */}
+                        <AssociationList />
                     </Suspense>
                 </CardContent>
                 <CardFooter>
