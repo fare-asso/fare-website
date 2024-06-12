@@ -94,7 +94,7 @@ export default function AddMemberButton() {
 
                     <div>
                         <Label htmlFor="picture">Photo</Label>
-                        <div className="text-sm text-muted-foreground">Format d'image accepté : PNG, JPEG, JPG, WebP, GIF</div>
+                        <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
                         <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
                         <div className="text-sm text-muted-foreground">Résolution recommandée : 1080x1920 pixels (portrait)</div>
                         <Input type="file" id="picture" name="picture" accept="image/*" required/>

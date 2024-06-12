@@ -81,7 +81,7 @@ export default function AddAssociationButton() {
                 <DialogHeader>
                     <DialogTitle>Nouvelle Association</DialogTitle>
                     <DialogDescription>
-                        Ceci est le formulaire d'ajout d'association du réseau
+                        {"Ceci est le formulaire d'ajout d'association du réseau"}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -89,7 +89,7 @@ export default function AddAssociationButton() {
                 <form onSubmit={handleSubmit} id="addAssociationForm" className="space-y-3">
 
                     <div>
-                        <Label htmlFor="name">Nom de l'association</Label>
+                        <Label htmlFor="name">{"Nom de l'association"}</Label>
                         <Input type="text" id="name" name="name" placeholder="Nom" required/>
                     </div>
 
@@ -100,14 +100,14 @@ export default function AddAssociationButton() {
 
                     <div>
                         <Label htmlFor="picture">Photos</Label>
-                        <div className="text-sm text-muted-foreground">Format d'image accepté : PNG, JPEG, JPG, WebP, GIF</div>
+                        <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
                         <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
                         <div className="text-sm text-muted-foreground mb-1">Résolution recommandée : 1080x1920 pixels (portrait)</div>
                         <Input type="file" id="pictures" name="pictures" accept="image/*" multiple required/>
                     </div>
 
                     <div>
-                        <Label>Date de Naissance de l'Association</Label>
+                        <Label>{"Date de Naissance de l'Association"}</Label>
                         <Popover>
                             <PopoverTrigger asChild className="flex flex-col">
                                 <Button variant="outline" className="flex flex-row">

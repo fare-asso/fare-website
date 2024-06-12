@@ -92,7 +92,7 @@ export default function EditEventButtonClient({eventInfo} : {eventInfo : EventIn
         }
 
         fetchImageUrl();
-    }, [dialogIsOpen])
+    }, [dialogIsOpen, eventInfo.id])
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
