@@ -277,6 +277,7 @@ export default async function editEventAction(prevState: {error? : string, succe
             }
         })
 
+        revalidatePath('/agenda')
         revalidatePath('/dashboard/events')
         return {
             success: true
