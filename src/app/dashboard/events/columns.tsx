@@ -32,6 +32,18 @@ import deleteEventAction from "@/actions/events/deleteEventAction";
 import EditEventButtonClient from "@/components/dashboard/event/editEventButton";
 
 
+function processLocationObject(value: string): string {
+    try {
+        const json: {displayName: string, coordinates : { lat: string, lon: string} } = JSON.parse(value);
+        return json.displayName;
+    } catch {
+        if(typeof value == 'string') {
+            return value;
+        } else return "Non défini"
+    }
+}
+
+
 export type Event = {
     id: number;
     name: string;
@@ -118,7 +130,10 @@ export const columns: ColumnDef<Event>[] = [
     },
     {
         accessorKey: "location",
-        header: "Lieu"
+        header: "Lieu",
+        cell: ({row}) => {
+            return processLocationObject(row.getValue('location')).split(',')[0]
+        }
     },
     {
         accessorKey: "category",
@@ -186,7 +201,7 @@ export const columns: ColumnDef<Event>[] = [
                     image: "",
                     startTime: row.getValue('startTime'),
                     endTime: row.getValue('endTime'),
-                    location: row.getValue('location'),
+                    location: processLocationObject(row.getValue('location')),
                     visibility: row.getValue('visibility'),
                     category: row.getValue('category')
 

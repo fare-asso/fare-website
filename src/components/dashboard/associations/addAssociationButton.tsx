@@ -77,7 +77,7 @@ export default function AddAssociationButton() {
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[60%] lg:max-w-[40%]">
                 <DialogHeader>
                     <DialogTitle>Nouvelle Association</DialogTitle>
                     <DialogDescription>
@@ -86,7 +86,7 @@ export default function AddAssociationButton() {
                 </DialogHeader>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} id="addAssociationForm" className="space-y-3">
+                <form onSubmit={handleSubmit} id="addAssociationForm" className="space-y-3 overflow-y-auto p-2">
 
                     <div>
                         <Label htmlFor="name">{"Nom de l'association"}</Label>

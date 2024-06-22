@@ -78,6 +78,8 @@ export default async function createEventAction(prevState: {error? : string, suc
     // check location validity
     if(location != null && typeof location == 'string') {
         if(location.length > 0) { // non null string
+            
+            // location is a stringified JSON
             data.location = location.toString();
         } else {
             return {

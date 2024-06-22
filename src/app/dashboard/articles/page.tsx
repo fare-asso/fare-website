@@ -1,4 +1,5 @@
 
+import CreateArticleButton from "@/components/dashboard/Articles/createArticleButton";
 import {
 Card,
 CardContent,
@@ -10,6 +11,8 @@ CardTitle,
 
 import { Suspense } from "react";
 
+import ArticleList from "@/components/dashboard/Articles/articleList";
+
 
 export default async function Articles() {
     return(
@@ -18,13 +21,13 @@ export default async function Articles() {
                 <CardTitle>Articles</CardTitle>
                 <CardDescription>Espace de gestion des articles</CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 h-1/2">
+            <CardContent className="flex-1 overflow-y-auto">
                 <Suspense fallback={<p>Chargements...</p>}>
-                    {/* <MemberList /> */}
+                    <ArticleList />
                 </Suspense>
             </CardContent>
             <CardFooter>
-                {/* <AddMemberButton/> */}
+                <CreateArticleButton/>
             </CardFooter>
         </Card>
       )

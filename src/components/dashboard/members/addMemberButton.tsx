@@ -66,7 +66,7 @@ export default function AddMemberButton() {
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Nouveau Membre</DialogTitle>
                     <DialogDescription>
@@ -75,7 +75,7 @@ export default function AddMemberButton() {
                 </DialogHeader>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} id="addMemberForm" className="space-y-3">
+                <form onSubmit={handleSubmit} id="addMemberForm" className="space-y-3 overflow-y-auto p-2">
 
                     <div>
                         <Label htmlFor="first-name">Prénom</Label>

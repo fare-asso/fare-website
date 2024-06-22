@@ -21,7 +21,7 @@ export default async function EventsPage() {
                 <CardTitle>Evènements</CardTitle>
                 <CardDescription>Espace de gestion des évènements de la Fédération</CardDescription>
             </CardHeader>
-            <CardContent className="overflow-y-auto">
+            <CardContent className="flex-1 overflow-y-auto">
                 <Suspense fallback={<p>Chargements...</p>}>
                     <EventDataTable/>
                 </Suspense>

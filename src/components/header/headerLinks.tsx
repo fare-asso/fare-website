@@ -13,7 +13,7 @@ export default function HeaderLinks() {
             
             <HeaderLink title={"NOS ASSOS"} href={'/reseau'} runnerRef={runner}/>
             <HeaderLink title={"L'AGENDA"} href={'/agenda'} runnerRef={runner}/>
-            <HeaderLink title={"PROJETS"} href={'#2'} runnerRef={runner}/>
+            <HeaderLink title={"ACTUALITES"} href={'/actualites'} runnerRef={runner}/>
             <HeaderLink title={"A PROPOS"} href={'/'} runnerRef={runner}/>
             
         </nav>

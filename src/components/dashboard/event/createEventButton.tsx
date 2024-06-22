@@ -86,7 +86,7 @@ export default function CreateEventButton() {
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[425px]">
                 <DialogHeader>
                 <DialogTitle>Nouvel évènement</DialogTitle>
                 <DialogDescription>
@@ -95,7 +95,7 @@ export default function CreateEventButton() {
                 </DialogHeader>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} id="createEventForm" className="space-y-3">
+                <form onSubmit={handleSubmit} id="createEventForm" className="space-y-3 overflow-y-auto p-2">
                     <div>
                         <Label>Nom</Label>
                         <Input type="text" id="name" name="name" placeholder="Nom de l'évènement"/>

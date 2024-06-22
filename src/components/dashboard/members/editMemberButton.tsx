@@ -109,7 +109,7 @@ export default function EditMemberButton({member, pictureUrl} : {member: Member,
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Modification du membre</DialogTitle>
                     <DialogDescription>
@@ -118,7 +118,7 @@ export default function EditMemberButton({member, pictureUrl} : {member: Member,
                 </DialogHeader>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} id="editMemberForm" className="space-y-3">
+                <form onSubmit={handleSubmit} id="editMemberForm" className="space-y-3 overflow-y-auto p-2">
 
                     <input type="hidden" name="id" value={member.id} />
 

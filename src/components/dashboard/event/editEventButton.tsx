@@ -134,7 +134,7 @@ export default function EditEventButtonClient({eventInfo} : {eventInfo : EventIn
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[425px]">
                 <DialogHeader>
                 <DialogTitle>Modifier Evènement</DialogTitle>
                 <DialogDescription>
@@ -143,7 +143,7 @@ export default function EditEventButtonClient({eventInfo} : {eventInfo : EventIn
                 </DialogHeader>
 
                 {/* Form */}
-                <form action={formAction} id="editEventForm" className="space-y-3">
+                <form action={formAction} id="editEventForm" className="space-y-3 overflow-y-auto p-2">
                     <input type="hidden" name="id" value={eventInfo.id}/>
                     <div>
                         <Label>Nom</Label>

@@ -29,7 +29,7 @@ export default async function CDPList() {
 
         return(
             <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-6 ">
-                <div className="grid grid-cols-8 gap-8 w-full h-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 w-full h-auto">
                     {cdpCards}
                 </div>
             </div>

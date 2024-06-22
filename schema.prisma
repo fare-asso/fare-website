@@ -71,11 +71,13 @@ model Category {
 }
 
 model Article {
-  id  Int     @id @default(autoincrement())
-  title String
-  content String
-  author  User    @relation(fields: [authorId], references: [id])
-  authorId  String
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     Json      // content of an article in Delta (Quill Format (subset of JSON))
+  imagesPath  String[]
+  writtenOn   DateTime  @default(now())
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String
 }
 
 model CommuniqueDePresse {
@@ -84,6 +86,13 @@ model CommuniqueDePresse {
   size        Int       @default(0)
   createdAt   DateTime  @default(now())
   filePath    String
+}
+
+model LocationCache {
+  id              Int       @id @default(autoincrement())
+  query           String    @unique
+  response        Json[]
+  lastAccessedAt  DateTime  @default(now())
 }
 
 enum Role {

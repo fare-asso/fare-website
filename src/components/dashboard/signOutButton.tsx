@@ -20,9 +20,9 @@ export default function SignOutButton() {
     };
 
     return (
-        <Button onClick={handleSignOut} className="flex flex-row items-center justify-center" disabled={loading}>
+        <Button onClick={handleSignOut} className="flex flex-row items-center justify-center h-auto px-4" disabled={loading}>
             <MdLogout className="mr-1" size={20} />
-            {loading ? "Déconnexion..." : "Se déconnecter"}
+            <div className='text-base lg:text-sm'>{loading ? "Déconnexion..." : "Se déconnecter"}</div>
         </Button>
     );
 }

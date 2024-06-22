@@ -6,12 +6,39 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import LoadingRing from "@/components/dashboard/loadingRing";
 
+interface SearchLocationApiResponse {
+  place_id: number,
+  display_name: string,
+  lat: string,
+  lon: string
+}
+
+interface Coordinates {
+  lat: string,
+  lon: string
+}
+
+function isLocationObjectJson(value: string): boolean {
+  try {
+      const json = JSON.parse(value);
+      return true
+  } catch {
+      return false
+  }
+}
+
+
+
 export default function LocationPicker({ defaultValue, name }: { defaultValue: string, name: string }) {
+
+  const isDefaultValueJson: boolean = isLocationObjectJson(defaultValue);
+
   const inputRef = useRef<HTMLInputElement>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchResultElements, setSearchResultElements] = useState(<></>);
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
   const [isLoading, setIsLoading] = useState(false);
+  const [value, setValue] = useState<string>(defaultValue);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -29,7 +56,7 @@ export default function LocationPicker({ defaultValue, name }: { defaultValue: s
         setIsLoading(true);
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${debouncedQuery}&format=json&limit=3&accept-language=FR&countrycodes=fr`,
+            `/api/searchLocation?query=${encodeURIComponent(debouncedQuery)}`,
             {
               method: "GET",
               headers: {
@@ -38,14 +65,17 @@ export default function LocationPicker({ defaultValue, name }: { defaultValue: s
             }
           );
 
-          const json = await res.json();
-          if (json.length > 0) {
-            const elements = json.map((response: any) => 
+          const json: {sucess: boolean, results: SearchLocationApiResponse[], from: 'string'} = await res.json();
+
+          const results = json.results;
+
+          if (results.length > 0) {
+            const elements = results.map((response) => 
               <Button 
                 variant="outline" 
                 className="w-full mb-1 text-start whitespace-normal justify-start h-auto" 
                 key={response.place_id} 
-                onClick={() => handleSuggestionClick(response.display_name)}
+                onClick={() => handleSuggestionClick(response.display_name, {lat: response.lat, lon: response.lon})}
               >
                 {response.display_name}
               </Button>
@@ -75,22 +105,26 @@ export default function LocationPicker({ defaultValue, name }: { defaultValue: s
     setSearchQuery(event.target.value);
   };
 
-  const handleSuggestionClick = (displayName: string) => {
+  const handleSuggestionClick = (displayName: string, coordinates: Coordinates) => {
+    setValue(JSON.stringify({
+      displayName: displayName,
+      coordinates: coordinates
+    }));
+
     if (inputRef.current) {
       inputRef.current.value = displayName;
     }
+
     setSearchQuery(""); // Réinitialiser la requête de recherche pour empêcher une nouvelle recherche
     setSearchResultElements(<></>); // Cacher les résultats de la recherche
   };
 
   return (
-    <div>
+    <div className="relative">
+      <input type="hidden" id="locationSearch" name={name} value={value} />
       <Input
         ref={inputRef}
-        type="text"
-        id="locationSearch"
-        name={name}
-        defaultValue={defaultValue}
+        defaultValue={isDefaultValueJson ? JSON.parse(defaultValue).displayName : defaultValue}
         onChange={handleSearchChange}
         autoComplete="off"
       />
