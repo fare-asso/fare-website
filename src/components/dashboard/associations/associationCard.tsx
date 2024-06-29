@@ -14,7 +14,11 @@ import { useToast } from "@/components/ui/use-toast"
 
 import clsx from "clsx";
 
-import { Association } from "./associationList";
+import { Association } from "@prisma/client";
+import EditAssociationButton from "./editAssociationButton";
+import SendInvitationLinkButton from "./sendInvitationLinkButton";
+import DeleteRepresentativeButton from "./deleteRepresentativeButton";
+import AssociationDropdownMenu from "./AssociationDropdownMenu";
 
 export default function AssociationCard({association, logoUrl} : {association: Association, logoUrl: string}) {
 
@@ -44,17 +48,18 @@ export default function AssociationCard({association, logoUrl} : {association: A
     return(
         <div className={clsx("flex flex-col items-start rounded-lg border bg-card text-card-foreground shadow-sm p-3 h-min", hidden && "hidden")}>
             <div className="relative">
-                {/* Hover buttons
-                <div className="w-full h-full flex flex-row opacity-0 hover:opacity-100 absolute items-start justify-end p-2 space-x-1">
-                    <EditMemberButton member={member} pictureUrl={pictureUrl}/>
-                    <Button id="deleteButton" onClick={handleDelete} className="p-1 h-auto whitespace-normal" variant="outline"><MdDelete size={20}/></Button>
-                </div> */}
+                {/* Hover buttons */}
+                <div className="w-full h-full flex flex-row opacity-100 lg:opacity-0 lg:hover:opacity-100 absolute items-start justify-end p-2 space-x-1">
+                        <EditAssociationButton association={association}/>
+                        { association.representativeId ? 
+                            <DeleteRepresentativeButton association={association}/> :  <SendInvitationLinkButton association={association}/>
+                        }
+                </div>
                 <Image src={logoUrl} width={1000} height={1000} alt={"Logo de l'association " + association.name} className="rounded-md shadow-sm aspect-square object-cover mb-1"/>
             </div>
             
             <div className="w-full flex flex-row space-x-1 text-card-foreground font-medium mb-[0.125rem]">{association.name}</div>
             <div className="inline-flex items-center bg-card-foreground rounded-full px-2.5 py-0.5 text-primary-foreground text-xs font-semibold whitespace-nowrap">{association.major}</div>
         </div>
-        
     )
 }

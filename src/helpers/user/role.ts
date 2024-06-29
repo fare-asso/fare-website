@@ -2,7 +2,9 @@ import prisma from "../db";
 
 import { createClient } from "../supabase/server";
 
-export default async function getCurrentUserRole() : Promise<{role?: string, error?: string}> {
+import { Role } from "@prisma/client";
+
+export default async function getCurrentUserRole() : Promise<{role?: Role, error?: string}> {
 
     // create supabase client
     const supabase = createClient();
@@ -21,7 +23,7 @@ export default async function getCurrentUserRole() : Promise<{role?: string, err
 
         if(pUser) { // is valid user
             return {
-                role: pUser.role as string
+                role: pUser.role as Role
             }
         } else {
             return {

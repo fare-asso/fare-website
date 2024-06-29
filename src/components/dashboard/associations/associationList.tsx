@@ -4,22 +4,7 @@ import { createClient } from "@/helpers/supabase/server"
 import prisma from "@/helpers/db";
 import AssociationCard from "./associationCard";
 
-// import MemberCard from "./memberCard";
-
-export interface Association {
-    id: number;
-    name: string;
-    logoPath: string[];
-    major: string;
-    desc: string;
-    birthdate: Date;
-    location: string;
-    website: string | null;
-    facebook: string | null;
-    instagram: string | null;
-    twitter: string | null;
-    discord: string | null;
-}
+import { Association } from "@prisma/client";
 
 export default async function AssociationList() {
 

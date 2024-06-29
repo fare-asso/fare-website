@@ -12,13 +12,14 @@ datasource db {
 }
 
 model User {
-  id        String      @id @default(uuid())
-  name      String?
-  image     String?
-  createdAt DateTime @default(now())
-  createdEvents Event[]
-  role Role             @default(MEMBER)
+  id              String            @id @default(uuid())
+  name            String?
+  image           String?
+  createdAt       DateTime          @default(now())
+  createdEvents   Event[]
+  role            Role              @default(MEMBER)
   writtenArticles Article[]
+  association     Association?
 }
 
 model Member {
@@ -34,18 +35,20 @@ model Member {
 }
 
 model Association {
-  id        Int      @id @default(autoincrement())
-  name      String
-  logoPath  String[]
-  major     String
-  desc      String
-  birthdate DateTime @default(now())
-  location  String
-  website   String?
-  facebook  String?
-  instagram String?
-  twitter   String?
-  discord   String?
+  id                Int       @id @default(autoincrement())
+  name              String
+  logoPath          String[]
+  major             String
+  desc              String
+  birthdate         DateTime  @default(now())
+  location          String
+  website           String?
+  facebook          String?
+  instagram         String?
+  twitter           String?
+  discord           String?
+  representative    User?     @relation(fields: [representativeId], references: [id])
+  representativeId  String?   @unique
 }
 
 model Event {

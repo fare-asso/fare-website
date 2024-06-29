@@ -3,6 +3,7 @@
 import { createClient } from "@/helpers/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import getCurrentUserRole from "@/helpers/user/role";
 
 interface Data {
     email?: string,
@@ -16,9 +17,6 @@ export default async function loginAction(currentState: {emailError? : string, p
 
     const email = formData.get('email');
     const password = formData.get('password');
-
-    console.log("Username: " + email)
-    console.log("Password: " + password)
 
     const credentials: Data = {}
 
@@ -56,7 +54,20 @@ export default async function loginAction(currentState: {emailError? : string, p
         }
         
     } else {
-        revalidatePath('../dashboard')
+
+        // fetch user role
+        const { role, error } = await getCurrentUserRole();
+
+        if(error) {
+            return { passwordError: "Impossible de récupérer les informations de l'utilisateur" }
+        }
+
+        if (role === 'ASSO_OWNER') {
+            revalidatePath('/espace-asso')
+            redirect('../espace-asso')
+        } 
+        
+        revalidatePath('/dashboard')
         redirect("../dashboard")
     }
 
