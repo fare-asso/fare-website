@@ -73,10 +73,6 @@ async function fetchImageAsBase64(url: string): Promise<string> {
 
 export default function EditArticleButton({className, children, article} : {className?: string, children: React.ReactNode, article: Article}) {
 
-    if (article.content == null) {
-        return null;
-    }
-
     const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(editArticleAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -134,6 +130,10 @@ export default function EditArticleButton({className, children, article} : {clas
     const handleRichTextEditorChange = (value : string, delta: DeltaStatic, sources: Sources, editor: UnprivilegedEditor) => {
         setContent(value);
         setDelta(editor.getContents());
+    }
+
+    if (article.content == null) {
+        return null;
     }
 
     return(

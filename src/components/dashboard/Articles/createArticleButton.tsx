@@ -105,7 +105,7 @@ export default function CreateArticleButton() {
                     </div>
 
                     <div>
-                        <RichTextEditor value={content} onChange={handleRichTextEditorChange} defaultValue={""}/>
+                        <RichTextEditor value={content} onChange={handleRichTextEditorChange} />
                     </div>
 
 

@@ -41,7 +41,7 @@ export default async function Page({params} : {params : { id: string }}) {
     if(isNaN(Number(params.id))) {
         return (
             <div>
-                <span>L'association recherchée n'existe pas</span>
+                <span>{"L'association recherchée n'existe pas"}</span>
             </div>
         )
     }
@@ -55,7 +55,7 @@ export default async function Page({params} : {params : { id: string }}) {
     if(!associationRecord) {
         return (
             <div>
-                <span>L'association recherchée n'existe pas ou plus</span>
+                <span>{"L'association recherchée n'existe pas ou plus"}</span>
             </div>
         )
     }

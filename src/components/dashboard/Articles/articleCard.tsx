@@ -50,7 +50,7 @@ export default function ArticleCard({article} : {article: Article}) {
             })
         }
         setIsLoading(false);
-        }, [formState]);
+        });
 
     return (
         <div className="w-full rounded-lg border bg-card text-card-foreground shadow-sm px-4 py-4 h-16 flex flex-row items-center justify-between">
