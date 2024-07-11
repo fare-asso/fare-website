@@ -1,7 +1,12 @@
-
 import AssociationList from "@/components/public/associations/associationList";
 import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller";
 import prisma from "@/helpers/db";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Réseau | FAHB",
+  description: "Page des associations du réseau FAHB"
+}
 
 export default async function Reseau() {
 

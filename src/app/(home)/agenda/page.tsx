@@ -1,8 +1,13 @@
-
-
 import EventArchive from "@/components/public/events/archive";
 import CurrentEvents from "@/components/public/events/currentEvents";
 import SoonEvents from "@/components/public/events/soon";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Agenda | FAHB",
+    description: "Page regroupant les événements lié à la FAHB"
+}
+
 
 export default async function Reseau() {
 

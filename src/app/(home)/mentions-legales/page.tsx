@@ -1,3 +1,9 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Mentions Légales | FAHB"
+}
+
 export default function MentionsLegales() {
     return (
         <div className="flex flex-col items-center justify-start w-full">

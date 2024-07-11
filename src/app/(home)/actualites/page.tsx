@@ -1,4 +1,11 @@
 import ArticleList from "@/components/public/articles/articleList";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Actualités | FAHB",
+    description: "Page regroupant les actualités lié à la FAHB"
+}
+
 
 export default async function ActualitePage() {
     return(
