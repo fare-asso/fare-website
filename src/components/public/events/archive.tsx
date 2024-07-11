@@ -24,6 +24,10 @@ export default async function EventArchive() {
         }
     })
 
+    if(events.length == 0) {
+        return <></>
+    }
+
     return (
         <div className="w-full flex flex-col mb-8">
             <span className="font-semibold text-2xl mb-4">Archives</span>

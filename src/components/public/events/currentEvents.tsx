@@ -29,6 +29,10 @@ export default async function CurrentEvents() {
             }
         }
     })
+
+    if(events.length == 0) {
+        return <></>
+    }
     
     return (
         <div className="w-full flex flex-col mb-8">

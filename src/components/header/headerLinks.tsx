@@ -1,21 +1,76 @@
 'use client';
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import HeaderLink from "./headerLink";
+import { MdClose, MdOutlineMenu } from "react-icons/md";
+import clsx from "clsx";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export default function HeaderLinks() {
+export interface Link {
+    title: string,
+    href: string,
+    subLinks?: Link[]
+}
 
+export default function HeaderLinks({links}: {links: Link[]}) {
+
+    const pathname = usePathname();
     const runner = useRef<HTMLDivElement>(null);
+    const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    const handleOutsideClick = (event: MouseEvent) => {
+        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            setMenuIsOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        if (menuIsOpen) {
+            document.addEventListener('mousedown', handleOutsideClick);
+        } else {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, [menuIsOpen]);
 
     return(
-        <nav className="border-black border-2 rounded-full py-2 flex flex-row relative items-center">
-            <div ref={runner} className="bg-black z-10 rounded-full absolute h-full opacity-0 transition-all duration-300 ease-out"></div>
-            
-            <HeaderLink title={"Nos Assos"} href={'/reseau'} runnerRef={runner}/>
-            <HeaderLink title={"Agenda"} href={'/agenda'} runnerRef={runner}/>
-            <HeaderLink title={"Actualités"} href={'/actualites'} runnerRef={runner}/>
-            <HeaderLink title={"A Propos"} href={'/'} runnerRef={runner}/>
-            
-        </nav>
-    )
+        <div>
+            {/* Navbar pour les écrans larges */}
+            <nav className="border-black border-2 rounded-full py-2 hidden lg:flex flex-row relative items-center">
+                <div ref={runner} className="bg-black z-10 rounded-full absolute h-full opacity-0 transition-all duration-300 ease-out"></div>
+                { links.map((link) => <HeaderLink key={link.title} title={link.title} href={link.href} runnerRef={runner}/> )}
+            </nav>
+
+            {/* Bouton Burger pour les petits écrans */}
+            <button className="block lg:hidden text-black" onClick={() => setMenuIsOpen(true)}>
+                <MdOutlineMenu size={25} />
+            </button>
+
+            {/* Menu mobile */}
+            <div ref={menuRef} id="mobileMenu" className={clsx("w-80 fixed top-0 right-0 bg-white border-l-2 min-h-screen transition-all duration-500 flex flex-col z-[9999]", menuIsOpen ? 'translate-x-0' : 'translate-x-80')}>
+                <div className="w-full flex flex-row items-center justify-end p-4">
+                    <button id="closeButton" className="hover:font-bold" onClick={() => setMenuIsOpen(false)}>
+                        <MdClose size={25}/>
+                    </button>
+                </div>
+                <div className="flex flex-col items-start p-4">
+                    { links.map((link) => (
+                        <Link 
+                            key={link.title} 
+                            href={link.href} 
+                            className={clsx(pathname.startsWith(link.href) ? 'underline' : 'no-underline', 'py-2 text-lg')} 
+                            onClick={() => setMenuIsOpen(false)}
+                        >
+                            {link.title}
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
 }

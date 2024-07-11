@@ -66,6 +66,7 @@ export default function CreateEventButton() {
     if (formState?.success) {
         handleOpenChange(false);
     }
+    setIsLoading(false);
     }, [formState, handleOpenChange]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

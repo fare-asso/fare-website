@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { MouseEvent, RefObject } from "react";
+import { usePathname } from "next/navigation";
 
 export default function HeaderLink({title, href , runnerRef} : {title: string, href: string, runnerRef: RefObject<HTMLDivElement>}) {
+
+    const pathname = usePathname();
 
     const hoverHandler = (e : MouseEvent<HTMLAnchorElement>) => {
         if(runnerRef.current) {
@@ -27,7 +30,7 @@ export default function HeaderLink({title, href , runnerRef} : {title: string, h
 
     return(
         <Link href={href} passHref legacyBehavior>
-            <a className="z-20 rounded-full flex items-center justify-center text-black text-sm px-5 font-semibold uppercase hover:text-white transition-all duration-250" onMouseEnter={hoverHandler} onMouseLeave={unhoverHandler}>{title}</a>
+            <a className={`z-20 rounded-full flex items-center justify-center text-black text-sm px-5 font-semibold uppercase hover:text-white transition-all duration-250 ${pathname.startsWith(href) ? 'underline' : 'no-underline'}`} style={{textDecorationThickness: 2}} onMouseEnter={hoverHandler} onMouseLeave={unhoverHandler}>{title}</a>
         </Link>
     )
 }

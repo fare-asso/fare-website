@@ -6,6 +6,8 @@ import { createClient } from "@/helpers/supabase/server";
 import { randomUUID } from "crypto";
 import getCurrentUserId from "@/helpers/user/id";
 
+import { sanitizeString } from "@/helpers/string";
+
 interface Event {
     name?: string,
     desc?: string,
@@ -194,7 +196,7 @@ export default async function createEventAction(prevState: {error? : string, suc
         const pictureFile: File = picture;
         if(pictureFile.size != 0 && ((pictureFile.size / (1024*1024)) <= 10)) { // valid picture file and size < 10mb
             // Some Logic to upload file to S3 and get its path
-            const res = await supabase.storage.from('EventPictures').upload(data.name + ":" + randomUUID(), pictureFile);
+            const res = await supabase.storage.from('EventPictures').upload(sanitizeString(data.name) + ":" + randomUUID(), pictureFile);
 
             if(res.error) { // Upload Failed
                 console.log(res.error)
