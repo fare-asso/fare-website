@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url = env("SUPABASE_POSTGRES_PRISMA_URL")
+  url       = env("SUPABASE_POSTGRES_PRISMA_URL")
   directUrl = env("SUPABASE_POSTGRES_PRISMA_DIRECT_URL")
 
   // url       = env("POSTGRES_PRISMA_URL")
@@ -12,90 +12,115 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(uuid())
+  id              String       @id @default(uuid())
   name            String?
   image           String?
-  createdAt       DateTime          @default(now())
+  createdAt       DateTime     @default(now())
   createdEvents   Event[]
-  role            Role              @default(MEMBER)
+  role            Role         @default(MEMBER)
   writtenArticles Article[]
   association     Association?
 }
 
 model Member {
-  id            Int       @id @default(autoincrement())
-  firstName     String
-  lastName      String
-  position      String    @default("membre actif")
-  picturePath   String
-  email         String
-  facebookUrl   String?
-  instagramUrl  String?
-  twitterUrl    String?
+  id           Int     @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  position     String  @default("membre actif")
+  picturePath  String
+  email        String
+  facebookUrl  String?
+  instagramUrl String?
+  twitterUrl   String?
 }
 
 model Association {
-  id                Int       @id @default(autoincrement())
-  name              String
-  logoPath          String[]
-  major             String
-  desc              String
-  birthdate         DateTime  @default(now())
-  location          String
-  website           String?
-  facebook          String?
-  instagram         String?
-  twitter           String?
-  discord           String?
-  representative    User?     @relation(fields: [representativeId], references: [id])
-  representativeId  String?   @unique
+  id               Int      @id @default(autoincrement())
+  name             String
+  logoPath         String[]
+  major            String
+  desc             String
+  birthdate        DateTime @default(now())
+  location         String
+  website          String?
+  facebook         String?
+  instagram        String?
+  twitter          String?
+  discord          String?
+  representative   User?    @relation(fields: [representativeId], references: [id])
+  representativeId String?  @unique
 }
 
 model Event {
-  id        Int      @id @default(autoincrement())
-  name      String
-  image     String
-  desc      String
-  createdAt DateTime @default(now())
-  startTime DateTime
-  endTime   DateTime
-  location  String
-  category  Category  @relation(fields: [categoryId], references: [id])
-  categoryId  Int
-  createdBy User      @relation(fields: [creatorId], references: [id])
-  creatorId String
-  visibility  Boolean @default(false)
+  id         Int      @id @default(autoincrement())
+  name       String
+  image      String
+  desc       String
+  createdAt  DateTime @default(now())
+  startTime  DateTime
+  endTime    DateTime
+  location   String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  createdBy  User     @relation(fields: [creatorId], references: [id])
+  creatorId  String
+  visibility Boolean  @default(false)
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
-  name  String  @unique
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
   events Event[]
 }
 
 model Article {
-  id          Int       @id @default(autoincrement())
-  title       String
-  content     Json      // content of an article in Delta (Quill Format (subset of JSON))
-  imagesPath  String[]
-  writtenOn   DateTime  @default(now())
-  author      User      @relation(fields: [authorId], references: [id])
-  authorId    String
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    Json // content of an article in Delta (Quill Format (subset of JSON))
+  imagesPath String[]
+  writtenOn  DateTime @default(now())
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   String
 }
 
 model CommuniqueDePresse {
-  id          Int       @id @default(autoincrement())
-  name        String
-  size        Int       @default(0)
-  createdAt   DateTime  @default(now())
-  filePath    String
+  id        Int      @id @default(autoincrement())
+  name      String
+  size      Int      @default(0)
+  createdAt DateTime @default(now())
+  filePath  String
+}
+
+model BagadAssoEquipment {
+  id        Int               @id @default(autoincrement())
+  name      String
+  imagePath String?
+  deposit   Float             @default(0)
+  number    Int               @default(1)
+  tickets   BagadAssoTicket[]
+}
+
+model BagadAssoTicket {
+  id                    Int                 @id @default(autoincrement())
+  creationDate          DateTime            @default(now())
+  assocation            String
+  mail                  String
+  firstName             String
+  lastName              String
+  phoneNumber           String?
+  eventName             String
+  eventType             String
+  eventDate             DateTime
+  eventAddr             String
+  estimatedParticipants Int                 @default(0)
+  materials             BagadAssoEquipment[]
 }
 
 model LocationCache {
-  id              Int       @id @default(autoincrement())
-  query           String    @unique
-  response        Json[]
-  lastAccessedAt  DateTime  @default(now())
+  id             Int      @id @default(autoincrement())
+  query          String   @unique
+  response       Json[]
+  lastAccessedAt DateTime @default(now())
 }
 
 enum Role {
