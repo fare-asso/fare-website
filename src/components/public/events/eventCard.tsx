@@ -63,7 +63,7 @@ export default function EventCard({event, archive, imageUrl} : {event: Event & {
 
             <div className="hidden md:flex text-white p-1 flex-1 flex-col items-center">
                     {/* Description */}
-                    <p className="line-clamp-3 h-1/2 flex-1 text-ellipsis" style={{color: archive ? fontColor : 'white', opacity: archive ? 0.75 : 1}}>
+                    <p className="line-clamp-3 h-1/2 flex-1 text-ellipsis" style={{color: archive ? fontColor : 'white', opacity: archive ? 0.9 : 1}}>
                         {event.desc}
                     </p>
                 

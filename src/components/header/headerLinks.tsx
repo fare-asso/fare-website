@@ -58,7 +58,7 @@ export default function HeaderLinks({links}: {links: Link[]}) {
                         <MdClose size={25}/>
                     </button>
                 </div>
-                <div className="flex flex-col items-start p-4">
+                <div className="flex flex-col items-start p-8">
                     { links.map((link) => (
                         <Link 
                             key={link.title} 

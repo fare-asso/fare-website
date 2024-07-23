@@ -11,7 +11,7 @@ export default function ArticleCard({article} : {article: Article}) {
             {/* Image */}
             <div className="bg-gray-300 h-full w-full md:w-1/3 *:md:min-w-[33%] md:max-w-[50%] object-cover rounded-md"></div>
 
-            <div className="mt-2 md:mt-0 ml-0 md:ml-4 flex flex-col">
+            <div className="mt-2 md:mt-0 ml-0 md:ml-4 flex flex-col flex-1">
                 {/* Title */}
                 <span className="font-bold text-lg">{article.title}</span>
 
@@ -24,7 +24,7 @@ export default function ArticleCard({article} : {article: Article}) {
                 </p>
 
                 {/* Lire plus */}
-                <Link href={`/articles/${article.id}`} className="mt-2 outline-1 outline-black rounded-full bg-black text-white px-2 py-1 text-center font-semibold hover:text-black hover:bg-white hover:outline transition-all duration-100">En savoir +</Link>
+                <Link href={`/actualites/articles/${article.id}`} className="w-full md:w-fit mt-2 outline-1 outline-black rounded-full bg-black text-white px-8 py-1 text-center font-semibold hover:text-black hover:bg-white hover:outline transition-all duration-100">En savoir +</Link>
             </div>
         </div>
     )

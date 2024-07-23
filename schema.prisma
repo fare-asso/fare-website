@@ -6,9 +6,6 @@ datasource db {
   provider  = "postgresql"
   url       = env("SUPABASE_POSTGRES_PRISMA_URL")
   directUrl = env("SUPABASE_POSTGRES_PRISMA_DIRECT_URL")
-
-  // url       = env("POSTGRES_PRISMA_URL")
-  // directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
@@ -16,39 +13,39 @@ model User {
   name            String?
   image           String?
   createdAt       DateTime     @default(now())
-  createdEvents   Event[]
   role            Role         @default(MEMBER)
   writtenArticles Article[]
   association     Association?
+  createdEvents   Event[]
 }
 
 model Member {
   id           Int     @id @default(autoincrement())
   firstName    String
   lastName     String
-  position     String  @default("membre actif")
-  picturePath  String
   email        String
   facebookUrl  String?
   instagramUrl String?
   twitterUrl   String?
+  picturePath  String
+  position     String  @default("membre actif")
 }
 
 model Association {
   id               Int      @id @default(autoincrement())
   name             String
-  logoPath         String[]
   major            String
   desc             String
-  birthdate        DateTime @default(now())
   location         String
-  website          String?
+  discord          String?
   facebook         String?
   instagram        String?
+  logoPath         String[]
   twitter          String?
-  discord          String?
-  representative   User?    @relation(fields: [representativeId], references: [id])
+  website          String?
+  birthdate        DateTime @default(now())
   representativeId String?  @unique
+  representative   User?    @relation(fields: [representativeId], references: [id])
 }
 
 model Event {
@@ -60,11 +57,11 @@ model Event {
   startTime  DateTime
   endTime    DateTime
   location   String
-  category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int
-  createdBy  User     @relation(fields: [creatorId], references: [id])
   creatorId  String
   visibility Boolean  @default(false)
+  category   Category @relation(fields: [categoryId], references: [id])
+  createdBy  User     @relation(fields: [creatorId], references: [id])
 }
 
 model Category {
@@ -76,19 +73,19 @@ model Category {
 model Article {
   id         Int      @id @default(autoincrement())
   title      String
-  content    Json // content of an article in Delta (Quill Format (subset of JSON))
-  imagesPath String[]
-  writtenOn  DateTime @default(now())
-  author     User     @relation(fields: [authorId], references: [id])
   authorId   String
+  writtenOn  DateTime @default(now())
+  content    Json
+  imagesPath String[]
+  author     User     @relation(fields: [authorId], references: [id])
 }
 
 model CommuniqueDePresse {
   id        Int      @id @default(autoincrement())
   name      String
-  size      Int      @default(0)
-  createdAt DateTime @default(now())
   filePath  String
+  createdAt DateTime @default(now())
+  size      Int      @default(0)
 }
 
 model BagadAssoEquipment {
@@ -97,12 +94,11 @@ model BagadAssoEquipment {
   imagePath String?
   deposit   Float             @default(0)
   number    Int               @default(1)
-  tickets   BagadAssoTicket[]
+  tickets   BagadAssoTicket[] @relation("BagadAssoEquipmentToBagadAssoTicket")
 }
 
 model BagadAssoTicket {
-  id                    Int                 @id @default(autoincrement())
-  creationDate          DateTime            @default(now())
+  id                    Int                  @id @default(autoincrement())
   assocation            String
   mail                  String
   firstName             String
@@ -112,8 +108,9 @@ model BagadAssoTicket {
   eventType             String
   eventDate             DateTime
   eventAddr             String
-  estimatedParticipants Int                 @default(0)
-  materials             BagadAssoEquipment[]
+  estimatedParticipants Int                  @default(0)
+  creationDate          DateTime             @default(now())
+  materials             BagadAssoEquipment[] @relation("BagadAssoEquipmentToBagadAssoTicket")
 }
 
 model LocationCache {

@@ -1,4 +1,7 @@
+import { JsonValue } from '@prisma/client/runtime/library';
 import { DeltaStatic } from 'quill';
+import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
+import parse from 'html-react-parser';
 
 export function extractFirstWords(take: number, delta: DeltaStatic): string {
     
@@ -18,4 +21,16 @@ export function extractFirstWords(take: number, delta: DeltaStatic): string {
     const words = fullText.split(/\s+/).slice(0, take).join(' ');
 
     return words;
+}
+
+
+export function convertDeltaToHTML(content: JsonValue) : string | JSX.Element | JSX.Element[] {
+
+    const delta: DeltaStatic = JSON.parse(JSON.stringify(content));
+
+    if(!delta.ops) {
+        return ""
+    }
+    const converter = new QuillDeltaToHtmlConverter(delta.ops);
+    return parse(converter.convert());
 }

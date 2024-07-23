@@ -70,13 +70,17 @@ export default async function createArticleAction(prevState: {error?: string, su
             imageFiles.push(base64ToFile(image, "image" + index));
         })
 
-        /* Delete previous images */
-        console.log(currentArticle.imagesPath)
-        const res = await supabase.storage.from('article-pictures').remove(currentArticle.imagesPath);
-        if(res.error) {
-            console.log(res.error.message);
-            return { error: "Echec de la suppression de images précédentes"}
+        if(currentArticle.imagesPath.length > 0) {
+            /* Delete previous images */
+            console.log(currentArticle.imagesPath)
+            const res = await supabase.storage.from('article-pictures').remove(currentArticle.imagesPath);
+            if(res.error) {
+                console.log(res.error.message);
+                return { error: "Echec de la suppression de images précédentes"}
+            }
         }
+
+        
 
         /* Upload those images on the storage and save to path */
 

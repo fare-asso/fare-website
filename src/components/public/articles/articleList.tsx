@@ -11,7 +11,7 @@ export default async function ArticleList() {
     })
 
     return(
-        <div className="flex flex-col w-full md:w-3/4 lg:w-1/2">
+        <div className="flex flex-col w-full md:w-3/4 lg:w-1/2 space-y-4">
             { articles.map((article) => <ArticleCard key={article.id} article={article} />)}
         </div>
     )

@@ -45,6 +45,7 @@ export default async function deleteArticleAction(prevState: {error?: string, su
             }
         });
         revalidatePath('/dashboard/articles');
+        revalidatePath('/actualites')
         return { success : true }
 
     } catch (_) {

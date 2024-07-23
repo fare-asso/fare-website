@@ -31,7 +31,7 @@ export default async function EventArchive() {
     return (
         <div className="w-full flex flex-col mb-8">
             <span className="font-semibold text-2xl mb-4">Archives</span>
-            <div className="w-full h-auto flex flex-col items-center">
+            <div className="w-full h-auto flex flex-col items-center space-y-3">
                 {
                     events.length > 0 ? 
                     events.map((event) => <EventCard key={event.id} event={event} archive={true}

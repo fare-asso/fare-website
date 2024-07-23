@@ -106,6 +106,7 @@ export default async function createArticleAction(prevState: {error?: string, su
             })
 
             if(record != null) { // creation is a success
+                revalidatePath('/actualites')
                 revalidatePath('/dashboard/articles');
                 return { success : true }
             } else { // record creation failed
