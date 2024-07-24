@@ -31,6 +31,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 import addAssociationAction from "@/actions/associations/addAssociationAction";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function AddAssociationButton() {
 
@@ -99,6 +100,11 @@ export default function AddAssociationButton() {
                     </div>
 
                     <div>
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea id="description" name="description" maxLength={1000} placeholder="(Max: 1000 caractères)" className="max-h-[170px]"/>
+                    </div>
+
+                    <div>
                         <Label htmlFor="picture">Photos</Label>
                         <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
                         <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
@@ -116,7 +122,7 @@ export default function AddAssociationButton() {
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent>
-                                <Calendar mode="single" selected={birthdate} onSelect={setBirthdate} className="mb-3"/>
+                                <Calendar mode="single" selected={birthdate} onSelect={setBirthdate} className="mb-3" captionLayout="dropdown" fromYear={1950} toYear={new Date().getFullYear()}/>
                             </PopoverContent>
                         </Popover>
                         <input type="hidden" name ="birthdate" value={birthdate ? birthdate.toString() : ""}/>

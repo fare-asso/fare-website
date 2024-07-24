@@ -19,8 +19,6 @@ export default async function MoreArticles({currentArticleId} : {currentArticleI
         return <></>
     }
 
-    console.log(articles)
-
     return (
         <div className="w-full mt-12">
             <span className="text-lg font-semibold">Autres articles:</span>

@@ -7,7 +7,7 @@ export function extractFirstWords(take: number, delta: DeltaStatic): string {
     
     // Filtrer les opérations pour ne conserver que celles sans attributs
     const textOps = delta.ops?.filter((operation) => {
-        return typeof operation.insert === 'string' && !operation.attributes;
+        return typeof operation.insert === 'string';
     });
 
     if (!textOps) {
@@ -15,7 +15,18 @@ export function extractFirstWords(take: number, delta: DeltaStatic): string {
     }
 
     // Joindre le texte des opérations filtrées
-    const fullText = textOps.map(op => op.insert).join(' ');
+    const fullText = textOps.map(op => {
+        if(op.insert.image) {
+            return '[image]'
+        }
+
+        if(op.insert.endsWith('\n')) {
+            return op.insert + '[...]'
+        } else {
+            return op.insert
+        }
+
+    }).join(' ');
 
     // Extraire les premiers mots
     const words = fullText.split(/\s+/).slice(0, take).join(' ');

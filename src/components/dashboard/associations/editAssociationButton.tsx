@@ -30,14 +30,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
-import addAssociationAction from "@/actions/associations/addAssociationAction";
+import editAssociationAction from "@/actions/associations/editAssociationAction";
 import { Association } from "@prisma/client";
 import { MdEdit } from "react-icons/md";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function EditAssociationButton({association} : {association: Association}) {
 
-    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(addAssociationAction, undefined)
+    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(editAssociationAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [birthdate, setBirthdate] = useState<Date | undefined>(association.birthdate);
@@ -91,6 +91,8 @@ export default function EditAssociationButton({association} : {association: Asso
                 {/* Form */}
                 <form onSubmit={handleSubmit} id="editAssociationForm" className="space-y-3 overflow-y-auto p-2">
 
+                    <input type="hidden" name="id" value={association.id} />
+
                     <div>
                         <Label htmlFor="name">{"Nom de l'association"}</Label>
                         <Input type="text" id="name" name="name" placeholder="Nom" required defaultValue={association.name}/>
@@ -103,7 +105,7 @@ export default function EditAssociationButton({association} : {association: Asso
 
                     <div>
                         <Label htmlFor="description">Description</Label>
-                        <Textarea id="description" name="description" maxLength={1000} placeholder="(Max: 1000 caractères)" className="max-h-[170px]"/>
+                        <Textarea id="description" name="description" maxLength={1000} placeholder="(Max: 1000 caractères)" className="max-h-[170px]" defaultValue={association.desc}/>
                     </div>
 
                     <div>
@@ -124,7 +126,7 @@ export default function EditAssociationButton({association} : {association: Asso
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent>
-                                <Calendar mode="single" selected={birthdate} onSelect={setBirthdate} className="mb-3"/>
+                                <Calendar mode="single" selected={birthdate} onSelect={setBirthdate} className="mb-3" captionLayout="dropdown" fromYear={1950} toYear={new Date().getFullYear()}/>
                             </PopoverContent>
                         </Popover>
                         <input type="hidden" name ="birthdate" value={birthdate ? birthdate.toString() : ""}/>

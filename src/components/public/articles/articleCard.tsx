@@ -24,7 +24,7 @@ export default function ArticleCard({article} : {article: Article}) {
                 </p>
 
                 {/* Lire plus */}
-                <Link href={`/actualites/articles/${article.id}`} className="w-full md:w-fit mt-2 outline-1 outline-black rounded-full bg-black text-white px-8 py-1 text-center font-semibold hover:text-black hover:bg-white hover:outline transition-all duration-100">En savoir +</Link>
+                <Link href={`/actualites/articles/${article.id}`} className="w-full md:w-fit mt-2 outline-1 outline-black rounded-full bg-black text-white px-8 py-1 text-center font-semibold hover:text-black hover:bg-white hover:outline transition-all">En savoir +</Link>
             </div>
         </div>
     )

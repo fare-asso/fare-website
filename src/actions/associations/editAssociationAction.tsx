@@ -5,11 +5,12 @@ import { createClient } from "@/helpers/supabase/server";
 import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 
-export default async function addAssociationAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
+export default async function editAssociationAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
     // create supabase client
     const supabase = createClient();
 
     // retrieve form data fields
+    const id = Number(formData.get('id')?.toString() ?? NaN);
     const name = formData.get('name')?.toString();
     const major = formData.get('major')?.toString();
     const description = formData.get('description')?.toString();
@@ -22,7 +23,7 @@ export default async function addAssociationAction(prevState: {error?: string, s
     const discord = formData.get('discord')?.toString();
 
     // Fields Validation
-    if (!name || !major || !description || !pictures.length || !birthdate || !location) {
+    if (isNaN(id) || !name || !major || !description || !pictures.length || !birthdate || !location) {
         return { error: "Veuillez remplir tous les champs obligatoires." };
     }
 
@@ -50,7 +51,10 @@ export default async function addAssociationAction(prevState: {error?: string, s
             picturePaths.push(data.path);
         }
 
-        const newAssociation = await prisma.association.create({
+        const editedAssociation = await prisma.association.update({
+            where: {
+                id: id
+            },
             data: {
                 name: name,
                 major: major,
@@ -65,12 +69,12 @@ export default async function addAssociationAction(prevState: {error?: string, s
             },
         });
 
-        if (newAssociation) {
+        if (editedAssociation) {
             revalidatePath('/dashboard/associations');
-            revalidatePath('/reseau');
+            revalidatePath('/reseau')
             return { success: true };
         } else {
-            return { error: "La création de l'association dans la base de données a échoué... Veuillez contacter un administrateur." };
+            return { error: "La modification de l'association dans la base de données a échoué... Veuillez contacter un administrateur." };
         }
     } catch (error: any) {
         return { error: error.message };
