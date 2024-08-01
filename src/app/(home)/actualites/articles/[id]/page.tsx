@@ -1,13 +1,44 @@
 import prisma from "@/helpers/db";
 import { createClient } from "@/helpers/supabase/server";
 import Link from "next/link";
+import { Metadata } from "next";
 
+import { extractFirstWords } from "@/helpers/quill";
 import { convertDeltaToHTML } from "@/helpers/quill";
+
 import { format } from "date-fns";
 import MoreArticles from "@/components/public/articles/moreArticles";
 
+export async function generateMetadata({
+    params,
+  }: {params : {id: string}}): Promise<Metadata> {
+    const id = params.id;
+
+    if(isNaN(Number(params.id))) return {
+        title: "Article",
+        description: "Un article"
+    }
+
+    const articleMetadata = await prisma.article.findUnique({
+        where : {
+            id: Number(id)
+        }
+    })
+
+    if(!articleMetadata) {
+        return {
+            title: "Article non trouvé",
+            description: "Erreur..."
+        }
+    }
+
+    return {
+      title: `${articleMetadata.title}`,
+      description: extractFirstWords(10, JSON.parse(JSON.stringify(articleMetadata.content)))
+    };
+}
+
 export default async function Page({params} : {params : {id: string}}) {
-    const supabase = createClient();
 
     // check if the parameter is correct
     if(isNaN(Number(params.id))) {
@@ -47,16 +78,13 @@ export default async function Page({params} : {params : {id: string}}) {
             [&_ol]:list-decimal
             [&_ul]:list-disc 
             [&_a]:text-yellow-500 [&_a]:underline [&_a]:underline-offset-2 [&_a]:tracking-wide hover:[&_a]:text-yellow-300 hover:[&_a]:underline-offset-4
-            [&_img]:max-w-[500px] [&_img]:max-h-[400px] [&_img]:mx-auto [&_img]:my-4 [&_img]:rounded-sm
+            [&_img]:w-full [&_img]:max-w-[500px] [&_img]:max-h-[400px] [&_img]:mx-auto [&_img]:my-4 [&_img]:rounded-sm
             ">
                 {/* Parse article content to HTML */}
                 {convertDeltaToHTML(articleRecord.content)}
             </div>
 
             <MoreArticles currentArticleId={articleRecord.id}/>
-            
-
-            
             
         </div>
     )

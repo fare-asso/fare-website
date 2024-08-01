@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { MouseEvent, RefObject } from "react";
 import { usePathname } from "next/navigation";
+import { Link as L } from "./headerLinks";
 
-export default function HeaderLink({title, href , runnerRef} : {title: string, href: string, runnerRef: RefObject<HTMLDivElement>}) {
+export default function HeaderLink({title, href, subLinks, runnerRef} : {title: string, href: string, subLinks?: L[],runnerRef: RefObject<HTMLDivElement>}) {
 
     const pathname = usePathname();
 
@@ -29,8 +30,9 @@ export default function HeaderLink({title, href , runnerRef} : {title: string, h
     }
 
     return(
-        <Link href={href} passHref legacyBehavior>
-            <a className={`z-20 rounded-full flex items-center justify-center text-black text-sm px-5 font-semibold uppercase hover:text-white transition-all duration-250 ${pathname.startsWith(href) ? 'underline' : 'no-underline'}`} style={{textDecorationThickness: 2}} onMouseEnter={hoverHandler} onMouseLeave={unhoverHandler}>{title}</a>
-        </Link>
+        <div className="relative z-20 py-1 m-0">
+            <Link href={href} className="px-4" onMouseEnter={() => console.log("enter")}>{title}</Link>
+            <div id="dropdown-links" className="absolute flex flex-col w-full h-32 border rounded-b-xl"></div>
+        </div>
     )
 }

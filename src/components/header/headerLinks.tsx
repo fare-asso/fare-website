@@ -13,12 +13,38 @@ export interface Link {
     subLinks?: Link[]
 }
 
+
 export default function HeaderLinks({links}: {links: Link[]}) {
 
     const pathname = usePathname();
     const runner = useRef<HTMLDivElement>(null);
     const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    function renderMobileLinks(links: Link[], pathname: string, level: number) : JSX.Element | JSX.Element[] {
+        return links.map((link) =>
+            <div className="flex flex-col">
+                <Link 
+                    key={link.title} 
+                    href={link.href} 
+                    className={clsx(pathname.startsWith(link.href) ? 'underline' : 'no-underline', `py-2 text-lg`)} 
+                    onClick={() => setMenuIsOpen(false)}
+                    style={{marginLeft: level * 15}}
+                >
+                    {link.title}
+                </Link>
+
+                { link.subLinks ? renderMobileLinks(link.subLinks, pathname, ++level) : <></>}
+                
+            </div>
+        )
+    }
+
+    function renderDesktopLinks(links: Link[], pathname: string) : JSX.Element | JSX.Element[] {
+        return links.map((link) => 
+            <HeaderLink key={link.title} title={link.title} href={link.href} subLinks={link.subLinks} runnerRef={runner}/>
+        )
+    }
 
     const handleOutsideClick = (event: MouseEvent) => {
         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -41,9 +67,9 @@ export default function HeaderLinks({links}: {links: Link[]}) {
     return(
         <div>
             {/* Navbar pour les écrans larges */}
-            <nav className="border-black border-2 rounded-full py-2 hidden lg:flex flex-row relative items-center">
+            <nav className="border-black border-2 rounded-full hidden lg:flex flex-row relative items-center">
                 <div ref={runner} className="bg-black z-10 rounded-full absolute h-full opacity-0 transition-all duration-300 ease-out"></div>
-                { links.map((link) => <HeaderLink key={link.title} title={link.title} href={link.href} runnerRef={runner}/> )}
+                { renderDesktopLinks(links, pathname) }
             </nav>
 
             {/* Bouton Burger pour les petits écrans */}
@@ -59,16 +85,7 @@ export default function HeaderLinks({links}: {links: Link[]}) {
                     </button>
                 </div>
                 <div className="flex flex-col items-start p-8">
-                    { links.map((link) => (
-                        <Link 
-                            key={link.title} 
-                            href={link.href} 
-                            className={clsx(pathname.startsWith(link.href) ? 'underline' : 'no-underline', 'py-2 text-lg')} 
-                            onClick={() => setMenuIsOpen(false)}
-                        >
-                            {link.title}
-                        </Link>
-                    ))}
+                    { renderMobileLinks(links, pathname, 0) }
                 </div>
             </div>
         </div>

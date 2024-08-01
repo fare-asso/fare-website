@@ -3,10 +3,6 @@ import HeaderLogo from "./logo";
 
 const links: Link[] = [
     {
-        title: "Nos Assos",
-        href: "/reseau"
-    },
-    {
         title: "Agenda",
         href: "/agenda"
     },
@@ -16,7 +12,17 @@ const links: Link[] = [
     },
     {
         title: "A Propos",
-        href: "/about"
+        href: "/about",
+        subLinks: [
+            {
+                title: "Qui sommes-nous ?",
+                href: "/about"
+            },
+            {
+                title: "Nos Assos",
+                href: "/reseau"
+            }
+        ]
     }
 ]
 
