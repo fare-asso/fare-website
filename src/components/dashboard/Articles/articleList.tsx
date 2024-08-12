@@ -24,7 +24,11 @@ export default async function ArticleList() {
     const supabase = createClient();
 
     // fetch all members from DB
-    const articles = await prisma.article.findMany()
+    const articles = await prisma.article.findMany({
+        orderBy: {
+            writtenOn: 'desc'
+        }
+    })
 
     if(articles == null) {
         return(

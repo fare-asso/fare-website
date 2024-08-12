@@ -5,7 +5,14 @@ export default async function ArticleList() {
 
     const articles = await prisma.article.findMany({
         orderBy: {
-            writtenOn: 'asc'
+            writtenOn: 'desc'
+        },
+        take: 10
+    })
+
+    const communiques = await prisma.communiqueDePresse.findMany({
+        orderBy: {
+            createdAt: 'desc'
         },
         take: 10
     })

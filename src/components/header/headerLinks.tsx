@@ -23,9 +23,8 @@ export default function HeaderLinks({links}: {links: Link[]}) {
 
     function renderMobileLinks(links: Link[], pathname: string, level: number) : JSX.Element | JSX.Element[] {
         return links.map((link) =>
-            <div className="flex flex-col">
+            <div key={link.title} className="flex flex-col">
                 <Link 
-                    key={link.title} 
                     href={link.href} 
                     className={clsx(pathname.startsWith(link.href) ? 'underline' : 'no-underline', `py-2 text-lg`)} 
                     onClick={() => setMenuIsOpen(false)}

@@ -21,7 +21,7 @@ export function extractFirstWords(take: number, delta: DeltaStatic): string {
         }
 
         if(op.insert.endsWith('\n')) {
-            return op.insert + '[...]'
+            return op.insert + '...'
         } else {
             return op.insert
         }

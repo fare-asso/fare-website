@@ -1,18 +1,21 @@
 'use client';
 
 import Link from "next/link";
-import { MouseEvent, RefObject } from "react";
+import { MouseEvent, MouseEventHandler, RefObject } from "react";
 import { usePathname } from "next/navigation";
 import { Link as L } from "./headerLinks";
+import clsx from "clsx";
 
 export default function HeaderLink({title, href, subLinks, runnerRef} : {title: string, href: string, subLinks?: L[],runnerRef: RefObject<HTMLDivElement>}) {
 
     const pathname = usePathname();
 
-    const hoverHandler = (e : MouseEvent<HTMLAnchorElement>) => {
+    const hoverHandler = (e : MouseEvent<HTMLDivElement>) => {
         if(runnerRef.current) {
-            const target = e.target as HTMLAnchorElement;
-            const {width, left} : {width: number, left: number} = target.getBoundingClientRect();
+            const target = e.currentTarget as HTMLDivElement;
+            const link = target.children[0] as HTMLAnchorElement;
+            const dropdown = target.children[1] as HTMLDivElement;
+            const {width, left} : {width: number, left: number} = link.getBoundingClientRect();
             runnerRef.current.style.width = width + 2 + "px";
             runnerRef.current.style.left = left - target.parentElement!.getBoundingClientRect().left - 2 + "px";
             runnerRef.current.style.opacity = '1';
@@ -21,7 +24,7 @@ export default function HeaderLink({title, href, subLinks, runnerRef} : {title: 
         }
     }
 
-    const unhoverHandler = (e : MouseEvent<HTMLAnchorElement>) => {
+    const unhoverHandler = (e : MouseEvent<HTMLDivElement>) => {
         if(runnerRef.current) {
             runnerRef.current.style.opacity = "0";
         } else {
@@ -30,9 +33,12 @@ export default function HeaderLink({title, href, subLinks, runnerRef} : {title: 
     }
 
     return(
-        <div className="relative z-20 py-1 m-0">
-            <Link href={href} className="px-4" onMouseEnter={() => console.log("enter")}>{title}</Link>
-            <div id="dropdown-links" className="absolute flex flex-col w-full h-32 border rounded-b-xl"></div>
+        <div className="relative z-20 m-0 [&>div]:hover:opacity-100 [&>div]:hover:scale-100  [&>a]:hover:text-white transition-all" onMouseEnter={hoverHandler} onMouseLeave={unhoverHandler}>
+            <Link href={href} className={clsx("text-black px-4 py-1 flex flex-col items-center h-full transition-all decoration-2", href.endsWith(pathname) ? "underline" : "")}>{title}</Link>
+            
+            { subLinks ? <div id="dropdown-links" className="absolute flex flex-col w-max scale-0 right-0 items-center opacity-0 space-y-1 mt-1 border-2 border-black rounded-xl p-1 bg-black transition-all">
+                { subLinks?.map((subLink) => <Link key={subLink.href} href={subLink.href} className="text-sm text-start text-white hover:bg-white/20 w-full px-3 py-1 rounded-[0.5rem]">{subLink.title}</Link>)}
+            </div> : null }
         </div>
     )
 }

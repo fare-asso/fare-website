@@ -84,7 +84,14 @@ export default async function Page({params} : {params : {id: string}}) {
                 {convertDeltaToHTML(articleRecord.content)}
             </div>
 
-            <MoreArticles currentArticleId={articleRecord.id}/>
+            <div className="w-full flex flex-col items-center mt-12">
+                <div className="w-full lg:w-[75%]">
+                    <MoreArticles currentArticleId={articleRecord.id}/>
+                </div>
+                
+            </div>
+
+            
             
         </div>
     )
