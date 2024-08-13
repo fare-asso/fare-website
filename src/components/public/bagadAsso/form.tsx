@@ -81,9 +81,12 @@ export default function BagadAssoForm() {
             {/* Type de l'évènement */}
             <label htmlFor="event-type">{"Type de l'évènement"}</label>
             <select name="event-type" id="event-type">
-            <option value="option-1">Option 1</option>
-            <option value="option-2">Option 2</option>
-            <option value="option-3">Option 3</option>
+            <option value="option-1">Week End de cohésion</option>
+            <option value="option-2">Soirée</option>
+            <option value="option-3">Stand</option>
+            <option value="option-3">Temps démocratique (AG/CA)</option>
+            <option value="option-3">Conférence</option>
+            <option value="option-3">Séjour</option>
             <option value="other">Autre</option>
             </select>
 

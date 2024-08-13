@@ -19,6 +19,7 @@ import EditAssociationButton from "./editAssociationButton";
 import SendInvitationLinkButton from "./sendInvitationLinkButton";
 import DeleteRepresentativeButton from "./deleteRepresentativeButton";
 import AssociationDropdownMenu from "./AssociationDropdownMenu";
+import DeleteAssociationButton from "./deleteAssociationButton";
 
 export default function AssociationCard({association, logoUrl} : {association: Association, logoUrl: string}) {
 
@@ -50,6 +51,7 @@ export default function AssociationCard({association, logoUrl} : {association: A
             <div className="relative">
                 {/* Hover buttons */}
                 <div className="w-full h-full flex flex-row opacity-100 lg:opacity-0 lg:hover:opacity-100 absolute items-start justify-end p-2 space-x-1">
+                        <DeleteAssociationButton association={association} />
                         <EditAssociationButton association={association}/>
                         { association.representativeId ? 
                             <DeleteRepresentativeButton association={association}/> :  <SendInvitationLinkButton association={association}/>
