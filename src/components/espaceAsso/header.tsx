@@ -1,6 +1,8 @@
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
+import Image from "next/image";
 import { redirect } from "next/navigation";
+import AssociationAccountDropdown from "./accountDropdown";
 
 export default async function Header() {
 
@@ -24,10 +26,12 @@ export default async function Header() {
         redirect('/');
     }
 
+    const logoUrl = supabase.storage.from('association-pictures').getPublicUrl(association.logoPath[0]).data.publicUrl;
+
     return (
         <div className="w-full h-12 flex flex-row items-center justify-between bg-black text-white p-3">
             <span className="font-semibold text-xl">Espace Asso FAHB</span>
-            <span>{association.name}</span>
+            <AssociationAccountDropdown associationName={association.name} logoUrl={logoUrl} />
         </div>
     )
 }

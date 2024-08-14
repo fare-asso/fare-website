@@ -1,40 +1,31 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-
 import {
-Dialog,
-DialogContent,
-DialogDescription,
-DialogHeader,
-DialogTitle,
-DialogTrigger,
-DialogFooter,
-} from "@/components/ui/dialog"
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader, 
+    AlertDialogTitle, 
+    AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import LoadingRing from "../loadingRing";
 
 import { useState } from "react";
 
 import { useFormState } from "react-dom";
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
+import { MdDelete } from "react-icons/md";
 
 
-import LoadingRing from "../loadingRing";
-import LocationPicker from "@/components/ui/location/locationPicker";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-
-import editAssociationAction from "@/actions/associations/editAssociationAction";
 import { Association } from "@prisma/client";
-import { MdDelete, MdEdit } from "react-icons/md";
-import { Textarea } from "@/components/ui/textarea";
+
 import deleteAssociationAction from "@/actions/associations/deleteAssociationAction";
+
+import deleteEventAction from "@/actions/events/deleteEventAction";
 
 export default function DeleteAssociationButton({association} : {association: Association}) {
 
@@ -55,11 +46,28 @@ export default function DeleteAssociationButton({association} : {association: As
 
         setIsLoading(true);
 
-        formAction(association.id);
+        //formAction(association.id);
     };
 
     return(
-        <Button className="p-1 h-auto whitespace-normal" variant="destructive" onClick={handleDelete}>{ isLoading ? <LoadingRing className="!m-0" /> : <MdDelete size={18}/>}</Button>
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button className="p-1 h-auto whitespace-normal" variant="destructive"><MdDelete size={18}/></Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                <AlertDialogTitle>Voulez-vous vraiment supprimer l'association <span className="font-bold">{association.name}</span> ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Cette action est permanente et les données de l'association ne peuvent être récupérées. Le représentant de l'association perdra ses accès à l'espace association.
+                </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>{ isLoading ? <LoadingRing/> : null } Supprimer</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+        
     )
 
 }

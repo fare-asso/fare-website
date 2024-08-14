@@ -2,7 +2,7 @@
 
 import prisma from "@/helpers/db";
 
-import { createClient } from "@/helpers/supabase/server";
+import { createAdminClient, createClient } from "@/helpers/supabase/server";
 
 import { revalidatePath } from "next/cache";
 
@@ -11,7 +11,10 @@ export default async function deleteAssociationAction(prevState: {error?: string
     // create supabase client
     const supabase = createClient();
 
-    // fetch article to delete
+    // create supabase admin client (only on server)
+    const supabaseAdmin = createAdminClient();
+
+    // fetch association to delete
     const association = await prisma.association.findUnique({
         where: {
             id: id
@@ -20,6 +23,19 @@ export default async function deleteAssociationAction(prevState: {error?: string
 
     if(association == null) {
         return { error: "Echec de la suppression de l'association"}
+    }
+
+    /* Remove representative */
+    if(association.representativeId) {
+        try {
+            const removedRepresentative = await supabaseAdmin.auth.admin.deleteUser(association.representativeId);
+        } catch (error) {
+            console.error(error);
+            return {
+                error: "Echec de la suppression du compte représentant"
+            }
+        }
+        
     }
 
     /* Remove pictures from storage if there is some */

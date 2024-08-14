@@ -17,13 +17,15 @@ export default async function editAssociationAction(prevState: {error?: string, 
     const pictures = formData.getAll('pictures');
     const birthdate = formData.get('birthdate')?.toString();
     const location = formData.get('location')?.toString();
+    const email = formData.get('email')?.toString();
+    const website = formData.get('website')?.toString();
     const facebook = formData.get('facebook')?.toString();
     const instagram = formData.get('instagram')?.toString();
     const twitter = formData.get('twitter')?.toString();
     const discord = formData.get('discord')?.toString();
 
     // Fields Validation
-    if (isNaN(id) || !name || !major || !description || !pictures.length || !birthdate || !location) {
+    if (isNaN(id) || !name || !major || !description || !pictures.length || !birthdate || !location || !email) {
         return { error: "Veuillez remplir tous les champs obligatoires." };
     }
 
@@ -56,16 +58,18 @@ export default async function editAssociationAction(prevState: {error?: string, 
                 id: id
             },
             data: {
-                name: name,
-                major: major,
+                name,
+                major,
                 desc: description,
                 logoPath: picturePaths,
                 birthdate: new Date(birthdate),
                 location,
-                facebook: facebook,
-                instagram: instagram,
-                twitter: twitter,
-                discord: discord
+                email,
+                website,
+                facebook,
+                instagram,
+                twitter,
+                discord
             },
         });
 

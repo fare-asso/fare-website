@@ -14,7 +14,6 @@ export default function HeaderLink({title, href, subLinks, runnerRef} : {title: 
         if(runnerRef.current) {
             const target = e.currentTarget as HTMLDivElement;
             const link = target.children[0] as HTMLAnchorElement;
-            const dropdown = target.children[1] as HTMLDivElement;
             const {width, left} : {width: number, left: number} = link.getBoundingClientRect();
             runnerRef.current.style.width = width + 2 + "px";
             runnerRef.current.style.left = left - target.parentElement!.getBoundingClientRect().left - 2 + "px";

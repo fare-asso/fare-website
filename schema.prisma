@@ -37,6 +37,7 @@ model Association {
   major            String
   desc             String
   location         String
+  email            String   @default("")
   discord          String?
   facebook         String?
   instagram        String?

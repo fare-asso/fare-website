@@ -138,6 +138,19 @@ export default function EditAssociationButton({association} : {association: Asso
                     </div>
 
                     <div>
+                        <Label htmlFor="email">Email de contact</Label>
+                        <Input type="email" id="email" name="email" placeholder="john.doe@gmail.com" defaultValue={association.email ?? ''} />
+                    </div>
+
+                    <div>
+                        <div className="flex flex-row items-center space-x-1">
+                            <Label htmlFor="website">Site internet</Label>
+                            <div className="opacity-50 text-sm">(Optionnel)</div>
+                        </div>
+                        <Input type="url" id="website" name="website" pattern="https://.*" placeholder="https://www.fahb.eu" defaultValue={association.website ?? ''} />
+                    </div>
+
+                    <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="facebook">Lien Facebook</Label>
                             <div className="opacity-50 text-sm">(Optionnel)</div>
