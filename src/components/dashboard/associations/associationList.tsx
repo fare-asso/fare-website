@@ -12,7 +12,11 @@ export default async function AssociationList() {
     const supabase = createClient();
 
     // fetch all members from DB
-    const assos = await prisma.association.findMany()
+    const assos = await prisma.association.findMany({
+        orderBy: {
+            name: 'asc'
+        }
+    })
 
     if(assos == null) {
         return(

@@ -10,7 +10,11 @@ export const metadata: Metadata = {
 
 export default async function Reseau() {
 
-    const assos = await prisma.association.findMany();
+    const assos = await prisma.association.findMany({
+        orderBy: {
+            name: 'asc'
+        }
+    });
 
     return(
         <div className="flex flex-col items-center justify-start w-full">

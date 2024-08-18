@@ -6,16 +6,6 @@ import { sanitizeString, validateEmail } from "@/helpers/string";
 import { createClient } from "@/helpers/supabase/server";
 import { revalidatePath } from "next/cache";
 
-interface Member {
-    lastName?: string,
-    firstName?: string,
-    position?: string,
-    picturePath?: string,
-    email?: string,
-    facebook?: string,
-    instagram?: string,
-    twitter?: string
-}
 
 export default async function editMemberAction(prevState: {error?: string, success?: boolean,} | undefined,formData: FormData) {
 
@@ -23,20 +13,21 @@ export default async function editMemberAction(prevState: {error?: string, succe
     const supabase = createClient();
 
     // retrieve form data fields
-    const id = formData.get('id');
-    const lastName = formData.get('last-name');
-    const firstName = formData.get('first-name');
-    const position = formData.get('position');
+    const id = formData.get('id')?.toString();
+    const lastName = formData.get('last-name')?.toString();
+    const firstName = formData.get('first-name')?.toString();
+    const position = formData.get('position')?.toString();
     const pictureFile = formData.get('picture');
-    const email = formData.get('email');
-    const facebook = formData.get('facebook');
-    const instagram = formData.get('instagram');
-    const twitter = formData.get('twitter');
+    const email = formData.get('email')?.toString();
+    const facebook = formData.get('facebook')?.toString();
+    const instagram = formData.get('instagram')?.toString();
+    const twitter = formData.get('twitter')?.toString();
 
-    console.log("Picture File: " + pictureFile);
-
-    // Temp variable to store form data
-    const temp : Member = {}
+    if(!id || !lastName || !firstName || !position || !pictureFile || !email) {
+        return {
+            error: "Un ou plusieurs champs obligatoires ne sont pas remplis"
+        }
+    }
 
     // fetch current record
     const currentMember = await prisma.member.findUnique({
@@ -55,61 +46,15 @@ export default async function editMemberAction(prevState: {error?: string, succe
 
     const maxFileSize : number = 15 // in mb
 
-    if(lastName != null && typeof lastName == "string") {
-        temp.lastName = lastName.toString();
-    } else {
+    if(!validateEmail(email)) {
         return {
-            error: "Nom invalide"
+            error: "Adresse email non-valide"
         }
     }
 
-    if(firstName != null && typeof firstName == "string") {
-        temp.firstName = firstName.toString();
-    } else {
-        return {
-            error: "Prénom invalide"
-        }
-    }
+    let picturePath: string | undefined = undefined;
 
-    if(position != null && typeof position == "string") {
-        temp.position = position.toString();
-        if(temp.position == "") {
-            return {
-                error : "Fonction non-valide"
-            }
-        }
-    } else {
-        return {
-            error: "Fonction non-valide"
-        }
-    }
-
-    if(email != null && typeof email == "string") {
-        temp.email = email.toString();
-        if(!validateEmail(temp.email)) {
-            return {
-                error: "Adresse email non-valide"
-            }
-        }
-    } else {
-        return {
-            error: "Email non valide"
-        }
-    }
-
-    if(facebook != null && typeof facebook == "string") {
-        temp.facebook = facebook.toString();
-    }
-
-    if(instagram != null && typeof instagram == "string") {
-        temp.instagram = instagram.toString();
-    }
-
-    if(twitter != null && typeof twitter == "string") {
-        temp.twitter = twitter.toString();
-    }
-
-    if(pictureFile != null && pictureFile instanceof File) {
+    if(pictureFile && pictureFile instanceof File) {
         const file: File = pictureFile;
         // check file validity and size
         if(file.size != 0 && ((file.size / (1024*1024)) <= maxFileSize)) { // valid file and size <= max file size
@@ -126,7 +71,7 @@ export default async function editMemberAction(prevState: {error?: string, succe
                         error : error.message
                     }
                 } else { // upload success
-                    temp.picturePath = data.path;
+                    picturePath = data.path;
                 }
             } else {
                 return {
@@ -141,23 +86,23 @@ export default async function editMemberAction(prevState: {error?: string, succe
     }
 
     // update record
-    const newMemberRecord = await prisma.member.update({
+    const updatedMemberRecord = await prisma.member.update({
         where: {
             id: Number(id)
         },
         data: {
-            firstName : temp.firstName,
-            lastName: temp.lastName,
-            position: temp.position,
-            picturePath: temp.picturePath ? temp.picturePath : currentMember.picturePath,
-            email: temp.email,
-            facebookUrl: temp.facebook,
-            instagramUrl: temp.instagram,
-            twitterUrl: temp.twitter
+            firstName : firstName,
+            lastName: lastName,
+            position: position,
+            picturePath: picturePath,
+            email: email,
+            facebookUrl: facebook,
+            instagramUrl: instagram,
+            twitterUrl: twitter
         }
     })
 
-    if(newMemberRecord != null) { // record has been created
+    if(updatedMemberRecord != null) { // record has been created
 
         // revalidate path
         revalidatePath('/dashboard/membres');
