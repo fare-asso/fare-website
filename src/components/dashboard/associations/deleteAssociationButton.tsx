@@ -46,7 +46,7 @@ export default function DeleteAssociationButton({association} : {association: As
 
         setIsLoading(true);
 
-        //formAction(association.id);
+        formAction(association.id);
     };
 
     return(

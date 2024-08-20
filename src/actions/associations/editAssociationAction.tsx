@@ -2,10 +2,18 @@
 
 import prisma from "@/helpers/db";
 import { createClient } from "@/helpers/supabase/server";
+import getCurrentUserRole from "@/helpers/user/role";
 import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 
 export default async function editAssociationAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
+
+    /* SUPER IMPORTANT : Auth and role verifications */
+    const { role, error } = await getCurrentUserRole();
+    if(error) return { error : "Echec de l'authentification de l'utilisateur" }
+    if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
+
+    
     // create supabase client
     const supabase = createClient();
 

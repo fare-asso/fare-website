@@ -66,7 +66,7 @@ export default async function Page({params} : {params : { id: string }}) {
             <h1 className="text-3xl font-bold mt-2">{associationRecord.name}</h1>
             <div className="w-full flex flex-row">
                 <p>{associationRecord.desc}</p>
-                <Image src={supabase.storage.from('association-pictures').getPublicUrl(associationRecord.logoPath[0]).data.publicUrl} width={400} height={400} alt={associationRecord.name + " logo"}
+                <Image src={supabase.storage.from('association-pictures').getPublicUrl(associationRecord.logoPath).data.publicUrl} width={400} height={400} alt={associationRecord.name + " logo"}
                 className=" rounded-lg border border-black aspect-square object-cover h-60 w-60"
                 />
             </div>

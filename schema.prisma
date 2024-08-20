@@ -41,7 +41,8 @@ model Association {
   discord          String?
   facebook         String?
   instagram        String?
-  logoPath         String[]
+  logoPath         String
+  officePath       String?
   twitter          String?
   website          String?
   birthdate        DateTime @default(now())

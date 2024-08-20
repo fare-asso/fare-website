@@ -6,8 +6,15 @@ import prisma from "@/helpers/db";
 
 import { revalidatePath } from "next/cache";
 import { sanitizeString } from "@/helpers/string";
+import getCurrentUserRole from "@/helpers/user/role";
 
 export default async function createCDPAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
+
+    /* SUPER IMPORTANT : Auth and role verifications */
+    const { role, error } = await getCurrentUserRole();
+    if(error) return { error : "Echec de l'authentification de l'utilisateur" }
+    if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
+    
 
     // create supabase client
     const supabase = createClient();

@@ -26,7 +26,7 @@ export default async function Header() {
         redirect('/');
     }
 
-    const logoUrl = supabase.storage.from('association-pictures').getPublicUrl(association.logoPath[0]).data.publicUrl;
+    const logoUrl = supabase.storage.from('association-pictures').getPublicUrl(association.logoPath).data.publicUrl;
 
     return (
         <div className="w-full h-12 flex flex-row items-center justify-between bg-black text-white p-3">

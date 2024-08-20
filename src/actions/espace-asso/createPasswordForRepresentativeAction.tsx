@@ -1,9 +1,15 @@
 'use server'
 
 import { createClient } from "@/helpers/supabase/server";
+import getCurrentUserRole from "@/helpers/user/role";
 import { redirect } from "next/navigation";
 
 export default async function createPasswordForRepresentativeAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
+
+    /* SUPER IMPORTANT : Auth and role verifications */
+    const { role, error: err } = await getCurrentUserRole();
+    if(err) return { error : "Echec de l'authentification de l'utilisateur" }
+    if(role != "ASSO_OWNER") return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
     
     // create supabase client
     const supabase = createClient();

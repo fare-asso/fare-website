@@ -25,7 +25,7 @@ export default async function AssociationList() {
     } else {
 
         const assoCards: JSX.Element[] = assos.map((asso) => <AssociationCard key={asso.id} association={asso}
-        logoUrl={supabase.storage.from('association-pictures').getPublicUrl(asso.logoPath[0]).data.publicUrl}/>)
+        logoUrl={supabase.storage.from('association-pictures').getPublicUrl(asso.logoPath).data.publicUrl}/>)
 
         return(
             <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-6">

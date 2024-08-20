@@ -12,6 +12,13 @@ DialogTrigger,
 DialogFooter,
 } from "@/components/ui/dialog"
 
+import {
+Accordion,
+AccordionContent,
+AccordionItem,
+AccordionTrigger,
+} from "@/components/ui/accordion"
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 import { Input } from "@/components/ui/input"
@@ -89,29 +96,57 @@ export default function AddAssociationButton() {
                 {/* Form */}
                 <form onSubmit={handleSubmit} id="addAssociationForm" className="space-y-3 overflow-y-auto p-2">
 
+                    {/* Name */}
                     <div>
                         <Label htmlFor="name">{"Nom de l'association"}</Label>
                         <Input type="text" id="name" name="name" placeholder="Nom" required/>
                     </div>
 
+                    {/* Major */}
                     <div>
                         <Label htmlFor="major">Filière</Label>
                         <Input type="text" id="major" name="major" placeholder="exemple: Médecine, Informatique, Biologie..." required/>
                     </div>
 
+                    {/* Description */}
                     <div>
                         <Label htmlFor="description">Description</Label>
                         <Textarea id="description" name="description" maxLength={1000} placeholder="(Max: 1000 caractères)" className="max-h-[170px]"/>
                     </div>
 
+                    {/* Pictures */}
                     <div>
-                        <Label htmlFor="picture">Photos</Label>
-                        <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
-                        <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
-                        <div className="text-sm text-muted-foreground mb-1">Résolution recommandée : 1080x1920 pixels (portrait)</div>
-                        <Input type="file" id="pictures" name="pictures" accept="image/*" multiple required/>
+                        <Accordion type="single" collapsible>
+
+                            {/* Logo Picture */}
+                            <AccordionItem value="logo-picture">
+                                <AccordionTrigger>
+                                    <Label htmlFor="logo-picture">Logo</Label>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
+                                    <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
+                                    <div className="text-sm text-muted-foreground mb-1">Format recommandée: carré</div>
+                                    <Input type="file" id="logo-picture" name="logo-picture" accept="image/*" required/>
+                                </AccordionContent>
+                            </AccordionItem>
+
+                            {/* Office Picture */}
+                            <AccordionItem value="office-picture">
+                                <AccordionTrigger>
+                                    <Label htmlFor="office-picture">Photo du local</Label>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
+                                    <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
+                                    <Input type="file" id="office-picture" name="office-picture" accept="image/*" required/>
+                                </AccordionContent>
+                            </AccordionItem>
+
+                        </Accordion>
                     </div>
 
+                    {/* Birth date */}
                     <div>
                         <Label>{"Date de Naissance de l'Association"}</Label>
                         <Popover>
@@ -128,16 +163,19 @@ export default function AddAssociationButton() {
                         <input type="hidden" name ="birthdate" value={birthdate ? birthdate.toString() : ""}/>
                     </div>
 
+                    {/* Location */}
                     <div>
                         <Label htmlFor="location">Adresse du local</Label>
                         <LocationPicker defaultValue="" name="location"/>
                     </div>
 
+                    {/* Email */}
                     <div>
                         <Label htmlFor="email">Email de contact</Label>
                         <Input type="email" id="email" name="email" placeholder="john.doe@gmail.com"/>
                     </div>
 
+                    {/* Website */}
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="website">Site internet</Label>
@@ -146,6 +184,7 @@ export default function AddAssociationButton() {
                         <Input type="url" id="website" name="website" pattern="https://.*" placeholder="https://www.fahb.eu" />
                     </div>
 
+                    {/* Facebook */}
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="facebook">Lien Facebook</Label>
@@ -154,6 +193,7 @@ export default function AddAssociationButton() {
                         <Input type="url" id="facebook" name="facebook" pattern="https://www.facebook.com/.*" placeholder="https://www.facebook.com/johndoe"/>
                     </div>
 
+                    {/* Instagram */}
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="instagram">Lien Instagram</Label>
@@ -162,25 +202,26 @@ export default function AddAssociationButton() {
                         <Input type="url" id="instagram" name="instagram" pattern="https://www.instagram.com/.*" placeholder="https://www.instagram.com/johndoe"/>
                     </div>
 
+                    {/* X/Twitter */}
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="twitter">Lien X</Label>
                             <div className="opacity-50 text-sm">(Optionnel)</div>
                         </div>
-                        
                         <Input type="url" id="twitter" name="twitter" pattern="https://twitter.com/.*|https://x.com/.*" placeholder="https://x.com/johndoe"/>
                     </div>
 
+                    {/* Discord */}
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="discord">Lien Serveur Discord</Label>
                             <div className="opacity-50 text-sm">(Optionnel)</div>
                         </div>
-                        
                         <Input type="url" id="discord" name="discord" pattern="https://discord.com/.*" placeholder="https://discord.com/invite/fahb"/>
                     </div>
 
 
+                    {/* Error */}
                     { formState?.error ? 
                     <Alert variant="destructive">
                         <AlertTitle>Erreur</AlertTitle>

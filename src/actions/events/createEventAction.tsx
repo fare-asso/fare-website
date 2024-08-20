@@ -7,6 +7,7 @@ import { randomUUID } from "crypto";
 import getCurrentUserId from "@/helpers/user/id";
 
 import { sanitizeString } from "@/helpers/string";
+import getCurrentUserRole from "@/helpers/user/role";
 
 interface Event {
     name?: string,
@@ -21,6 +22,11 @@ interface Event {
 }
 
 export default async function createEventAction(prevState: {error? : string, success? : boolean} | undefined, formData: FormData) {
+
+    /* SUPER IMPORTANT : Auth and role verifications */
+    const { role, error } = await getCurrentUserRole();
+    if(error) return { error : "Echec de l'authentification de l'utilisateur" }
+    if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
 
     // instantiate supabase client
     const supabase = createClient();

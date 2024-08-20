@@ -13,10 +13,18 @@ import { DeltaStatic } from 'quill'
 import { base64ToFile } from "@/helpers/image";
 import getCurrentUserId from "@/helpers/user/id";
 import { revalidatePath } from "next/cache";
+import getCurrentUserRole from "@/helpers/user/role";
 
 export default async function createArticleAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
+
+    /* SUPER IMPORTANT : Auth and role verifications */
+    const { role, error } = await getCurrentUserRole();
+    if(error) return { error : "Echec de l'authentification de l'utilisateur" }
+    if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
+
     // create supabase client
     const supabase = createClient();
+
 
     // retrieve form data fields
     const title = formData.get('title')?.toString();

@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/helpers/supabase/server";
 import { randomUUID } from "crypto";
 import getCurrentUserId from "@/helpers/user/id";
+import getCurrentUserRole from "@/helpers/user/role";
 
 interface Event {
     id?: number,
@@ -21,6 +22,12 @@ interface Event {
 }
 
 export default async function editEventAction(prevState: {error? : string, success? : boolean} | undefined, formData: FormData) {
+
+    /* SUPER IMPORTANT : Auth and role verifications */
+    const { role, error } = await getCurrentUserRole();
+    if(error) return { error : "Echec de l'authentification de l'utilisateur" }
+    if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
+    
 
     // create supabase client
     const supabase = createClient();

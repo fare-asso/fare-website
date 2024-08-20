@@ -104,7 +104,7 @@ export default function AssociationMap({ associations } : { associations: Associ
                             <Popup>
                                 <div className='flex flex-row w-full'>
 
-                                    <Image src={supabase.storage.from('association-pictures').getPublicUrl(association.logoPath[0]).data.publicUrl} width={100} height={100} alt={"Logo de l'association " + association.name}
+                                    <Image src={supabase.storage.from('association-pictures').getPublicUrl(association.logoPath).data.publicUrl} width={100} height={100} alt={"Logo de l'association " + association.name}
                                     className='aspect-square object-cover rounded-md'
                                     />
                                     <div className='ml-3'>

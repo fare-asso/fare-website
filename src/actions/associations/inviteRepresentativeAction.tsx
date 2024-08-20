@@ -10,18 +10,14 @@ import { revalidatePath } from "next/cache";
 
 export default async function inviteRepresentativeAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
 
+    /* SUPER IMPORTANT : Auth and role verifications */
+    const { role, error } = await getCurrentUserRole();
+    if(error) return { error : "Echec de l'authentification de l'utilisateur" }
+    if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
+
+
+    // supabase Admin client
     const supabase = createAdminClient();
-
-    /* Check is the current user is valid and Admin */
-    const { role, error } = await getCurrentUserRole()
-
-    if(error) {
-        return { error : "Echec de la récupération des informations de l'utilisateur courant" }
-    } else {
-        if(role !== 'ADMIN') {
-            return { error : "Vous n'avez pas les droits pour effectuer cette opération" } 
-        }
-    }
 
     /* Data Validation */
     const email = formData.get('email')?.toString();

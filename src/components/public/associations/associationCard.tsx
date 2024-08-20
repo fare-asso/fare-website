@@ -37,7 +37,7 @@ export default function AssociationCard({association}:{ association: Association
 
     return (
         <Link href={`/reseau/associations/${association.id}`} className="relative flex flex-col p-4 [&>.back]:hover:rotate-12 bg-white outline outline-1 outline-black rounded-lg">
-            <Image src={supabase.storage.from('association-pictures').getPublicUrl(association.logoPath[0]).data.publicUrl} width={400} height={400} alt={association.name + " logo"}
+            <Image src={supabase.storage.from('association-pictures').getPublicUrl(association.logoPath).data.publicUrl} width={400} height={400} alt={association.name + " logo"}
             className=" rounded-lg border border-black aspect-square object-cover w-full"
             />
             <div className="flex flex-row w-full">
