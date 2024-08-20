@@ -39,15 +39,18 @@ export default function AddMemberButton() {
           }
         },
         [setDialogIsOpen]
-      );
+    );
     
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
-    if (formState?.success) {
-        handleOpenChange(false);
-    }
+        if (formState?.success) {
+            handleOpenChange(false);
+        }
+
+        setIsLoading(false);
     }, [formState, handleOpenChange]);
 
+    // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 

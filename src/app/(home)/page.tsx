@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Metadata } from "next";
+import DiscordWidget from "@/components/public/discordWidget";
 
 export const metadata: Metadata = {
   title: "Accueil | FAHB"
@@ -7,6 +8,12 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
+    <div>
       <h1>Bienvenue sur le site de la FAHB</h1>
+
+
+      <DiscordWidget />
+    </div>
+      
   );
 }

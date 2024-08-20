@@ -10,6 +10,7 @@ import {
 
 import prisma from "@/helpers/db"
 import EquipmentCard from "./equipmentCard";
+import AddEquipmentButton from "./addEquipmentButton";
 
 export default async function Equipments() {
 
@@ -26,7 +27,7 @@ export default async function Equipments() {
                 </div>
             </CardContent>
             <CardFooter>
-                <Button>Ajouter du matériel</Button>
+                <AddEquipmentButton />
             </CardFooter>
             
         </Card>

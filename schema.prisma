@@ -94,7 +94,7 @@ model BagadAssoEquipment {
   name      String
   imagePath String?
   deposit   Float             @default(0)
-  number    Int               @default(1)
+  quantity  Int               @default(1)
   tickets   BagadAssoTicket[] @relation("BagadAssoEquipmentToBagadAssoTicket")
 }
 
