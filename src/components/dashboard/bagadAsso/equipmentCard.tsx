@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/helpers/supabase/server";
 import { BagadAssoEquipment } from "@prisma/client";
+import Image from "next/image";
 
 import { MdOutlineHideImage } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
@@ -14,7 +15,7 @@ export default function EquipmentCard({equipment} : {equipment: BagadAssoEquipme
         <div className="flex flex-col rounded-lg border bg-card text-card-foreground shadow-sm p-4 space-y-1">
             {/* Image */}
             <div className="h-auto w-full flex flex-col items-center justify-center rounded-md bg-gray-100 object-contain aspect-square">
-                {equipment.imagePath ? <img className="rounded-md aspect-square object-cover" src={supabase.storage.from('equipment-pictures').getPublicUrl(equipment.imagePath).data.publicUrl}></img> : <><MdOutlineHideImage size={40} /> <span className="text-xs mt-1 overflow-hidden text-center">Pas d'image trouvée</span></>}
+                {equipment.imagePath ? <Image width={300} height={300} alt={`Photo de ${equipment.name}`} className="rounded-md aspect-square object-cover" src={supabase.storage.from('equipment-pictures').getPublicUrl(equipment.imagePath).data.publicUrl} /> : <><MdOutlineHideImage size={40} /> <span className="text-xs mt-1 overflow-hidden text-center">Pas d'image trouvée</span></>}
             </div>
 
             {/* Equipment name */}

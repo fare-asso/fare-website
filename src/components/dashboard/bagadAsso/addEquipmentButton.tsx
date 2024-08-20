@@ -27,6 +27,7 @@ import NumberInput from "@/components/ui/input/numberInput";
 import { MdDelete } from "react-icons/md";
 import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput";
 import LoadingRing from "../loadingRing";
+import Image from "next/image";
 
 export default function AddEquipmentButton() {
 
@@ -131,7 +132,7 @@ export default function AddEquipmentButton() {
                         <Label htmlFor="equipment-picture">{"Image de l'équipement"}</Label>
                         { file &&
                         <div className="relative w-fit">
-                            <img src={file} className="rounded-lg border my-2 h-48 aspect-auto outline outline-1 outline-offset-1"></img>
+                            <Image width={300} height={300} src={file} alt={`Photo du matériel`} className="rounded-lg border my-2 h-48 aspect-auto outline outline-1 outline-offset-1" />
                             <Button className="absolute m-1 top-0 right-0 p-3" variant="destructive" onClick={handleDeleteImage}><MdDelete size="20" /></Button>
                         </div>
                         }

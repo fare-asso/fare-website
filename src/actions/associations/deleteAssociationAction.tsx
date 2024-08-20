@@ -48,12 +48,12 @@ export default async function deleteAssociationAction(prevState: {error?: string
     /* Remove pictures from storage if there is some */
     if(association.logoPath.length > 0) {
         
-        const { data, error } = await supabase.storage.from('association-pictures').remove(association.logoPath);
+        const { data, error } = await supabase.storage.from('association-pictures').remove([association.logoPath]);
 
         if(error) {
             console.log(error.message)
             return { error: "Echec de la suppression des images dans la base de données" }
-        } // else success
+        }
 
     }
 

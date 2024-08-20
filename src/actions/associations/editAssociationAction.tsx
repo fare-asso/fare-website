@@ -3,7 +3,6 @@
 import prisma from "@/helpers/db";
 import { createClient } from "@/helpers/supabase/server";
 import getCurrentUserRole from "@/helpers/user/role";
-import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 
 export default async function editAssociationAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
@@ -11,7 +10,7 @@ export default async function editAssociationAction(prevState: {error?: string, 
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole();
     if(error) return { error : "Echec de l'authentification de l'utilisateur" }
-    if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
+    if(role != 'ADMIN' && role != "ASSO_OWNER") return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
 
     
     // create supabase client
@@ -22,7 +21,7 @@ export default async function editAssociationAction(prevState: {error?: string, 
     const name = formData.get('name')?.toString();
     const major = formData.get('major')?.toString();
     const description = formData.get('description')?.toString();
-    const pictures = formData.getAll('pictures');
+    const logoPicture = formData.get('logo-picture');
     const birthdate = formData.get('birthdate')?.toString();
     const location = formData.get('location')?.toString();
     const email = formData.get('email')?.toString();
@@ -32,34 +31,50 @@ export default async function editAssociationAction(prevState: {error?: string, 
     const twitter = formData.get('twitter')?.toString();
     const discord = formData.get('discord')?.toString();
 
+    // fetch current association logo path
+    const currentAssociation = await prisma.association.findUnique({
+        where: {
+            id: id
+        },
+        select: {
+            logoPath: true,
+            officePath: true
+        }
+    })
+
+    // validate current association
+    if(!currentAssociation) return { error : "Echec de la récupération des informations l'association" }
+
     // Fields Validation
-    if (isNaN(id) || !name || !major || !description || !pictures.length || !birthdate || !location || !email) {
+    if (isNaN(id) || !name || !major || !description || !birthdate || !location || !email || !logoPicture) {
         return { error: "Veuillez remplir tous les champs obligatoires." };
     }
 
     const maxFileSize = 15; // max file size in mb
 
-    for (let picture of pictures) {
-        if (!(picture instanceof File)) {
-            return { error: "Photo non valide" };
-        }
-        if (picture.size / (1024 * 1024) > maxFileSize) {
-            return { error: `La taille de chaque photo doit être inférieure à ${maxFileSize} Mo.` };
-        }
-        if (!['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'].includes(picture.type)) {
-            return { error: "Le format de l'image doit être : PNG, JPEG, JPG, WebP ou GIF" };
-        }
+
+    // Logo Picture
+    if(!(logoPicture instanceof File)) return { error: "Logo non-valide." }
+
+    const file: File = logoPicture;
+
+    // size validation
+    if(file.size == 0 || file.size / (1024 * 1024) > maxFileSize) {
+        return { error: `La taille de chaque photo doit être inférieure à ${maxFileSize} Mo.` }
     }
 
+    // type validation
+    if (!['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'].includes(file.type)) {
+        return { error: "Le format de l'image doit être : PNG, JPEG, JPG, WebP ou GIF" };
+    }
+
+    // update logo picture
+    const { data, error: err } = await supabase.storage.from('association-pictures').update(currentAssociation.logoPath, file);
+    if (err) return { error: err.message }
+
+    const logoPath: string = data.path;
+
     try {
-        const picturePaths = [];
-        for (let picture of pictures) {
-            const { data, error } = await supabase.storage.from('association-pictures').upload(randomUUID(), picture);
-            if (error) {
-                return { error: error.message };
-            }
-            picturePaths.push(data.path);
-        }
 
         const editedAssociation = await prisma.association.update({
             where: {
@@ -69,7 +84,7 @@ export default async function editAssociationAction(prevState: {error?: string, 
                 name,
                 major,
                 desc: description,
-                logoPath: picturePaths,
+                logoPath,
                 birthdate: new Date(birthdate),
                 location,
                 email,
