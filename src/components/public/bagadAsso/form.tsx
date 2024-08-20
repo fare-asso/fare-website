@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import NumberInput from "@/components/ui/numberInput";
+import NumberInput from "@/components/ui/input/numberInput";
 import {
     Popover,
     PopoverContent,
