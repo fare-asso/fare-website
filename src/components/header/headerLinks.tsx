@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import HeaderLink from "./headerLink";
-import { MdClose, MdOutlineMenu } from "react-icons/md";
+import { MdClose, MdOutlineMenu, MdExpandLess, MdExpandMore } from "react-icons/md";
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,30 +13,54 @@ export interface Link {
     subLinks?: Link[]
 }
 
-
 export default function HeaderLinks({links}: {links: Link[]}) {
 
     const pathname = usePathname();
     const runner = useRef<HTMLDivElement>(null);
     const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+    const [openSubMenus, setOpenSubMenus] = useState<{ [key: string]: boolean }>({});
     const menuRef = useRef<HTMLDivElement>(null);
 
-    function renderMobileLinks(links: Link[], pathname: string, level: number) : JSX.Element | JSX.Element[] {
-        return links.map((link) =>
-            <div key={link.title} className="flex flex-col">
-                <Link 
-                    href={link.href} 
-                    className={clsx(pathname.startsWith(link.href) ? 'underline' : 'no-underline', `py-2 text-lg`)} 
-                    onClick={() => setMenuIsOpen(false)}
-                    style={{marginLeft: level * 15}}
-                >
-                    {link.title}
-                </Link>
+    const toggleSubMenu = (title: string) => {
+        setOpenSubMenus((prevState) => ({
+            ...prevState,
+            [title]: !prevState[title],
+        }));
+    };
 
-                { link.subLinks ? renderMobileLinks(link.subLinks, pathname, ++level) : <></>}
-                
-            </div>
-        )
+    function renderMobileLinks(links: Link[], pathname: string, level: number) : JSX.Element | JSX.Element[] {
+        return links.map((link) => {
+            const isOpen = openSubMenus[link.title];
+            const hasSubLinks = link.subLinks && link.subLinks.length > 0;
+            return (
+                <div key={link.title} className={clsx('flex flex-col', level == 0 && 'mb-4')}>
+                    <div className={clsx("flex items-center justify-start", level == 0 && 'w-fit')}>
+                        <Link 
+                            href={link.href} 
+                            className={clsx(pathname.startsWith(link.href) ? 'font-bold' : 'font-normal', `text-lg flex-1`, level > 0 && '!text-base pb-1')} 
+                            onClick={() => setMenuIsOpen(false)}
+                            style={{marginLeft: level * 20}}
+                        >
+                            {link.title}
+                        </Link>
+                        {hasSubLinks && (
+                            <button 
+                                onClick={() => toggleSubMenu(link.title)}
+                                className="ml-2"
+                            >
+                                {isOpen ? <MdExpandLess size={20} /> : <MdExpandMore size={20} />}
+                            </button>
+                        )}
+                    </div>
+
+                    {hasSubLinks && isOpen && (
+                        <div className="">
+                            {renderMobileLinks(link.subLinks!, pathname, level + 1)}
+                        </div>
+                    )}
+                </div>
+            )
+        });
     }
 
     function renderDesktopLinks(links: Link[], pathname: string) : JSX.Element | JSX.Element[] {

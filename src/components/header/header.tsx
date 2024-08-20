@@ -25,6 +25,28 @@ const links: Link[] = [
         ]
     },
     {
+        title: "Actualités",
+        href: "/actualites"
+    },
+    {
+        title: "Presse",
+        href: "/presse",
+        subLinks: [
+            {
+                title: "Dossiers de presse",
+                href: "/presse/dossier-de-presse"
+            },
+            {
+                title: "Communiqués de presse",
+                href: "/presse/communiques-de-presse"
+            },
+            {
+                title: "Conférence de presse",
+                href: "/presse/conference-de-presse"
+            }
+        ]
+    },
+    {
         title: "Représentation",
         href: "/representation",
         subLinks: [
@@ -103,10 +125,6 @@ const links: Link[] = [
     {
         title: "Agenda",
         href: "/agenda"
-    },
-    {
-        title: "Actualités",
-        href: "/actualites"
     }
 ]
 

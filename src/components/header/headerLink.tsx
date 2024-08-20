@@ -35,7 +35,7 @@ export default function HeaderLink({title, href, subLinks, runnerRef} : {title: 
         <div className="relative z-20 m-0 [&>div]:hover:opacity-100 [&>div]:hover:scale-100  [&>a]:hover:text-white transition-all" onMouseEnter={hoverHandler} onMouseLeave={unhoverHandler}>
             <Link href={href} className={clsx("text-black px-4 py-1 flex flex-col items-center h-full transition-all decoration-2", href.endsWith(pathname) ? "underline" : "")}>{title}</Link>
             
-            { subLinks ? <div id="dropdown-links" className="absolute flex flex-col w-max scale-0 right-0 items-center opacity-0 space-y-1 mt-1 border-2 border-black rounded-xl p-1 bg-black transition-all">
+            { subLinks ? <div id="dropdown-links" className="absolute flex flex-col w-max scale-0 items-center opacity-0 space-y-1 mt-1 border-2 border-black rounded-xl p-1 bg-black transition-all">
                 { subLinks?.map((subLink) => <Link key={subLink.href} href={subLink.href} className="text-sm text-start text-white hover:bg-white/20 w-full px-3 py-1 rounded-[0.5rem]">{subLink.title}</Link>)}
             </div> : null }
         </div>
