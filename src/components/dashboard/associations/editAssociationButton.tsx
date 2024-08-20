@@ -12,6 +12,13 @@ DialogTrigger,
 DialogFooter,
 } from "@/components/ui/dialog"
 
+import {
+Accordion,
+AccordionContent,
+AccordionItem,
+AccordionTrigger,
+} from "@/components/ui/accordion"
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 import { Input } from "@/components/ui/input"
@@ -108,12 +115,36 @@ export default function EditAssociationButton({association} : {association: Asso
                         <Textarea id="description" name="description" maxLength={1000} placeholder="(Max: 1000 caractères)" className="max-h-[170px]" defaultValue={association.desc}/>
                     </div>
 
+                    {/* Pictures */}
                     <div>
-                        <Label htmlFor="picture">Photos</Label>
-                        <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
-                        <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
-                        <div className="text-sm text-muted-foreground mb-1">Résolution recommandée : 1080x1920 pixels (portrait)</div>
-                        <Input type="file" id="pictures" name="pictures" accept="image/*" multiple required/>
+                        <Accordion type="single" collapsible>
+
+                            {/* Logo Picture */}
+                            <AccordionItem value="logo-picture">
+                                <AccordionTrigger>
+                                    <Label htmlFor="logo-picture">Logo</Label>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
+                                    <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
+                                    <div className="text-sm text-muted-foreground mb-1">Format recommandée: carré</div>
+                                    <Input type="file" id="logo-picture" name="logo-picture" accept="image/*" required/>
+                                </AccordionContent>
+                            </AccordionItem>
+
+                            {/* Office Picture */}
+                            <AccordionItem value="office-picture">
+                                <AccordionTrigger>
+                                    <Label htmlFor="office-picture">Photo du local</Label>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
+                                    <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
+                                    <Input type="file" id="office-picture" name="office-picture" accept="image/*" required/>
+                                </AccordionContent>
+                            </AccordionItem>
+
+                        </Accordion>
                     </div>
 
                     <div>
