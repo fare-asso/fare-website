@@ -1,35 +1,9 @@
 'use client';
 
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import DatePicker from "@/components/ui/input/datePicker";
 import NumberInput from "@/components/ui/input/numberInput";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-    } from "@/components/ui/popover"
-import { format, set } from "date-fns";
-import { fr } from "date-fns/locale";
-import { ChangeEvent, useState } from "react";
 
 export default function BagadAssoForm() {
-
-    const [eventDate, setEventDate] = useState<Date>();
-    const [participantsCount, setParticipantsCount] = useState<number>(0);
-
-    const increment = () => {
-        setParticipantsCount(participantsCount + 1)
-    }
-
-    const decrement = () => {
-        setParticipantsCount(Math.max(0, participantsCount - 1));
-    }
-
-    const handleParticipantsChange = (event : ChangeEvent<HTMLInputElement>) => {
-        if(!isNaN(Number(event.target.value))) {
-            setParticipantsCount(Math.max(0, Number(event.target.value)))
-        }
-    }
 
     return (
         <form action="submitBagadAssoForm" className={`w-full lg:w-[60%] flex flex-col items-start
@@ -93,18 +67,7 @@ export default function BagadAssoForm() {
 
             {/* Date de l'évènement */}
             <label htmlFor="event-date">{"Date de l'évènement"}</label>
-            <Popover>
-                <PopoverTrigger asChild className="flex flex-col">
-                    <Button variant="outline" className="flex flex-row">
-                    <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                    {eventDate ? format(eventDate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full">
-                    <Calendar mode="single" selected={eventDate} onSelect={setEventDate} className="mb-3"/>
-                </PopoverContent>
-            </Popover>
-            <input type="hidden" name ="startDate" value={eventDate ? eventDate.toString() : ""}/>
+            <DatePicker name ="event-date" />
 
             {/* Adresse de l'évènement */}
             <label htmlFor="event-address">{"Adresse/Lieu de l'évènement"}</label>
