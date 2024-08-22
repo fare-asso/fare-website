@@ -32,13 +32,14 @@ import { useState } from "react";
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import TimePicker from "../../ui/timePicker";
+import TimePicker from "../../ui/input/timePicker";
 import createEventAction from "@/actions/events/createEventAction";
 import LocationPicker from "../../ui/location/locationPicker";
 import CategorySelect from "../../ui/category/categorySelect";
 import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
 import LoadingRing from "../loadingRing";
+import DatePicker from "@/components/ui/input/datePicker";
 
 export default function CreateEventButton() {
 
@@ -114,19 +115,8 @@ export default function CreateEventButton() {
 
                     <div className="flex flex-row w-full space-x-4">
                         <div>
-                            <Label>Date de début</Label>
-                            <Popover>
-                                <PopoverTrigger asChild className="flex flex-col">
-                                    <Button variant="outline" className="flex flex-row">
-                                        <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                                        {startDate ? format(startDate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                    <Calendar mode="single" selected={startDate} onSelect={setStartDate} className="mb-3"/>
-                                </PopoverContent>
-                            </Popover>
-                            <input type="hidden" name ="startDate" value={startDate ? startDate.toString() : ""}/>
+                            <Label htmlFor="startDate">Date de début</Label>
+                            <DatePicker name="startDate" fromYear={new Date().getFullYear() - 10} toYear={new Date().getFullYear() + 10} />
                         </div>
 
                         <div>
@@ -139,18 +129,7 @@ export default function CreateEventButton() {
                     <div className="flex flex-row w-full space-x-4">
                         <div>
                             <Label>Date de fin</Label>
-                            <Popover>
-                                <PopoverTrigger asChild className="flex flex-col">
-                                    <Button variant="outline" className="flex flex-row">
-                                        <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                                        {endDate ? format(endDate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                    <Calendar mode="single" selected={endDate} onSelect={setEndDate} className="mb-4"/>
-                                </PopoverContent>
-                            </Popover>
-                            <input type="hidden" name="endDate" value={endDate ? endDate.toString() : ""}/>
+                            <DatePicker name="endDate" fromYear={new Date().getFullYear() - 10} toYear={new Date().getFullYear() + 10} />
                         </div>
 
                         <div>

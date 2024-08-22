@@ -1,6 +1,6 @@
 'use client';
 
-import { Input } from "./input"
+import { Input } from "../input"
 
 type Time = {
     hours: number,

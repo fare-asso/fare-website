@@ -41,6 +41,7 @@ import editAssociationAction from "@/actions/associations/editAssociationAction"
 import { Association } from "@prisma/client";
 import { MdEdit } from "react-icons/md";
 import { Textarea } from "@/components/ui/textarea";
+import DatePicker from "@/components/ui/input/datePicker";
 
 export default function EditAssociationButton({association} : {association: Association}) {
 
@@ -148,19 +149,8 @@ export default function EditAssociationButton({association} : {association: Asso
                     </div>
 
                     <div>
-                        <Label>{"Date de Naissance de l'Association"}</Label>
-                        <Popover>
-                            <PopoverTrigger asChild className="flex flex-col">
-                                <Button variant="outline" className="flex flex-row">
-                                    <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                                    {birthdate ? format(birthdate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent>
-                                <Calendar mode="single" selected={birthdate} onSelect={setBirthdate} className="mb-3" captionLayout="dropdown" fromYear={1950} toYear={new Date().getFullYear()}/>
-                            </PopoverContent>
-                        </Popover>
-                        <input type="hidden" name ="birthdate" value={birthdate ? birthdate.toString() : ""}/>
+                        <Label htmlFor="birthdate">{"Date de Naissance de l'Association"}</Label>
+                        <DatePicker name="birthdate" enableMonthYearDropdown defaultValue={association.birthdate} fromYear={1950}/>
                     </div>
 
                     <div>

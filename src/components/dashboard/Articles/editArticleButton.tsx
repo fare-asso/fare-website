@@ -33,6 +33,8 @@ import editArticleAction from "@/actions/articles/editArticleAction";
 
 import { Article } from "./articleList";
 import { isUrl } from "@/helpers/string";
+import TimePicker from "@/components/ui/input/timePicker";
+import DatePicker from "@/components/ui/input/datePicker";
 
 export async function deltaImagesUrlToBase64Delta(delta: DeltaStatic): Promise<DeltaStatic> {
     if (delta.ops && delta.ops.length > 0) {
@@ -166,6 +168,11 @@ export default function EditArticleButton({className, children, article} : {clas
                         <Suspense fallback={<div>Chargement</div>}>
                             <RichTextEditor value={content} onChange={handleRichTextEditorChange} />
                         </Suspense>
+                    </div>
+
+                    <div>
+                        <Label htmlFor="date">Date de publication</Label>
+                        <DatePicker name="date" defaultValue={article.writtenOn} />
                     </div>
 
 

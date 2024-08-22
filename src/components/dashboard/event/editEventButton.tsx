@@ -32,7 +32,7 @@ import { ChangeEvent, useState } from "react";
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import TimePicker from "../../ui/timePicker";
+import TimePicker from "../../ui/input/timePicker";
 import LocationPicker from "../../ui/location/locationPicker";
 import CategorySelect from "../../ui/category/categorySelect";
 import { useFormState, useFormStatus } from "react-dom";
@@ -40,6 +40,7 @@ import { useEffect, useCallback } from "react";
 
 import editEventAction from "@/actions/events/editEventAction";
 import Image from "next/image";
+import DatePicker from "@/components/ui/input/datePicker";
 
 export interface EventInfo {
     id:number,
@@ -61,8 +62,6 @@ export default function EditEventButtonClient({eventInfo} : {eventInfo : EventIn
 
     const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(editEventAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-    const [startDate, setStartDate] = useState<Date | undefined>(eventInfo.startTime);
-    const [endDate, setEndDate] = useState<Date | undefined>(eventInfo.endTime);
 
     const [switchState, setSwitchState] = useState<boolean>(eventInfo.visibility);
 
@@ -162,21 +161,11 @@ export default function EditEventButtonClient({eventInfo} : {eventInfo : EventIn
                         { previousPath ? <input type="hidden" name="previousPath" value={previousPath}/> : null }
                     </div>
 
+                    {/* Start Date */}
                     <div className="flex flex-row w-full space-x-4">
                         <div>
                             <Label>Date de début</Label>
-                            <Popover>
-                                <PopoverTrigger asChild className="flex flex-col">
-                                    <Button variant="outline" className="flex flex-row">
-                                        <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                                        {startDate ? format(startDate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                    <Calendar mode="single" selected={startDate} onSelect={setStartDate} className="mb-3"/>
-                                </PopoverContent>
-                            </Popover>
-                            <input type="hidden" name ="startDate" value={startDate ? startDate.toString() : ""}/>
+                            <DatePicker name="startDate" defaultValue={eventInfo.startTime} fromYear={new Date().getFullYear() - 10} toYear={new Date().getFullYear() + 10} />
                         </div>
 
                         <div>
@@ -186,21 +175,11 @@ export default function EditEventButtonClient({eventInfo} : {eventInfo : EventIn
                     </div>
                     
 
+                    {/* End Date */}
                     <div className="flex flex-row w-full space-x-4">
                         <div>
                             <Label>Date de fin</Label>
-                            <Popover>
-                                <PopoverTrigger asChild className="flex flex-col">
-                                    <Button variant="outline" className="flex flex-row">
-                                        <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                                        {endDate ? format(endDate, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                    <Calendar mode="single" selected={endDate} onSelect={setEndDate} className="mb-4"/>
-                                </PopoverContent>
-                            </Popover>
-                            <input type="hidden" name="endDate" value={endDate ? endDate.toString() : ""}/>
+                            <DatePicker name="endDate" defaultValue={eventInfo.endTime} fromYear={new Date().getFullYear() - 10} toYear={new Date().getFullYear() + 10} />
                         </div>
 
                         <div>

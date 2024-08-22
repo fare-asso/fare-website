@@ -31,9 +31,10 @@ export default async function createArticleAction(prevState: {error?: string, su
     const id: number | undefined = isNaN(Number(formData.get('id'))) ? undefined : Number(formData.get('id'));
     const title = formData.get('title')?.toString();
     const content = formData.get('delta')?.toString();
+    const date = formData.get('date')?.toString();
 
     // Fields Validation
-    if (!title || !content || !id) {
+    if (!title || !content || !id || !date) {
         return { error: "Veuillez remplir tous les champs obligatoires." };
     }
 
@@ -47,14 +48,7 @@ export default async function createArticleAction(prevState: {error?: string, su
         return { error : "L'article est introuvable..."}
     }
 
-
-
     const contentDelta: DeltaStatic = await JSON.parse(content);
-
-    const contentString : string = JSON.stringify(contentDelta)
-
-    console.log("Title: " + title);
-    console.log("Content (Delta): " + contentString);
 
 
     if(contentDelta.ops && contentDelta.ops.length > 0) { // content is not null
@@ -138,7 +132,8 @@ export default async function createArticleAction(prevState: {error?: string, su
                     title: title,
                     content: contentJSON,
                     imagesPath: imagePaths,
-                    authorId: userId!
+                    authorId: userId!,
+                    writtenOn: new Date(date)
                 }
             })
 
