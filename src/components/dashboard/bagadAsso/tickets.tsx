@@ -8,6 +8,7 @@ import {
     } from "@/components/ui/card"
     
 import prisma from "@/helpers/db"
+import BagadAssoTicketCard from "./ticketCard"
 
 export default async function Tickets() {
 
@@ -17,8 +18,10 @@ export default async function Tickets() {
         }
     })
     return (
-        <Card className="flex flex-col w-full h-full p-4">
-            Tickets
+        <Card className="flex flex-col w-full h-full p-4 space-y-2">
+            {
+                tickets.map((ticket) => <BagadAssoTicketCard key={ticket.id} ticket={ticket}/>)
+            }
         </Card>
     )
 }

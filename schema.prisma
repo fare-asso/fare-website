@@ -96,23 +96,23 @@ model BagadAssoEquipment {
   imagePath String?
   deposit   Float             @default(0)
   quantity  Int               @default(1)
-  tickets   BagadAssoTicket[] @relation("BagadAssoEquipmentToBagadAssoTicket")
 }
 
 model BagadAssoTicket {
   id                    Int                  @id @default(autoincrement())
   assocation            String
-  mail                  String
+  associationEmail      String
   firstName             String
   lastName              String
   phoneNumber           String?
+  representativeEmail   String
   eventName             String
   eventType             String
   eventDate             DateTime
   eventAddr             String
   estimatedParticipants Int                  @default(0)
   creationDate          DateTime             @default(now())
-  materials             BagadAssoEquipment[] @relation("BagadAssoEquipmentToBagadAssoTicket")
+  equipments            Json
 }
 
 model LocationCache {

@@ -2,11 +2,37 @@
 
 import DatePicker from "@/components/ui/input/datePicker";
 import NumberInput from "@/components/ui/input/numberInput";
+import EquipmentSelection from "./equipmentSelection";
+import { BagadAssoEquipment } from "@prisma/client";
+import { useFormState } from "react-dom";
+import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction";
+import { useEffect, useState } from "react";
+import LoadingRing from "@/components/dashboard/loadingRing";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-export default function BagadAssoForm() {
+export default function BagadAssoForm({equipmentList} : {equipmentList: BagadAssoEquipment[]}) {
+
+    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(submitBagadAssoFormAction, undefined);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    // Fermer le dialogue lorsque l'action du formulaire indique un succès
+    useEffect(() => {
+        setIsLoading(false);
+    }, [formState]);
+
+    // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.currentTarget);
+
+        setIsLoading(true);
+
+        formAction(formData);
+    };
 
     return (
-        <form action="submitBagadAssoForm" className={`w-full lg:w-[60%] flex flex-col items-start
+        <form onSubmit={handleSubmit} className={`w-full lg:w-[60%] flex flex-col items-start
                                             [&_input]:border [&_input]:border-gray-300 [&_input]:text-black
                                             [&_input]:text-base [&_input]:rounded-lg [&_input]:focus:ring-yellow-400
                                             [&_input]:focus:border-yellow-400 [&_input]:block [&_input]:w-full [&_input]:p-2.5
@@ -26,8 +52,8 @@ export default function BagadAssoForm() {
                                             `}>
 
             {/* Association représentée */}
-            <label htmlFor="association">Association représentée</label>
-            <input type="text" name="association" id="association" required/>
+            <label htmlFor="association-name">Association représentée</label>
+            <input type="text" name="association-name" id="association" required/>
 
             {/* Email de l'Association */}
             <label htmlFor="association-email">Email de l'Association</label>
@@ -56,12 +82,12 @@ export default function BagadAssoForm() {
             {/* Type de l'évènement */}
             <label htmlFor="event-type">{"Type de l'évènement"}</label>
             <select name="event-type" id="event-type">
-            <option value="option-1">Week End de cohésion</option>
-            <option value="option-2">Soirée</option>
-            <option value="option-3">Stand</option>
-            <option value="option-3">Temps démocratique (AG/CA)</option>
-            <option value="option-3">Conférence</option>
-            <option value="option-3">Séjour</option>
+            <option value="Weekend de cohésion">Weekend de cohésion</option>
+            <option value="Soirée">Soirée</option>
+            <option value="Stand">Stand</option>
+            <option value="Temps démocratique">Temps démocratique (AG/CA)</option>
+            <option value="Conférence">Conférence</option>
+            <option value="Séjour">Séjour</option>
             <option value="other">Autre</option>
             </select>
 
@@ -78,13 +104,12 @@ export default function BagadAssoForm() {
             <NumberInput name="event-participants" min={0} placeholder="999" />
 
             {/* Matériels demandés */}
-            <label htmlFor="stuff">{"Matériels demandés"}</label>
-            <div className="opacity-80 italic text-red-600">TODO</div>
-
+            <label htmlFor="equipment-input">{"Matériels demandés"}</label>
+            <EquipmentSelection name="equipment-input" equipmentList={equipmentList}/>
 
             
             {/* Termes et conditions */}
-            <div className="flex flex-row items-center mt-6">
+            <div className="flex flex-row items-center mt-6 mb-8">
                 <input 
                     id="terms-and-conditions"
                     name="terms-and-conditions" 
@@ -92,16 +117,33 @@ export default function BagadAssoForm() {
                     className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
                     required 
                 />
-                <label htmlFor="terms-and-conditions" className="!mt-0 text-nowrap ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                <label htmlFor="terms-and-conditions" className="!m-0 text-nowrap !ml-2  text-sm font-medium text-gray-900 dark:text-gray-300">
                     J'accepte les <a href="#" className="text-blue-600 hover:underline dark:text-blue-500">termes et conditions</a>.
                 </label>
             </div>
+
+            { formState?.error ? 
+            <Alert variant="destructive">
+                <AlertTitle>Erreur</AlertTitle>
+                <AlertDescription>
+                    {formState.error}
+                </AlertDescription>
+            </Alert>
+            : null 
+            }
+
+            {
+                formState?.success ?
+                <Alert variant="destructive" className="border-green-600 text-green-600">
+                    <AlertDescription>
+                    {"Votre soumission a été reçue. Nous vous remercions et vous contacterons sous peu."}
+                    </AlertDescription>
+                </Alert>
+            : null
+            }
             
 
-            <button type="submit" className="px-4 py-2 rounded-lg bg-black text-white hover:scale-105 transition-all mt-4">Valider la demande de matériels</button>
-
-
-
+            <button type="submit" className="disabled:pointer-events-none disabled:opacity-50 px-4 py-2 rounded-lg bg-black text-white hover:scale-105 transition-all mt-4 flex flex-row items-center" disabled={isLoading}> { isLoading ? <LoadingRing /> : null } Valider la demande de matériels</button>
 
         </form>
     );

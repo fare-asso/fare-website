@@ -1,6 +1,9 @@
 import BagadAssoForm from "@/components/public/bagadAsso/form";
+import prisma from "@/helpers/db";
 
-export default async function Reseau() {
+export default async function BagadAsso() {
+
+    const equipmentList = await prisma.bagadAssoEquipment.findMany();
 
     return(
         <div className="flex flex-col items-center justify-start w-full">
@@ -10,7 +13,7 @@ export default async function Reseau() {
             <p className="opacity-80 italic text-red-600">présentations du projet à écrire</p>
 
             {/* Formulaire de demande de matériel */}
-            <BagadAssoForm />
+            <BagadAssoForm equipmentList={equipmentList} />
             
         </div>
         
