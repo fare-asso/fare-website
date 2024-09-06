@@ -5,7 +5,36 @@ import prisma from "@/helpers/db";
 import { revalidatePath } from "next/cache";
 
 
+async function verifyCaptcha(captchaValue: string) {
+    const response = await fetch(
+        `https://www.google.com/recaptcha/api/siteverify?secret=6LfNcTYqAAAAAI_3A1XCfBPmkHmOLrzBnwW51zFS&response=${captchaValue}`,
+        {
+        method: 'POST',
+        headers: {
+            'Content-Type': "application/json",
+        }
+        }
+    );
+
+    const data = await response.json();
+    return data.success;
+}
+
+
 export default async function submitBagadAssoFormAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
+
+    // Retrieve CAPTCHA value
+    const captchaValue = formData.get('g-recaptcha-response')?.toString();
+
+    // Verify CAPTCHA
+    if (!captchaValue) {
+        return { error: "Veuillez compléter le CAPTCHA." };
+    }
+
+    const isCaptchaValid = await verifyCaptcha(captchaValue);
+    if (!isCaptchaValid) {
+        return { error: "La vérification CAPTCHA a échoué. Veuillez réessayer." };
+    }
 
     // retrieve form data fields
     const association_name = formData.get('association-name')?.toString();

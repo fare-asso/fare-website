@@ -37,16 +37,16 @@ model Association {
   major            String
   desc             String
   location         String
-  email            String   @default("")
   discord          String?
   facebook         String?
   instagram        String?
   logoPath         String
-  officePath       String?
   twitter          String?
   website          String?
   birthdate        DateTime @default(now())
   representativeId String?  @unique
+  email            String   @default("")
+  officePath       String?
   representative   User?    @relation(fields: [representativeId], references: [id])
 }
 
@@ -91,28 +91,28 @@ model CommuniqueDePresse {
 }
 
 model BagadAssoEquipment {
-  id        Int               @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   name      String
   imagePath String?
-  deposit   Float             @default(0)
-  quantity  Int               @default(1)
+  deposit   Float   @default(0)
+  quantity  Int     @default(1)
 }
 
 model BagadAssoTicket {
-  id                    Int                  @id @default(autoincrement())
+  id                    Int      @id @default(autoincrement())
   assocation            String
-  associationEmail      String
   firstName             String
   lastName              String
   phoneNumber           String?
-  representativeEmail   String
   eventName             String
   eventType             String
   eventDate             DateTime
   eventAddr             String
-  estimatedParticipants Int                  @default(0)
-  creationDate          DateTime             @default(now())
+  estimatedParticipants Int      @default(0)
+  creationDate          DateTime @default(now())
   equipments            Json
+  associationEmail      String
+  representativeEmail   String
 }
 
 model LocationCache {

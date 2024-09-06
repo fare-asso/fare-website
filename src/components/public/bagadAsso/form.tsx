@@ -9,11 +9,13 @@ import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAc
 import { useEffect, useState } from "react";
 import LoadingRing from "@/components/dashboard/loadingRing";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import Captcha from "@/components/captcha/recaptcha";
 
 export default function BagadAssoForm({equipmentList} : {equipmentList: BagadAssoEquipment[]}) {
 
     const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(submitBagadAssoFormAction, undefined);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [captchaValue, setCaptchaValue] = useState<string | null>(null);
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
@@ -122,6 +124,10 @@ export default function BagadAssoForm({equipmentList} : {equipmentList: BagadAss
                 </label>
             </div>
 
+            <div>
+                <Captcha onChange={setCaptchaValue} />
+            </div>
+
             { formState?.error ? 
             <Alert variant="destructive">
                 <AlertTitle>Erreur</AlertTitle>
@@ -134,7 +140,7 @@ export default function BagadAssoForm({equipmentList} : {equipmentList: BagadAss
 
             {
                 formState?.success ?
-                <Alert variant="destructive" className="border-green-600 text-green-600">
+                <Alert variant="destructive" className="border-green-600 text-green-600 mt-4">
                     <AlertDescription>
                     {"Votre soumission a été reçue. Nous vous remercions et vous contacterons sous peu."}
                     </AlertDescription>

@@ -12,7 +12,7 @@ const links: Link[] = [
             },
             {
                 title: "Le Bureau",
-                href: "/membres"
+                href: "/bureau"
             },
             {
                 title: "Les Associations du réseau",
