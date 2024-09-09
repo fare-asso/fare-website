@@ -36,7 +36,7 @@ export default function AssociationCard({association}:{ association: Association
     const processedLocationData = processLocationData(association.location);
 
     return (
-        <Link href={`/reseau/associations/${association.id}`} className="relative flex flex-col p-4 hover:scale-105 bg-white outline outline-1 outline-black rounded-lg">
+        <Link href={`/reseau/associations/${association.id}`} className="relative flex flex-col p-4 hover:scale-105 bg-white outline outline-1 outline-black rounded-lg transition-all">
             <Image src={supabase.storage.from('association-pictures').getPublicUrl(association.logoPath).data.publicUrl} width={400} height={400} alt={association.name + " logo"}
             className=" rounded-lg border border-black aspect-square object-cover w-full"
             />

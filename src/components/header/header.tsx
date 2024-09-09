@@ -4,11 +4,11 @@ import HeaderLogo from "./logo";
 const links: Link[] = [
     {
         title: "A Propos",
-        href: "/about",
+        href: "/a-propos",
         subLinks: [
             {
                 title: "Qu'est ce que la FAHB ?",
-                href: "/about"
+                href: "/a-propos"
             },
             {
                 title: "Le Bureau",

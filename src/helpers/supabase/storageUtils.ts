@@ -1,7 +1,7 @@
 
 export class StorageUtils {
 
-    private storageUrl: string = process.env.SUPABASE_URL!;
+    private storageUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 
     public constructor(storageUrl?: string) {
         if(storageUrl) {
