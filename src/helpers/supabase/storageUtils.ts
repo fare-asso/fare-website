@@ -3,20 +3,28 @@ export class StorageUtils {
 
     private storageUrl: string = process.env.SUPABASE_URL!;
 
-    public static from(bucketName: string) {
+    public constructor(storageUrl?: string) {
+        if(storageUrl) {
+            this.storageUrl = storageUrl;
+        }
+    }
 
+    public from(bucketName: string) {
+        return new Bucket(bucketName, this.storageUrl);
     }
 }
 
 class Bucket {
 
-    name: string;
+    private name: string;
+    private storageUrl: string;
 
-    constructor(name: string) {
+    constructor(name: string, storageUrl: string) {
         this.name = name;
+        this.storageUrl = storageUrl;
     }
 
-    public static getPublicUrl(path: string): string {
-        return ""
+    public getPublicUrl(path: string, download?: boolean): string {
+        return (this.storageUrl + "/storage/v1/object/public/" + this.name + "/" + path)
     }
 }

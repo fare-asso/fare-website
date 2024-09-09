@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 export interface Link {
     title: string,
     href: string,
+    hidden?: boolean,
     subLinks?: Link[]
 }
 
@@ -32,6 +33,11 @@ export default function HeaderLinks({links}: {links: Link[]}) {
         return links.map((link) => {
             const isOpen = openSubMenus[link.title];
             const hasSubLinks = link.subLinks && link.subLinks.length > 0;
+            
+            if(link.hidden) {
+                return <></>
+            }
+
             return (
                 <div key={link.title} className={clsx('flex flex-col', level == 0 && 'mb-4')}>
                     <div className={clsx("flex items-center justify-start", level == 0 && 'w-fit')}>
@@ -64,7 +70,7 @@ export default function HeaderLinks({links}: {links: Link[]}) {
     }
 
     function renderDesktopLinks(links: Link[], pathname: string) : JSX.Element | JSX.Element[] {
-        return links.map((link) => 
+        return links.filter((link) => !link.hidden).map((link) => 
             <HeaderLink key={link.title} title={link.title} href={link.href} subLinks={link.subLinks} runnerRef={runner}/>
         )
     }

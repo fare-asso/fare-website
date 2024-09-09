@@ -7,6 +7,7 @@ import Link from "next/link";
 import LinkButton from "@/components/public/link";
 import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller";
 import prisma from "@/helpers/db";
+import { Association } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Accueil | FAHB"
@@ -14,7 +15,14 @@ export const metadata: Metadata = {
 
 export default async function Home() {
 
-  const associations = await prisma.association.findMany()
+  let associations: Association[] | undefined;
+  
+  try {
+    associations = await prisma.association.findMany();
+  } catch(e) {
+    console.error("Failed to fetch associations")
+  }
+
 
   return (
     <div className="w-full md:w-[90%] flex flex-col items-center">
@@ -75,7 +83,11 @@ export default async function Home() {
           Notre réseau
         </h2>
         <div className="flex flex-col items-center">
-          <AssociationMapCaller associations={associations} />
+          { associations ?
+          <AssociationMapCaller associations={associations} /> :
+           <span>Echec de la récupération des associations</span>
+          }
+          
         </div>
         
       </div>

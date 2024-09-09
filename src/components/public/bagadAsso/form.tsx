@@ -17,7 +17,7 @@ export default function BagadAssoForm({equipmentList} : {equipmentList: BagadAss
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [captchaValue, setCaptchaValue] = useState<string | null>(null);
 
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
+    // Arrêter le chargement lorsque l'action du formulaire indique un succès
     useEffect(() => {
         setIsLoading(false);
     }, [formState]);
@@ -62,19 +62,19 @@ export default function BagadAssoForm({equipmentList} : {equipmentList: BagadAss
             <input type="email" name="association-email" id="association-email" placeholder="association@gmail.com" required/>
 
             {/* Nom du référent */}
-            <label htmlFor="association-referent-name">Nom du référent</label>
+            <label htmlFor="association-referent-name">Nom du référent.e.s</label>
             <input type="text" name="association-referent-name" id="association-referent-name" placeholder="Jean" required/>
 
             {/* Prénom du référent */}
-            <label htmlFor="association-referent-first-name">Prénom du référent</label>
+            <label htmlFor="association-referent-first-name">Prénom du référent.e.s</label>
             <input type="text" name="association-referent-first-name" id="association-referent-first-name" placeholder="Thomas" required/>
 
             {/* Mail du référent */}
-            <label htmlFor="association-referent-email">{"Email du référent"}</label>
+            <label htmlFor="association-referent-email">{"Email du référent.e.s"}</label>
             <input type="email" name="association-referent-email" id="association-referent-email" placeholder="jean.thomas@gmail.com" required/>
 
             {/* Téléphone du référent */}
-            <label htmlFor="association-referent-phone">Numéro de téléphone du représentant</label>
+            <label htmlFor="association-referent-phone">Numéro de téléphone du référent.e.s</label>
             <input type="tel" name="association-referent-phone" id="association-referent-phone" placeholder="06 12 34 56 78"/>
 
             {/* Nom de l'évènement */}
@@ -102,7 +102,7 @@ export default function BagadAssoForm({equipmentList} : {equipmentList: BagadAss
             <input type="text" name="event-address" id="event-address" placeholder="263 Av. Général Leclerc, 35000 Rennes"/>
 
             {/* Nombre de participant à l'évènement */}
-            <label htmlFor="event-participants">{"Nombre de participants à l'évènement"}</label>
+            <label htmlFor="event-participants">{"Nombre de participant.e.s à l'évènement"}</label>
             <NumberInput name="event-participants" min={0} placeholder="999" />
 
             {/* Matériels demandés */}
@@ -124,6 +124,7 @@ export default function BagadAssoForm({equipmentList} : {equipmentList: BagadAss
                 </label>
             </div>
 
+            {/* ReCaptcha Input */}
             <div>
                 <Captcha onChange={setCaptchaValue} />
             </div>
@@ -149,7 +150,7 @@ export default function BagadAssoForm({equipmentList} : {equipmentList: BagadAss
             }
             
 
-            <button type="submit" className="disabled:pointer-events-none disabled:opacity-50 px-4 py-2 rounded-lg bg-black text-white hover:scale-105 transition-all mt-4 flex flex-row items-center" disabled={isLoading}> { isLoading ? <LoadingRing /> : null } Valider la demande de matériels</button>
+            <button type="submit" className="disabled:pointer-events-none disabled:opacity-50 px-4 py-2 rounded-lg bg-black text-white hover:scale-105 transition-all mt-4 flex flex-row items-center" disabled={isLoading}> { isLoading ? <LoadingRing /> : null } Valider la demande de matériel</button>
 
         </form>
     );

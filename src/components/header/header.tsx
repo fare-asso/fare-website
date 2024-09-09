@@ -20,7 +20,8 @@ const links: Link[] = [
             },
             {
                 title: "Nos partenaires",
-                href: "/partenaires"
+                href: "/partenaires",
+                hidden: true
             }
         ]
     },
@@ -56,11 +57,13 @@ const links: Link[] = [
             },
             {
                 title: "Haute-Bretagne",
-                href: "/representation/haute-bretagne"
+                href: "/representation/haute-bretagne",
+                hidden: true
             },
             {
                 title: "Jeunesse & étudiant.e.s",
-                href: "/representation/jeunesse-et-etudiants"
+                href: "/representation/jeunesse-et-etudiants",
+                hidden: true
             },
             {
                 title: "FAGE",
@@ -92,15 +95,18 @@ const links: Link[] = [
         subLinks: [
             {
                 title: "Education populaire & politique de formation",
-                href: "/formation/educ-pop-et-politique-de-formation"
+                href: "/formation/educ-pop-et-politique-de-formation",
+                hidden: true
             },
             {
                 title: "Évènements",
-                href: "/formation/evenements"
+                href: "/formation/evenements",
+                hidden: true
             },
             {
                 title: "Catalogue de formation",
-                href: "/formation/catalogue-de-formation"
+                href: "/formation/catalogue-de-formation",
+                hidden: true
             },
             {
                 title: "Demande de formation",
@@ -114,7 +120,8 @@ const links: Link[] = [
         subLinks: [
             {
                 title: "Vos droits",
-                href: "/defense-des-droits/vos-droits"
+                href: "/defense-des-droits/vos-droits",
+                hidden: true
             },
             {
                 title: "Nous contacter",
