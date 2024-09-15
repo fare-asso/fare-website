@@ -19,6 +19,10 @@ const links: Link[] = [
                 href: "/reseau"
             },
             {
+                title: "Rejoindre la FAHB",
+                href: "/adhesion"
+            },
+            {
                 title: "Nos partenaires",
                 href: "/partenaires",
                 hidden: true
