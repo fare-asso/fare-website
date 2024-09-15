@@ -18,14 +18,14 @@ export default function MemberCard({member} : {member: Member}) {
             />
             <div className="flex flex-col w-full items-center">
                 <span className="font-semibold">{`${member.firstName} ${member.lastName}`}</span>
-                <span className="text-center">{member.position}</span>
+                <span className="text-center italic">{member.position}</span>
+                <Link href={`mailto:${member.email}`} className="text-sm flex flex-row items-center justify-center"><MdAlternateEmail size={16}/>{`: ${member.email}`}</Link>
             </div>
 
             <div className="flex flex-row justify-center items-center">
                 { member.facebookUrl ? <Link href={member.facebookUrl}><FaFacebook/></Link> : null}
                 { member.instagramUrl ? <Link href={member.instagramUrl}><FaInstagram/></Link> : null}
                 { member.twitterUrl ? <Link href={member.twitterUrl}><FaTwitter/></Link> : null}
-                <Link href={`mailto:${member.email}`}><MdAlternateEmail/></Link>
             </div>
 
         </div>

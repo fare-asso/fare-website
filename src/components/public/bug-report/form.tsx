@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import LoadingRing from "@/components/dashboard/loadingRing";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import Captcha from "@/components/captcha/recaptcha";
-import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction";
+import bugReportAction from "@/actions/bug-report/bugReportAction";
 
 export default function BugReportForm() {
 
-    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(submitBagadAssoFormAction, undefined);
+    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(bugReportAction, undefined);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [captchaValue, setCaptchaValue] = useState<string | null>(null);
     const [charactersLength, setCharactersLength] = useState<number>(0);
@@ -138,7 +138,7 @@ export default function BugReportForm() {
             }
             
 
-            <button type="submit" className="disabled:pointer-events-none disabled:opacity-50 px-4 py-2 rounded-lg bg-black text-white hover:scale-105 transition-all mt-4 flex flex-row items-center" disabled={isLoading}> { isLoading ? <LoadingRing /> : null } Valider la demande de matériel</button>
+            <button type="submit" className="disabled:pointer-events-none disabled:opacity-50 px-4 py-2 rounded-lg bg-black text-white hover:scale-105 transition-all mt-4 flex flex-row items-center" disabled={isLoading}> { isLoading ? <LoadingRing /> : null } Envoyer le rapport de bug</button>
 
         </form>
     );
