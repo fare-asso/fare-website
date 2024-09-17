@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
+import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok } from "react-icons/fa6";
 import { FaXTwitter } from "react-icons/fa6";
 
 export default function SocialLinks() {
@@ -19,6 +19,11 @@ export default function SocialLinks() {
             {/* Facebook */}
             <Link href="https://www.facebook.com/la.fahb/?locale=fr_FR" title="Facebook">
                 <FaFacebook size={25}/>
+            </Link>
+
+            {/* Linkedin */}
+            <Link href="https://fr.linkedin.com/company/fahb" title="Linkedin">
+                <FaLinkedin size={25} />
             </Link>
 
             {/* TikTok */}
