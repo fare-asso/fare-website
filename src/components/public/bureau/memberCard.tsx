@@ -2,7 +2,7 @@ import { Member } from "@prisma/client";
 import Image from "next/image";
 import { StorageUtils } from "@/helpers/supabase/storageUtils";
 import Link from "next/link";
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa6";
+import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6";
 import { MdAlternateEmail, MdEmail } from "react-icons/md";
 
 export default function MemberCard({member} : {member: Member}) {
@@ -22,10 +22,10 @@ export default function MemberCard({member} : {member: Member}) {
                 <Link href={`mailto:${member.email}`} className="text-sm flex flex-row items-center justify-center"><MdAlternateEmail size={16}/>{`: ${member.email}`}</Link>
             </div>
 
-            <div className="flex flex-row justify-center items-center">
-                { member.facebookUrl ? <Link href={member.facebookUrl}><FaFacebook/></Link> : null}
-                { member.instagramUrl ? <Link href={member.instagramUrl}><FaInstagram/></Link> : null}
-                { member.twitterUrl ? <Link href={member.twitterUrl}><FaTwitter/></Link> : null}
+            <div className="flex flex-row justify-center items-center space-x-2 mt-1">
+                { member.facebookUrl ? <Link href={member.facebookUrl}><FaFacebook size={20} /></Link> : null}
+                { member.instagramUrl ? <Link href={member.instagramUrl}><FaInstagram size={20}/></Link> : null}
+                { member.twitterUrl ? <Link href={member.twitterUrl}><FaXTwitter size={20}/></Link> : null}
             </div>
 
         </div>
