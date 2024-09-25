@@ -8,6 +8,7 @@ import LinkButton from "@/components/public/link";
 import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller";
 import prisma from "@/helpers/db";
 import { Association } from "@prisma/client";
+import AnimatedNumber from "@/components/ui/animatedNumber";
 
 export const metadata: Metadata = {
   title: "Accueil | FAHB"
@@ -29,22 +30,32 @@ export default async function Home() {
       
       {/* Welcome picture and key numbers */}
       <div className="w-full flex flex-col md:flex-row mt-8 mb-4">
-      <Image src={WelcomeImage} alt="Image des membres du bureau" className="w-full md:w-[90%] rounded-xl" />
-        <div className="w-full flex flex-col mt-2 md:mt-0 md:ml-4 [&_span]:text-white flex-shrink-[2]">
+        <div className="w-full md:w-[60%]">
+          <Image src={WelcomeImage} alt="Image des membres du bureau" className="w-full rounded-xl" />
+        </div>
+        <div className="w-full md:w-[40%] flex flex-col mt-2 md:mt-0 md:ml-4">
           <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full mb-2 md:mb-4">
-            <span className="text-2xl md:text-[2.5rem] font-semibold">17</span>
-            <span className="text-xl md:p-1 opacity-95 text-center">Associations étudiantes</span>
+            <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
+              <AnimatedNumber end={17} duration={1.5} />
+            </span>
+            <span className="text-xl md:p-1 opacity-95 text-center text-white">Associations étudiantes</span>
           </div>
           <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full mb-2 md:mb-4">
-            <span className="text-2xl md:text-[2.5rem] font-semibold">88 000</span>
-            <span className="text-xl md:p-1 opacity-95 text-center">Étudiant.e.s</span>
+            <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
+              <AnimatedNumber end={88000} duration={3} />
+            </span>
+            <span className="text-xl md:p-1 opacity-95 text-center text-white">Étudiant.e.s</span>
           </div>
           <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full">
-            <span className="text-2xl md:text-[2.5rem] font-semibold">28</span>
-            <span className="text-xl md:p-1 opacity-95 text-center">Élu.e.s universitaires & CROUS</span>
+            <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
+              <AnimatedNumber end={28} duration={4} />
+            </span>
+            <span className="text-xl md:p-1 opacity-95 text-center text-white">Élu.e.s universitaires & CROUS</span>
           </div>
         </div>
       </div>
+
+      
 
       {/* Qui sommes-nous ? */}
       <div className="my-10 w-full flex flex-col items-center">
@@ -55,7 +66,7 @@ export default async function Home() {
             Indépendante de tout parti politique, elle œuvre chaque jour pour améliorer la vie des 88 000 étudiant.e.s du territoire grâce à des projets construits "par et pour les étudiant.e.s".
           </p>
           <div className="w-full flex items-center flex-col pt-8">
-            <LinkButton href="/about" title="En savoir +" className="bg-white text-black"/>
+            <LinkButton href="/a-propos" title="En savoir +" className="bg-white text-black"/>
           </div>
         </div>
       </div>
