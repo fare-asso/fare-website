@@ -56,8 +56,8 @@ const links: Link[] = [
         href: "/representation",
         subLinks: [
             {
-                title: "Nos élu.e.s",
-                href: "/representation/elus"
+                title: "Nos élu·e·s",
+                href: "/representation/nos-elues"
             },
             {
                 title: "Haute-Bretagne",
