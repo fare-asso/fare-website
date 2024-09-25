@@ -18,9 +18,9 @@ export default function BougeTaPrison() {
                     </p>
                 </section>
 
-                <div className='flex flex-col md:flex-row space-y-3 space-x-0 md:space-y-0 md:space-x-2 [&>img]:rounded-xl [&>img]:w-full [&>img]:object-cover'>
-                    <Image src={assemblee0} alt="Cantine de l'AGORAé" />
-                    <Image src={assemblee1} alt="Nourriture proposée à l'AGORAé" />
+                <div className='flex flex-col md:flex-row space-y-3 space-x-0 md:space-y-0 md:space-x-2 [&>img]:rounded-xl [&>img]:w-full md:[&>img]:w-1/2 [&>img]:object-cover'>
+                    <Image src={assemblee0} alt="Photo d'une conférence de sensibilisation du milieu carcéral à l'Université de Rennes 2 qui s'est déroulée en février 2024" />
+                    <Image src={assemblee1} alt="Deuxième photo de la conférence de sensibilisation du milieu carcéral à l'Université de Rennes 2" />
                 </div>
 
                 <section>
