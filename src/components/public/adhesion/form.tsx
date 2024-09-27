@@ -1,8 +1,11 @@
 'use client';
 
+import { processAdhesionForm } from '@/actions/adhesion/processAdhesionFormAction';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import NumberInput from '@/components/ui/input/numberInput';
 import React, { useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useFormState } from 'react-dom';
+import { MdAdminPanelSettings } from 'react-icons/md';
 
 interface BoardMember {
   poste: string;
@@ -29,39 +32,15 @@ interface Elu {
   adresse: string;
 }
 
-interface FormInputs {
-  dateAdhesion: string;
-  sigle: string;
-  nomComplet: string;
-  logo: FileList;
-  college: 'A' | 'B' | '';
-  objetPrincipal: string;
-  adresseAdministrative: string;
-  siegeSocial?: string;
-  numeroSalle?: string;
-  dateAG: string;
-  nombreEtudiantsRepresentes: number;
-  nombreAdherents: number;
-  engagementCotisation: boolean;
-  statuts: FileList;
-  reglementInterieur?: FileList;
-  recepisse: FileList;
-  extraitPV: FileList;
-  bilanFinancier: FileList;
-  lettreEngagement?: FileList;
-  emailAssociation: string;
-  telephonePortable: string;
-  telephoneFixe?: string;
-  bureau: BoardMember[];
-  elus: {
-    etablissement: Elu[];
-    centraux: Elu[];
-    crous: Elu[];
-  };
+interface FormState {
+  error?: string;
+  success?: boolean;
 }
 
 export default function AdhesionForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormInputs>();
+
+  const [formState, formAction] = useFormState<FormState, FormData>(processAdhesionForm, {});
+
   const [boardMembers, setBoardMembers] = useState<BoardMember[]>([{ 
     poste: '', nom: '', prenom: '', filiere: '', annee: '', telephone: '', email: '', adresse: '', isAdmin: false 
   }]);
@@ -74,11 +53,6 @@ export default function AdhesionForm() {
     centraux: [{ conseil: '', nom: '', prenom: '', ts: '', place: '', filiere: '', annee: '', telephone: '', email: '', adresse: '' }],
     crous: [{ conseil: '', nom: '', prenom: '', ts: '', place: '', filiere: '', annee: '', telephone: '', email: '', adresse: '' }]
   });
-
-  const onSubmit: SubmitHandler<FormInputs> = (data) => {
-    console.log(data);
-    // Ici, vous pouvez ajouter la logique pour envoyer les données au backend
-  };
 
   const addBoardMember = () => {
     setBoardMembers([...boardMembers, { 
@@ -94,8 +68,8 @@ export default function AdhesionForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8w-full lg:w-[60%] flex flex-col items-start
-                                            [&_input]:border [&_input]:border-gray-300 [&_input]:text-black [&_input]:mb-1
+    <form action={formAction} className="space-y-8 w-full lg:w-[60%] flex flex-col items-start
+                                            [&_input]:border [&_input]:border-gray-300 [&_input]:text-black
                                             [&_input]:text-base [&_input]:rounded-lg [&_input]:focus:ring-yellow-400
                                             [&_input]:focus:border-yellow-400 [&_input]:block [&_input]:w-full [&_input]:p-2.5
                                             [&_input]:dark:bg-gray-700 [&_input]:dark:border-gray-600 
@@ -114,12 +88,12 @@ export default function AdhesionForm() {
 
                                             [&_p]:text-gray-400 [&_p]:italic
 
-                                            [&_h2]:text-2xl
+                                            [&_h2]:text-2xl [&_h2]:mb-4
 
-
-                                            
                                             [&>section]:mb-12
                                             ">
+
+      <h1 className='text-3xl font-bold mb-8'>{"Formulaire d'adhésion"}</h1>
 
       {/* Informations générales */}
       <section className="w-full">
@@ -128,22 +102,22 @@ export default function AdhesionForm() {
           <div>
             <label htmlFor="dateAdhesion">Date de la demande d'adhésion</label>
             <p className="description">Sélectionnez la date à laquelle vous faites cette demande d'adhésion.</p>
-            <input id="dateAdhesion" {...register("dateAdhesion", { required: true })} type="date" />
+            <input id="dateAdhesion" name="dateAdhesion" type="date" required />
           </div>
           <div>
             <label htmlFor="sigle">Sigle de l'association</label>
             <p className="description">Entrez l'acronyme ou le sigle officiel de votre association.</p>
-            <input id="sigle" {...register("sigle", { required: true })} placeholder="Ex: FAHB" />
+            <input id="sigle" name="sigle" placeholder="Ex: FAHB" required />
           </div>
           <div>
             <label htmlFor="nomComplet">Nom complet de l'association</label>
             <p className="description">Saisissez le nom complet et officiel de votre association.</p>
-            <input id="nomComplet" {...register("nomComplet", { required: true })} placeholder="Ex: Fédération des Associations de Haute-Bretagne" />
+            <input id="nomComplet" name="nomComplet" placeholder="Ex: Fédération des Associations de Haute-Bretagne" required />
           </div>
           <div>
             <label htmlFor="logo">Logo de l'association</label>
             <p className="description">Téléchargez le logo de votre association au format .ai ou .png.</p>
-            <input id="logo" {...register("logo", { required: true })} type="file" accept=".ai,.png" />
+            <input id="logo" name="logo" type="file" accept=".ai,.png" required />
           </div>
         </div>
       </section>
@@ -155,7 +129,7 @@ export default function AdhesionForm() {
           <div>
             <label htmlFor="college">Collège de l'association</label>
             <p className="description">Choisissez le collège auquel votre association appartient.</p>
-            <select id="college" {...register("college", { required: true })}>
+            <select id="college" name="college" required>
               <option value="">Sélectionnez le collège</option>
               <option value="A">Collège A - Association représentative des étudiant.e.s</option>
               <option value="B">Collège B - Association étudiante thématique</option>
@@ -164,27 +138,27 @@ export default function AdhesionForm() {
           <div>
             <label htmlFor="objetPrincipal">Objet principal de l'association</label>
             <p className="description">Décrivez brièvement le but principal de votre association.</p>
-            <input id="objetPrincipal" {...register("objetPrincipal", { required: true })} placeholder="Ex: Représentation et défense des intérêts des étudiants" />
+            <input id="objetPrincipal" name="objetPrincipal" placeholder="Ex: Représentation et défense des intérêts des étudiants" required />
           </div>
           <div>
             <label htmlFor="adresseAdministrative">Adresse administrative</label>
             <p className="description">Indiquez l'adresse officielle de votre association.</p>
-            <input id="adresseAdministrative" {...register("adresseAdministrative", { required: true })} placeholder="Ex: 6 Cours des Alliés, 35000 Rennes" />
+            <input id="adresseAdministrative" name="adresseAdministrative" placeholder="Ex: 6 Cours des Alliés, 35000 Rennes" required />
           </div>
           <div>
             <label htmlFor="siegeSocial">Siège social (si différent)</label>
             <p className="description">Si différent de l'adresse administrative, indiquez le siège social de votre association.</p>
-            <input id="siegeSocial" {...register("siegeSocial")} placeholder="Ex: 1 Rue de l'Université, 35000 Rennes" />
+            <input id="siegeSocial" name="siegeSocial" placeholder="Ex: 1 Rue de l'Université, 35000 Rennes" />
           </div>
           <div>
             <label htmlFor="numeroSalle">Numéro de salle du local (si existant)</label>
             <p className="description">Si votre association dispose d'un local, indiquez son numéro.</p>
-            <input id="numeroSalle" {...register("numeroSalle")} placeholder="Ex: B204" />
+            <input id="numeroSalle" name="numeroSalle" placeholder="Ex: B204" />
           </div>
           <div>
             <label htmlFor="dateAG">Date de la dernière Assemblée Générale</label>
             <p className="description">Indiquez la date de la dernière Assemblée Générale de votre association.</p>
-            <input id="dateAG" {...register("dateAG", { required: true })} type="date" />
+            <input id="dateAG" name="dateAG" type="date" required />
           </div>
           <div>
             <label htmlFor="nombreEtudiantsRepresentes">Nombre d'étudiant.e.s représenté.e.s</label>
@@ -198,8 +172,8 @@ export default function AdhesionForm() {
           </div>
         </div>
         <div className="mt-4">
-          <label className="flex items-center">
-            <input {...register("engagementCotisation", { required: true })} type="checkbox" className="mr-2" />
+          <label className="flex flex-row items-start justify-start !font-normal !text-base">
+            <input name="engagementCotisation" type="checkbox" className="mt-2 mr-4 !w-4 !h-4" required />
             <span>Je m'engage à régler la cotisation demandée pour l'adhésion de mon association dès que le secrétariat général aura validé ma demande.</span>
           </label>
         </div>
@@ -212,32 +186,32 @@ export default function AdhesionForm() {
           <div>
             <label htmlFor="statuts">Statuts de l'association</label>
             <p className="description">Téléchargez les statuts à jour de votre association (format PDF).</p>
-            <input id="statuts" {...register("statuts", { required: true })} type="file" accept=".pdf" />
+            <input id="statuts" name="statuts" type="file" accept=".pdf" required />
           </div>
           <div>
             <label htmlFor="reglementInterieur">Règlement intérieur</label>
             <p className="description">Si existant, téléchargez le règlement intérieur de votre association (format PDF).</p>
-            <input id="reglementInterieur" {...register("reglementInterieur")} type="file" accept=".pdf" />
+            <input id="reglementInterieur" name="reglementInterieur" type="file" accept=".pdf" />
           </div>
           <div>
             <label htmlFor="recepisse">Récépissé de déclaration en préfecture</label>
             <p className="description">Téléchargez le récépissé de déclaration de votre association en préfecture (format PDF).</p>
-            <input id="recepisse" {...register("recepisse", { required: true })} type="file" accept=".pdf" />
+            <input id="recepisse" name="recepisse" type="file" accept=".pdf" required />
           </div>
           <div>
             <label htmlFor="extraitPV">Extrait de PV d'élection du bureau</label>
             <p className="description">Téléchargez l'extrait du procès-verbal d'élection du bureau actuel (format PDF).</p>
-            <input id="extraitPV" {...register("extraitPV", { required: true })} type="file" accept=".pdf" />
+            <input id="extraitPV" name="extraitPV" type="file" accept=".pdf" required />
           </div>
           <div>
             <label htmlFor="bilanFinancier">Bilan financier</label>
             <p className="description">Téléchargez le dernier bilan financier de votre association (format PDF).</p>
-            <input id="bilanFinancier" {...register("bilanFinancier", { required: true })} type="file" accept=".pdf" />
+            <input id="bilanFinancier" name="bilanFinancier" type="file" accept=".pdf" required />
           </div>
           <div>
             <label htmlFor="lettreEngagement">Lettre d'engagement (pour première adhésion)</label>
             <p className="description">Si c'est votre première adhésion, téléchargez une lettre d'engagement (format PDF).</p>
-            <input id="lettreEngagement" {...register("lettreEngagement")} type="file" accept=".pdf" />
+            <input id="lettreEngagement" name="lettreEngagement" type="file" accept=".pdf" />
           </div>
         </div>
       </section>
@@ -249,17 +223,17 @@ export default function AdhesionForm() {
           <div>
             <label htmlFor="emailAssociation">Adresse mail de l'association</label>
             <p className="description">Indiquez l'adresse e-mail officielle de votre association.</p>
-            <input id="emailAssociation" {...register("emailAssociation", { required: true, pattern: /^\S+@\S+$/i })} type="email" placeholder="Ex: contact@association.fr" />
+            <input id="emailAssociation" name="emailAssociation" type="email" placeholder="Ex: contact@association.fr" required />
           </div>
           <div>
             <label htmlFor="telephonePortable">Numéro de téléphone portable de l'association</label>
             <p className="description">Indiquez le numéro de téléphone portable de contact de l'association.</p>
-            <input id="telephonePortable" {...register("telephonePortable", { required: true })} type="tel" placeholder="Ex: 06 12 34 56 78" />
+            <input id="telephonePortable" name="telephonePortable" type="tel" placeholder="Ex: 06 12 34 56 78" required />
           </div>
           <div>
             <label htmlFor="telephoneFixe">Numéro de téléphone fixe de l'association</label>
             <p className="description">Si existant, indiquez le numéro de téléphone fixe de l'association.</p>
-            <input id="telephoneFixe" {...register("telephoneFixe")} type="tel" placeholder="Ex: 02 99 12 34 56" />
+            <input id="telephoneFixe" name="telephoneFixe" type="tel" placeholder="Ex: 02 99 12 34 56" />
           </div>
         </div>
       </section>
@@ -268,26 +242,33 @@ export default function AdhesionForm() {
       <section>
         <h2 className="text-xl font-semibold">Bureau de l'association</h2>
         {boardMembers.map((member, index) => (
-          <div key={index} className="">
-            <input {...register(`bureau.${index}.poste` as const, { required: true })} placeholder="Poste" />
-            <input {...register(`bureau.${index}.nom` as const, { required: true })} placeholder="Nom" />
-            <input {...register(`bureau.${index}.prenom` as const, { required: true })} placeholder="Prénom" />
-            <input {...register(`bureau.${index}.filiere` as const, { required: true })} placeholder="Filière d'étude" />
-            <input {...register(`bureau.${index}.annee` as const, { required: true })} placeholder="Année d'études" />
-            <input {...register(`bureau.${index}.telephone` as const, { required: true })} type="tel" placeholder="Téléphone portable" />
-            <input {...register(`bureau.${index}.email` as const, { required: true, pattern: /^\S+@\S+$/i })} type="email" placeholder="Adresse mail" />
-            <input {...register(`bureau.${index}.adresse` as const, { required: true })} placeholder="Adresse postale" />
-            <label className="flex items-center">
-              <input {...register(`bureau.${index}.isAdmin` as const)} type="checkbox" className="mr-2" />
+          <div key={index} className='mb-4 border-gray-300 border rounded-lg p-2 sm:p-4'>
+            <label className="flex flex-row items-center justify-start !mt-0 p-2">
+              <input id={`bureau.${index}.isAdmin`} name={`bureau.${index}.isAdmin`} type="checkbox" className="mr-2 !w-4 !h-4" />
+              <MdAdminPanelSettings size={25}/>
               <span>Administrateur.rice</span>
             </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+              <input id={`bureau.${index}.poste`} name={`bureau.${index}.poste`} required placeholder="Poste" />
+              <input id={`bureau.${index}.nom`} name={`bureau.${index}.nom`} required placeholder="Nom" />
+              <input id={`bureau.${index}.prenom`} name={`bureau.${index}.prenom`} required placeholder="Prénom" />
+              <input id={`bureau.${index}.filiere`} name={`bureau.${index}.filiere`} required placeholder="Filière d'étude" />
+              <input id={`bureau.${index}.annee`} name={`bureau.${index}.annee`} required placeholder="Année d'études" />
+              <input id={`bureau.${index}.telephone`} name={`bureau.${index}.telephone`} required type="tel" placeholder="Téléphone portable" />
+              <input id={`bureau.${index}.email`} name={`bureau.${index}.email`} required type="email" placeholder="Adresse mail" />
+              <input id={`bureau.${index}.addresse`} name={`bureau.${index}.addresse`} required placeholder="Adresse postale" />
+            </div>
           </div>
+          
         ))}
-        <button type="button" onClick={addBoardMember} className="bg-blue-500 text-white px-4 py-2 rounded">Ajouter un membre du bureau</button>
+        <div className='flex flex-col items-end'>
+          <button type="button" onClick={addBoardMember} className="bg-blue-500 text-white px-4 py-2 rounded-md">+ Ajouter un membre du bureau</button>
+        </div>
+        
       </section>
 
       {/* Élus revendiqués */}
-      {(Object.keys(elus) as Array<keyof typeof elus>).map((type) => (
+      {/* {(Object.keys(elus) as Array<keyof typeof elus>).map((type) => (
         <section key={type}>
           <h2 className="text-xl font-semibold">Élus {type}</h2>
           {elus[type].map((elu, index) => (
@@ -310,9 +291,22 @@ export default function AdhesionForm() {
           ))}
           <button type="button" onClick={() => addElu(type)} className="bg-green-500 text-white px-4 py-2 rounded">Ajouter un élu {type}</button>
         </section>
-      ))}
+      ))} */}
 
-      <button type="submit" className="bg-black text-white px-4 py-2 rounded-lg font-bold">Envoyer le formulaire d'adhésion</button>
+      { formState?.error ? 
+        <Alert variant="destructive">
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription>
+                {formState.error}
+            </AlertDescription>
+        </Alert>
+        : null 
+      }
+
+      <div className='w-full flex flex-col items-center'>
+      
+        <button type="submit" className="bg-black text-white px-4 py-2 rounded-lg font-bold">Envoyer le formulaire d'adhésion</button>
+      </div>
     </form>
   );
 }
