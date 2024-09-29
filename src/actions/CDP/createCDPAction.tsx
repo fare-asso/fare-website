@@ -7,6 +7,21 @@ import prisma from "@/helpers/db";
 import { revalidatePath } from "next/cache";
 import { sanitizeString } from "@/helpers/string";
 import getCurrentUserRole from "@/helpers/user/role";
+import { PresseType } from "@prisma/client";
+
+function isPresseType(value: string): value is PresseType {
+    return value === "a" || value === "b";
+}
+
+function getPresseType(formData: FormData): PresseType | undefined {
+    const value = formData.get('CDPType')?.toString();
+    
+    if (value && isPresseType(value)) {
+        return value;
+    }
+    
+    return undefined;
+}
 
 export default async function createCDPAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
 
@@ -20,22 +35,17 @@ export default async function createCDPAction(prevState: {error?: string, succes
     const supabase = createClient();
 
     // retrieve form data fields
-    const name = formData.get('name');
+    const name = formData.get('name')?.toString();
     const file = formData.get('CDPfile');
+    const type: PresseType | undefined = getPresseType(formData)
 
     // data validation
 
     const maxFileSize : number = 25 // max pdf size (in mb)
 
-    // name
-    if(name != null && typeof name == "string") { // valid
-
-    } else {
-        return {
-            error: "Le nom n'est pas valide"
-        }
+    if(!name || !type) {
+        return { error: "Un ou plusieurs champs sont invalides" }
     }
-
     // FILE
     if(file != null && file instanceof File) {
         const CDPFile: File = file;
@@ -66,7 +76,8 @@ export default async function createCDPAction(prevState: {error?: string, succes
                         data: {
                             name: name.toString(),
                             filePath: data.path,
-                            size: CDPFile.size
+                            size: CDPFile.size,
+                            type: type
                         }
                     });
 

@@ -23,6 +23,7 @@ import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
 
 import createCDPAction from "@/actions/CDP/createCDPAction";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function AddNewCDPButton() {
 
@@ -51,13 +52,13 @@ export default function AddNewCDPButton() {
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button >Créer un nouveau communiqué</Button>
+                <Button >Créer un nouveau communiqué/dossier de presse</Button>
             </DialogTrigger>
 
             {/* Content */}
             <DialogContent className="sm:max-w-[60%] md:max-w-[50%] lg:max-w-[30%] sm:w-[90%]">
                 <DialogHeader>
-                    <DialogTitle>Nouveau communiqué</DialogTitle>
+                    <DialogTitle>Nouveau communiqué/dossier de pressse</DialogTitle>
                     <DialogDescription>
                         Le format de fichier attendu est PDF
                     </DialogDescription>
@@ -67,12 +68,25 @@ export default function AddNewCDPButton() {
                 <form action={formAction} id="createCDPForm" className="space-y-3">
                     <div>
                         <Label>Nom</Label>
-                        <Input type="text" id="name" name="name" placeholder="Nom du communiqué"/>
+                        <Input type="text" id="name" name="name" placeholder="Nom du communiqué/dossier de presse"/>
                     </div>
 
                     <div>
                         <Label htmlFor="CDPfile">Fichier</Label>
                         <Input type="file" id="CDPfile" name="CDPfile" accept="application/pdf"/>
+                    </div>
+
+                    <div>
+                        <Label htmlFor="CDPType">Type</Label>
+                        <Select name="CDPType">
+                            <SelectTrigger className="">
+                                <SelectValue placeholder="Selectionnez un type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="CDP">Communiqué de presse</SelectItem>
+                                <SelectItem value="DDP">Dossier de presse</SelectItem>
+                            </SelectContent>
+                            </Select>
                     </div>
 
                     
