@@ -78,8 +78,8 @@ export default function AssociationMap({ associations } : { associations: Associ
 
     return (
         <MapContainer 
-            center={[48.218606757415415, -2.755923596719829]} 
-            zoom={8.4} 
+            center={[48.28842852181882, -2.1546832933080085]} 
+            zoom={9} 
             scrollWheelZoom={false} 
             className={"h-[600px] w-[90%] rounded-xl border-[1.5px] border-black mb-20 " + inter.className}
             ref={mapRef}

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { MdOutlineHideImage } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { MdModeEditOutline } from "react-icons/md";
+import DeleteEquipmentButton from "./deleteEquipmentButton";
 
 export default function EquipmentCard({equipment} : {equipment: BagadAssoEquipment}) {
 
@@ -29,8 +30,8 @@ export default function EquipmentCard({equipment} : {equipment: BagadAssoEquipme
 
             {/* Edit or delete */}
             <div className="w-full flex flex-row items-stretch space-x-2">
-                <Button variant='outline' className="p-2 aspect-square"><MdModeEditOutline size={20}/></Button>
-                <Button variant='destructive' className="p-2 aspect-square"><MdDelete size={20}/></Button>
+                {/* <Button variant='outline' className="p-2 aspect-square"><MdModeEditOutline size={20}/></Button> */}
+                <DeleteEquipmentButton equipmentId={equipment.id} />
             </div>
         </div>
     )

@@ -3,6 +3,7 @@
 import { processAdhesionForm } from '@/actions/adhesion/processAdhesionFormAction';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import NumberInput from '@/components/ui/input/numberInput';
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { useFormState } from 'react-dom';
 import { MdAdminPanelSettings } from 'react-icons/md';
@@ -93,7 +94,14 @@ export default function AdhesionForm() {
                                             [&>section]:mb-12
                                             ">
 
-      <h1 className='text-3xl font-bold mb-8'>{"Formulaire d'adhésion"}</h1>
+      <h1 className='text-3xl font-bold mb-2'>{"Formulaire d'adhésion"}</h1>
+      <p className='!mt-1 !not-italic !text-base !opacity-100 !text-black'>
+        En cas de difficulté pour remplir ce formulaire d'adhésion, merci de contacter le secrétariat général de la FAHB en privé ou sur 
+        <a href="mailto:secretariat@fahb.eu" title="Mail de contact en cas de difficulté ou question" className="text-blue-600 hover:underline"> secretariat@fahb.eu</a>. 
+        <br />
+        Le temps estimé pour compléter cette adhésion est de : <b>10-15 minutes</b>
+
+      </p>
 
       {/* Informations générales */}
       <section className="w-full">

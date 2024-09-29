@@ -20,22 +20,17 @@ import { useFormState } from "react-dom";
 import { useEffect } from "react";
 import { MdDelete } from "react-icons/md";
 
+import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction";
 
-import { Association } from "@prisma/client";
+export default function DeleteEquipmentButton({equipmentId} : {equipmentId: number}) {
 
-import deleteAssociationAction from "@/actions/associations/deleteAssociationAction";
-
-export default function DeleteAssociationButton({association} : {association: Association}) {
-
-    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(deleteAssociationAction, undefined)
+    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(deleteEquipmentAction, undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isOpen, setIsOpen] = useState<boolean>(false);
     
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
     if (formState?.success) {
         setIsLoading(false);
-        setIsOpen(false);
     }
 
     setIsLoading(false);
@@ -46,19 +41,19 @@ export default function DeleteAssociationButton({association} : {association: As
 
         setIsLoading(true);
 
-        formAction(association.id);
+        formAction(equipmentId);
     };
 
     return(
-        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+        <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="p-1 h-auto whitespace-normal" variant="destructive"><MdDelete size={18}/></Button>
+                <Button className="p-2 aspect-square" variant="destructive"><MdDelete size={20}/></Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                <AlertDialogTitle>Voulez-vous vraiment supprimer l'association <span className="font-bold">{association.name}</span> ?</AlertDialogTitle>
+                <AlertDialogTitle>Voulez-vous vraiment supprimer cet équipement ?</AlertDialogTitle>
                 <AlertDialogDescription>
-                    Cette action est permanente et les données de l'association ne peuvent être récupérées. Le représentant de l'association perdra ses accès à l'espace association.
+                    Cette action est permanente et les données ne peuvent être récupérées.
                 </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

@@ -3,6 +3,9 @@ import { Metadata } from "next";
 import DiscordWidget from "@/components/public/discordWidget";
 
 import WelcomeImage from "../../../public/welcome.jpg";
+import FAHBLogo from "../../../public/FAHB_Logo__Nom.png";
+
+
 import Link from "next/link";
 import LinkButton from "@/components/public/link";
 import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller";
@@ -27,31 +30,34 @@ export default async function Home() {
 
   return (
     <div className="w-full md:w-[90%] flex flex-col items-center">
-      
-      {/* Welcome picture and key numbers */}
-      <div className="w-full flex flex-col md:flex-row mt-8 mb-4">
-        <div className="w-full md:w-[60%]">
-          <Image src={WelcomeImage} alt="Image des membres du bureau" className="w-full rounded-xl" />
+
+      {/* Welcome picture */}
+      <div className="w-full md:w-1/2 mb-8">
+        <Image src={WelcomeImage} alt="Image des membres du bureau" className="w-full rounded-xl" />
+      </div>
+
+      {/* Key numbers */}
+      <div className="w-full md:w-2/3 flex flex-col md:flex-row items-center justify-center mt-2 md:mt-0 md:ml-4 [&>div]:h-32 space-y-2 md:space-y-0 space-x-0 md:space-x-2">
+
+        <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full w-full md:w-1/3">
+          <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
+            <AnimatedNumber end={17} duration={1.5} />
+          </span>
+          <span className="text-xl md:p-1 opacity-95 text-center text-white">Associations étudiantes</span>
         </div>
-        <div className="w-full md:w-[40%] flex flex-col mt-2 md:mt-0 md:ml-4">
-          <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full mb-2 md:mb-4">
-            <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
-              <AnimatedNumber end={17} duration={1.5} />
-            </span>
-            <span className="text-xl md:p-1 opacity-95 text-center text-white">Associations étudiantes</span>
-          </div>
-          <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full mb-2 md:mb-4">
-            <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
-              <AnimatedNumber end={88000} duration={3} />
-            </span>
-            <span className="text-xl md:p-1 opacity-95 text-center text-white">Étudiant.e.s</span>
-          </div>
-          <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full">
-            <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
-              <AnimatedNumber end={28} duration={4} />
-            </span>
-            <span className="text-xl md:p-1 opacity-95 text-center text-white">Élu.e.s universitaires & CROUS</span>
-          </div>
+
+        <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full w-full md:w-1/3">
+          <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
+            <AnimatedNumber end={88000} duration={3} />
+          </span>
+          <span className="text-xl md:p-1 opacity-95 text-center text-white">Étudiant.e.s</span>
+        </div>
+
+        <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full w-full md:w-1/3">
+          <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
+            <AnimatedNumber end={28} duration={4} />
+          </span>
+          <span className="text-xl md:p-1 opacity-95 text-center text-white">Élu.e.s universitaires & CROUS</span>
         </div>
       </div>
 

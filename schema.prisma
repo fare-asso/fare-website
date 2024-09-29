@@ -88,6 +88,7 @@ model CommuniqueDePresse {
   filePath  String
   createdAt DateTime @default(now())
   size      Int      @default(0)
+  type      PresseType @default(CDP)
 }
 
 model BagadAssoEquipment {
@@ -133,4 +134,9 @@ enum Role {
   MEMBER
   ADMIN
   ASSO_OWNER
+}
+
+enum PresseType {
+  CDP
+  DDP
 }

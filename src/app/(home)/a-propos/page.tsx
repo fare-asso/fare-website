@@ -1,7 +1,7 @@
 
 import Image from 'next/image';
 
-import logoFAHB from '/public/logo_FAHB.png';
+import logoFAHB from '/public/FAHB_Logo__Nom.png';
 
 export default function APropos() {
     return (
@@ -9,7 +9,7 @@ export default function APropos() {
             <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Fédération des Associations de Haute-Bretagne (FAHB)</h1>
 
             {/* TODO : Need to crop the picture to fit the logo and improve the svg file */}
-            {/* <Image src={logoFAHB} alt="Logo de la FAHB" className="w-full md:w-1/2" /> */}
+            <Image src={logoFAHB} alt="Logo de la FAHB" className="w-full md:w-1/2 mb-12" />
 
             <div className="max-w-4xl w-full space-y-8 mb-20">
                 <section>
