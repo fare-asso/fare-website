@@ -35,7 +35,7 @@ export default function SideBar({children} : {children : JSX.Element[]}) {
                     <SideBarLink href="/dashboard/events" title="Evènements"/>
                     <SideBarLink href="/dashboard/associations" title="Associations"/>
                     <SideBarLink href="/dashboard/articles" title="Articles"/>
-                    <SideBarLink href="/dashboard/communiques-de-presse" title="Communiqués de presse"/>
+                    <SideBarLink href="/dashboard/communiques-de-presse" title="Presse"/>
                     <SideBarLink href="/dashboard/membres" title="Membres"/>
                     <SideBarLink href="/dashboard/bagadAsso" title="Bagad'Asso"/>
                 </div>
@@ -58,7 +58,7 @@ export default function SideBar({children} : {children : JSX.Element[]}) {
                             <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/events" title="Evènements"/>
                             <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/associations" title="Associations"/>
                             <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/articles" title="Articles"/>
-                            <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/communiques-de-presse" title="Communiqués de presse"/>
+                            <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/communiques-de-presse" title="Presse"/>
                             <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/membres" title="Membres"/>
                             <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/bagadAsso" title="Bagad'Asso"/>
                         </div>
