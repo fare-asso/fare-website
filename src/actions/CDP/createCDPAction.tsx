@@ -10,7 +10,7 @@ import getCurrentUserRole from "@/helpers/user/role";
 import { PresseType } from "@prisma/client";
 
 function isPresseType(value: string): value is PresseType {
-    return value === "a" || value === "b";
+    return value === "CDP" || value === "DDP";
 }
 
 function getPresseType(formData: FormData): PresseType | undefined {
@@ -29,7 +29,6 @@ export default async function createCDPAction(prevState: {error?: string, succes
     const { role, error } = await getCurrentUserRole();
     if(error) return { error : "Echec de l'authentification de l'utilisateur" }
     if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
-    
 
     // create supabase client
     const supabase = createClient();
@@ -37,15 +36,16 @@ export default async function createCDPAction(prevState: {error?: string, succes
     // retrieve form data fields
     const name = formData.get('name')?.toString();
     const file = formData.get('CDPfile');
+    const date = formData.get('date')?.toString();
     const type: PresseType | undefined = getPresseType(formData)
-
-    // data validation
 
     const maxFileSize : number = 25 // max pdf size (in mb)
 
+    // Required fields
     if(!name || !type) {
         return { error: "Un ou plusieurs champs sont invalides" }
     }
+
     // FILE
     if(file != null && file instanceof File) {
         const CDPFile: File = file;
@@ -77,6 +77,7 @@ export default async function createCDPAction(prevState: {error?: string, succes
                             name: name.toString(),
                             filePath: data.path,
                             size: CDPFile.size,
+                            createdAt: date,
                             type: type
                         }
                     });
