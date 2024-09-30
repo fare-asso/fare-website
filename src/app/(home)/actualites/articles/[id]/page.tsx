@@ -78,7 +78,7 @@ export default async function Page({params} : {params : {id: string}}) {
             [&_ol]:list-decimal
             [&_ul]:list-disc 
             [&_a]:text-yellow-500 [&_a]:underline [&_a]:underline-offset-2 [&_a]:tracking-wide hover:[&_a]:text-yellow-300 hover:[&_a]:underline-offset-4
-            [&_img]:w-full [&_img]:max-w-[500px] [&_img]:max-h-[400px] [&_img]:mx-auto [&_img]:my-4 [&_img]:rounded-sm
+            [&_img]:w-full [&_img]:max-w-[500px] [&_img]:mx-auto [&_img]:my-4 [&_img]:rounded-sm
             ">
                 {/* Parse article content to HTML */}
                 {convertDeltaToHTML(articleRecord.content)}
