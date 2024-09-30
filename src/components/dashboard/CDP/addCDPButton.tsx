@@ -24,6 +24,8 @@ import { useEffect, useCallback } from "react";
 
 import createCDPAction from "@/actions/CDP/createCDPAction";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import DatePicker from "@/components/ui/input/datePicker";
 
 export default function AddNewCDPButton() {
 
@@ -89,6 +91,11 @@ export default function AddNewCDPButton() {
                             </Select>
                     </div>
 
+                    <div>
+                        <Label htmlFor="date">Date</Label>
+                        <DatePicker name="date" />
+                    </div>
+
                     
 
                     { formState?.error ? 
@@ -104,7 +111,7 @@ export default function AddNewCDPButton() {
                 </form>
 
                 <DialogFooter>
-                    <Button type="submit" form="createCDPForm">Créer</Button>
+                    <Button type="submit" form="createCDPForm">Ajouter</Button>
                 </DialogFooter>
             </DialogContent>
             </Dialog>
