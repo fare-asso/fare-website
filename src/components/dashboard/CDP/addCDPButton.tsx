@@ -52,13 +52,13 @@ export default function AddNewCDPButton() {
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button >Créer un nouveau communiqué/dossier de presse</Button>
+                <Button >Ajouter un document</Button>
             </DialogTrigger>
 
             {/* Content */}
             <DialogContent className="sm:max-w-[60%] md:max-w-[50%] lg:max-w-[30%] sm:w-[90%]">
                 <DialogHeader>
-                    <DialogTitle>Nouveau communiqué/dossier de pressse</DialogTitle>
+                    <DialogTitle>Nouveau document</DialogTitle>
                     <DialogDescription>
                         Le format de fichier attendu est PDF
                     </DialogDescription>

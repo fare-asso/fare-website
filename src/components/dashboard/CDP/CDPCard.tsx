@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MouseEvent, useState } from "react";
 
 import { FaRegFilePdf } from "react-icons/fa";
+import { FaRegFolderOpen } from "react-icons/fa6";
 
 import { MdDelete } from "react-icons/md";
 import { MdOutlineFileDownload } from "react-icons/md";
@@ -12,6 +13,7 @@ import { MdOutlineFileDownload } from "react-icons/md";
 import { useToast } from "@/components/ui/use-toast"
 
 import clsx from "clsx";
+import { CommuniqueDePresse } from "@prisma/client";
 
 function downloadFile(url: string) {
     const a = document.createElement('a');
@@ -21,7 +23,7 @@ function downloadFile(url: string) {
     document.body.removeChild(a);
 }
 
-export default function CdpCard({id, name, size, uploadDate, url, dlUrl} : {id : number, name: string, size: number, uploadDate: Date, url: string, dlUrl: string}) {
+export default function CdpCard({cdp, url, dlUrl} : {cdp: CommuniqueDePresse, url: string, dlUrl: string}) {
 
     const { toast } = useToast()
 
@@ -32,7 +34,7 @@ export default function CdpCard({id, name, size, uploadDate, url, dlUrl} : {id :
         event.stopPropagation();
 
         setIsHidden(true)
-        const res = await deleteCDPAction({id});
+        const res = await deleteCDPAction({id: cdp.id});
         if(res.error) {
             toast({
                 title: "Erreur",
@@ -57,16 +59,21 @@ export default function CdpCard({id, name, size, uploadDate, url, dlUrl} : {id :
                         <button id="deleteIcon" onClick={handleDelete} className="bg-black/10 rounded-md p-1 hover:bg-black/20"><MdDelete size={20}/></button>
                     </div>
                     
-                    <FaRegFilePdf size={55} className="text-red-600"/>
+                    {
+                        cdp.type == 'CDP' ?
+                        <FaRegFilePdf size={55} className="text-red-600"/> :
+                        <FaRegFolderOpen size={55} className="text-red-600"/>
+                    }
+
                 </div>
             </Link>
             
             <div className="flex flex-col items-center justify-start mt-2">
                 <Link href={url} target="blank" className="font-medium text-sm hover:underline text-center">
-                    {name}
+                    {cdp.name}
                 </Link>
                 
-                <div className="text-xs opacity-50">{(size/(1024 * 1024)).toFixed(2)} Mo</div>
+                <div className="text-xs opacity-50">{(cdp.size/(1024 * 1024)).toFixed(2)} Mo</div>
             </div>
         </div>
         

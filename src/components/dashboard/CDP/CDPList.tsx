@@ -1,16 +1,12 @@
 
-import { createClient } from "@/helpers/supabase/server"
-
 import prisma from "@/helpers/db";
 
 import CdpCard from "./CDPCard";
-
-
+import { StorageUtils } from "@/helpers/supabase/storageUtils";
 
 export default async function CDPList() {
 
-    // create supabase client
-    const supabase = createClient();
+    const su = new StorageUtils();
 
     // fetch all cdp from DB
     const communiques = await prisma.communiqueDePresse.findMany({
@@ -23,14 +19,17 @@ export default async function CDPList() {
         )
     } else {
 
-        const cdpCards: JSX.Element[] = communiques.map((cdp) => <CdpCard key={cdp.id} id={cdp.id} name={cdp.name} size={cdp.size} uploadDate={cdp.createdAt}
-        url={supabase.storage.from('communique-de-presse').getPublicUrl(cdp.filePath).data.publicUrl}
-        dlUrl={supabase.storage.from('communique-de-presse').getPublicUrl(cdp.filePath, {download: true}).data.publicUrl}/>)
+        const cdpCards: JSX.Element[] = communiques.map((cdp) => <CdpCard key={cdp.id} cdp={cdp}
+        url={su.from('communique-de-presse').getPublicUrl(cdp.filePath)}
+        dlUrl={su.from('communique-de-presse').getPublicUrl(cdp.filePath, true)}/>)
 
         return(
-            <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-6 ">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 w-full h-auto">
-                    {cdpCards}
+            <div className="relative w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-6 ">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 w-full h-full overflow-auto">
+                    {cdpCards.length > 0 ?
+                        cdpCards :
+                        <span>Aucuns documents.</span>
+                    }
                 </div>
             </div>
         )
