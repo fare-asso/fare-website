@@ -39,7 +39,7 @@ const links: Link[] = [
         subLinks: [
             {
                 title: "Dossiers de presse",
-                href: "/presse/dossier-de-presse"
+                href: "/presse/dossiers-de-presse"
             },
             {
                 title: "Communiqués de presse",
@@ -47,7 +47,8 @@ const links: Link[] = [
             },
             {
                 title: "Conférence de presse",
-                href: "/presse/conference-de-presse"
+                href: "/presse/conference-de-presse",
+                hidden: true
             }
         ]
     },
@@ -96,6 +97,7 @@ const links: Link[] = [
     {
         title: "Formation",
         href: "/formation",
+        hidden: true,
         subLinks: [
             {
                 title: "Education populaire & politique de formation",
@@ -121,6 +123,7 @@ const links: Link[] = [
     {
         title: "Défense des droits",
         href: "defense-des-droits",
+        hidden: true,
         subLinks: [
             {
                 title: "Vos droits",

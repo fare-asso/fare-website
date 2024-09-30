@@ -6,10 +6,10 @@ import Link from "next/link";
 
 export default function ArticleCard({article} : {article: Article}) {
     return (
-        <div className="outline outline-1 outline-black p-4 h-72 md:h-48 w-full rounded-lg flex flex-col md:flex-row">
+        <div className="bg-yellow-400 p-2 h-72 md:h-48 w-full rounded-lg flex flex-col md:flex-row">
 
             {/* Image */}
-            <div className="bg-gray-300 h-full w-full md:w-1/3 *:md:min-w-[33%] md:max-w-[50%] object-cover rounded-md"></div>
+            <div className="bg-black opacity-35 h-full w-full md:w-1/3 *:md:min-w-[33%] md:max-w-[50%] object-cover rounded-md"></div>
 
             <div className="mt-2 md:mt-0 ml-0 md:ml-4 flex flex-col flex-1">
                 {/* Title */}

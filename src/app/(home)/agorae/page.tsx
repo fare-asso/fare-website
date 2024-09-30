@@ -9,7 +9,7 @@ import recettesParMois from "/public/AGORAe/recettes_par_mois.png"
 export default function AGORAe() {
     return (
         <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">AGORAé</h1>
+            {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">AGORAé</h1> */}
 
             <Image src={logoAgoraE} alt="Logo de l'AGORAé" className="w-full md:w-1/2" />
 
@@ -20,7 +20,7 @@ export default function AGORAe() {
                         L'AGORAé est une <strong>épicerie sociale et solidaire créée par les étudiant·e·s et pour les étudiant·e·s</strong>. Elle se situe sur le campus universitaire briochin de Mazier, au sein du Ty-Maz, lieu central de la vie étudiante universitaire sur Saint-Brieuc.
                     </p>
                     <p className="mb-4">
-                        C'est un projet national créé par la FAGE (Fédération des Associations Générales Étudiantes) et porté à Saint-Brieuc par la FAHB (Fédération des Associations de Haute-Bretagne). Les AGORAé sont des espaces d'échanges et de solidarité qui se composent d'un lieu de vie ouvert à tous.tes et d'une épicerie solidaire accessible sur critères sociaux.
+                        C'est un projet national créé par la <Link href="/representation/fage" className='text-blue-600 hover:underline'>FAGE</Link> (Fédération des Associations Générales Étudiantes) et porté à Saint-Brieuc par la <Link href="/a-propos" className='text-blue-600 hover:underline'>FAHB</Link> (Fédération des Associations de Haute-Bretagne). Les AGORAé sont des espaces d'échanges et de solidarité qui se composent d'un lieu de vie ouvert à tous.tes et d'une épicerie solidaire accessible sur critères sociaux.
                     </p>
                     <p className="mb-4">
                         Portées et gérées par des jeunes pour des jeunes, les AGORAé sont des lieux non-stigmatisants œuvrant pour l'égalité des chances d'accès et de réussite dans l'enseignement supérieur.

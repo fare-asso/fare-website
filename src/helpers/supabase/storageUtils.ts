@@ -25,6 +25,6 @@ class Bucket {
     }
 
     public getPublicUrl(path: string, download?: boolean): string {
-        return (this.storageUrl + "/storage/v1/object/public/" + this.name + "/" + path)
+        return (this.storageUrl + "/storage/v1/object/public/" + this.name + "/" + path + (download ? "?download" : ""))
     }
 }

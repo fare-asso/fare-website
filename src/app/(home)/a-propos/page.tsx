@@ -15,7 +15,7 @@ export default function APropos() {
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">Qu'est-ce que la FAHB ?</h2>
                     <p className="mb-4">
-                        La Fédération des Associations de Haute-Bretagne (FAHB) est une association à but non lucratif de loi 1901. C'est une organisation représentative des étudiant·e·s, présente sur les départements d'Ille-et-Vilaine et des Côtes d'Armor.
+                        La <strong>Fédération des Associations de Haute-Bretagne (FAHB)</strong> est une association à but non lucratif de loi 1901. C'est une organisation représentative des étudiant·e·s, présente sur les départements d'Ille-et-Vilaine et des Côtes d'Armor.
                     </p>
                     <p className="mb-4">
                         Depuis le 24 octobre 2018, notre fédération de territoire met toutes ses ressources et son savoir-faire au service de l'intérêt des étudiant·e·s. Notre organisation régionale humaniste et militante fonde son fonctionnement sur la démocratie participative. Elle est menée par des associations étudiantes et réunit les jeunes dans le respect mutuel de leurs convictions personnelles, philosophiques, morales ou religieuses.

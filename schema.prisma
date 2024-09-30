@@ -83,11 +83,11 @@ model Article {
 }
 
 model CommuniqueDePresse {
-  id        Int      @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   name      String
   filePath  String
-  createdAt DateTime @default(now())
-  size      Int      @default(0)
+  createdAt DateTime   @default(now())
+  size      Int        @default(0)
   type      PresseType @default(CDP)
 }
 
@@ -124,10 +124,10 @@ model LocationCache {
 }
 
 model BugReport {
-  id            Int       @id @default(autoincrement())
-  email         String
-  type          String    @default("autre")
-  description   String
+  id          Int    @id @default(autoincrement())
+  email       String
+  type        String @default("autre")
+  description String
 }
 
 enum Role {

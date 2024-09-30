@@ -6,7 +6,7 @@ import logoFage from '/public/Logo_FAGE.png';
 export default function FAGE() {
     return (
         <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Fédération des Associations Générales Étudiantes (FAGE)</h1>
+            {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Fédération des Associations Générales Étudiantes (FAGE)</h1> */}
 
             <Image src={logoFage} alt="Logo de la FAGE" className="w-full md:w-1/2" />
 
@@ -14,7 +14,7 @@ export default function FAGE() {
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">Présentation</h2>
                     <p className="mb-4 italic">
-                        La Fédération des associations générales étudiantes - FAGE - est la première organisation étudiante de France. Fondée en 1989, elle assoit son fonctionnement sur la démocratie participative et regroupe près de 2000 associations et syndicats, soit environ 300 000 étudiantEs.
+                        La <strong>Fédération des associations générales étudiantes - FAGE</strong> - est la première organisation étudiante de France. Fondée en 1989, elle assoit son fonctionnement sur la démocratie participative et regroupe près de 2000 associations et syndicats, soit environ 300 000 étudiantEs.
                     </p>
                     <p className="mb-4">
                         La FAGE a pour but de garantir l'égalité des chances de réussite dans le système éducatif. C'est pourquoi elle agit pour l'amélioration constante des conditions de vie et d'études des jeunes en déployant des activités dans le champ de la représentation et de la défense des droits. En gérant des services et des œuvres répondant aux besoins sociaux, elle est également actrice de l'innovation sociale.
