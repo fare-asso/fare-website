@@ -30,13 +30,11 @@ export default function HeaderLinks({links}: {links: Link[]}) {
     };
 
     function renderMobileLinks(links: Link[], pathname: string, level: number) : JSX.Element | JSX.Element[] {
-        return links.map((link) => {
+        return links
+        .filter((link) => !link.hidden)
+        .map((link) => {
             const isOpen = openSubMenus[link.title];
             const hasSubLinks = link.subLinks && link.subLinks.length > 0;
-            
-            if(link.hidden) {
-                return <></>
-            }
 
             return (
                 <div key={link.title} className={clsx('flex flex-col', level == 0 && 'mb-4')}>
@@ -60,7 +58,7 @@ export default function HeaderLinks({links}: {links: Link[]}) {
                     </div>
 
                     {hasSubLinks && isOpen && (
-                        <div className="">
+                        <div key={`sublink-${link.title}`} className="">
                             {renderMobileLinks(link.subLinks!, pathname, level + 1)}
                         </div>
                     )}
