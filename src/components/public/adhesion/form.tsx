@@ -61,12 +61,16 @@ export default function AdhesionForm() {
     }]);
   };
 
-  const addElu = (type: keyof typeof elus) => {
-    setElus({
-      ...elus,
-      [type]: [...elus[type], { conseil: '', nom: '', prenom: '', ts: '', place: '', filiere: '', annee: '', telephone: '', email: '', adresse: '' }]
-    });
-  };
+  const [adminCount, setAdminCount] = useState(0);
+
+  // const addElu = (type: keyof typeof elus) => {
+  //   setElus({
+  //     ...elus,
+  //     [type]: [...elus[type], { conseil: '', nom: '', prenom: '', ts: '', place: '', filiere: '', annee: '', telephone: '', email: '', adresse: '' }]
+  //   });
+  // };
+
+  
 
   return (
     <form action={formAction} className="space-y-8 w-full lg:w-[60%] flex flex-col items-start
@@ -190,16 +194,11 @@ export default function AdhesionForm() {
       {/* Documents à fournir */}
       <section className="w-full">
         <h2 className="text-xl font-semibold mb-4">Documents à fournir</h2>
-        <div className="space-y-4">
+        <div className="space-y-4 md:[&_input]:!w-1/2">
           <div>
             <label htmlFor="statuts">Statuts de l'association</label>
             <p className="description">Téléchargez les statuts à jour de votre association (format PDF).</p>
             <input id="statuts" name="statuts" type="file" accept=".pdf" required />
-          </div>
-          <div>
-            <label htmlFor="reglementInterieur">Règlement intérieur</label>
-            <p className="description">Si existant, téléchargez le règlement intérieur de votre association (format PDF).</p>
-            <input id="reglementInterieur" name="reglementInterieur" type="file" accept=".pdf" />
           </div>
           <div>
             <label htmlFor="recepisse">Récépissé de déclaration en préfecture</label>
@@ -212,14 +211,19 @@ export default function AdhesionForm() {
             <input id="extraitPV" name="extraitPV" type="file" accept=".pdf" required />
           </div>
           <div>
-            <label htmlFor="bilanFinancier">Bilan financier</label>
-            <p className="description">Téléchargez le dernier bilan financier de votre association (format PDF).</p>
-            <input id="bilanFinancier" name="bilanFinancier" type="file" accept=".pdf" required />
-          </div>
-          <div>
             <label htmlFor="lettreEngagement">Lettre d'engagement (pour première adhésion)</label>
             <p className="description">Si c'est votre première adhésion, téléchargez une lettre d'engagement (format PDF).</p>
             <input id="lettreEngagement" name="lettreEngagement" type="file" accept=".pdf" />
+          </div>
+          <div>
+            <label htmlFor="reglementInterieur">Règlement intérieur (Optionnel)</label>
+            <p className="description">Si existant, téléchargez le règlement intérieur de votre association (format PDF).</p>
+            <input id="reglementInterieur" name="reglementInterieur" type="file" accept=".pdf" />
+          </div>
+          <div>
+            <label htmlFor="bilanFinancier">Bilan financier (Optionnel)</label>
+            <p className="description">Téléchargez le dernier bilan financier de votre association (format PDF).</p>
+            <input id="bilanFinancier" name="bilanFinancier" type="file" accept=".pdf"/>
           </div>
         </div>
       </section>
@@ -252,9 +256,28 @@ export default function AdhesionForm() {
         {boardMembers.map((member, index) => (
           <div key={index} className='mb-4 border-gray-300 border rounded-lg p-2 sm:p-4'>
             <label className="flex flex-row items-center justify-start !mt-0 p-2">
-              <input id={`bureau.${index}.isAdmin`} name={`bureau.${index}.isAdmin`} type="checkbox" className="mr-2 !w-4 !h-4" />
+              <input 
+                id={`bureau.${index}.isAdmin`} 
+                name={`bureau.${index}.isAdmin`} 
+                type="checkbox" 
+                className="mr-2 !w-4 !h-4"
+                checked={member.isAdmin}
+                onChange={(e) => {
+                  const newBoardMembers = [...boardMembers];
+                  const isBecomingAdmin = e.target.checked;
+                  
+                  if (isBecomingAdmin && adminCount >= 2) {
+                    alert("Vous ne pouvez pas avoir plus de 2 administrateurs");
+                    return;
+                  }
+                  
+                  newBoardMembers[index].isAdmin = isBecomingAdmin;
+                  setBoardMembers(newBoardMembers);
+                  setAdminCount(prev => isBecomingAdmin ? prev + 1 : prev - 1);
+                }}
+              />
               <MdAdminPanelSettings size={25}/>
-              <span>Administrateur.rice</span>
+              <span>Administrateur.rice {adminCount}/2</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
               <input id={`bureau.${index}.poste`} name={`bureau.${index}.poste`} required placeholder="Poste" />
