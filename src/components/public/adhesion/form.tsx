@@ -45,15 +45,6 @@ export default function AdhesionForm() {
   const [boardMembers, setBoardMembers] = useState<BoardMember[]>([{ 
     poste: '', nom: '', prenom: '', filiere: '', annee: '', telephone: '', email: '', adresse: '', isAdmin: false 
   }]);
-  const [elus, setElus] = useState<{
-    etablissement: Elu[];
-    centraux: Elu[];
-    crous: Elu[];
-  }>({
-    etablissement: [{ conseil: '', nom: '', prenom: '', ts: '', place: '', filiere: '', annee: '', telephone: '', email: '', adresse: '' }],
-    centraux: [{ conseil: '', nom: '', prenom: '', ts: '', place: '', filiere: '', annee: '', telephone: '', email: '', adresse: '' }],
-    crous: [{ conseil: '', nom: '', prenom: '', ts: '', place: '', filiere: '', annee: '', telephone: '', email: '', adresse: '' }]
-  });
 
   const addBoardMember = () => {
     setBoardMembers([...boardMembers, { 
@@ -287,7 +278,7 @@ export default function AdhesionForm() {
               <input id={`bureau.${index}.annee`} name={`bureau.${index}.annee`} required placeholder="Année d'études" />
               <input id={`bureau.${index}.telephone`} name={`bureau.${index}.telephone`} required type="tel" placeholder="Téléphone portable" />
               <input id={`bureau.${index}.email`} name={`bureau.${index}.email`} required type="email" placeholder="Adresse mail" />
-              <input id={`bureau.${index}.addresse`} name={`bureau.${index}.addresse`} required placeholder="Adresse postale" />
+              <input id={`bureau.${index}.addresse`} name={`bureau.${index}.adresse`} required placeholder="Adresse postale" />
             </div>
           </div>
           
