@@ -7,6 +7,61 @@ interface ValidationError {
     field: string;
     message: string;
 }
+
+interface BureauMember {
+    isAdmin?: boolean;
+    poste?: string;
+    nom?: string;
+    prenom?: string;
+    filiere?: string;
+    annee?: string;
+    telephone?: string;
+    email?: string;
+    adresse?: string;
+}
+
+function validateBureauFields(bureau: BureauMember[], errors: any[]) {
+    // Parcourir chaque membre du bureau
+    bureau.forEach((member, index) => {
+        // Définir les champs obligatoires
+        const requiredFields: (keyof BureauMember)[] = [
+            'poste', 'nom', 'prenom', 'filiere', 'annee', 'telephone', 'email', 'adresse'
+        ];
+
+        // Vérifier les champs obligatoires
+        requiredFields.forEach(field => {
+            if (!member[field]) {
+                errors.push({
+                    field: `bureau.${index}.${field}`,
+                    message: `Le champ ${field} est requis pour le membre du bureau ${index + 1}`
+                });
+            }
+        });
+
+        // Validation spécifique pour l'email
+        if (member.email && !validateEmail(member.email)) {
+            errors.push({
+                field: `bureau.${index}.email`,
+                message: `L'email du membre du bureau ${index + 1} n'est pas valide`
+            });
+        }
+
+        // Validation spécifique pour le téléphone
+        if (member.telephone && !validatePhoneNumber(member.telephone)) {
+            errors.push({
+                field: `bureau.${index}.telephone`,
+                message: `Le numéro de téléphone du membre du bureau ${index + 1} n'est pas valide`
+            });
+        }
+    });
+
+    return errors;
+}
+
+
+function validationErrorToString(errors: ValidationError[]) {
+    return errors.reduce((acc, current) => (acc + current.field+ ": " + current.message + "\n"), "Validation Error debug:\n")
+}
   
 function validateEmail(email: string): boolean {
     const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -88,7 +143,7 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     validateField('extraitPV', extraitPV);
 
     const bilanFinancier = formData.get('bilanFinancier') as File;
-    validateField('bilanFinancier', bilanFinancier);
+    validateField('bilanFinancier', bilanFinancier, false);
 
     const lettreEngagement = formData.get('lettreEngagement') as File;
     validateField('lettreEngagement', lettreEngagement, false);
@@ -102,15 +157,60 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     const telephoneFixe = formData.get('telephoneFixe') as string;
     validateField('telephoneFixe', telephoneFixe, false, (value) => value === '' || validatePhoneNumber(value));
 
-    const bureau = JSON.parse(formData.get('bureau') as string);
-    validateField('bureau', bureau, true, (value) => Array.isArray(value) && value.length > 0);
+    // const bureau = JSON.parse(formData.get('bureau') as string);
+    // validateField('bureau', bureau, true, (value) => Array.isArray(value) && value.length > 0);
 
-    const elus = JSON.parse(formData.get('elus') as string);
-    validateField('elus', elus);
+    // Does not exist anymore
+    // const elus = JSON.parse(formData.get('elus') as string);
+    // validateField('elus', elus);
+
+    // Récupérer les données du bureau
+    const bureauEntries = Array.from(formData.entries())
+    .filter(([key]) => key.startsWith('bureau'))
+    .reduce((acc: { [key: string]: any }, [key, value]) => {
+        // Debug: Voir la clé et la valeur à chaque étape
+        console.log(`Key: ${key}, Value: ${value}`);
+
+        // Extraire l'index et la propriété du nom du champ
+        const matches = key.match(/bureau\.(\d+)\.(\w+)/);
+
+        console.log("Matches: " + matches)
+
+        if (matches) {
+            const [, index, prop] = matches;
+
+            // Initialiser un objet pour l'index donné si nécessaire
+            if (!acc[index]) {
+                acc[index] = {};
+            }
+
+            // Assigner la propriété à l'objet
+            acc[index][prop] = value;
+
+            // Debug: Afficher l'accumulateur à chaque étape
+            console.log(`Accumulateur après ajout:`, acc);
+        } else {
+            // Debug: Si le format ne correspond pas, afficher un message d'erreur
+            console.warn(`Clé non correspondante: ${key}`);
+        }
+
+        return acc;
+    }, {});
+
+    // Convertir l'objet en tableau
+    let bureau: BureauMember[] = Object.values(bureauEntries);
+
+    validateBureauFields(bureau, errors);
+
+    // Debug: Vérifier le tableau final
+    console.log("Résultat final du bureau:", bureau);
+
+
 
     // Si des erreurs ont été détectées, on les renvoie
     if (errors.length > 0) {
-        return { error: errors.toString() };
+        console.log(errors)
+        return { error: validationErrorToString(errors) };
     }
 
     // Création du PDF
@@ -164,12 +264,12 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
         addField(`${member.poste}`, `${member.prenom} ${member.nom} (${member.email})`);
     });
 
-    // Ajout des élus
-    page.drawText('Élus:', { x: 50, y: yPosition, size: 12, font, color: rgb(0, 0, 0) });
-    yPosition -= 20;
-    Object.entries(elus).forEach(([type, elusList]: [string, any]) => {
-        addField(`Élus ${type}:`, elusList.length.toString());
-    });
+    // // Ajout des élus
+    // page.drawText('Élus:', { x: 50, y: yPosition, size: 12, font, color: rgb(0, 0, 0) });
+    // yPosition -= 20;
+    // Object.entries(elus).forEach(([type, elusList]: [string, any]) => {
+    //     addField(`Élus ${type}:`, elusList.length.toString());
+    // });
 
     // Générer le PDF
     const pdfBytes = await pdfDoc.save();
