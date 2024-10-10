@@ -5,6 +5,7 @@ import salle from "/public/AGORAe/salle.jpg";
 import food from "/public/AGORAe/food.jpg";
 import logoAgoraE from "/public/AGORAe/logo_AgoraE.png";
 import recettesParMois from "/public/AGORAe/recettes_par_mois.png"
+import tableauRAV from "/public/AGORAe/tableau_rav.png"
 
 export default function AGORAe() {
     return (
@@ -15,21 +16,21 @@ export default function AGORAe() {
 
             <div className="max-w-4xl w-full space-y-12 mb-20 flex flex-col items-center">
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">Qu'est-ce que l'AGORAé ?</h2>
+                    <h2 className="text-2xl font-semibold mb-4">L'AGORAé, la lutte contre la pauvreté étudiante sur Saint-Brieuc</h2>
                     <p className="mb-4">
-                        L'AGORAé est une <strong>épicerie sociale et solidaire créée par les étudiant·e·s et pour les étudiant·e·s</strong>. Elle se situe sur le campus universitaire briochin de Mazier, au sein du Ty-Maz, lieu central de la vie étudiante universitaire sur Saint-Brieuc.
+                        L'AGORAé est une <strong>épicerie sociale et solidaire créée par les étudiant·e·s et pour les étudiant·e·s</strong>. Elle se situe sur le campus universitaire briochin de Mazier, au sein du Ty-Maz', lieu central de la vie étudiante universitaire sur <strong>Saint-Brieuc</strong> (22).
+                    </p>
+                    <p className="mb-4">
+                        Elle a pour objectif de permettre aux étudiant.e.s en situation de précarité financière, <strong>une diminution de leurs dépenses quotidiennes</strong>. En effet, les différents produits alimentaires, d'hygiène ou d'entretien qui vous sont proposés sont revendus à hauteur de <strong>10%</strong> à <strong>20%</strong> de leur valeur en grande surface, ou distribués <strong>gratuitement</strong>.
+                    </p>
+                    <p className='mb-4'>
+                        Plus qu'un simple lieu d'aide alimentaire, c'est aussi <strong>un espace de rencontres, d'échanges et de convivialité</strong> que ce soit entre les étudiant·e·s bénéficiaires ou de part les actions mises en place pour lutter contre l'isolement social des étudiants sur le territoire.
                     </p>
                     <p className="mb-4">
                         C'est un projet national créé par la <Link href="/representation/fage" className='text-blue-600 hover:underline'>FAGE</Link> (Fédération des Associations Générales Étudiantes) et porté à Saint-Brieuc par la <Link href="/a-propos" className='text-blue-600 hover:underline'>FAHB</Link> (Fédération des Associations de Haute-Bretagne). Les AGORAé sont des espaces d'échanges et de solidarité qui se composent d'un lieu de vie ouvert à tous.tes et d'une épicerie solidaire accessible sur critères sociaux.
                     </p>
                     <p className="mb-4">
                         Portées et gérées par des jeunes pour des jeunes, les AGORAé sont des lieux non-stigmatisants œuvrant pour l'égalité des chances d'accès et de réussite dans l'enseignement supérieur.
-                    </p>
-                    <p className="mb-4">
-                        Elle a pour objectif de permettre aux étudiant.e.s en situation de précarité financière, <strong>une diminution de leurs dépenses quotidiennes</strong>. En effet, les différents produits alimentaires, d'hygiène ou d'entretien qui vous sont proposés sont revendus à hauteur de 10% à 20% de leur valeur en grande surface, ou distribués gratuitement.
-                    </p>
-                    <p>
-                        Plus qu'un simple lieu d'aide alimentaire, c'est aussi <strong>un espace de rencontres, d'échanges et de convivialité</strong> que ce soit entre les étudiant·e·s bénéficiaires ou de part les actions mises en place pour lutter contre l'isolement social au sein de l'Enseignement Supérieur et de la Recherche sur le territoire.
                     </p>
                 </section>
 
@@ -43,24 +44,40 @@ export default function AGORAe() {
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">Comment devenir bénéficiaire de l'AGORAé ?</h2>
                     <p className="mb-4">
-                        L'épicerie est ouverte aux étudiant.e.s, selon le reste à vivre quotidien : si ton reste à vivre (toutes tes recettes par mois – toutes tes dépenses /30) est inférieur à 7,50€, tu es éligible à l'aide alimentaire.
+                        L'épicerie est ouverte aux étudiant.e.s, selon le <strong>reste à vivre (RAV) quotidien</strong>. Celui-ci correspond à la somme restante par jour pour se norrir, après le paiement des charges courantes quotidiennes. Il est calculé selon la formule suivante :
                     </p>
 
                     <div className='w-full flex flex-col items-center'>
                         <Image src={recettesParMois} alt="Schéma du calcul pour devenir bénéficiaire de l'AGORAé" className="w-full md:w-1/2" />
                     </div>
 
-                    <p>
-                        L'AGORAé est accessible via un dossier de demande d'admission, disponible <Link href="/path-to-pdf" className="text-blue-600 hover:underline">ici</Link> ou à l'adresse mail : <a href="mailto:agorae@fahb.eu" className="text-blue-600 hover:underline">agorae@fahb.eu</a>.
+                    <div className='w-full flex flex-col items-center'>
+                        <Image src={tableauRAV} alt="Tableau de calcul d'éligibilité à l'aide alimentaire mensuel" className="w-full md:w-1/2" />
+                    </div>
+
+                    <p className='mb-4'>
+                        L'inscription à l'AGORAé se fait sur <a href="https://mon-compte.fage.org/creation-compte" title="Inscription AGORAé" target='blank' className='text-blue-600 hover:underline'>https://mon-compte.fage.org/</a> et ne prend que quelques minutes.
                     </p>
+
+                    <p className='mb-0'>
+                        Si vous êtes en difficulté pour compléter cette démarche, vous pouvez nous contacter à <a href="mailto:agorae@fahb.eu" target='blank' className='text-blue-600 hover:underline'>agorae@fahb.eu</a> ou venir nous rencontrer lors des permanences de l'épicerie.
+                    </p>
+
+                    {/* <p>
+                        L'AGORAé est accessible via un dossier de demande d'admission, disponible <Link href="/path-to-pdf" className="text-blue-600 hover:underline">ici</Link> ou à l'adresse mail : <a href="mailto:agorae@fahb.eu" className="text-blue-600 hover:underline">agorae@fahb.eu</a>.
+                    </p> */}
                 </section>
 
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">Envie de participer au projet AGORAé ?</h2>
-                    <p>
-                        Tu as quelques heures ou quelques jours de disponibles pour l'AGORAé et tu souhaite devenir bénévole ?
-                        Tu peux envoyer un mail à <a href="mailto:agorae@fahb.eu" className="text-blue-600 hover:underline">agorae@fahb.eu</a> ou nous contacter sur le compte Instagram <a href="https://www.instagram.com/agorae.saint.brieuc" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">@agorae.saint.brieuc</a> ou directement sur ce site internet.
+                    <p className='mb-4'>
+                        Tu as quelques heures ou quelques jours de disponibles pour l'AGORAé et tu souhaite devenir bénévole ? Tu souhaites participer à l'accueil, la gestion des stocks ou la communication ?
                     </p>
+                    <p>
+                        Tu peux remplir ce <a className='text-blue-600 hover:underline' href="https://forms.gle/DHoMDL7N3QRHTL1w7" target='blank'>formulaire d'inscription</a>.                         
+                        Tout engagement est le bienvenu.
+                    </p>
+
                 </section>
 
                 <section>
