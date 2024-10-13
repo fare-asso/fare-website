@@ -1,10 +1,11 @@
 'use client';
 
 import { processAdhesionForm } from '@/actions/adhesion/processAdhesionFormAction';
+import LoadingRing from '@/components/dashboard/loadingRing';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import NumberInput from '@/components/ui/input/numberInput';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { MdAdminPanelSettings } from 'react-icons/md';
 
@@ -42,6 +43,8 @@ export default function AdhesionForm() {
 
   const [formState, formAction] = useFormState<FormState, FormData>(processAdhesionForm, {});
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [boardMembers, setBoardMembers] = useState<BoardMember[]>([{ 
     poste: '', nom: '', prenom: '', filiere: '', annee: '', telephone: '', email: '', adresse: '', isAdmin: false 
   }]);
@@ -54,6 +57,22 @@ export default function AdhesionForm() {
 
   const [adminCount, setAdminCount] = useState(0);
 
+  // Gestion de l'indicateur de chargement
+  useEffect(() => {
+    if (formState?.success) {
+        setIsLoading(false);
+    }
+    setIsLoading(false);
+  }, [formState]);
+  
+  // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    setIsLoading(true);
+    formAction(formData);
+  }
+
   // const addElu = (type: keyof typeof elus) => {
   //   setElus({
   //     ...elus,
@@ -64,7 +83,7 @@ export default function AdhesionForm() {
   
 
   return (
-    <form action={formAction} className="space-y-8 w-full lg:w-[60%] flex flex-col items-start
+    <form onSubmit={handleSubmit} className="space-y-8 w-full lg:w-[60%] flex flex-col items-start
                                             [&_input]:border [&_input]:border-gray-300 [&_input]:text-black
                                             [&_input]:text-base [&_input]:rounded-lg [&_input]:focus:ring-yellow-400
                                             [&_input]:focus:border-yellow-400 [&_input]:block [&_input]:w-full [&_input]:p-2.5
@@ -327,7 +346,7 @@ export default function AdhesionForm() {
 
       <div className='w-full flex flex-col items-center'>
       
-        <button type="submit" className="bg-black text-white px-4 py-2 rounded-lg font-bold">Envoyer le formulaire d'adhésion</button>
+        <button type="submit" className="bg-black text-white px-4 py-2 rounded-lg font-bold" disabled={isLoading}>{ isLoading ? <LoadingRing/> : null } Envoyer le formulaire d'adhésion</button>
       </div>
     </form>
   );

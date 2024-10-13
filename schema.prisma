@@ -116,6 +116,13 @@ model BagadAssoTicket {
   representativeEmail   String
 }
 
+model Adhesion {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  association    String
+  folderPath     String
+}
+
 model LocationCache {
   id             Int      @id @default(autoincrement())
   query          String   @unique

@@ -1,5 +1,7 @@
 'use server';
 
+import prisma from '@/helpers/db';
+import { sanitizeString } from '@/helpers/string';
 import { createClient } from '@/helpers/supabase/server';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
@@ -127,7 +129,7 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     const nombreAdherents = parseInt(formData.get('nombreAdherents') as string);
     validateField('nombreAdherents', nombreAdherents, true, (value) => !isNaN(value) && value > 0);
 
-    const engagementCotisation = formData.get('engagementCotisation') === 'true';
+    const engagementCotisation = formData.get('engagementCotisation') === 'on';
     validateField('engagementCotisation', engagementCotisation);
 
     const statuts = formData.get('statuts') as File;
@@ -271,13 +273,21 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     //     addField(`Élus ${type}:`, elusList.length.toString());
     // });
 
+    // Nom du dossier de l'asso normalisé
+    const folderName: string = sanitizeString(`${sigle}-${dateAdhesion}`);
+
     // Générer le PDF
     const pdfBytes = await pdfDoc.save();
+
+    // Sigle normalisé
+    const sanitizedSigle = sanitizeString(sigle);
+
+    const suffix = sanitizeString(`${sigle}-${dateAdhesion}`)
 
     // Envoyer le PDF à Supabase Storage
     const { data: pdfData, error: pdfError } = await supabase.storage
         .from('adhesion')
-        .upload(`${sigle}-${dateAdhesion}.pdf`, pdfBytes, {
+        .upload(`${folderName}/adhesion-${suffix}.pdf`, pdfBytes, {
         contentType: 'application/pdf',
         });
 
@@ -286,59 +296,44 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
         return { error: `Erreur lors de l'upload du PDF: ${pdfError.message}`}
     }
 
-    // // Fonction pour uploader un fichier
-    // const uploadFile = async (file: File, bucket: string) => {
-    //     if (!file) return null;
-    //     const { data, error } = await supabase.storage
-    //     .from(bucket)
-    //     .upload(`${sigle}-${file.name}`, file);
-    //     if (error) throw new Error(`Erreur lors de l'upload de ${file.name}: ${error.message}`);
-    //     return data.path;
-    // };
+    // Fonction pour uploader un fichier
+    const uploadFile = async (file: File, folder: string, filename: string) => {
+        if (!file) return null;
 
-    // // Upload des fichiers
-    // const logoUrl = await uploadFile(logo, 'logos');
-    // const statutsUrl = await uploadFile(statuts, 'statuts');
-    // const reglementInterieurUrl = await uploadFile(reglementInterieur, 'reglements');
-    // const recepisseUrl = await uploadFile(recepisse, 'recepisses');
-    // const extraitPVUrl = await uploadFile(extraitPV, 'pv');
-    // const bilanFinancierUrl = await uploadFile(bilanFinancier, 'bilans');
-    // const lettreEngagementUrl = await uploadFile(lettreEngagement, 'engagements');
+        // extract file extension
+        const extension = file.name.split('.').pop();
 
-    // // Enregistrer les informations dans la base de données
-    // const { data: dbData, error: dbError } = await supabase
-    //     .from('adhesions')
-    //     .insert({
-    //     date_adhesion: dateAdhesion,
-    //     sigle,
-    //     nom_complet: nomComplet,
-    //     college,
-    //     objet_principal: objetPrincipal,
-    //     adresse_administrative: adresseAdministrative,
-    //     siege_social: siegeSocial,
-    //     numero_salle: numeroSalle,
-    //     date_ag: dateAG,
-    //     nombre_etudiants_representes: nombreEtudiantsRepresentes,
-    //     nombre_adherents: nombreAdherents,
-    //     engagement_cotisation: engagementCotisation,
-    //     email_association: emailAssociation,
-    //     telephone_portable: telephonePortable,
-    //     telephone_fixe: telephoneFixe,
-    //     bureau: bureau,
-    //     elus: elus,
-    //     pdf_url: pdfData.path,
-    //     logo_url: logoUrl,
-    //     statuts_url: statutsUrl,
-    //     reglement_interieur_url: reglementInterieurUrl,
-    //     recepisse_url: recepisseUrl,
-    //     extrait_pv_url: extraitPVUrl,
-    //     bilan_financier_url: bilanFinancierUrl,
-    //     lettre_engagement_url: lettreEngagementUrl,
-    //     });
+        const fullFileName = `${sanitizeString(filename)}-${sanitizedSigle}.${extension}`;
 
-    // if (dbError) {
-    //     throw new Error(`Erreur lors de l'enregistrement dans la base de données: ${dbError.message}`);
-    // }
+        const { data, error } = await supabase.storage
+        .from('adhesion')
+        .upload(`${folder}/${fullFileName}`, file);
+        if (error) return { error: "Erreur lors de l'upload du fichier: " + file.name }
+        return data.path;
+    };
 
+    // Upload des fichiers
+    const logoUrl = await uploadFile(logo, folderName, 'logo');
+    const statutsUrl = await uploadFile(statuts, folderName, 'statut');
+    const reglementInterieurUrl = await uploadFile(reglementInterieur, folderName, 'reglement');
+    const recepisseUrl = await uploadFile(recepisse, folderName, 'recepisse');
+    const extraitPVUrl = await uploadFile(extraitPV, folderName, 'extraitPV');
+    const bilanFinancierUrl = await uploadFile(bilanFinancier, folderName, 'BF');
+    const lettreEngagementUrl = await uploadFile(lettreEngagement, folderName, 'LE');
+    
+
+    // Enregistrer les informations dans la base de données
+    try {
+        const record = await prisma.adhesion.create({
+            data: {
+                association: sanitizedSigle,
+                folderPath: folderName
+            }
+        })
+    } catch (error) {
+        console.error("Erreur lors de l'enregistrement dans la base de données :", error);
+        return { error : "Une erreur est survenue lors de l'envoi du formulaire. Veuillez réessayer plus tard." }
+    }
+    
     return { success: true };
 }

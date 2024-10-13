@@ -21,13 +21,13 @@ export default function AGORAe() {
                         L'AGORAé est une <strong>épicerie sociale et solidaire créée par les étudiant·e·s et pour les étudiant·e·s</strong>. Elle se situe sur le campus universitaire briochin de Mazier, au sein du Ty-Maz', lieu central de la vie étudiante universitaire sur <strong>Saint-Brieuc</strong> (22).
                     </p>
                     <p className="mb-4">
-                        Elle a pour objectif de permettre aux étudiant.e.s en situation de précarité financière, <strong>une diminution de leurs dépenses quotidiennes</strong>. En effet, les différents produits alimentaires, d'hygiène ou d'entretien qui vous sont proposés sont revendus à hauteur de <strong>10%</strong> à <strong>20%</strong> de leur valeur en grande surface, ou distribués <strong>gratuitement</strong>.
+                        Elle a pour objectif de permettre aux étudiant·e·s en situation de précarité financière, <strong>une diminution de leurs dépenses quotidiennes</strong>. En effet, les différents produits alimentaires, d'hygiène ou d'entretien qui vous sont proposés sont revendus à hauteur de <strong>20%</strong> de leur valeur en grande surface, ou distribués <strong>gratuitement</strong>.
                     </p>
                     <p className='mb-4'>
-                        Plus qu'un simple lieu d'aide alimentaire, c'est aussi <strong>un espace de rencontres, d'échanges et de convivialité</strong> que ce soit entre les étudiant·e·s bénéficiaires ou de part les actions mises en place pour lutter contre l'isolement social des étudiants sur le territoire.
+                        Plus qu'un simple lieu d'aide alimentaire, c'est aussi <strong>un espace de rencontres, d'échanges et de convivialité</strong> que ce soit entre les étudiant·e·s bénéficiaires ou de part les actions mises en place pour lutter contre l'isolement social des étudiant·e·s sur le territoire.
                     </p>
                     <p className="mb-4">
-                        C'est un projet national créé par la <Link href="/representation/fage" className='text-blue-600 hover:underline'>FAGE</Link> (Fédération des Associations Générales Étudiantes) et porté à Saint-Brieuc par la <Link href="/a-propos" className='text-blue-600 hover:underline'>FAHB</Link> (Fédération des Associations de Haute-Bretagne). Les AGORAé sont des espaces d'échanges et de solidarité qui se composent d'un lieu de vie ouvert à tous.tes et d'une épicerie solidaire accessible sur critères sociaux.
+                        C'est un projet national créé par la <Link href="/representation/fage" className='text-blue-600 hover:underline'>FAGE</Link> (Fédération des Associations Générales Étudiantes) et porté à Saint-Brieuc par la <Link href="/a-propos" className='text-blue-600 hover:underline'>FAHB</Link> (Fédération des Associations de Haute-Bretagne). Les AGORAé sont des espaces d'échanges et de solidarité qui se composent d'un lieu de vie ouvert à tous·tes et d'une épicerie solidaire accessible sur critères sociaux.
                     </p>
                     <p className="mb-4">
                         Portées et gérées par des jeunes pour des jeunes, les AGORAé sont des lieux non-stigmatisants œuvrant pour l'égalité des chances d'accès et de réussite dans l'enseignement supérieur.
@@ -44,12 +44,16 @@ export default function AGORAe() {
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">Comment devenir bénéficiaire de l'AGORAé ?</h2>
                     <p className="mb-4">
-                        L'épicerie est ouverte aux étudiant.e.s, selon le <strong>reste à vivre (RAV) quotidien</strong>. Celui-ci correspond à la somme restante par jour pour se norrir, après le paiement des charges courantes quotidiennes. Il est calculé selon la formule suivante :
+                        L'épicerie est ouverte aux étudiant·e·s, selon le <strong>Reste à Vivre (RAV) quotidien</strong>. Celui-ci correspond à la somme restante par jour pour se nourrir, après le paiement des charges courantes quotidiennes. Il est calculé selon la formule suivante :
                     </p>
 
                     <div className='w-full flex flex-col items-center'>
                         <Image src={recettesParMois} alt="Schéma du calcul pour devenir bénéficiaire de l'AGORAé" className="w-full md:w-1/2" />
                     </div>
+
+                    <p className='mb-4'>
+                        Grâce à ce RAV, nous pouvons ensuite calculer le montant de panier mensuel à proposer à chaque étudiant·e :
+                    </p>
 
                     <div className='w-full flex flex-col items-center'>
                         <Image src={tableauRAV} alt="Tableau de calcul d'éligibilité à l'aide alimentaire mensuel" className="w-full md:w-1/2" />
