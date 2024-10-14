@@ -25,7 +25,7 @@ export default async function CDPList() {
 
         return(
             <div className="relative w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-6 ">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 w-full h-full overflow-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 w-full h-full overflow-auto p-1">
                     {cdpCards.length > 0 ?
                         cdpCards :
                         <span>Aucuns documents.</span>
