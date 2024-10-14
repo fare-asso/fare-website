@@ -344,9 +344,19 @@ export default function AdhesionForm() {
         : null 
       }
 
+      { formState?.success ? 
+        <Alert variant="default">
+            <AlertTitle>Votre demande d'adhésion à bien été soumise</AlertTitle>
+            <AlertDescription>
+                {`Nous reviendrons vers vous par e-mail dans les plus brefs délais pour vous fournir une réponse concernant votre demande.`}
+            </AlertDescription>
+        </Alert>
+        : null 
+      }
+
       <div className='w-full flex flex-col items-center'>
       
-        <button type="submit" className="bg-black text-white px-4 py-2 rounded-lg font-bold" disabled={isLoading}>{ isLoading ? <LoadingRing/> : null } Envoyer le formulaire d'adhésion</button>
+        <button type="submit" className="bg-black text-white px-4 py-2 rounded-lg font-bold flex flex-row items-center disabled:opacity-75 transition-all" disabled={isLoading}>{ isLoading ? <LoadingRing/> : null } Envoyer le formulaire d'adhésion</button>
       </div>
     </form>
   );
