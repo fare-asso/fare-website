@@ -38,6 +38,7 @@ export default function SideBar({children} : {children : JSX.Element[]}) {
                     <SideBarLink href="/dashboard/communiques-de-presse" title="Presse"/>
                     <SideBarLink href="/dashboard/membres" title="Membres"/>
                     <SideBarLink href="/dashboard/bagadAsso" title="Bagad'Asso"/>
+                    <SideBarLink href="/dashboard/adhesions" title="Adhésions"/>
                 </div>
 
                 <div className="flex flex-col items-center justify-center space-y-0 lg:space-y-2 ml-2 lg:ml-0">
@@ -61,6 +62,7 @@ export default function SideBar({children} : {children : JSX.Element[]}) {
                             <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/communiques-de-presse" title="Presse"/>
                             <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/membres" title="Membres"/>
                             <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/bagadAsso" title="Bagad'Asso"/>
+                            <SideBarLink onClick={handleSidebarCollapse} href="/dashboard/adhesions" title="Adhésions"/>
                         </div>
 
                         <div className="flex flex-col items-center justify-center space-y-0 w-full">
