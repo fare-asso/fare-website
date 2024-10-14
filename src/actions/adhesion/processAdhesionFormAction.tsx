@@ -3,7 +3,10 @@
 import prisma from '@/helpers/db';
 import { sanitizeString } from '@/helpers/string';
 import { createClient } from '@/helpers/supabase/server';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { format } from 'date-fns';
+import { PDFDocument, PDFPage, rgb, StandardFonts } from 'pdf-lib';
+import cornerSVG from '/public/corner-pdf-FAHB.svg';
+import { revalidatePath } from 'next/cache';
 
 interface ValidationError {
     field: string;
@@ -215,55 +218,148 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
         return { error: validationErrorToString(errors) };
     }
 
+    // Fonction pour ajouter le SVG à une page
+    const addCornerLabelToPage = async (page: PDFPage) => {
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+        const absoluteUrl = `${baseUrl}${"/corner-pdf-FAHB.png"}`;
+
+        const pngImageBytes = await fetch(absoluteUrl).then((res) => res.arrayBuffer())
+        const pngImage = await pdfDoc.embedPng(pngImageBytes)
+        const pngDims = pngImage.scale(0.5)
+
+        const { width, height } = page.getSize();
+        page.drawImage(pngImage, {
+            x: 0,
+            y: height-pngDims.height,
+            width: pngDims.width,
+            height: pngDims.height
+        })
+    };
+
+    // Fonction pour créer une nouvelle page avec le SVG
+    const createPageWithSVG = async () => {
+        const page = pdfDoc.addPage();
+        await addCornerLabelToPage(page);
+        return page;
+    };
+
     // Création du PDF
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage();
+    const page = await createPageWithSVG()
     const { width, height } = page.getSize();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
     page.drawText('Formulaire d\'adhésion', {
         x: 50,
-        y: height - 50,
-        size: 20,
-        font,
+        y: height - 75,
+        size: 25,
+        font: boldFont,
         color: rgb(0, 0, 0),
     });
 
     // Fonction pour ajouter un champ au PDF
-    let yPosition = height - 100;
-    const addField = (label: string, value: string | number | boolean) => {
+    let yPosition = height - 125;
+    const addField = (page: PDFPage, label: string, value: string | number | boolean) => {
         page.drawText(`${label}: ${value}`, {
         x: 50,
         y: yPosition,
-        size: 10,
+        size: 12,
         font,
         color: rgb(0, 0, 0),
         });
         yPosition -= 15;
     };
 
+    // Fonction pour ajouter un titre de section
+    const addSectionTitle = (page: PDFPage, text: string) => {
+        page.drawText(text, {
+            x: 50,
+            y: yPosition,
+            size: 14,
+            font: boldFont,
+            color: rgb(0, 0, 0),
+        });
+        page.drawLine({
+            start: { x: 50, y: yPosition - 5 },
+            end: { x: width - 50, y: yPosition - 5 },
+            thickness: 1,
+            color: rgb(0, 0, 0),
+        });
+        yPosition -= 25
+    };
+
+    /* Ajouter le logo de l'Association */
+    // Vérifier le type de fichier
+    if (['image/png'].includes(logo.type)) { 
+        const logoBytes = await logo.arrayBuffer();
+        const logoImage = await pdfDoc.embedPng(logoBytes);
+        const logoDims = logoImage.scale(0.5); // Ajuster la taille comme nécessaire
+
+        console.log(logoDims.height)
+
+        page.drawImage(logoImage, {
+            x: width - 125 - logoDims.width, // Position X
+            y: height - 125 - logoDims.height, // Position Y
+            width: 100,
+            height: 100,
+        });
+        yPosition -= 50;
+    }
+    
     // Ajout des champs au PDF
-    addField('Date d\'adhésion', dateAdhesion);
-    addField('Sigle', sigle);
-    addField('Nom complet', nomComplet);
-    addField('Collège', college);
-    addField('Objet principal', objetPrincipal);
-    addField('Adresse administrative', adresseAdministrative);
-    addField('Siège social', siegeSocial || 'Non spécifié');
-    addField('Numéro de salle', numeroSalle || 'Non spécifié');
-    addField('Date de la dernière AG', dateAG);
-    addField('Nombre d\'étudiants représentés', nombreEtudiantsRepresentes);
-    addField('Nombre d\'adhérents', nombreAdherents);
-    addField('Engagement de cotisation', engagementCotisation ? 'Oui' : 'Non');
-    addField('Email de l\'association', emailAssociation);
-    addField('Téléphone portable', telephonePortable);
-    addField('Téléphone fixe', telephoneFixe || 'Non spécifié');
+    addSectionTitle(page, "- CARTE D\'IDENTITÉ DE L'ASSOCIATION -");
+
+    addField(page, 'Nom complet de l\'association', nomComplet);
+    addField(page, 'Sigle de l\'association', sigle);
+    addField(page, 'Date d\'adhésion', format(dateAdhesion, "dd/MM/yyyy"));
+    yPosition -= 10;
+    addField(page, 'Email de l\'association', emailAssociation);
+    addField(page, 'Téléphone portable de l\'association', telephonePortable);
+    addField(page, 'Téléphone fixe de l\'association (si existant)', telephoneFixe || 'Non spécifié');
+    yPosition -= 20;
+
+
+    addSectionTitle(page, "- OBJECTIFS DE L'ASSOCIATION -");
+
+    addField(page, 'Collège de l\'association', college);
+    addField(page, 'Objet principal de l\'association', objetPrincipal);
+    yPosition -= 20;
+
+
+    addSectionTitle(page, "- LOCALISATION -");
+
+    addField(page, 'Adresse administrative', adresseAdministrative);
+    addField(page, 'Siège social (si différent)', siegeSocial || 'Non spécifié');
+    addField(page, 'Numéro de salle (si existant)', numeroSalle || 'Non spécifié');
+    yPosition -= 20;
+    
+
+    addSectionTitle(page, "- REPRÉSENTATION -");
+
+    addField(page, 'Date de la dernière Assemblée Générale', format(dateAG, "dd/MM/yyyy"));
+    addField(page, 'Nombre d\'étudiants représentés', nombreEtudiantsRepresentes);
+    addField(page, 'Nombre d\'adhérents actuel de l\'association', nombreAdherents);
+    yPosition -= 20;
+    
+    
+    addSectionTitle(page, "- COTISATION -");
+
+    addField(page, 'Engagement de cotisation', engagementCotisation ? 'Oui' : 'Non');
+
+    const memberPage = await createPageWithSVG();
+
+    yPosition = height - 50;
 
     // Ajout des membres du bureau
-    page.drawText('Membres du bureau:', { x: 50, y: yPosition, size: 12, font, color: rgb(0, 0, 0) });
-    yPosition -= 20;
-    bureau.forEach((member: any) => {
-        addField(`${member.poste}`, `${member.prenom} ${member.nom} (${member.email})`);
+    memberPage.drawText('Membres du bureau:', { x: 50, y: yPosition, size: 18, font, color: rgb(0, 0, 0) });
+    yPosition -= 36;
+    bureau.forEach((member: BureauMember) => {
+        addField(memberPage, `${member.poste}`, `${member.prenom} ${member.nom} (${member.email}) (${member.telephone})`);
+        addField(memberPage, "Admin", member.isAdmin ? "Oui" : "Non")
+        addField(memberPage, "Années d'études", `${member.annee!} (${member.filiere})`);
+        addField(memberPage, "Adresse", member.adresse!)
+        yPosition -= 20;
     });
 
     // // Ajout des élus
@@ -335,5 +431,6 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
         return { error : "Une erreur est survenue lors de l'envoi du formulaire. Veuillez réessayer plus tard." }
     }
     
+    revalidatePath('/dashboard/adhesions')
     return { success: true };
 }
