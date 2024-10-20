@@ -289,23 +289,23 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
         yPosition -= 25
     };
 
-    /* Ajouter le logo de l'Association */
-    // Vérifier le type de fichier
-    if (['image/png'].includes(logo.type)) { 
-        const logoBytes = await logo.arrayBuffer();
-        const logoImage = await pdfDoc.embedPng(logoBytes);
-        const logoDims = logoImage.scale(0.5); // Ajuster la taille comme nécessaire
+    // /* Ajouter le logo de l'Association */
+    // // Vérifier le type de fichier
+    // if (['image/png'].includes(logo.type)) { 
+    //     const logoBytes = await logo.arrayBuffer();
+    //     const logoImage = await pdfDoc.embedPng(logoBytes);
+    //     const logoDims = logoImage.scale(0.5); // Ajuster la taille comme nécessaire
 
-        console.log(logoDims.height)
+    //     console.log(logoDims.height)
 
-        page.drawImage(logoImage, {
-            x: width - 125 - logoDims.width, // Position X
-            y: height - 125 - logoDims.height, // Position Y
-            width: 100,
-            height: 100,
-        });
-        yPosition -= 50;
-    }
+    //     page.drawImage(logoImage, {
+    //         x: width - 125 - logoDims.width, // Position X
+    //         y: height - 125 - logoDims.height, // Position Y
+    //         width: 100,
+    //         height: 100,
+    //     });
+    //     yPosition -= 50;
+    // }
     
     // Ajout des champs au PDF
     addSectionTitle(page, "- CARTE D\'IDENTITÉ DE L'ASSOCIATION -");
@@ -425,12 +425,13 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
                 association: sanitizedSigle,
                 folderPath: folderName
             }
-        })
+        });
+        revalidatePath('/dashboard/adhesions');
+        return { success: true };
+        
     } catch (error) {
         console.error("Erreur lors de l'enregistrement dans la base de données :", error);
         return { error : "Une erreur est survenue lors de l'envoi du formulaire. Veuillez réessayer plus tard." }
     }
     
-    revalidatePath('/dashboard/adhesions')
-    return { success: true };
 }
