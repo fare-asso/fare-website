@@ -78,7 +78,7 @@ export default async function Home() {
       </div>
       
 
-      {/* Last articles */}
+      {/* Last articles
       <div className="my-10 w-full flex flex-col">
         <h2 className="text-2xl font-semibold mb-2">
           Actualités
@@ -92,7 +92,7 @@ export default async function Home() {
           </div>
         </div>
 
-      </div>
+      </div> */}
 
       {/* Le réseau */}
       <div className="my-10 w-full flex flex-col">
@@ -109,7 +109,7 @@ export default async function Home() {
         
       </div>
 
-      {/* Les évènements à venir */}
+      {/* Les évènements à venir
       <div className="my-10 w-full flex flex-col">
         <h2 className="text-2xl font-semibold mb-2">
           Les évènements à venir
@@ -118,7 +118,7 @@ export default async function Home() {
           
         </div>
         
-      </div>
+      </div> */}
 
 
 
