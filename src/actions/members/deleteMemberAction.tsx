@@ -18,30 +18,21 @@ export default async function deleteMemberAction({id} : {id: number}) {
     const supabase = createClient();
 
     const res = await prisma.member.delete({
-        where: {
-            id : id
-        }
+        where: { id : id }
     })
-
 
     if(res != null) { // successfully deleted
 
         const { data, error } = await supabase.storage.from('member-pictures').remove([res.picturePath]);
+
         if(error) {
-            return {
-                error: error.message
-            }
+            return { error: error.message }
         } else {
-            revalidatePath('/dashboard/membres')
-            return {
-                success : true
-            }
+            revalidatePath('/dashboard/membres');
+            revalidatePath('/bureau');
+            return { success : true }
         }
         
-    } else {
-        return {
-            error : "Failed to delete record"
-        }
-    }
+    } else return { error : "Failed to delete record" }
 
 }

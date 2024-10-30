@@ -140,10 +140,10 @@ export default function EditMemberButton({member, pictureUrl} : {member: Member,
                     <div>
                         <Label htmlFor="picture">Photo</Label>
                         <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
-                        <div className="text-sm text-muted-foreground">Taille maximale : 15 Mo</div>
-                        <div className="text-sm text-muted-foreground">Résolution recommandée : 1080x1920 pixels (portrait)</div>
+                        <div className="text-sm text-muted-foreground">Taille maximale : 10 Mo</div>
+                        <div className="text-sm text-muted-foreground">Résolution recommandée : 400x400 pixels</div>
 
-                        { imageUrl ? <Image src={imageUrl} width={200} height={200} alt="Image du membre" className="rounded-md outline outline-2 outline-offset-2 outline-black w-auto h-32 my-3 aspect-[9/14] object-cover"/> : null}
+                        { imageUrl ? <Image src={imageUrl} width={200} height={200} alt="Image du membre" className="rounded-md outline outline-2 outline-offset-2 outline-black w-auto h-32 my-3 aspect-square object-cover"/> : null}
                         <Input type="file" id="picture" name="picture" onChange={handleImageInputChange} accept="image/*" className="mt-2"/>
                     </div>
 

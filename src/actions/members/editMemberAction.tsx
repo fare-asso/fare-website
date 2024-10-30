@@ -5,6 +5,7 @@ import { validateEmail } from "@/helpers/string";
 
 import { createClient } from "@/helpers/supabase/server";
 import getCurrentUserRole from "@/helpers/user/role";
+import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 
 
@@ -51,7 +52,7 @@ export default async function editMemberAction(prevState: {error?: string, succe
 
     // Fields Validation
 
-    const maxFileSize : number = 15 // in mb
+    const maxFileSize : number = 10 // in mb
 
     if(!validateEmail(email)) {
         return {
@@ -69,17 +70,25 @@ export default async function editMemberAction(prevState: {error?: string, succe
             // check file format
             if(file.type.startsWith('image/')) {
 
-                // update image
-                const { error, data } = await supabase.storage.from('member-pictures').update(currentMember.picturePath, file);
+                // Remove previous image
+                const { error: removeError, data: removeData } = await supabase.storage.from('member-pictures').remove([currentMember.picturePath]);
 
-                if(error) { // upload failed
-                    console.log(error.message)
+                if(removeError) {
+                    return { error: `Echec de la supression de l'ancienne photo de ${currentMember.facebookUrl} ${currentMember.lastName}`}
+                }
+
+                // Add new image
+                const { error: updateError, data: updateData } = await supabase.storage.from('member-pictures').upload(randomUUID(), file);
+
+                if(updateError) { // upload failed
+                    console.log(updateError.message)
                     return {
-                        error : error.message
+                        error : updateError.message
                     }
                 } else { // upload success
-                    picturePath = data.path;
+                    picturePath = updateData.path;
                 }
+
             } else {
                 return {
                     error: "Le format de l'image doit être : png, jpeg, jpg, webp ou gif"
@@ -113,10 +122,12 @@ export default async function editMemberAction(prevState: {error?: string, succe
 
         // revalidate path
         revalidatePath('/dashboard/membres');
+        revalidatePath('/bureau');
 
         return {
             success : true
         }
+        
     } else {
         return {
             error: "La modification du membre dans la base de données à échoué... Veuillez contacter un administrateur"

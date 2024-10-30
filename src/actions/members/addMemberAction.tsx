@@ -46,7 +46,7 @@ export default async function addMemberAction(prevState: {error?: string, succes
 
     // Fields Validation
 
-    const maxFileSize : number = 15 // in mb
+    const maxFileSize : number = 10 // in mb
 
     if(lastName != null && typeof lastName == "string") {
         temp.lastName = lastName.toString();
@@ -102,62 +102,55 @@ export default async function addMemberAction(prevState: {error?: string, succes
         temp.twitter = twitter.toString();
     }
 
-    if(pictureFile != null && pictureFile instanceof File) {
-        const file: File = pictureFile;
-        // check file validity and size
-        if(file.size != 0 && ((file.size / (1024*1024)) <= maxFileSize)) { // valid file and size <= max file size
-            // check file format
-            if(file.type.startsWith('image/')) {
-                // upload image
-                const { error, data } = await supabase.storage.from('member-pictures').upload(randomUUID(), file);
-                if(error) {
-                    return {
-                        error : error.message
-                    }
-                } else { // upload success
+    if(!(pictureFile != null && pictureFile instanceof File)) {
+        return { error : "Photo non valide" }
+    }
 
-                    // create record
-                    const newMemberRecord = await prisma.member.create({
-                        data: {
-                            firstName : temp.firstName,
-                            lastName: temp.lastName,
-                            position: temp.position,
-                            picturePath: data.path,
-                            email: temp.email,
-                            facebookUrl: temp.facebook,
-                            instagramUrl: temp.instagram,
-                            twitterUrl: temp.twitter
+    const file: File = pictureFile;
 
-                        }
-                    })
+    // check file validity and size
+    if(!(file.size != 0 && ((file.size / (1024*1024)) <= maxFileSize))) { // valid file and size <= max file size
+        return { error: `La taille de la photo doit être inférieure à ${maxFileSize}` }
+    }
+    
+    // check file format
+    if(!file.type.startsWith('image/')) {
+        return { error: "Le format de l'image doit être : png, jpeg, jpg, webp ou gif" }
+    }
 
-                    if(newMemberRecord != null) { // record has been created
+    // upload image
+    const { error: uploadError, data: uploadData } = await supabase.storage.from('member-pictures').upload(randomUUID(), file);
+    if(uploadError) {
+        return { error : uploadError.message }
+    } else { // upload success
 
-                        // revalidate path
-                        revalidatePath('/dashboard/membres');
+        // create record
+        const newMemberRecord = await prisma.member.create({
+            data: {
+                firstName : temp.firstName,
+                lastName: temp.lastName,
+                position: temp.position,
+                picturePath: uploadData.path,
+                email: temp.email,
+                facebookUrl: temp.facebook,
+                instagramUrl: temp.instagram,
+                twitterUrl: temp.twitter
 
-                        return {
-                            success : true
-                        }
-                    } else {
-                        return {
-                            error: "La création du membre dans la base de données à échoué... Veuillez contacter un administrateur"
-                        }
-                    }
-                }
-            } else {
-                return {
-                    error: "Le format de l'image doit être : png, jpeg, jpg, webp ou gif"
-                }
+            }
+        })
+
+        if(newMemberRecord) { // record has been created
+
+            // revalidate path
+            revalidatePath('/dashboard/membres');
+            revalidatePath('/bureau');
+
+            return { success : true
             }
         } else {
             return {
-                error: `La taille de la photo doit être inférieure à ${maxFileSize}`
+                error: "La création du membre dans la base de données à échoué... Veuillez contacter un administrateur"
             }
-        }
-    } else {
-        return {
-            error : "Photo non valide"
         }
     }
 
