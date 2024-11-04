@@ -89,9 +89,9 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     // Fonction de validation
     const validateField = (name: string, value: any, isRequired: boolean = true, validator?: (value: any) => boolean) => {
         if (isRequired && (value === null || value === undefined || value === '')) {
-        errors.push({ field: name, message: `Le champ ${name} est requis.` });
+            errors.push({ field: name, message: `Le champ ${name} est requis.` });
         } else if (validator && !validator(value)) {
-        errors.push({ field: name, message: `Le champ ${name} est invalide.` });
+            errors.push({ field: name, message: `Le champ ${name} est invalide.` });
         }
     };
 
@@ -106,7 +106,7 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     validateField('nomComplet', nomComplet);
 
     const logo = formData.get('logo') as File;
-    validateField('logo', logo);
+    validateField('logo', logo, true, (value: File) => ['image/ai', 'image/png'].includes(value.type));
 
     const college = formData.get('college') as 'A' | 'B' | '';
     validateField('college', college, true, (value) => ['A', 'B'].includes(value));
@@ -136,22 +136,22 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     validateField('engagementCotisation', engagementCotisation);
 
     const statuts = formData.get('statuts') as File;
-    validateField('statuts', statuts);
+    validateField('statuts', statuts, true, (value: File) => value.type == 'application/json');
 
     const reglementInterieur = formData.get('reglementInterieur') as File;
-    validateField('reglementInterieur', reglementInterieur, false);
+    validateField('reglementInterieur', reglementInterieur, false, (value: File) => value.type == 'application/json');
 
     const recepisse = formData.get('recepisse') as File;
-    validateField('recepisse', recepisse);
+    validateField('recepisse', recepisse, true, (value: File) => value.type == 'application/json');
 
     const extraitPV = formData.get('extraitPV') as File;
-    validateField('extraitPV', extraitPV);
+    validateField('extraitPV', extraitPV, true, (value: File) => value.type == 'application/json');
 
     const bilanFinancier = formData.get('bilanFinancier') as File;
-    validateField('bilanFinancier', bilanFinancier, false);
+    validateField('bilanFinancier', bilanFinancier, false, (value: File) => value.type == 'application/json');
 
     const lettreEngagement = formData.get('lettreEngagement') as File;
-    validateField('lettreEngagement', lettreEngagement, false);
+    validateField('lettreEngagement', lettreEngagement, false, (value: File) => value.type == 'application/json');
 
     const emailAssociation = formData.get('emailAssociation') as string;
     validateField('emailAssociation', emailAssociation, true, validateEmail);
@@ -393,7 +393,7 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     }
 
     // Fonction pour uploader un fichier
-    const uploadFile = async (file: File, folder: string, filename: string) => {
+    const uploadFile = async (file: File, folder: string, filename: string) : Promise<string | undefined | null> => {
         if (!file) return null;
 
         // extract file extension
@@ -404,7 +404,7 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
         const { data, error } = await supabase.storage
         .from('adhesion')
         .upload(`${folder}/${fullFileName}`, file);
-        if (error) return { error: "Erreur lors de l'upload du fichier: " + file.name }
+        if (error) return undefined
         return data.path;
     };
 
@@ -416,6 +416,21 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     const extraitPVUrl = await uploadFile(extraitPV, folderName, 'extraitPV');
     const bilanFinancierUrl = await uploadFile(bilanFinancier, folderName, 'BF');
     const lettreEngagementUrl = await uploadFile(lettreEngagement, folderName, 'LE');
+
+    const optionnalUploads = [reglementInterieurUrl, bilanFinancierUrl, lettreEngagementUrl]
+
+    optionnalUploads.forEach((upload) => {
+        if(upload == undefined) return { error: "Echec de l'upload d'un ou plusieurs fichiers optionnels." }
+    })
+
+    const requiredUploads = [logoUrl, statutsUrl, recepisseUrl, extraitPVUrl];
+
+    requiredUploads.forEach((upload) => {
+        if(upload == null) { return { error: "Attention un ou plusieurs fichiers sont manquants." } }
+        else if (upload == undefined) { return { error: "Echec de l'upload d'un ou plusieurs fichiers obligatoires." }}
+    })
+
+    
     
 
     // Enregistrer les informations dans la base de données

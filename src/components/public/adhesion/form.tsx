@@ -7,9 +7,10 @@ import NumberInput from '@/components/ui/input/numberInput';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
-import { MdAdminPanelSettings } from 'react-icons/md';
+import { MdAdminPanelSettings, MdDelete, MdDeleteOutline } from 'react-icons/md';
 
 interface BoardMember {
+  id: string;
   poste: string;
   nom: string;
   prenom: string;
@@ -21,18 +22,18 @@ interface BoardMember {
   isAdmin: boolean;
 }
 
-interface Elu {
-  conseil: string;
-  nom: string;
-  prenom: string;
-  ts: 'T' | 'S' | '';
-  place: string;
-  filiere: string;
-  annee: string;
-  telephone: string;
-  email: string;
-  adresse: string;
-}
+// interface Elu {
+//   conseil: string;
+//   nom: string;
+//   prenom: string;
+//   ts: 'T' | 'S' | '';
+//   place: string;
+//   filiere: string;
+//   annee: string;
+//   telephone: string;
+//   email: string;
+//   adresse: string;
+// }
 
 interface FormState {
   error?: string;
@@ -46,24 +47,44 @@ export default function AdhesionForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [boardMembers, setBoardMembers] = useState<BoardMember[]>([{ 
-    poste: '', nom: '', prenom: '', filiere: '', annee: '', telephone: '', email: '', adresse: '', isAdmin: false 
+    id: crypto.randomUUID(), poste: '', nom: '', prenom: '', filiere: '', annee: '', telephone: '', email: '', adresse: '', isAdmin: false 
   }]);
 
   const addBoardMember = () => {
     setBoardMembers([...boardMembers, { 
-      poste: '', nom: '', prenom: '', filiere: '', annee: '', telephone: '', email: '', adresse: '', isAdmin: false 
+      id: crypto.randomUUID(), poste: '', nom: '', prenom: '', filiere: '', annee: '', telephone: '', email: '', adresse: '', isAdmin: false 
     }]);
+  };
+
+  const deleteBoardMember = (id: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Empêcher la suppression si c'est le dernier membre
+    if (boardMembers.length <= 1) {
+      alert("Vous devez avoir au moins un membre dans le bureau");
+      return;
+    }
+
+    boardMembers.forEach((member) => {
+      if (member.id === id && member.isAdmin) {
+        setAdminCount(prev => prev - 1);
+      }
+    })
+
+    const newBoardMembers = boardMembers.filter(member => member.id !== id);
+    
+    setBoardMembers(newBoardMembers);
   };
 
   const [adminCount, setAdminCount] = useState(0);
 
   // Gestion de l'indicateur de chargement
   useEffect(() => {
-    if (formState?.success) {
+    if (formState?.success || formState?.error) {
         setIsLoading(false);
     }
-    setIsLoading(false);
-  }, [formState]);
+}, [formState]);
   
   // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -264,7 +285,7 @@ export default function AdhesionForm() {
       <section>
         <h2 className="text-xl font-semibold">Bureau de l'association</h2>
         {boardMembers.map((member, index) => (
-          <div key={index} className='mb-4 border-gray-300 border rounded-lg p-2 sm:p-4'>
+          <div key={member.id} className='mb-4 border-gray-300 border rounded-lg p-2 sm:p-4'>
             <label className="flex flex-row items-center justify-start !mt-0 p-2">
               <input 
                 id={`bureau.${index}.isAdmin`} 
@@ -288,6 +309,11 @@ export default function AdhesionForm() {
               />
               <MdAdminPanelSettings size={25}/>
               <span>Administrateur.rice {adminCount}/2</span>
+
+              <button className='ml-auto' onClick={(event) => deleteBoardMember(member.id, event)}>
+                <MdDelete size={25} />
+              </button>
+              
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
               <input id={`bureau.${index}.poste`} name={`bureau.${index}.poste`} required placeholder="Poste" />
