@@ -88,12 +88,26 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
 
     // Fonction de validation
     const validateField = (name: string, value: any, isRequired: boolean = true, validator?: (value: any) => boolean) => {
+
+        if (!isRequired && (value === null || value === undefined || value === '')) {
+            return;
+        }
+
         if (isRequired && (value === null || value === undefined || value === '')) {
             errors.push({ field: name, message: `Le champ ${name} est requis.` });
         } else if (validator && !validator(value)) {
             errors.push({ field: name, message: `Le champ ${name} est invalide.` });
         }
     };
+
+    // Fonction de validation de document pdf
+    const validatePdfDocument = (value: File) => {
+        return value.type === 'application/pdf'
+    }
+
+    const validateOptionnalPdfDocument = (value: File) => {
+        return value.size === 0 || value.type === 'application/pdf'
+    }
 
     // Extraction et validation des données du formulaire
     const dateAdhesion = formData.get('dateAdhesion') as string;
@@ -136,22 +150,22 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     validateField('engagementCotisation', engagementCotisation);
 
     const statuts = formData.get('statuts') as File;
-    validateField('statuts', statuts, true, (value: File) => value.type == 'application/json');
+    validateField('statuts', statuts, true, validatePdfDocument);
 
     const reglementInterieur = formData.get('reglementInterieur') as File;
-    validateField('reglementInterieur', reglementInterieur, false, (value: File) => value.type == 'application/json');
+    validateField('reglementInterieur', reglementInterieur, false, validateOptionnalPdfDocument);
 
     const recepisse = formData.get('recepisse') as File;
-    validateField('recepisse', recepisse, true, (value: File) => value.type == 'application/json');
+    validateField('recepisse', recepisse, true, validatePdfDocument);
 
     const extraitPV = formData.get('extraitPV') as File;
-    validateField('extraitPV', extraitPV, true, (value: File) => value.type == 'application/json');
+    validateField('extraitPV', extraitPV, true, validatePdfDocument);
 
     const bilanFinancier = formData.get('bilanFinancier') as File;
-    validateField('bilanFinancier', bilanFinancier, false, (value: File) => value.type == 'application/json');
+    validateField('bilanFinancier', bilanFinancier, false, validateOptionnalPdfDocument);
 
     const lettreEngagement = formData.get('lettreEngagement') as File;
-    validateField('lettreEngagement', lettreEngagement, false, (value: File) => value.type == 'application/json');
+    validateField('lettreEngagement', lettreEngagement, false, validateOptionnalPdfDocument);
 
     const emailAssociation = formData.get('emailAssociation') as string;
     validateField('emailAssociation', emailAssociation, true, validateEmail);
@@ -174,12 +188,12 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
     .filter(([key]) => key.startsWith('bureau'))
     .reduce((acc: { [key: string]: any }, [key, value]) => {
         // Debug: Voir la clé et la valeur à chaque étape
-        console.log(`Key: ${key}, Value: ${value}`);
+        // console.log(`Key: ${key}, Value: ${value}`);
 
         // Extraire l'index et la propriété du nom du champ
         const matches = key.match(/bureau\.(\d+)\.(\w+)/);
 
-        console.log("Matches: " + matches)
+        // console.log("Matches: " + matches)
 
         if (matches) {
             const [, index, prop] = matches;
@@ -193,7 +207,7 @@ export async function processAdhesionForm(prevState: {error?: string, success?: 
             acc[index][prop] = value;
 
             // Debug: Afficher l'accumulateur à chaque étape
-            console.log(`Accumulateur après ajout:`, acc);
+            // console.log(`Accumulateur après ajout:`, acc);
         } else {
             // Debug: Si le format ne correspond pas, afficher un message d'erreur
             console.warn(`Clé non correspondante: ${key}`);
