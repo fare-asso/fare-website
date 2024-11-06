@@ -26,12 +26,14 @@ import createCDPAction from "@/actions/CDP/createCDPAction";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import DatePicker from "@/components/ui/input/datePicker";
+import LoadingRing from "../loadingRing";
 
 export default function AddNewCDPButton() {
 
 
     const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(createCDPAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
@@ -48,7 +50,18 @@ export default function AddNewCDPButton() {
     if (formState?.success) {
         handleOpenChange(false);
     }
+    setIsLoading(false);
     }, [formState, handleOpenChange]);
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.currentTarget);
+
+        setIsLoading(true);
+
+        formAction(formData);
+    };
 
     return(
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
@@ -67,7 +80,7 @@ export default function AddNewCDPButton() {
                 </DialogHeader>
 
                 {/* Form */}
-                <form action={formAction} id="createCDPForm" className="space-y-3">
+                <form onSubmit={handleSubmit} id="createCDPForm" className="space-y-3">
                     <div>
                         <Label>Nom</Label>
                         <Input type="text" id="name" name="name" placeholder="Nom du communiqué/dossier de presse"/>
@@ -111,7 +124,7 @@ export default function AddNewCDPButton() {
                 </form>
 
                 <DialogFooter>
-                    <Button type="submit" form="createCDPForm">Ajouter</Button>
+                    <Button type="submit" form="createCDPForm" disabled={isLoading}>{ isLoading ? <LoadingRing/> : null }Ajouter</Button>
                 </DialogFooter>
             </DialogContent>
             </Dialog>

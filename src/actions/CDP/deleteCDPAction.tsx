@@ -42,6 +42,9 @@ export default async function deleteCDPAction({id} : {id : number}) {
 
         // revalidate Path
         revalidatePath('/dashboard/communiques-de-presse');
+        revalidatePath('/presse');
+        revalidatePath('/presse/communiques-de-presse');
+        revalidatePath('/presse/dossiers-de-presse');
         return {
             success: true
         }

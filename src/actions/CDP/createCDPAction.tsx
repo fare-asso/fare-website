@@ -77,7 +77,7 @@ export default async function createCDPAction(prevState: {error?: string, succes
                             name: name.toString(),
                             filePath: data.path,
                             size: CDPFile.size,
-                            createdAt: date,
+                            createdAt: date ? new Date(date) : new Date(),
                             type: type
                         }
                     });
@@ -85,6 +85,9 @@ export default async function createCDPAction(prevState: {error?: string, succes
                     if(createdCDP != null) { // successfully created the record
                         // revalidate cdp page
                         revalidatePath('/dashboard/communiques-de-presse');
+                        revalidatePath('/presse');
+                        revalidatePath(type == 'CDP' ? '/presse/communiques-de-presse' : '/presse/dossiers-de-presse');
+
                         return {
                             success: true
                         }
