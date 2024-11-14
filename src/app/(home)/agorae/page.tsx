@@ -21,7 +21,7 @@ export default function AGORAe() {
                         L'AGORAé est une <strong>épicerie sociale et solidaire créée par les étudiant·e·s et pour les étudiant·e·s</strong>. Elle se situe sur le campus universitaire briochin de Mazier, au sein du Ty-Maz', lieu central de la vie étudiante universitaire sur <strong>Saint-Brieuc</strong> (22).
                     </p>
                     <p className="mb-4">
-                        Elle a pour objectif de permettre aux étudiant·e·s en situation de précarité financière, <strong>une diminution de leurs dépenses quotidiennes</strong>. En effet, les différents produits alimentaires, d'hygiène ou d'entretien qui vous sont proposés sont revendus à hauteur de <strong>20%</strong> de leur valeur en grande surface, ou distribués <strong>gratuitement</strong>.
+                        Elle a pour objectif de permettre aux étudiant·e·s en situation de précarité financière, <strong>une diminution de leurs dépenses quotidiennes</strong>. En effet, les différents produits alimentaires, d'hygiène ou d'entretien qui vous sont proposés sont revendus à hauteur de <strong>10%</strong> de leur valeur en grande surface, ou distribués <strong>gratuitement</strong>.
                     </p>
                     <p className='mb-4'>
                         Plus qu'un simple lieu d'aide alimentaire, c'est aussi <strong>un espace de rencontres, d'échanges et de convivialité</strong> que ce soit entre les étudiant·e·s bénéficiaires ou de part les actions mises en place pour lutter contre l'isolement social des étudiant·e·s sur le territoire.
