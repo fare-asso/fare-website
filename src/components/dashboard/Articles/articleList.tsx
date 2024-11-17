@@ -39,7 +39,7 @@ export default async function ArticleList() {
         const articleCards: JSX.Element[] = articles.map((article) => <ArticleCard key={article.id} article={article}/>)
 
         return(
-            <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-6 overflow-y-auto space-y-4">
+            <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-3 md:p-6 overflow-y-auto space-y-4">
                     {articleCards}
             </div>
         )

@@ -55,8 +55,8 @@ export default function ArticleCard({article} : {article: Article}) {
 
     return (
         <div className="w-full rounded-lg border bg-card text-card-foreground shadow-sm px-4 py-4 h-16 flex flex-row items-center justify-between">
-            <div className="text-sm">{article.title}</div>
-            <div className="text-sm text-card-foreground/70">{format(article.writtenOn, "PPP", {locale: fr})}</div>
+            <div className="text-xs md:text-sm text-ellipsis overflow-hidden whitespace-nowrap">{article.title}</div>
+            <div className="text-sm text-card-foreground/70 hidden md:block">{format(article.writtenOn, "PPP", {locale: fr})}</div>
             
             <div id="buttons" className="flex flex-row items-center">
                 <Button variant={"default"} className='px-3 mr-2 hidden md:block'>

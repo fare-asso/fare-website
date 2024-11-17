@@ -6,6 +6,7 @@ import food from "/public/AGORAe/food.jpg";
 import logoAgoraE from "/public/AGORAe/logo_AgoraE.png";
 import recettesParMois from "/public/AGORAe/recettes_par_mois.png"
 import tableauRAV from "/public/AGORAe/tableau_rav.png"
+import CalculateurBeneficiaire from '@/components/public/agorae/calculateurBeneficiaire';
 
 export default function AGORAe() {
     return (
@@ -58,6 +59,11 @@ export default function AGORAe() {
                     <div className='w-full flex flex-col items-center'>
                         <Image src={tableauRAV} alt="Tableau de calcul d'éligibilité à l'aide alimentaire mensuel" className="w-full md:w-1/2" />
                     </div>
+
+                    <div className='mb-16'>
+                        <CalculateurBeneficiaire />
+                    </div>
+
 
                     <p className='mb-4'>
                         L'inscription à l'AGORAé se fait sur <a href="https://mon-compte.fage.org/creation-compte" title="Inscription AGORAé" target='blank' className='text-blue-600 hover:underline'>https://mon-compte.fage.org/</a> et ne prend que quelques minutes.
