@@ -23,22 +23,32 @@ export default function CalculateurBeneficiaire() {
             return {
                 montantPanier: "10€",
                 prixPaye: "1€",
-                classe: "bg-yellow-50"
+                classe: "bg-green-50",
             };
         } else if (ravJournalier >= 0.70 && ravJournalier <= 7.50) {
             return {
                 montantPanier: "jusqu'à 240€",
                 prixPaye: "jusqu'à 24€",
-                classe: "bg-green-50"
+                classe: "bg-yellow-50"
             };
         } else {
             return {
                 montantPanier: "selon le besoin",
                 prixPaye: "0€",
-                classe: "bg-blue-50"
+                classe: "bg-red-50"
             };
         }
     };
+
+    const computeRavColor = () => {
+        if (rav > 7.50) {
+            return 'text-green-500'
+        } else if (rav >= 0.70 && rav <= 7.50) {
+            return 'text-orange-500'
+        } else {
+            return 'text-red-500'
+        }
+    }
 
     return (
         <Card className="w-full max-w-lg mx-auto">
@@ -73,7 +83,7 @@ export default function CalculateurBeneficiaire() {
                 {rav !== null && (
                     <div className="space-y-4">
                         <Alert>
-                            <AlertDescription>
+                            <AlertDescription className={`${computeRavColor()}`}>
                                 Votre Reste à Vivre (RAV) quotidien est de : {rav.toFixed(2)}€
                             </AlertDescription>
                         </Alert>
