@@ -13,7 +13,7 @@ export default function CalculateurBeneficiaire() {
 
     useEffect(() => {
         if (recettes && depenses) {
-            const ravJournalier: number = Math.max(parseFloat(recettes) - parseFloat(depenses), 0) / 30;
+            const ravJournalier: number = (parseFloat(recettes) - parseFloat(depenses)) / 30;
             setRav(ravJournalier);
         }
     }, [recettes, depenses]);
