@@ -63,7 +63,11 @@ export default function Elues() {
                 <section className="space-y-6">
 
                     <div className="flex flex-col items-center space-y-6">
-                        <Image src={logoBougeTonCrous} alt="Logo du CROUS" className="w-44 h-auto"/>
+                        <div className='w-full flex flex-row items-center justify-center space-x-6 mt-20'>
+                        <Image src={logoBougeTonCrous} alt="Logo Bouge Ton Crous" className="w-32 h-auto md:w-auto md:h-44"/>
+                            <Image src={logoCrous} alt="Logo du Crous Bretagne" className="w-32 h-auto md:w-auto md:h-44"/>
+                        </div>
+                        
                         <h2 className="text-2xl font-semibold mb-4">Nos élu.e.s “Bouge Ton CROUS” au CROUS Bretagne</h2>
                     </div>
 
