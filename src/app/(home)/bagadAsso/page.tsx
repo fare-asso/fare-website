@@ -1,5 +1,8 @@
 import BagadAssoForm from "@/components/public/bagadAsso/form";
 import prisma from "@/helpers/db";
+import Image from "next/image";
+
+import logoBagadAsso from '/public/logoBagadAsso.png';
 
 export default async function BagadAsso() {
 
@@ -7,7 +10,9 @@ export default async function BagadAsso() {
 
     return(
         <div className="flex flex-col items-center justify-start w-full">
-            <h1 className="py-12 sm:py-24 md:py-32 lg:py-44 text-[3rem] font-semibold">{"Bagad'Asso"}</h1>
+            {/* <h1 className="py-12 sm:py-24 md:py-32 lg:py-44 text-[3rem] font-semibold">{"Bagad'Asso"}</h1> */}
+
+            <Image src={logoBagadAsso} alt="Logo du projet Bagad'Asso" className="w-[90%] md:w-[40%] mb-12" />
 
             {/* Présentation du projet */}
             <div className="max-w-4xl text-justify mb-12 rounded-xl bg-black text-white p-8">
@@ -37,9 +42,7 @@ export default async function BagadAsso() {
                         <ul className="list-disc list-inside">
                             <li>Enceinte</li>
                             <li>Jeu de lumières</li>
-                            <li>Tapis rouge</li>
                             <li>Machine à fumée</li>
-                            <li>Platines DJ</li>
                             <li>Mégaphone</li>
                             <li>Talkies-Walkies</li>
                         </ul>
@@ -50,16 +53,14 @@ export default async function BagadAsso() {
                             <li>Préservatifs</li>
                             <li>Capotes de verre</li>
                             <li>Boules quies</li>
-                            <li>Ethylotest</li>
                             <li>Éthylomètre</li>
                             <li>Flyers sensibilisation drogues</li>
-                            <li>Trousse de secours</li>
                         </ul>
                     </div>
                     <div>
                         <h3 className="text-xl font-semibold mb-2">Services</h3>
                         <ul className="list-disc list-inside">
-                            <li>Trusted People (oui des gens)</li>
+                            <li>Personnes de confiance</li>
                             <li>Tarif réduit sur la SACEM</li>
                             <li>Tarifs réduits sur les goodies</li>
                         </ul>
