@@ -104,9 +104,7 @@ export default async function Home() {
           <AssociationMapCaller associations={associations} /> :
            <span>Echec de la récupération des associations</span>
           }
-          
         </div>
-        
       </div>
 
       {/* Les évènements à venir
@@ -120,9 +118,32 @@ export default async function Home() {
         
       </div> */}
 
+      {/* Discord */}
+      <div className="my-10 w-full flex flex-col">
+        <h2 className="text-2xl font-semibold mb-2">
+          Discord
+        </h2>
+        <div className="flex flex-col md:flex-row items-center justify-center space-y-6 md:space-x-12">
+          <DiscordWidget />
+          <div className="flex flex-col w-full md:w-1/2 items-center mt-4">
+            <p className="text-lg font-semibold mb-2 text-center">Vidéo de présentation du <a href="https://discord.gg/jXN7DupGup" title="Lien vers Discord" className="text-blue-600 hover:text-blue-400 transition-all">Discord</a> de la FAHB 👇</p>
+            <iframe
+              width="853"
+              height="480"
+              src={`https://www.youtube.com/embed/_nu4cbdJ8do?si=_OAfgGASwAr1jEg5`}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title="Embedded youtube"
+              className="rounded-md w-full h-full aspect-video"
+            />
+          </div>
+        </div>
+      </div>
 
 
-      <DiscordWidget />
+      {/* <iframe width="560" height="315" src="https://www.youtube.com/embed/_nu4cbdJ8do?si=_OAfgGASwAr1jEg5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> */}
+      
     </div>
       
   );
