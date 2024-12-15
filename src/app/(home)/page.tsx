@@ -12,6 +12,7 @@ import AssociationMapCaller from "@/components/public/associations/map/associati
 import prisma from "@/helpers/db";
 import { Association } from "@prisma/client";
 import AnimatedNumber from "@/components/ui/animatedNumber";
+import PartnersCarousel from "@/components/public/partenariats/partnersCarousel";
 
 export const metadata: Metadata = {
   title: "Accueil | FAHB"
@@ -123,6 +124,14 @@ export default async function Home() {
         <h2 className="text-2xl font-semibold mb-2">
           Discord
         </h2>
+        <p className="text-justify mb-12">
+        Intéressé·e par la FAHB et son réseau ? Étudiant·e en Ille-et-Vilaine ou Côtes d'Armor ?
+
+        La FAHB possède un serveur Discord, conçu par les étudiant·e·s à destination des étudiant·e·s. C'est une plateforme d'échange, de partage et de travail sur laquelle sont déjà présent·e·s les administrateur·rice·s, les élu·e·s de la FAHB mais aussi tous·tes les membres des associations étudiantes de Haute-Bretagne. 
+        Ce serveur est un réel outil pour vous et vous permet de profiter au mieux des services que nous vous proposons. 
+
+        Maintenant que c'est clair, il ne vous reste plus qu'à cliquer sur le lien d'accès, et si quelques zones de flou persistent, voici une vidéo de présentation du Discord de la FAHB qui devrait vous aider !
+        </p>
         <div className="flex flex-col md:flex-row items-center justify-center space-y-6 md:space-x-12">
           <DiscordWidget />
           <div className="flex flex-col w-full md:w-1/2 items-center mt-4">
@@ -139,6 +148,12 @@ export default async function Home() {
             />
           </div>
         </div>
+      </div>
+
+      {/* Nos partenaires */}
+      <div className="my-10 w-full flex flex-col">
+        <h2 className="text-2xl font-semibold mb-2">Nos partenaires</h2>
+        <PartnersCarousel />
       </div>
 
 
