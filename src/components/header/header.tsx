@@ -26,6 +26,11 @@ const links: Link[] = [
                 title: "Nos partenaires",
                 href: "/partenaires",
                 hidden: true
+            },
+            {
+                title: "Nous contacter",
+                href: "/contact",
+                hidden: false
             }
         ]
     },
