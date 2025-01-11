@@ -5,15 +5,15 @@ import { MdOutlineEmail } from "react-icons/md";
 
 export default function Contact() {
   return (
-    <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16">
+    <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16 mb-16">
         {/* Main header */}
         <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Vous souhaitez nous contacter ?</h1>
 
         {/* Links */}
-        <div className="flex flex-col w-full md:w-[80%] space-y-4">
+        <div className="flex flex-col w-full md:w-[80%] space-y-4 mb-12">
 
             {/* Email */}
-            <Link className="group flex flex-row items-center justify-between rounded-xl bg-gradient-to-r from-[#4B6CB7] to-[#182848] w-full p-4 text-white" href="https://instagram.com/">
+            <Link className="group flex flex-row items-center justify-between rounded-xl bg-[#4B6CB7] w-full p-4 text-white" href="https://instagram.com/">
                 <div className="flex flex-row space-x-4 items-center">
                     <MdOutlineEmail size={50} />
                     <p className="text-xl font-semibold transition-all">Email</p>

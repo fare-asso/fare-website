@@ -1,7 +1,7 @@
 
 export default function ContactForm() {
     return (
-        <div className="flex flex-col md:flex-row w-full md:w-[90%] bg-black mt-12 p-8 rounded-3xl">
+        <div className="flex flex-col md:flex-row w-full md:w-[70%] bg-black mt-12 p-8 rounded-3xl">
             {/* Text Section */}
             <div className="flex flex-col justify-center w-full md:w-1/2 pr-0 md:pr-8 mb-6 md:mb-0">
                 <h2 className="text-2xl text-white font-semibold mb-4">Vous avez une question ?</h2>
