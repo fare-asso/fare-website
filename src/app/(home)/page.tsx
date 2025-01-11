@@ -42,7 +42,7 @@ export default async function Home() {
 
         <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full w-full md:w-1/3">
           <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
-            <AnimatedNumber end={17} duration={1.5} />
+            <AnimatedNumber end={associations ? associations.length : 20} duration={1.5} />
           </span>
           <span className="text-xl md:p-1 opacity-95 text-center text-white">Associations étudiantes</span>
         </div>
