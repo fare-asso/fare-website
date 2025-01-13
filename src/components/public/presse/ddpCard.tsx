@@ -13,7 +13,7 @@ export default function DossierDePresseCard({dossier} : {dossier: CommuniqueDePr
         <div className="w-full flex flex-col md:flex-row items-center rounded-md border border-grey-300 space-x-2 p-2">
             <FaRegFilePdf size={50} className="text-red-600 m-4"/>
             <div className="flex flex-col">
-                <Link href={su.from('dossier-de-presse').getPublicUrl(dossier.filePath, false)} target="_blank" className="underline text-md md:text-lg hover:opacity-80 transition-all">{dossier.name}</Link>
+                <Link href={su.from('communique-de-presse').getPublicUrl(dossier.filePath, false)} target="_blank" className="underline text-md md:text-lg hover:opacity-80 transition-all">{dossier.name}</Link>
                 <span className="text-sm opacity-75">{format(dossier.createdAt, "dd/MM/yyyy")}</span>
                 <span className="text-sm">{(dossier.size / (1024 * 1024)).toFixed(2) + "Mo"}</span>
             </div>
