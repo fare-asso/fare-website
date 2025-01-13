@@ -1,6 +1,5 @@
 import DossierDePresseCard from '@/components/public/presse/ddpCard';
 import prisma from '@/helpers/db';
-import Link from 'next/link';
 
 export default async function DossiersDePresse() {
     

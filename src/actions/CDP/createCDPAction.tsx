@@ -5,7 +5,6 @@ import { createClient } from "@/helpers/supabase/server";
 import prisma from "@/helpers/db";
 
 import { revalidatePath } from "next/cache";
-import { sanitizeString } from "@/helpers/string";
 import getCurrentUserRole from "@/helpers/user/role";
 import { PresseType } from "@prisma/client";
 
@@ -35,81 +34,139 @@ export default async function createCDPAction(prevState: {error?: string, succes
 
     // retrieve form data fields
     const name = formData.get('name')?.toString();
-    const file = formData.get('CDPfile');
+    const file = formData.get('CDPfilePath')?.toString();
     const date = formData.get('date')?.toString();
     const type: PresseType | undefined = getPresseType(formData)
 
-    const maxFileSize : number = 25 // max pdf size (in mb)
-
     // Required fields
-    if(!name || !type) {
+    if(!name || !type || !file) {
         return { error: "Un ou plusieurs champs sont invalides" }
     }
 
-    // FILE
-    if(file != null && file instanceof File) {
-        const CDPFile: File = file;
-        // check file size
-        if(CDPFile.size != 0 && ((CDPFile.size / (1024*1024)) <= maxFileSize)) { // size is lower than 25mb
+    // Fetch file info before creating the record
+    const { data, error: fetchError } = await supabase.storage.from('communique-de-presse').info(file);
+    if(fetchError) {
+        return { error: "Une erreur est survenue lors de la récupération du fichier" }
+    }
 
-            if(CDPFile.type == "application/pdf") { // valid format
+    const fileSize = data.size!; // in bytes
+    const maxFileSize = 25; // in mb
 
-                // upload file on the S3 storage
-                const {error, data} = await supabase.storage.from('communique-de-presse').upload(sanitizeString(name.toString()), CDPFile);
-
-                if(error) {
-                    if(error.message == "The resource already exists") {
-                        return {
-                            error: "Un fichier portant le même nom existe déjà"
-                        }
-                    } else {
-                        console.error(error.message)
-                        return {
-                            error: "Une erreur est survenue lors de l'upload du document"
-                        }
-                    }
-                    
-                } else {
-
-                    // create a record for the new CDP (name, path, date?)
-                    const createdCDP = await prisma.communiqueDePresse.create({
-                        data: {
-                            name: name.toString(),
-                            filePath: data.path,
-                            size: CDPFile.size,
-                            createdAt: date ? new Date(date) : new Date(),
-                            type: type
-                        }
-                    });
-
-                    if(createdCDP != null) { // successfully created the record
-                        // revalidate cdp page
-                        revalidatePath('/dashboard/communiques-de-presse');
-                        revalidatePath('/presse');
-                        revalidatePath(type == 'CDP' ? '/presse/communiques-de-presse' : '/presse/dossiers-de-presse');
-
-                        return {
-                            success: true
-                        }
-                    } else {
-                        return {
-                            error: `Echec de l'ajout du CDP dans la base de données, veuillez contacter un administrateur (path: ${data.path})`
-                        }
-                    }
-
-                    
-                }
-
-            }
-        } else {
-            return {
-                error: `La taille du fichier doit être inférieure à ${maxFileSize}mo`
-            }
-        }
-    } else {
+    // Check file size
+    if(fileSize == 0 || ((fileSize / (1024*1024)) > maxFileSize)) {
         return {
-            error : "Le fichier n'est pas valide"
+            error: `La taille du fichier doit être inférieure à ${maxFileSize}mo`
         }
     }
+
+    // Check file format
+    if(data.contentType != "application/pdf") {
+        return {
+            error: "Le fichier doit être de format PDF"
+        }
+    }
+
+    // Create a record for the new CDP (name, path, date?)
+    const createdCDP = await prisma.communiqueDePresse.create({
+        data: {
+            name: name,
+            filePath: file,
+            size: fileSize,
+            createdAt: date ? new Date(date) : new Date(),
+            type: type
+        }
+    });
+
+    if(createdCDP != null) { // successfully created the record
+        // revalidate cdp page
+        revalidatePath('/dashboard/communiques-de-presse');
+        revalidatePath('/presse');
+        revalidatePath(type == 'CDP' ? '/presse/communiques-de-presse' : '/presse/dossiers-de-presse');
+
+        return {
+            success: true
+        }
+
+    } else { // failed to create the record
+
+        // Remove the file from the storage
+        const {error} = await supabase.storage.from('communique-de-presse').remove([file]);
+
+        if(error) {
+            console.error(error.message)
+        }
+
+        return {
+            error: `Echec de l'ajout du CDP dans la base de données`
+        }
+    }
+
+    // FILE
+    // if(file != null && file instanceof File) {
+    //     const CDPFile: File = file;
+    //     // check file size
+    //     if(CDPFile.size != 0 && ((CDPFile.size / (1024*1024)) <= maxFileSize)) { // size is lower than 25mb
+
+    //         if(CDPFile.type == "application/pdf") { // valid format
+
+    //             // upload file on the S3 storage
+    //             const {error, data} = await supabase.storage.from('communique-de-presse').upload(sanitizeString(name.toString()), CDPFile);
+
+    //             if(error) {
+    //                 if(error.message == "The resource already exists") {
+    //                     return {
+    //                         error: "Un fichier portant le même nom existe déjà"
+    //                     }
+    //                 } else {
+    //                     console.error(error.message)
+    //                     return {
+    //                         error: "Une erreur est survenue lors de l'upload du document"
+    //                     }
+    //                 }
+                    
+    //             } else {
+
+    //                 // create a record for the new CDP (name, path, date?)
+    //                 const createdCDP = await prisma.communiqueDePresse.create({
+    //                     data: {
+    //                         name: name.toString(),
+    //                         filePath: data.path,
+    //                         size: CDPFile.size,
+    //                         createdAt: date ? new Date(date) : new Date(),
+    //                         type: type
+    //                     }
+    //                 });
+
+    //                 if(createdCDP != null) { // successfully created the record
+    //                     // revalidate cdp page
+    //                     revalidatePath('/dashboard/communiques-de-presse');
+    //                     revalidatePath('/presse');
+    //                     revalidatePath(type == 'CDP' ? '/presse/communiques-de-presse' : '/presse/dossiers-de-presse');
+
+    //                     return {
+    //                         success: true
+    //                     }
+    //                 } else {
+    //                     return {
+    //                         error: `Echec de l'ajout du CDP dans la base de données, veuillez contacter un administrateur (path: ${data.path})`
+    //                     }
+    //                 }
+
+                    
+    //             }
+
+    //         }
+    //     } else {
+    //         return {
+    //             error: `La taille du fichier doit être inférieure à ${maxFileSize}mo`
+    //         }
+    //     }
+    // } else {
+    //     return {
+    //         error : "Le fichier n'est pas valide"
+    //     }
+    // }
+
+
 
 }
