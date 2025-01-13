@@ -19,7 +19,7 @@ export default function DossierDePresseCard({dossier} : {dossier: CommuniqueDePr
             </div>
 
             <div className="hidden md:flex h-full items-center !ml-auto mt-auto mb-auto p-4">
-                <Link href={su.from('dossier-de-presse').getPublicUrl(dossier.filePath, true)}>
+                <Link href={su.from('communique-de-presse').getPublicUrl(dossier.filePath, true)}>
                     <FiDownload size={35} className="hover:scale-110 transition-all"/>
                 </Link>
             </div>
