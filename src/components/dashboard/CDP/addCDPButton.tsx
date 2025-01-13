@@ -24,16 +24,18 @@ import { useEffect, useCallback } from "react";
 
 import createCDPAction from "@/actions/CDP/createCDPAction";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
 import DatePicker from "@/components/ui/input/datePicker";
 import LoadingRing from "../loadingRing";
+import { uploadFile } from "@/helpers/supabase/upload";
+import FileInput from "@/components/ui/fileInput";
 
 export default function AddNewCDPButton() {
-
 
     const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(createCDPAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const maxUploadSizeInMb = 25;
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
@@ -56,9 +58,26 @@ export default function AddNewCDPButton() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
+        setIsLoading(true);
+        
         const formData = new FormData(event.currentTarget);
 
-        setIsLoading(true);
+        const file = formData.get('CDPfile') as File;
+
+        if(file.type !== 'application/pdf') {
+            formAction({error: "Le fichier doit être en format PDF"});
+            return;
+        }
+
+        const uploadResponse = await uploadFile('communique-de-presse', undefined, file, formData.get('name') as string, maxUploadSizeInMb, ['pdf']);
+
+        if(uploadResponse.error) {
+            formAction({error: uploadResponse.error});
+            return;
+        }
+
+        formData.delete('CDPfile'); // Delete the file from the form data so it doesn't get sent to the API
+        formData.set('CDPfilePath', uploadResponse.path!);
 
         formAction(formData);
     };
@@ -88,7 +107,8 @@ export default function AddNewCDPButton() {
 
                     <div>
                         <Label htmlFor="CDPfile">Fichier</Label>
-                        <Input type="file" id="CDPfile" name="CDPfile" accept="application/pdf"/>
+                        {/* <Input type="file" id="CDPfile" name="CDPfile" accept="application/pdf"/> */}
+                        <FileInput id="CDPfile" name="CDPfile" accept="application/pdf" />
                     </div>
 
                     <div>
