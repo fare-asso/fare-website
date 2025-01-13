@@ -3,7 +3,7 @@
 import React, { ChangeEventHandler, useState } from 'react';
 import { File, Upload } from 'lucide-react';
 
-export default function FileInput({id, name, accept}: {id?: string, name?: string, accept?: string}) {
+export default function FileInput({id, name, accept, maxSize}: {id?: string, name?: string, accept?: string, maxSize?: number}) {
 
   const [filename, setFilename] = useState<string | undefined>(undefined);
   
@@ -31,6 +31,14 @@ export default function FileInput({id, name, accept}: {id?: string, name?: strin
                     <p className="text-sm text-gray-500">
                     Cliquez ou glissez un fichier ici
                     </p>
+                    {
+                      maxSize && (
+                        <p className='text-xs text-gray-500'>
+                          (Taille maximale {maxSize}mo)
+                        </p>
+                      )
+                    }
+                    
                 </div>
               )
             }

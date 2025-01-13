@@ -107,8 +107,7 @@ export default function AddNewCDPButton() {
 
                     <div>
                         <Label htmlFor="CDPfile">Fichier</Label>
-                        {/* <Input type="file" id="CDPfile" name="CDPfile" accept="application/pdf"/> */}
-                        <FileInput id="CDPfile" name="CDPfile" accept="application/pdf" />
+                        <FileInput id="CDPfile" name="CDPfile" accept="application/pdf" maxSize={25} />
                     </div>
 
                     <div>
