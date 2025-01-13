@@ -17,7 +17,7 @@ export default function FileInput({id, name, accept}: {id?: string, name?: strin
   return (
     <div className="w-full max-w-md">
       <div className="flex items-center justify-center w-full">
-        <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
             {
               filename ? (
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
