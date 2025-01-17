@@ -135,7 +135,7 @@ export default async function Home() {
         <div className="flex flex-col md:flex-row items-center justify-center space-y-6 md:space-x-12">
           <DiscordWidget />
           <div className="flex flex-col w-full md:w-1/2 items-center mt-4">
-            <p className="text-lg font-semibold mb-2 text-center">Vidéo de présentation du <a href="https://discord.gg/jXN7DupGup" title="Lien vers Discord" className="text-blue-600 hover:text-blue-400 transition-all">Discord</a> de la FAHB 👇</p>
+            <p className="text-lg font-semibold mb-2 text-center">Vidéo de présentation du <a href="https://discord.gg/VNK9GcheFr" title="Lien vers Discord" className="text-blue-600 hover:text-blue-400 transition-all">Discord</a> de la FAHB 👇</p>
             <iframe
               width="853"
               height="480"
