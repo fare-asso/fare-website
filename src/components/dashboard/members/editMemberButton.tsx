@@ -2,34 +2,37 @@
 
 import { Button } from "@/components/ui/button";
 
-import Image from "next/image";
-
 import {
-Dialog,
-DialogContent,
-DialogDescription,
-DialogHeader,
-DialogTitle,
-DialogTrigger,
-DialogFooter,
-} from "@/components/ui/dialog"
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 
-import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
 
 import { MdEdit } from "react-icons/md";
 
 import editMemberAction from "@/actions/members/editMemberAction";
 import LoadingRing from "../loadingRing";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { uploadFile } from "@/helpers/supabase/upload";
+import { formDataToString, zodFieldValuesToFormData } from "@/helpers/formData";
+import FileInput from "@/components/ui/fileInput";
 
-interface Member {
+type Member = {
     id: number;
     firstName: string;
     lastName: string;
@@ -39,73 +42,154 @@ interface Member {
     facebookUrl: string | null;
     instagramUrl: string | null;
     twitterUrl: string | null;
-}
+};
 
-export default function EditMemberButton({member, pictureUrl} : {member: Member, pictureUrl: string}) {
+const memberSchema = z.object({
+    id: z.string().min(0, "L'id est obligatoire"),
+    lastName: z.string().min(1, "Le nom de famille est obligatoire"),
+    firstName: z.string().min(1, "Le prénom est obligatoire"),
+    position: z.string().min(1, "Le poste est obligatoire"),
+    picture:
+        typeof window === "undefined"
+            ? z.any()
+            : z
+                  .instanceof(FileList)
+                  .optional()
+                  .transform((fl) => {
+                      if (!fl || fl.length === 0) return undefined;
+                      return fl[0];
+                  })
+                  .refine(
+                      (file) => !file || file.type.split("/")[0] === "image",
+                      "Le format de l'image n'est pas valide",
+                  )
+                  .refine(
+                      (file) =>
+                          !file || file.size <= 1024 * 1024 * maxUploadSizeInMb,
+                      "La taille de l'image est trop grande",
+                  ),
+    email: z.string().email("L'email doit être valide"),
+    facebook: z
+        .string()
+        .url("L'URL Facebook doit être valide")
+        .optional()
+        .or(z.literal("")),
+    instagram: z
+        .string()
+        .url("L'URL Instagram doit être valide")
+        .optional()
+        .or(z.literal("")),
+    twitter: z
+        .string()
+        .url("L'URL Twitter doit être valide")
+        .optional()
+        .or(z.literal("")),
+});
 
-    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(editMemberAction, undefined)
+type TMemberSchema = z.infer<typeof memberSchema>;
+
+const maxUploadSizeInMb = 10;
+
+export default function EditMemberButton({
+    member,
+    pictureUrl,
+}: {
+    member: Member;
+    pictureUrl: string;
+}) {
+    const [error, setError] = useState<string | undefined>(undefined);
+    const [success, setSuccess] = useState<boolean>(false);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        reset,
+    } = useForm<TMemberSchema>({
+        resolver: zodResolver(memberSchema),
+    });
+
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
-          setDialogIsOpen(open);
-          if (!open) {
-            // Réinitialiser le formulaire lorsque le dialogue est fermé
-            setIsLoading(false);
-          }
+            setDialogIsOpen(open);
+            if (!open) {
+                // Réinitialiser le formulaire lorsque le dialogue est fermé
+                reset();
+                setIsLoading(false);
+            }
         },
-        [setDialogIsOpen]
-      );
-    
+        [setDialogIsOpen],
+    );
+
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
-    if (formState?.success) {
-        handleOpenChange(false);
+        if (success) {
+            handleOpenChange(false);
+        }
         setIsLoading(false);
-    }
-    }, [formState, handleOpenChange]);
+    }, [success, handleOpenChange]);
 
-    useEffect(() => {
-        if (formState?.error) {
-          setIsLoading(false); // Reset loading state if there's an error
-        }
-    }, [formState]);
-
-    const handleImageInputChange = (event : ChangeEvent<HTMLInputElement>) => {
-
-        const files: FileList | null = event.target.files;
-
-        if(files && files.length >= 1) {
-            const file: File = files[0];
-            const fileReader = new FileReader();
-
-            fileReader.onloadend = () => {
-                const resultUrl : string | ArrayBuffer | null = fileReader.result;
-                if(typeof resultUrl == 'string') {
-                    setImageUrl(resultUrl); 
-                }
-            }
-            fileReader.readAsDataURL(file);
-        }
-    }
-
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        const formData = new FormData(event.currentTarget);
-
+    // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
+    const onSubmit = async (data: TMemberSchema) => {
         setIsLoading(true);
 
-        formAction(formData);
+        if(data.picture) {
+            // Upload picture
+            const uploadResponse = await uploadFile(
+                "member-pictures",
+                undefined,
+                data.picture,
+                undefined,
+                maxUploadSizeInMb,
+                ["png", "jpeg", "jpg", "webp", "gif"],
+            );
+    
+            if (uploadResponse.error) {
+                setError(uploadResponse.error);
+                setIsLoading(false);
+                return;
+            }
+        }
+
+        // Build the formData with data values
+        const formData = zodFieldValuesToFormData(data, {
+            excludeFields: ["picture"],
+        });
+
+        // Add the previously uploaded picture path to the formData
+        formData.append("picturePath", member.picturePath);
+
+        console.log(formDataToString(formData));
+
+        // Send formData to server action without the file
+        const response = await editMemberAction(formData, member.id);
+
+        if (response.error) {
+            setIsLoading(false);
+            setError(response.error);
+            return;
+        }
+
+        if (response.success) {
+            setIsLoading(true);
+            setSuccess(true);
+            return;
+        }
     };
 
-    return(
+    return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button className="p-1 h-auto whitespace-normal" variant="outline"><MdEdit size={18}/></Button>
+                <Button
+                    className="p-1 h-auto whitespace-normal"
+                    variant="outline"
+                >
+                    <MdEdit size={18} />
+                </Button>
             </DialogTrigger>
 
             {/* Content */}
@@ -113,91 +197,206 @@ export default function EditMemberButton({member, pictureUrl} : {member: Member,
                 <DialogHeader>
                     <DialogTitle>Modification du membre</DialogTitle>
                     <DialogDescription>
-                        Ceci est le formulaire de modification de membre du bureau fédéral
+                        Ceci est le formulaire de modification de membre du
+                        bureau fédéral
                     </DialogDescription>
                 </DialogHeader>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} id="editMemberForm" className="space-y-3 overflow-y-auto p-2">
-
-                    <input type="hidden" name="id" value={member.id} />
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    id="editMemberForm"
+                    className="space-y-3 overflow-y-auto p-2"
+                >
+                    <input
+                        type="hidden"
+                        {...register("id")}
+                        defaultValue={member.id}
+                    />
+                    {errors.id && (
+                            <p className="text-red-500">{`${errors.id.message}`}</p>
+                    )}
 
                     <div>
                         <Label htmlFor="first-name">Prénom</Label>
-                        <Input type="text" id="first-name" name="first-name" placeholder="Prénom" required defaultValue={member.firstName}/>
+                        <Input
+                            type="text"
+                            {...register("firstName")}
+                            placeholder="Prénom"
+                            required
+                            defaultValue={member.firstName}
+                        />
+                        {errors.firstName && (
+                            <p className="text-red-500">{`${errors.firstName.message}`}</p>
+                        )}
                     </div>
 
                     <div>
                         <Label htmlFor="last-name">Nom</Label>
-                        <Input type="text" id="last-name" name="last-name" placeholder="Nom" required defaultValue={member.lastName}/>
+                        <Input
+                            type="text"
+                            {...register("lastName")}
+                            placeholder="Nom"
+                            required
+                            defaultValue={member.lastName}
+                        />
+                        {errors.lastName && (
+                            <p className="text-red-500">{`${errors.lastName.message}`}</p>
+                        )}
                     </div>
 
                     <div>
                         <Label htmlFor="position">Fonction</Label>
-                        <Input type="text" id="position" name="position" placeholder="exemple: Président, Trésorier, Membre Actif..." required defaultValue={member.position}/>
+                        <Input
+                            type="text"
+                            {...register("position")}
+                            placeholder="exemple: Président, Trésorier, Membre Actif..."
+                            required
+                            defaultValue={member.position}
+                        />
+                        {errors.position && (
+                            <p className="text-red-500">{`${errors.position.message}`}</p>
+                        )}
                     </div>
 
                     <div>
                         <Label htmlFor="picture">Photo</Label>
-                        <div className="text-sm text-muted-foreground">{"Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"}</div>
-                        <div className="text-sm text-muted-foreground">Taille maximale : 10 Mo</div>
-                        <div className="text-sm text-muted-foreground">Résolution recommandée : 400x400 pixels</div>
+                        <div className="text-sm text-muted-foreground">
+                            {
+                                "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
+                            }
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                            Taille maximale : 10 Mo
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                            Résolution recommandée : 400x400 pixels
+                        </div>
 
-                        { imageUrl ? <Image src={imageUrl} width={200} height={200} alt="Image du membre" className="rounded-md outline outline-2 outline-offset-2 outline-black w-auto h-32 my-3 aspect-square object-cover"/> : null}
-                        <Input type="file" id="picture" name="picture" onChange={handleImageInputChange} accept="image/*" className="mt-2"/>
+                        {/* {imageUrl ? (
+                            <Image
+                                src={imageUrl}
+                                width={200}
+                                height={200}
+                                alt="Image du membre"
+                                className="rounded-md outline outline-2 outline-offset-2 outline-black w-auto h-32 my-3 aspect-square object-cover"
+                            />
+                        ) : null}
+                        <Input
+                            type="file"
+                            id="picture"
+                            name="picture"
+                            onChange={handleImageInputChange}
+                            accept="image/*"
+                            className="mt-2"
+                        /> */}
+                        <FileInput
+                            {...register("picture")}
+                            accept="image/*"
+                            maxSize={maxUploadSizeInMb}
+                        />
+                        {errors.picture && (
+                            <p className="text-red-500">{`${errors.picture.message}`}</p>
+                        )}
                     </div>
 
                     <div>
                         <Label htmlFor="email">Email</Label>
-                        <Input type="email" id="email" name="email" placeholder="john.doe@fahb.eu" required defaultValue={member.email}/>
+                        <Input
+                            type="email"
+                            {...register("email")}
+                            placeholder="john.doe@fahb.eu"
+                            required
+                            defaultValue={member.email}
+                        />
+                        {errors.email && (
+                            <p className="text-red-500">{`${errors.email.message}`}</p>
+                        )}
                     </div>
 
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="facebook">Lien Facebook</Label>
-                            <div className="opacity-50 text-sm">(Optionnel)</div>
+                            <div className="opacity-50 text-sm">
+                                (Optionnel)
+                            </div>
                         </div>
-                        <Input type="url" id="facebook" name="facebook" pattern="https://www.facebook.com/.*" placeholder="https://www.facebook.com/johndoe"
-                        defaultValue={member.facebookUrl ? member.facebookUrl : ""}/>
+                        <Input
+                            type="url"
+                            {...register("facebook")}
+                            pattern="https://www.facebook.com/.*"
+                            placeholder="https://www.facebook.com/johndoe"
+                            defaultValue={
+                                member.facebookUrl ? member.facebookUrl : ""
+                            }
+                        />
+                        {errors.facebook && (
+                            <p className="text-red-500">{`${errors.facebook.message}`}</p>
+                        )}
                     </div>
 
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="instagram">Lien Instagram</Label>
-                            <div className="opacity-50 text-sm">(Optionnel)</div>
+                            <div className="opacity-50 text-sm">
+                                (Optionnel)
+                            </div>
                         </div>
-                        <Input type="url" id="instagram" name="instagram" pattern="https://www.instagram.com/.*" placeholder="https://www.instagram.com/johndoe"
-                        defaultValue={member.instagramUrl ? member.instagramUrl : ""}/>
+                        <Input
+                            type="url"
+                            {...register("instagram")}
+                            pattern="https://www.instagram.com/.*"
+                            placeholder="https://www.instagram.com/johndoe"
+                            defaultValue={
+                                member.instagramUrl ? member.instagramUrl : ""
+                            }
+                        />
+                        {errors.instagram && (
+                            <p className="text-red-500">{`${errors.instagram.message}`}</p>
+                        )}
                     </div>
 
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="twitter">Lien X</Label>
-                            <div className="opacity-50 text-sm">(Optionnel)</div>
+                            <div className="opacity-50 text-sm">
+                                (Optionnel)
+                            </div>
                         </div>
-                        
-                        <Input type="url" id="twitter" name="twitter" pattern="https://twitter.com/.*|https://x.com/.*" placeholder="https://x.com/johndoe"
-                        defaultValue={member.twitterUrl ? member.twitterUrl : ""}/>
+
+                        <Input
+                            type="url"
+                            {...register("twitter")}
+                            pattern="https://twitter.com/.*|https://x.com/.*"
+                            placeholder="https://x.com/johndoe"
+                            defaultValue={
+                                member.twitterUrl ? member.twitterUrl : ""
+                            }
+                        />
+                        {errors.twitter && (
+                            <p className="text-red-500">{`${errors.twitter.message}`}</p>
+                        )}
                     </div>
 
-
-                    { formState?.error ? 
-                    <Alert variant="destructive">
-                        <AlertTitle>Erreur</AlertTitle>
-                        <AlertDescription>
-                            {formState.error}
-                        </AlertDescription>
-                    </Alert>
-                    : null 
-                    }
-
+                    {error ? (
+                        <Alert variant="destructive">
+                            <AlertTitle>Erreur</AlertTitle>
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    ) : null}
                 </form>
 
                 <DialogFooter>
-                    <Button variant="outline" type="submit" form="editMemberForm" disabled={isLoading}>{ isLoading ? <LoadingRing/> : null } Modifier</Button>
+                    <Button
+                        variant="outline"
+                        type="submit"
+                        form="editMemberForm"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? <LoadingRing /> : null} Modifier
+                    </Button>
                 </DialogFooter>
             </DialogContent>
-            </Dialog>
-    )
-
+        </Dialog>
+    );
 }
