@@ -1,25 +1,25 @@
-
 import CreateArticleButton from "@/components/dashboard/Articles/createArticleButton";
 import {
-Card,
-CardContent,
-CardDescription,
-CardFooter,
-CardHeader,
-CardTitle,
-} from "@/components/ui/card"
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 
 import { Suspense } from "react";
 
 import ArticleList from "@/components/dashboard/Articles/articleList";
 
-
 export default async function Articles() {
-    return(
+    return (
         <Card className="w-full h-full flex-1 flex flex-col">
             <CardHeader>
                 <CardTitle>Articles</CardTitle>
-                <CardDescription>Espace de gestion des articles</CardDescription>
+                <CardDescription>
+                    Espace de gestion des articles
+                </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto">
                 <Suspense fallback={<p>Chargements...</p>}>
@@ -27,8 +27,8 @@ export default async function Articles() {
                 </Suspense>
             </CardContent>
             <CardFooter>
-                <CreateArticleButton/>
+                <CreateArticleButton />
             </CardFooter>
         </Card>
-      )
+    );
 }

@@ -3,19 +3,20 @@ import { createClient } from "@/helpers/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function CreatePasswordPage() {
-
     const supabase = createClient();
     const { data, error } = await supabase.auth.getUser();
 
-    if(error) {
+    if (error) {
         return (
-            <div>{"Echec de l'authentification de votre compte représentant"}</div>
-        )
+            <div>
+                {"Echec de l'authentification de votre compte représentant"}
+            </div>
+        );
     }
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-0 sm:p-1 md:p-4 lg:p-8">
             <CreatePasswordForm email={data.user.email!} />
         </div>
-    )
+    );
 }

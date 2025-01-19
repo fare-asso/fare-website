@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
     Card,
@@ -7,22 +7,24 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-  } from "@/components/ui/card"
+} from "@/components/ui/card";
 
-  import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
-  import LoginForm from "@/components/dashboard/loginForm"
+import LoginForm from "@/components/dashboard/loginForm";
 
 export default function LoginPage() {
-    return(
+    return (
         <Card>
             <CardHeader>
                 <CardTitle>Connexion Admin</CardTitle>
-                <CardDescription>Accès réservé uniquement aux membres de la fédération</CardDescription>
+                <CardDescription>
+                    Accès réservé uniquement aux membres de la fédération
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <LoginForm></LoginForm>
             </CardContent>
         </Card>
-    )
+    );
 }
