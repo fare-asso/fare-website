@@ -1,137 +1,117 @@
-'use server';
+"use server";
 
 import prisma from "@/helpers/db";
-import { validateEmail } from "@/helpers/string";
 
 import { createClient } from "@/helpers/supabase/server";
 import getCurrentUserRole from "@/helpers/user/role";
-import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
+const MemberSchema = z.object({
+    lastName: z.string().min(1, "Le nom de famille est obligatoire"),
+    firstName: z.string().min(1, "Le prénom est obligatoire"),
+    position: z.string().min(1, "Le poste est obligatoire"),
+    picturePath: z.string().min(1, "Le chemin de l'image est obligatoire"),
+    email: z.string().email("L'email doit être valide"),
+    facebook: z.string().url("L'URL Facebook doit être valide").optional().or(z.literal('')),
+    instagram: z.string().url("L'URL Instagram doit être valide").optional().or(z.literal('')),
+    twitter: z.string().url("L'URL Twitter doit être valide").optional().or(z.literal('')),
+});
 
-export default async function editMemberAction(prevState: {error?: string, success?: boolean,} | undefined,formData: FormData) {
-
+export default async function editMemberAction(
+    formData: FormData,
+    id: number
+) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole();
-    if(error) return { error : "Echec de l'authentification de l'utilisateur" }
-    if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
-
+    if (error) return { error: "Echec de l'authentification de l'utilisateur" };
+    if (role != "ADMIN")
+        return {
+            error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
+        };
 
     // create supabase client
     const supabase = createClient();
 
-    // retrieve form data fields
-    const id = formData.get('id')?.toString();
-    const lastName = formData.get('last-name')?.toString();
-    const firstName = formData.get('first-name')?.toString();
-    const position = formData.get('position')?.toString();
-    const pictureFile = formData.get('picture');
-    const email = formData.get('email')?.toString();
-    const facebook = formData.get('facebook')?.toString();
-    const instagram = formData.get('instagram')?.toString();
-    const twitter = formData.get('twitter')?.toString();
+    // Retrieve form data fields
+    const memberData = {
+        lastName: formData.get("lastName"),
+        firstName: formData.get("firstName"),
+        position: formData.get("position"),
+        picturePath: formData.get("picturePath"),
+        email: formData.get("email"),
+        facebook: formData.get("facebook"),
+        instagram: formData.get("instagram"),
+        twitter: formData.get("twitter"),
+    };
 
-    if(!id || !lastName || !firstName || !position || !pictureFile || !email) {
+    // Validate form data with zod
+    const parsed = MemberSchema.safeParse(memberData);
+    if (!parsed.success) {
+        console.log("Error: ", parsed.error.toString());
         return {
-            error: "Un ou plusieurs champs obligatoires ne sont pas remplis"
-        }
+            success: false,
+            error: "Un ou plusieurs champs sont invalides",
+        };
     }
 
     // fetch current record
     const currentMember = await prisma.member.findUnique({
-        where : {
-            id: Number(id)
-        }
-    })
+        where: {
+            id: Number(id),
+        },
+    });
 
-    if(currentMember == null) {
+    if (currentMember == null) {
         return {
-            error: "La récupération des informations du membre (id: " + id?.toString() + ") a échouée"
-        }
+            error:
+                "La récupération des informations du membre (id: " +
+                id?.toString() +
+                ") a échouée",
+        };
     }
 
-    // Fields Validation
+    // Fetch picture info
+    const { data, error: pictureError } = await supabase.storage
+        .from("member-pictures")
+        .info(parsed.data?.picturePath!);
 
-    const maxFileSize : number = 10 // in mb
-
-    if(!validateEmail(email)) {
+    if (pictureError) {
         return {
-            error: "Adresse email non-valide"
-        }
-    }
-
-    let picturePath: string | undefined = undefined;
-
-    if(pictureFile && pictureFile instanceof File) {
-        const file: File = pictureFile;
-        // check file validity and size
-        if(file.size != 0 && ((file.size / (1024*1024)) <= maxFileSize)) { // valid file and size <= max file size
-
-            // check file format
-            if(file.type.startsWith('image/')) {
-
-                // Remove previous image
-                const { error: removeError, data: removeData } = await supabase.storage.from('member-pictures').remove([currentMember.picturePath]);
-
-                if(removeError) {
-                    return { error: `Echec de la supression de l'ancienne photo de ${currentMember.facebookUrl} ${currentMember.lastName}`}
-                }
-
-                // Add new image
-                const { error: updateError, data: updateData } = await supabase.storage.from('member-pictures').upload(randomUUID(), file);
-
-                if(updateError) { // upload failed
-                    console.log(updateError.message)
-                    return {
-                        error : updateError.message
-                    }
-                } else { // upload success
-                    picturePath = updateData.path;
-                }
-
-            } else {
-                return {
-                    error: "Le format de l'image doit être : png, jpeg, jpg, webp ou gif"
-                }
-            }
-        } else {
-            console.error("Taille de l'image non valide")
-        }
-    } else {
-        console.error("Image non valide")
+            success: false,
+            error: "Erreur lors de la récupération de l'image",
+        };
     }
 
     // update record
-    const updatedMemberRecord = await prisma.member.update({
-        where: {
-            id: Number(id)
-        },
-        data: {
-            firstName : firstName,
-            lastName: lastName,
-            position: position,
-            picturePath: picturePath,
-            email: email,
-            facebookUrl: facebook,
-            instagramUrl: instagram,
-            twitterUrl: twitter
-        }
-    })
-
-    if(updatedMemberRecord != null) { // record has been created
+    try {
+        const updatedMemberRecord = await prisma.member.update({
+            where: {
+                id: Number(id),
+            },
+            data: {
+                firstName: parsed.data.firstName,
+                lastName: parsed.data.lastName,
+                position: parsed.data.position,
+                picturePath: parsed.data.picturePath,
+                email: parsed.data.email,
+                facebookUrl: parsed.data.facebook,
+                instagramUrl: parsed.data.instagram,
+                twitterUrl: parsed.data.twitter,
+            },
+        });
 
         // revalidate path
-        revalidatePath('/dashboard/membres');
-        revalidatePath('/bureau');
+        revalidatePath("/dashboard/membres");
+        revalidatePath("/bureau");
 
         return {
-            success : true
-        }
-        
-    } else {
+            success: true,
+        };
+
+    } catch {
         return {
-            error: "La modification du membre dans la base de données à échoué... Veuillez contacter un administrateur"
-        }
+            error: "La modification du membre dans la base de données à échoué... Veuillez contacter un administrateur",
+        };
     }
-
 }
