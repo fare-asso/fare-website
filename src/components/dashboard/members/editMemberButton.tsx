@@ -136,6 +136,9 @@ export default function EditMemberButton({
     const onSubmit = async (data: TMemberSchema) => {
         setIsLoading(true);
 
+        let newPicturePath : string | undefined = undefined
+
+        // If a picture is provided, upload it and get the path
         if(data.picture) {
             // Upload picture
             const uploadResponse = await uploadFile(
@@ -152,6 +155,10 @@ export default function EditMemberButton({
                 setIsLoading(false);
                 return;
             }
+
+            // Set the new picture path
+            newPicturePath = uploadResponse.path!;
+
         }
 
         // Build the formData with data values
@@ -159,8 +166,8 @@ export default function EditMemberButton({
             excludeFields: ["picture"],
         });
 
-        // Add the previously uploaded picture path to the formData
-        formData.append("picturePath", member.picturePath);
+        // Add the picture to the formData
+        formData.append("picturePath", data.picture ? newPicturePath! : member.picturePath);
 
         console.log(formDataToString(formData));
 
