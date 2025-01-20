@@ -8,7 +8,7 @@ import { MouseEvent, useState } from "react";
 
 import { MdDelete } from "react-icons/md";
 
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast";
 
 // import EditMemberButton from "./editMemberButton";
 
@@ -21,8 +21,13 @@ import DeleteRepresentativeButton from "./deleteRepresentativeButton";
 import AssociationDropdownMenu from "./AssociationDropdownMenu";
 import DeleteAssociationButton from "./deleteAssociationButton";
 
-export default function AssociationCard({association, logoUrl} : {association: Association, logoUrl: string}) {
-
+export default function AssociationCard({
+    association,
+    logoUrl,
+}: {
+    association: Association;
+    logoUrl: string;
+}) {
     // const { toast } = useToast()
 
     const [hidden, setIsHidden] = useState<boolean>(false);
@@ -46,22 +51,39 @@ export default function AssociationCard({association, logoUrl} : {association: A
     //     }
     // }
 
-    return(
-        <div className={clsx("flex flex-col items-start rounded-lg border bg-card text-card-foreground shadow-sm p-3 h-min", hidden && "hidden")}>
+    return (
+        <div
+            className={clsx(
+                "flex flex-col items-start rounded-lg border bg-card text-card-foreground shadow-sm p-3 h-min",
+                hidden && "hidden",
+            )}
+        >
             <div className="relative">
                 {/* Hover buttons */}
                 <div className="w-full h-full flex flex-row opacity-100 lg:opacity-0 lg:hover:opacity-100 absolute items-start justify-end p-2 space-x-1">
-                        <DeleteAssociationButton association={association} />
-                        <EditAssociationButton association={association}/>
-                        { association.representativeId ? 
-                            <DeleteRepresentativeButton association={association}/> :  <SendInvitationLinkButton association={association}/>
-                        }
+                    <DeleteAssociationButton association={association} />
+                    <EditAssociationButton association={association} />
+                    {association.representativeId ? (
+                        <DeleteRepresentativeButton association={association} />
+                    ) : (
+                        <SendInvitationLinkButton association={association} />
+                    )}
                 </div>
-                <Image src={logoUrl} width={1000} height={1000} alt={"Logo de l'association " + association.name} className="rounded-md shadow-sm aspect-square object-cover mb-1"/>
+                <Image
+                    src={logoUrl}
+                    width={1000}
+                    height={1000}
+                    alt={"Logo de l'association " + association.name}
+                    className="rounded-md shadow-sm aspect-square object-cover mb-1"
+                />
             </div>
-            
-            <div className="w-full flex flex-row space-x-1 text-card-foreground font-medium mb-[0.125rem]">{association.name}</div>
-            <div className="inline-flex items-center bg-card-foreground rounded-full px-2.5 py-0.5 text-primary-foreground text-xs font-semibold whitespace-nowrap">{association.major}</div>
+
+            <div className="w-full flex flex-row space-x-1 text-card-foreground font-medium mb-[0.125rem]">
+                {association.name}
+            </div>
+            <div className="inline-flex items-center bg-card-foreground rounded-full px-2.5 py-0.5 text-primary-foreground text-xs font-semibold whitespace-nowrap">
+                {association.major}
+            </div>
         </div>
-    )
+    );
 }

@@ -5,22 +5,25 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-export default function AssociationDropdownMenu({children} : {children : JSX.Element[]}) {
-    return(
+export default function AssociationDropdownMenu({
+    children,
+}: {
+    children: JSX.Element[];
+}) {
+    return (
         <DropdownMenu>
             <DropdownMenuTrigger>...</DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuSeparator />
-                    {children}
-                
+                {children}
+
                 {/* <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Billing</DropdownMenuItem>
                 <DropdownMenuItem>Team</DropdownMenuItem>
                 <DropdownMenuItem>Subscription</DropdownMenuItem> */}
             </DropdownMenuContent>
         </DropdownMenu>
-    )
-    
+    );
 }

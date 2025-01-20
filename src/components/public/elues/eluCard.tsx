@@ -1,20 +1,25 @@
-
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 
 export type Elu = {
-    firstName: string,
-    lastName: string,
-    position: string
-}
+    firstName: string;
+    lastName: string;
+    position: string;
+};
 
-export default function EluCard({elu, picture} : {elu: Elu, picture: StaticImageData}) {
-
+export default function EluCard({
+    elu,
+    picture,
+}: {
+    elu: Elu;
+    picture: StaticImageData;
+}) {
     return (
         <div className="rounded-lg flex flex-col items-center p-4">
-            <Image src={picture}
-            alt={`Photo de ${elu.firstName} ${elu.lastName}`}
-            className="aspect-square rounded-full object-cover"
+            <Image
+                src={picture}
+                alt={`Photo de ${elu.firstName} ${elu.lastName}`}
+                className="aspect-square rounded-full object-cover"
             />
             <div className="flex flex-col w-full items-center">
                 <span className="font-semibold">{`${elu.firstName} ${elu.lastName}`}</span>
@@ -27,8 +32,6 @@ export default function EluCard({elu, picture} : {elu: Elu, picture: StaticImage
                 { member.instagramUrl ? <Link href={member.instagramUrl}><FaInstagram size={20}/></Link> : null}
                 { member.twitterUrl ? <Link href={member.twitterUrl}><FaXTwitter size={20}/></Link> : null}
             </div> */}
-
         </div>
-    )
-
+    );
 }

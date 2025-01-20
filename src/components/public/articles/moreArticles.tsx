@@ -1,22 +1,25 @@
 import prisma from "@/helpers/db";
 import ArticleCard from "./articleCard";
 
-export default async function MoreArticles({currentArticleId} : {currentArticleId : number}) {
-
+export default async function MoreArticles({
+    currentArticleId,
+}: {
+    currentArticleId: number;
+}) {
     const articles = await prisma.article.findMany({
         where: {
             NOT: {
-                id: currentArticleId
+                id: currentArticleId,
             },
         },
         orderBy: {
-            writtenOn: "desc"
+            writtenOn: "desc",
         },
-        take: 2
-    })
+        take: 2,
+    });
 
-    if(articles.length == 0) {
-        return <></>
+    if (articles.length == 0) {
+        return <></>;
     }
 
     return (
@@ -24,9 +27,10 @@ export default async function MoreArticles({currentArticleId} : {currentArticleI
             <span className="text-lg font-semibold">Autres articles:</span>
 
             <div className="w-full mt-2 flex flex-col items-center space-y-4">
-                { articles.map((article => <ArticleCard key={article.id} article={article} />))}
+                {articles.map((article) => (
+                    <ArticleCard key={article.id} article={article} />
+                ))}
             </div>
-            
         </div>
-    )
+    );
 }

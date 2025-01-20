@@ -1,6 +1,10 @@
-'use client';
+"use client";
 
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "../button";
 import { Calendar } from "../calendar";
 
@@ -9,25 +13,71 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
-
-export default function DatePicker({defaultValue, name, enableMonthYearDropdown, fromYear, toYear} : {defaultValue?: Date, name?: string, enableMonthYearDropdown?: boolean, fromYear?: number, toYear?: number}) {
-
-    const [date, setDate] = useState<Date | undefined>(defaultValue ?? undefined);
+export default function DatePicker({
+    defaultValue,
+    name,
+    enableMonthYearDropdown,
+    fromYear,
+    toYear,
+}: {
+    defaultValue?: Date;
+    name?: string;
+    enableMonthYearDropdown?: boolean;
+    fromYear?: number;
+    toYear?: number;
+}) {
+    const [date, setDate] = useState<Date | undefined>(
+        defaultValue ?? undefined,
+    );
 
     return (
         <div>
             <Popover>
                 <PopoverTrigger asChild className="flex flex-col">
                     <Button variant="outline" className="flex flex-row w-52">
-                        <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                        {date ? format(date, "PPP", {locale: fr}) : <span>Sélectionne une date</span>}
+                        <svg
+                            className="mr-2 h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M8 2v4" />
+                            <path d="M16 2v4" />
+                            <rect width="18" height="18" x="3" y="4" rx="2" />
+                            <path d="M3 10h18" />
+                        </svg>
+                        {date ? (
+                            format(date, "PPP", { locale: fr })
+                        ) : (
+                            <span>Sélectionne une date</span>
+                        )}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full">
-                    <Calendar mode="single" selected={date} onSelect={setDate} className="mb-3" captionLayout={enableMonthYearDropdown ? "dropdown" : "buttons"} fromYear={fromYear ?? 1971} toYear={toYear ?? new Date().getFullYear()}/>
+                    <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        className="mb-3"
+                        captionLayout={
+                            enableMonthYearDropdown ? "dropdown" : "buttons"
+                        }
+                        fromYear={fromYear ?? 1971}
+                        toYear={toYear ?? new Date().getFullYear()}
+                    />
                 </PopoverContent>
             </Popover>
-            <input type="hidden" name ={name} value={date ? date.toString() : ""}/>
+            <input
+                type="hidden"
+                name={name}
+                value={date ? date.toString() : ""}
+            />
         </div>
-    )
+    );
 }

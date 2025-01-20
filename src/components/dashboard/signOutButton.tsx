@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import SignOutAction from "@/actions/auth/signOutAction";
 import { Button } from "../ui/button";
 import { MdLogout } from "react-icons/md";
@@ -20,9 +20,15 @@ export default function SignOutButton() {
     };
 
     return (
-        <Button onClick={handleSignOut} className="flex flex-row items-center justify-center h-auto px-4" disabled={loading}>
+        <Button
+            onClick={handleSignOut}
+            className="flex flex-row items-center justify-center h-auto px-4"
+            disabled={loading}
+        >
             <MdLogout className="mr-1" size={20} />
-            <div className='text-base lg:text-sm'>{loading ? "Déconnexion..." : "Se déconnecter"}</div>
+            <div className="text-base lg:text-sm">
+                {loading ? "Déconnexion..." : "Se déconnecter"}
+            </div>
         </Button>
     );
 }

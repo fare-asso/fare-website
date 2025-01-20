@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import prisma from "@/helpers/db";
 
@@ -6,11 +6,12 @@ import { revalidatePath } from "next/cache";
 
 import { verifyCaptcha } from "@/helpers/captcha";
 
-
-export default async function submitBagadAssoFormAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
-
+export default async function submitBagadAssoFormAction(
+    prevState: { error?: string; success?: boolean } | undefined,
+    formData: FormData,
+) {
     // Retrieve CAPTCHA value
-    const captchaValue = formData.get('g-recaptcha-response')?.toString();
+    const captchaValue = formData.get("g-recaptcha-response")?.toString();
 
     // Verify CAPTCHA
     if (!captchaValue) {
@@ -19,23 +20,35 @@ export default async function submitBagadAssoFormAction(prevState: {error?: stri
 
     const isCaptchaValid = await verifyCaptcha(captchaValue);
     if (!isCaptchaValid) {
-        return { error: "La vérification CAPTCHA a échoué. Veuillez réessayer." };
+        return {
+            error: "La vérification CAPTCHA a échoué. Veuillez réessayer.",
+        };
     }
 
     // retrieve form data fields
-    const association_name = formData.get('association-name')?.toString();
-    const association_email = formData.get('association-email')?.toString();
-    const association_referent_name = formData.get('association-referent-name')?.toString();
-    const association_referent_first_name = formData.get('association-referent-first-name')?.toString();
-    const association_referent_email = formData.get('association-referent-email')?.toString();
-    const association_referent_phone = formData.get('association-referent-phone')?.toString();
-    const event_name = formData.get('event-name')?.toString();
-    const event_type = formData.get('event-type')?.toString();
-    const event_date = formData.get('event-date')?.toString();
-    const event_address = formData.get('event-address')?.toString();
-    const event_participants = Number(formData.get('event-participants'));
-    const equipment_input = formData.get('equipment-input')?.toString();
-    const terms_and_conditions = formData.get('terms-and-conditions')?.toString();
+    const association_name = formData.get("association-name")?.toString();
+    const association_email = formData.get("association-email")?.toString();
+    const association_referent_name = formData
+        .get("association-referent-name")
+        ?.toString();
+    const association_referent_first_name = formData
+        .get("association-referent-first-name")
+        ?.toString();
+    const association_referent_email = formData
+        .get("association-referent-email")
+        ?.toString();
+    const association_referent_phone = formData
+        .get("association-referent-phone")
+        ?.toString();
+    const event_name = formData.get("event-name")?.toString();
+    const event_type = formData.get("event-type")?.toString();
+    const event_date = formData.get("event-date")?.toString();
+    const event_address = formData.get("event-address")?.toString();
+    const event_participants = Number(formData.get("event-participants"));
+    const equipment_input = formData.get("equipment-input")?.toString();
+    const terms_and_conditions = formData
+        .get("terms-and-conditions")
+        ?.toString();
 
     // Debug logs
     console.log("Association Name:", association_name);
@@ -53,17 +66,30 @@ export default async function submitBagadAssoFormAction(prevState: {error?: stri
     console.log("Terms and Conditions:", terms_and_conditions);
 
     // data validation
-    if(!association_name || !association_email || !association_referent_name || !association_referent_first_name ||
-        !association_referent_email || !association_referent_phone || !event_name || !event_type || !event_date ||
-        !event_address || isNaN(event_participants) || !equipment_input || !terms_and_conditions
+    if (
+        !association_name ||
+        !association_email ||
+        !association_referent_name ||
+        !association_referent_first_name ||
+        !association_referent_email ||
+        !association_referent_phone ||
+        !event_name ||
+        !event_type ||
+        !event_date ||
+        !event_address ||
+        isNaN(event_participants) ||
+        !equipment_input ||
+        !terms_and_conditions
     ) {
         return {
-            error: "Un ou plusieurs champs ne sont pas remplis."
-        }
+            error: "Un ou plusieurs champs ne sont pas remplis.",
+        };
     }
 
     // terms and conditions
-    if(terms_and_conditions !== 'on') { return { error: "Veuillez accepter les termes et conditions" }}
+    if (terms_and_conditions !== "on") {
+        return { error: "Veuillez accepter les termes et conditions" };
+    }
 
     // Check if event_date is a valid date
     const eventDateObject = new Date(event_date);
@@ -85,17 +111,15 @@ export default async function submitBagadAssoFormAction(prevState: {error?: stri
                 eventDate: eventDateObject,
                 eventAddr: event_address,
                 estimatedParticipants: event_participants,
-                equipments: equipment_input
-            }
+                equipments: equipment_input,
+            },
         });
 
-        revalidatePath('/dashboard/bagadAsso')
-        return { success: true }
+        revalidatePath("/dashboard/bagadAsso");
+        return { success: true };
     } catch {
-        return { error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer." }
+        return {
+            error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer.",
+        };
     }
-
-
-    
-
 }

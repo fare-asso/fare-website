@@ -7,45 +7,66 @@ import Link from "next/link";
 import { MdLocationPin } from "react-icons/md";
 
 interface JsonLocation {
-    displayName: string,
-    coordinates: Coordinates
+    displayName: string;
+    coordinates: Coordinates;
 }
 
 interface Coordinates {
-    lat: string,
-    lon: string
+    lat: string;
+    lon: string;
 }
 
-function processLocationData(value: string): { json?: JsonLocation, string?: string} {
+function processLocationData(value: string): {
+    json?: JsonLocation;
+    string?: string;
+} {
     try {
         const json = JSON.parse(value);
         return {
-            json: json
-        }
+            json: json,
+        };
     } catch {
         return {
-            string: value
-        }
+            string: value,
+        };
     }
 }
 
-export default function AssociationCard({association}:{ association: Association}) {
-
+export default function AssociationCard({
+    association,
+}: {
+    association: Association;
+}) {
     const supabase = createClient();
 
     const processedLocationData = processLocationData(association.location);
 
     return (
-        <Link href={`/reseau/associations/${association.id}`} className="relative flex flex-col p-4 hover:scale-105 bg-white outline outline-1 outline-black rounded-lg transition-all">
-            <Image src={supabase.storage.from('association-pictures').getPublicUrl(association.logoPath).data.publicUrl} width={400} height={400} alt={association.name + " logo"}
-            className=" rounded-lg border border-black aspect-square object-cover w-full"
+        <Link
+            href={`/reseau/associations/${association.id}`}
+            className="relative flex flex-col p-4 hover:scale-105 bg-white outline outline-1 outline-black rounded-lg transition-all"
+        >
+            <Image
+                src={
+                    supabase.storage
+                        .from("association-pictures")
+                        .getPublicUrl(association.logoPath).data.publicUrl
+                }
+                width={400}
+                height={400}
+                alt={association.name + " logo"}
+                className=" rounded-lg border border-black aspect-square object-cover w-full"
             />
             <div className="flex flex-row w-full">
                 <div className="flex flex-col mt-2">
-                    <span className="font-semibold text-xl">{association.name}</span>
-                    <span className="border border-black text-xs px-4 py-[2px] rounded-full text-center font-semibold">{association.major}</span>
+                    <span className="font-semibold text-xl">
+                        {association.name}
+                    </span>
+                    <span className="border border-black text-xs px-4 py-[2px] rounded-full text-center font-semibold">
+                        {association.major}
+                    </span>
                 </div>
             </div>
         </Link>
-    )
+    );
 }

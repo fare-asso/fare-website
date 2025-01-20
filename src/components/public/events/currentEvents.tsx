@@ -5,7 +5,6 @@ import { createClient } from "@/helpers/supabase/server";
 import prisma from "@/helpers/db";
 
 export default async function CurrentEvents() {
-
     const supabase = createClient();
 
     const now = new Date();
@@ -13,39 +12,46 @@ export default async function CurrentEvents() {
     const events = await prisma.event.findMany({
         where: {
             AND: {
-                startTime : {
-                    lte: now
+                startTime: {
+                    lte: now,
                 },
                 endTime: {
-                    gte: now
-                }
-            }
+                    gte: now,
+                },
+            },
         },
         include: {
             category: {
                 select: {
-                    name: true
-                }
-            }
-        }
-    })
+                    name: true,
+                },
+            },
+        },
+    });
 
-    if(events.length == 0) {
-        return <></>
+    if (events.length == 0) {
+        return <></>;
     }
-    
+
     return (
         <div className="w-full flex flex-col mb-8">
             <span className="font-semibold text-2xl mb-4">En ce moment</span>
             <div className="w-full h-auto flex flex-col items-center">
-                {
-                    events.length > 0 ? 
-                    events.map((event) => <EventCard key={event.id} event={event} archive={false}
-                    imageUrl={supabase.storage.from('EventPictures').getPublicUrl(event.image).data.publicUrl} />)
-                    : null
-                }
+                {events.length > 0
+                    ? events.map((event) => (
+                          <EventCard
+                              key={event.id}
+                              event={event}
+                              archive={false}
+                              imageUrl={
+                                  supabase.storage
+                                      .from("EventPictures")
+                                      .getPublicUrl(event.image).data.publicUrl
+                              }
+                          />
+                      ))
+                    : null}
             </div>
-            
         </div>
-    )
+    );
 }

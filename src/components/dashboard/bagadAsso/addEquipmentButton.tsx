@@ -3,19 +3,19 @@
 import { Button } from "@/components/ui/button";
 
 import {
-Dialog,
-DialogContent,
-DialogDescription,
-DialogHeader,
-DialogTitle,
-DialogTrigger,
-DialogFooter,
-} from "@/components/ui/dialog"
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import { ChangeEvent, MouseEvent, useRef, useState } from "react";
 
@@ -30,9 +30,10 @@ import LoadingRing from "../loadingRing";
 import Image from "next/image";
 
 export default function AddEquipmentButton() {
-
-
-    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(addEquipmentAction, undefined)
+    const [formState, formAction] = useFormState<
+        { error?: string; success?: boolean } | undefined,
+        any
+    >(addEquipmentAction, undefined);
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -45,32 +46,31 @@ export default function AddEquipmentButton() {
         e.preventDefault();
 
         // if there is a file
-        if(e.target.files && e.target.files.length > 0) {
+        if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
             setFile(URL.createObjectURL(file));
-        } 
-    }
+        }
+    };
 
     const handleDeleteImage = (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
         setFile(undefined);
-        if(inputFileRef.current) {
-            inputFileRef.current.value = '';
+        if (inputFileRef.current) {
+            inputFileRef.current.value = "";
         }
-        
-    }
+    };
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
-          setDialogIsOpen(open);
-          if (!open) {
-            // Réinitialiser le formulaire lorsque le dialogue est fermé
-          }
+            setDialogIsOpen(open);
+            if (!open) {
+                // Réinitialiser le formulaire lorsque le dialogue est fermé
+            }
         },
-        [setDialogIsOpen]
+        [setDialogIsOpen],
     );
-    
+
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
@@ -90,11 +90,11 @@ export default function AddEquipmentButton() {
         formAction(formData);
     };
 
-    return(
+    return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button >Ajouter du matériel</Button>
+                <Button>Ajouter du matériel</Button>
             </DialogTrigger>
 
             {/* Content */}
@@ -102,17 +102,27 @@ export default function AddEquipmentButton() {
                 <DialogHeader>
                     <DialogTitle>Nouveau matériel</DialogTitle>
                     <DialogDescription>
-                        {"Ceci est le formulaire d'ajout des nouveaux équipements du projet BagadAsso"}
+                        {
+                            "Ceci est le formulaire d'ajout des nouveaux équipements du projet BagadAsso"
+                        }
                     </DialogDescription>
                 </DialogHeader>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} id="addEquipmentForm" className="space-y-3">
-
+                <form
+                    onSubmit={handleSubmit}
+                    id="addEquipmentForm"
+                    className="space-y-3"
+                >
                     {/* Name */}
                     <div>
                         <Label htmlFor="name">Nom</Label>
-                        <Input type="text" id="name" name="name" placeholder="Nom de l'équipement"/>
+                        <Input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Nom de l'équipement"
+                        />
                     </div>
 
                     {/* Quantity */}
@@ -129,36 +139,58 @@ export default function AddEquipmentButton() {
 
                     {/* Picture */}
                     <div>
-                        <Label htmlFor="equipment-picture">{"Image de l'équipement"}</Label>
-                        { file &&
-                        <div className="relative w-fit">
-                            <Image width={300} height={300} src={file} alt={`Photo du matériel`} className="rounded-lg border my-2 h-48 aspect-auto outline outline-1 outline-offset-1" />
-                            <Button className="absolute m-1 top-0 right-0 p-3" variant="destructive" onClick={handleDeleteImage}><MdDelete size="20" /></Button>
-                        </div>
-                        }
-                        <Input type="file" ref={inputFileRef} id="equipment-picture" name="equipment-picture" accept="image/*" onChange={handleFileChange}/>
-                        
+                        <Label htmlFor="equipment-picture">
+                            {"Image de l'équipement"}
+                        </Label>
+                        {file && (
+                            <div className="relative w-fit">
+                                <Image
+                                    width={300}
+                                    height={300}
+                                    src={file}
+                                    alt={`Photo du matériel`}
+                                    className="rounded-lg border my-2 h-48 aspect-auto outline outline-1 outline-offset-1"
+                                />
+                                <Button
+                                    className="absolute m-1 top-0 right-0 p-3"
+                                    variant="destructive"
+                                    onClick={handleDeleteImage}
+                                >
+                                    <MdDelete size="20" />
+                                </Button>
+                            </div>
+                        )}
+                        <Input
+                            type="file"
+                            ref={inputFileRef}
+                            id="equipment-picture"
+                            name="equipment-picture"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
                     </div>
 
-                    
-
-                    { formState?.error ? 
-                    <Alert variant="destructive">
-                        <AlertTitle>Erreur</AlertTitle>
-                        <AlertDescription>
-                            {formState.error}
-                        </AlertDescription>
-                    </Alert>
-                    : null 
-                    }
-
+                    {formState?.error ? (
+                        <Alert variant="destructive">
+                            <AlertTitle>Erreur</AlertTitle>
+                            <AlertDescription>
+                                {formState.error}
+                            </AlertDescription>
+                        </Alert>
+                    ) : null}
                 </form>
 
                 <DialogFooter>
-                    <Button type="submit" form="addEquipmentForm" className="mt-4" disabled={isLoading}>{isLoading ? <LoadingRing/> : null} Ajouter</Button>
+                    <Button
+                        type="submit"
+                        form="addEquipmentForm"
+                        className="mt-4"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? <LoadingRing /> : null} Ajouter
+                    </Button>
                 </DialogFooter>
             </DialogContent>
-            </Dialog>
-    )
-
+        </Dialog>
+    );
 }

@@ -3,25 +3,24 @@
 import { Button } from "@/components/ui/button";
 
 import {
-Dialog,
-DialogContent,
-DialogDescription,
-DialogHeader,
-DialogTitle,
-DialogTrigger,
-DialogFooter,
-} from "@/components/ui/dialog"
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import { useState } from "react";
 
 import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
-
 
 import LoadingRing from "../loadingRing";
 
@@ -30,31 +29,36 @@ import { Association } from "@prisma/client";
 import { TbMailPlus } from "react-icons/tb";
 import inviteRepresentativeAction from "@/actions/associations/inviteRepresentativeAction";
 
-
-export default function SendInvitationLinkButton({association} : {association: Association}) {
-
-    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(inviteRepresentativeAction, undefined)
+export default function SendInvitationLinkButton({
+    association,
+}: {
+    association: Association;
+}) {
+    const [formState, formAction] = useFormState<
+        { error?: string; success?: boolean } | undefined,
+        any
+    >(inviteRepresentativeAction, undefined);
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
-          setDialogIsOpen(open);
-          if (!open) {
-            setIsLoading(false);
-            // Réinitialiser le formulaire lorsque le dialogue est fermé
-          }
+            setDialogIsOpen(open);
+            if (!open) {
+                setIsLoading(false);
+                // Réinitialiser le formulaire lorsque le dialogue est fermé
+            }
         },
-        [setDialogIsOpen]
-      );
-    
+        [setDialogIsOpen],
+    );
+
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
-    if (formState?.success) {
-        handleOpenChange(false);
+        if (formState?.success) {
+            handleOpenChange(false);
+            setIsLoading(false);
+        }
         setIsLoading(false);
-    }
-    setIsLoading(false);
     }, [formState, handleOpenChange]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -67,11 +71,16 @@ export default function SendInvitationLinkButton({association} : {association: A
         formAction(formData);
     };
 
-    return(
+    return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button className="p-1 h-auto whitespace-normal" variant="outline"><TbMailPlus size={18}/></Button>
+                <Button
+                    className="p-1 h-auto whitespace-normal"
+                    variant="outline"
+                >
+                    <TbMailPlus size={18} />
+                </Button>
             </DialogTrigger>
 
             {/* Content */}
@@ -79,38 +88,55 @@ export default function SendInvitationLinkButton({association} : {association: A
                 <DialogHeader>
                     <DialogTitle>Invitation Représentant</DialogTitle>
                     <DialogDescription>
-                        {`Un e-mail sera envoyé à l'adresse e-mail ci-dessous et créera un compte `} <b>Représentant</b> {"pour l'association"}  <b>{association.name}</b>{"."}
+                        {`Un e-mail sera envoyé à l'adresse e-mail ci-dessous et créera un compte `}{" "}
+                        <b>Représentant</b> {"pour l'association"}{" "}
+                        <b>{association.name}</b>
+                        {"."}
                     </DialogDescription>
                 </DialogHeader>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} id="sendInvitationLinkForm" className="space-y-3 overflow-y-auto p-2">
-
-                    <input type="hidden" name="associationId" value={association.id} />
+                <form
+                    onSubmit={handleSubmit}
+                    id="sendInvitationLinkForm"
+                    className="space-y-3 overflow-y-auto p-2"
+                >
+                    <input
+                        type="hidden"
+                        name="associationId"
+                        value={association.id}
+                    />
 
                     <div>
                         <Label htmlFor="email">Email</Label>
-                        <Input type="email" name="email" required placeholder="jane.doe@fahb.eu"/>
+                        <Input
+                            type="email"
+                            name="email"
+                            required
+                            placeholder="jane.doe@fahb.eu"
+                        />
                     </div>
 
-
-                    { formState?.error ? 
-                    <Alert variant="destructive">
-                        <AlertTitle>Erreur</AlertTitle>
-                        <AlertDescription>
-                            {formState.error}
-                        </AlertDescription>
-                    </Alert>
-                    : null 
-                    }
-
+                    {formState?.error ? (
+                        <Alert variant="destructive">
+                            <AlertTitle>Erreur</AlertTitle>
+                            <AlertDescription>
+                                {formState.error}
+                            </AlertDescription>
+                        </Alert>
+                    ) : null}
                 </form>
 
                 <DialogFooter>
-                    <Button type="submit" form="sendInvitationLinkForm" disabled={isLoading}>{isLoading ? <LoadingRing/> : null} Inviter</Button>
+                    <Button
+                        type="submit"
+                        form="sendInvitationLinkForm"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? <LoadingRing /> : null} Inviter
+                    </Button>
                 </DialogFooter>
             </DialogContent>
-            </Dialog>
-    )
-
+        </Dialog>
+    );
 }

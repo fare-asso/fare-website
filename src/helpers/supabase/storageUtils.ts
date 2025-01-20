@@ -1,10 +1,8 @@
-
 export class StorageUtils {
-
     private storageUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 
     public constructor(storageUrl?: string) {
-        if(storageUrl) {
+        if (storageUrl) {
             this.storageUrl = storageUrl;
         }
     }
@@ -15,7 +13,6 @@ export class StorageUtils {
 }
 
 class Bucket {
-
     private name: string;
     private storageUrl: string;
 
@@ -25,6 +22,13 @@ class Bucket {
     }
 
     public getPublicUrl(path: string, download?: boolean): string {
-        return (this.storageUrl + "/storage/v1/object/public/" + this.name + "/" + path + (download ? "?download" : ""))
+        return (
+            this.storageUrl +
+            "/storage/v1/object/public/" +
+            this.name +
+            "/" +
+            path +
+            (download ? "?download" : "")
+        );
     }
 }

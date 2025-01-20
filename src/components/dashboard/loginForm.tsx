@@ -8,19 +8,29 @@ import { useFormState } from "react-dom";
 import LoginButton from "./loginButton";
 
 export default function LoginForm() {
+    const [error, formAction] = useFormState<
+        { emailError?: string; passwordError?: string } | undefined,
+        any
+    >(loginAction, { emailError: "", passwordError: "" });
 
-    const [error, formAction] = useFormState<{emailError? : string, passwordError?: string} | undefined, any>(loginAction, {emailError: "", passwordError: ""});
-
-    return(
+    return (
         <form action={formAction} className="space-y-3">
             <Label htmlFor="email">Email</Label>
             <Input type="email" name="email" id="email" />
-            { error && error.emailError ? <div className="text-sm font-medium text-destructive">{error.emailError}</div> : null}
+            {error && error.emailError ? (
+                <div className="text-sm font-medium text-destructive">
+                    {error.emailError}
+                </div>
+            ) : null}
 
             <Label htmlFor="password">Password</Label>
             <Input type="password" name="password" id="password" />
-            { error && error.passwordError ? <div className="text-sm font-medium text-destructive">{error.passwordError}</div> : null}
-            <LoginButton/>
+            {error && error.passwordError ? (
+                <div className="text-sm font-medium text-destructive">
+                    {error.passwordError}
+                </div>
+            ) : null}
+            <LoginButton />
         </form>
-    )
+    );
 }

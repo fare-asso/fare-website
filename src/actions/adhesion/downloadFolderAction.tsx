@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
-import { createClient } from '@/helpers/supabase/server';
-import getCurrentUserRole from '@/helpers/user/role';
-import archiver from 'archiver';
-import { Readable } from 'stream';
+import { createClient } from "@/helpers/supabase/server";
+import getCurrentUserRole from "@/helpers/user/role";
+import archiver from "archiver";
+import { Readable } from "stream";
 
 type ActionState = {
     error?: string;
@@ -12,10 +12,17 @@ type ActionState = {
     filename?: string;
 };
 
-export async function downloadFolderAction(prevState: ActionState | undefined, folderPath: string): Promise<ActionState> {
+export async function downloadFolderAction(
+    prevState: ActionState | undefined,
+    folderPath: string,
+): Promise<ActionState> {
     const { role, error: roleError } = await getCurrentUserRole();
-    if (roleError) return { error: "Echec de l'authentification de l'utilisateur" };
-    if (role !== 'ADMIN') return { error: "Vous devez avoir les droits administrateur pour effectuer cette opération." };
+    if (roleError)
+        return { error: "Echec de l'authentification de l'utilisateur" };
+    if (role !== "ADMIN")
+        return {
+            error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
+        };
 
     const supabase = createClient();
 
@@ -25,22 +32,24 @@ export async function downloadFolderAction(prevState: ActionState | undefined, f
 
     try {
         const { data: files, error } = await supabase.storage
-            .from('adhesion')
+            .from("adhesion")
             .list(folderPath);
 
         if (error) throw error;
 
-        const archive = archiver('zip', { zlib: { level: 9 } });
+        const archive = archiver("zip", { zlib: { level: 9 } });
         const chunks: Uint8Array[] = [];
 
-        archive.on('data', (chunk: Uint8Array) => chunks.push(chunk));
-        archive.on('warning', (err: Error) => console.warn(err));
-        archive.on('error', (err: Error) => { throw err; });
+        archive.on("data", (chunk: Uint8Array) => chunks.push(chunk));
+        archive.on("warning", (err: Error) => console.warn(err));
+        archive.on("error", (err: Error) => {
+            throw err;
+        });
 
         // Téléchargement parallèle des fichiers
         const downloadPromises = files.map(async (file) => {
             const { data: fileData, error: fileError } = await supabase.storage
-                .from('adhesion')
+                .from("adhesion")
                 .download(`${folderPath}/${file.name}`);
 
             if (fileError) throw fileError;
@@ -58,15 +67,15 @@ export async function downloadFolderAction(prevState: ActionState | undefined, f
         await archive.finalize();
 
         const zipBuffer = Buffer.concat(chunks);
-        const base64Zip = zipBuffer.toString('base64');
+        const base64Zip = zipBuffer.toString("base64");
 
         return {
             success: true,
             zipData: base64Zip,
-            filename: `${folderPath}.zip`
+            filename: `${folderPath}.zip`,
         };
     } catch (error) {
-        console.error('Error creating zip:', error);
+        console.error("Error creating zip:", error);
         return { error: "Erreur lors de la création du fichier zip" };
     }
 }

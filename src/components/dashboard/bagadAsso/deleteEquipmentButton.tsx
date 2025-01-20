@@ -8,9 +8,10 @@ import {
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
-    AlertDialogHeader, 
-    AlertDialogTitle, 
-    AlertDialogTrigger } from "@/components/ui/alert-dialog";
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import LoadingRing from "../loadingRing";
 
@@ -22,21 +23,29 @@ import { MdDelete } from "react-icons/md";
 
 import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction";
 
-export default function DeleteEquipmentButton({equipmentId} : {equipmentId: number}) {
-
-    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(deleteEquipmentAction, undefined)
+export default function DeleteEquipmentButton({
+    equipmentId,
+}: {
+    equipmentId: number;
+}) {
+    const [formState, formAction] = useFormState<
+        { error?: string; success?: boolean } | undefined,
+        any
+    >(deleteEquipmentAction, undefined);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    
+
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
-    if (formState?.success) {
-        setIsLoading(false);
-    }
+        if (formState?.success) {
+            setIsLoading(false);
+        }
 
-    setIsLoading(false);
+        setIsLoading(false);
     }, [formState]);
 
-    const handleDelete = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleDelete = async (
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    ) => {
         event.preventDefault();
 
         setIsLoading(true);
@@ -44,25 +53,30 @@ export default function DeleteEquipmentButton({equipmentId} : {equipmentId: numb
         formAction(equipmentId);
     };
 
-    return(
+    return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="p-2 aspect-square" variant="destructive"><MdDelete size={20}/></Button>
+                <Button className="p-2 aspect-square" variant="destructive">
+                    <MdDelete size={20} />
+                </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                <AlertDialogTitle>Voulez-vous vraiment supprimer cet équipement ?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    Cette action est permanente et les données ne peuvent être récupérées.
-                </AlertDialogDescription>
+                    <AlertDialogTitle>
+                        Voulez-vous vraiment supprimer cet équipement ?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Cette action est permanente et les données ne peuvent
+                        être récupérées.
+                    </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>{ isLoading ? <LoadingRing/> : null } Supprimer</AlertDialogAction>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                        {isLoading ? <LoadingRing /> : null} Supprimer
+                    </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-        
-    )
-
+    );
 }

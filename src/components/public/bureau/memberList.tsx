@@ -3,15 +3,15 @@ import MemberCard from "./memberCard";
 
 export default async function MembersList({ members }: { members: Member[] }) {
     const positionOrder: { [key: string]: number } = {
-        "Président": 1,
+        Président: 1,
         "Porte-Parole": 2,
-        "Trésorier": 3,
+        Trésorier: 3,
         "Secrétaire Général": 4,
         "VP Générale en charge de l'Accompagnement": 5,
-        "Réseau": 6,
-        "Formation": 7,
-        "Culture": 8,
-        "AGORAé": 9,
+        Réseau: 6,
+        Formation: 7,
+        Culture: 8,
+        AGORAé: 9,
         "Évènementiel & Projets": 10,
         "Affaires de Santé en charge de la Communication": 11,
         "Outils Numériques": 12,
@@ -23,7 +23,8 @@ export default async function MembersList({ members }: { members: Member[] }) {
         console.log("Rôle: " + position);
         const rolesPrincipaux = Object.keys(positionOrder);
         for (const role of rolesPrincipaux) {
-            if (position.toLowerCase().includes(role.toLowerCase())) return role;
+            if (position.toLowerCase().includes(role.toLowerCase()))
+                return role;
         }
         return undefined;
     }
@@ -42,7 +43,9 @@ export default async function MembersList({ members }: { members: Member[] }) {
 
     return (
         <div className="w-[90%] mb-32">
-            <h2 className="text-[1.75rem] font-semibold mb-6">Les membres du bureau</h2>
+            <h2 className="text-[1.75rem] font-semibold mb-6">
+                Les membres du bureau
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full h-full">
                 {sortMembers(members).map((member) => (
                     <MemberCard key={member.id} member={member} />

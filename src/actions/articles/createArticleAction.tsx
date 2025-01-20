@@ -1,34 +1,38 @@
-'use server';
+"use server";
 
 import prisma from "@/helpers/db";
 
 import { createClient } from "@/helpers/supabase/server";
 
-import { StorageError } from '@supabase/storage-js'
+import { StorageError } from "@supabase/storage-js";
 
 import { randomUUID } from "crypto";
 
-import { DeltaStatic } from 'quill'
+import { DeltaStatic } from "quill";
 
 import { base64ToFile } from "@/helpers/image";
 import getCurrentUserId from "@/helpers/user/id";
 import { revalidatePath } from "next/cache";
 import getCurrentUserRole from "@/helpers/user/role";
 
-export default async function createArticleAction(prevState: {error?: string, success?: boolean} | undefined, formData: FormData) {
-
+export default async function createArticleAction(
+    prevState: { error?: string; success?: boolean } | undefined,
+    formData: FormData,
+) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole();
-    if(error) return { error : "Echec de l'authentification de l'utilisateur" }
-    if(role != 'ADMIN') return { error : "Vous devez avoir les droits administrateur pour effectuer cette opération." }
+    if (error) return { error: "Echec de l'authentification de l'utilisateur" };
+    if (role != "ADMIN")
+        return {
+            error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
+        };
 
     // create supabase client
     const supabase = createClient();
 
-
     // retrieve form data fields
-    const title = formData.get('title')?.toString();
-    const content = formData.get('delta')?.toString();
+    const title = formData.get("title")?.toString();
+    const content = formData.get("delta")?.toString();
 
     // Fields Validation
     if (!title || !content) {
@@ -37,57 +41,71 @@ export default async function createArticleAction(prevState: {error?: string, su
 
     const contentDelta: DeltaStatic = await JSON.parse(content);
 
-    const contentString : string = JSON.stringify(contentDelta)
+    const contentString: string = JSON.stringify(contentDelta);
 
     console.log("Title: " + title);
     console.log("Content (Delta): " + contentString);
 
-
-    if(contentDelta.ops && contentDelta.ops.length > 0) { // content is not null
+    if (contentDelta.ops && contentDelta.ops.length > 0) {
+        // content is not null
 
         /* Filter all operations that contains images */
 
         const opsLength: number = contentDelta.ops.length;
-        const b64Images : Map<number, string> = new Map<number, string>(); // number is operation index and string is the base64 image
+        const b64Images: Map<number, string> = new Map<number, string>(); // number is operation index and string is the base64 image
 
-        for(let i=0;i < opsLength; i++) { // iterate throught all operations
+        for (let i = 0; i < opsLength; i++) {
+            // iterate throught all operations
             const currentOp = contentDelta.ops[i].insert;
-            if(currentOp.image) { // current operation is an image
+            if (currentOp.image) {
+                // current operation is an image
                 b64Images.set(i, currentOp.image);
             }
         }
 
         /* Convert those images to File type */
-        
+
         const imageFiles: File[] = [];
         b64Images.forEach((image, index) => {
             imageFiles.push(base64ToFile(image, "image" + index));
-        })
+        });
 
         /* Upload those images on the storage and save to path */
 
-        const imagePaths: string[] = []
-        
-        const responses: ({ data : { path : string }, error : null } | { data : null, error: StorageError})[] = await Promise.all(imageFiles.map(async (file) => await supabase.storage.from('article-pictures').upload(randomUUID() + file.name, file)))
+        const imagePaths: string[] = [];
+
+        const responses: (
+            | { data: { path: string }; error: null }
+            | { data: null; error: StorageError }
+        )[] = await Promise.all(
+            imageFiles.map(
+                async (file) =>
+                    await supabase.storage
+                        .from("article-pictures")
+                        .upload(randomUUID() + file.name, file),
+            ),
+        );
 
         responses.forEach((value) => {
-            if(value.error) {
+            if (value.error) {
                 return {
-                    error : "L'upload des images a échoué. Veuillez réessayer"
-                }
+                    error: "L'upload des images a échoué. Veuillez réessayer",
+                };
             } else {
-                imagePaths.push(value.data.path)
+                imagePaths.push(value.data.path);
             }
-        })
+        });
 
         /* Replace base64 in the Delta with url  */
 
         let i = 0;
         b64Images.forEach((value, index) => {
             contentDelta.ops![index].insert = {
-                image : supabase.storage.from('article-pictures').getPublicUrl(imagePaths[i]).data.publicUrl
+                image: supabase.storage
+                    .from("article-pictures")
+                    .getPublicUrl(imagePaths[i]).data.publicUrl,
             };
-            i++
+            i++;
         });
 
         // transform content : DeltaStatic to contentJSON : JSON
@@ -98,10 +116,10 @@ export default async function createArticleAction(prevState: {error?: string, su
         // fetch current user id
         const { userId, error } = await getCurrentUserId();
 
-        if(error) {
+        if (error) {
             return {
-                error: "Echec de l'authentification de l'utilisateur"
-            }
+                error: "Echec de l'authentification de l'utilisateur",
+            };
         } else {
             // create the record
             const record = await prisma.article.create({
@@ -109,25 +127,26 @@ export default async function createArticleAction(prevState: {error?: string, su
                     title: title,
                     content: contentJSON,
                     imagesPath: imagePaths,
-                    authorId: userId!
-                }
-            })
+                    authorId: userId!,
+                },
+            });
 
-            if(record != null) { // creation is a success
-                revalidatePath('/actualites')
-                revalidatePath('/dashboard/articles');
-                return { success : true }
-            } else { // record creation failed
-                return { error: "Echec de la création de l'article dans la base de données... Veuillez contacter un administrateur" }
+            if (record != null) {
+                // creation is a success
+                revalidatePath("/actualites");
+                revalidatePath("/dashboard/articles");
+                return { success: true };
+            } else {
+                // record creation failed
+                return {
+                    error: "Echec de la création de l'article dans la base de données... Veuillez contacter un administrateur",
+                };
             }
-
         }
-
-
-    } else { // content is empty
+    } else {
+        // content is empty
         return {
-            error: "Le contenu de l'article ne peut être nul"
-        }
+            error: "Le contenu de l'article ne peut être nul",
+        };
     }
-
 }

@@ -3,35 +3,35 @@
 import { Button } from "@/components/ui/button";
 
 import {
-Dialog,
-DialogContent,
-DialogDescription,
-DialogHeader,
-DialogTitle,
-DialogTrigger,
-DialogFooter,
-} from "@/components/ui/dialog"
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog";
 
 import {
-Popover,
-PopoverContent,
-PopoverTrigger,
-} from "@/components/ui/popover"
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-import { Switch } from "@/components/ui/switch"
+import { Switch } from "@/components/ui/switch";
 
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui/textarea";
 
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar } from "@/components/ui/calendar";
 import { ChangeEvent, useState } from "react";
 
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import TimePicker from "../../ui/input/timePicker";
 import LocationPicker from "../../ui/location/locationPicker";
 import CategorySelect from "../../ui/category/categorySelect";
@@ -43,89 +43,98 @@ import Image from "next/image";
 import DatePicker from "@/components/ui/input/datePicker";
 
 export interface EventInfo {
-    id:number,
-    name: string,
-    desc: string,
-    image: string,
-    startTime: Date,
-    endTime: Date,
-    location: string,
-    visibility: boolean,
+    id: number;
+    name: string;
+    desc: string;
+    image: string;
+    startTime: Date;
+    endTime: Date;
+    location: string;
+    visibility: boolean;
     category: {
-        id: number,
-        name : string
-    }
+        id: number;
+        name: string;
+    };
 }
 
-export default function EditEventButtonClient({eventInfo} : {eventInfo : EventInfo}) {
-
-
-    const [formState, formAction] = useFormState<{error?: string, success?: boolean} | undefined, any>(editEventAction, undefined)
+export default function EditEventButtonClient({
+    eventInfo,
+}: {
+    eventInfo: EventInfo;
+}) {
+    const [formState, formAction] = useFormState<
+        { error?: string; success?: boolean } | undefined,
+        any
+    >(editEventAction, undefined);
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
 
-    const [switchState, setSwitchState] = useState<boolean>(eventInfo.visibility);
+    const [switchState, setSwitchState] = useState<boolean>(
+        eventInfo.visibility,
+    );
 
     const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
-    const [previousPath, setPreviousPath] = useState<string | undefined>(undefined);
+    const [previousPath, setPreviousPath] = useState<string | undefined>(
+        undefined,
+    );
 
     // fetch image url
     useEffect(() => {
         const fetchImageUrl = async () => {
             const res = await fetch(`/api/eventImage?id=${eventInfo.id}`, {
                 method: "GET",
-                headers : {
-                    "Content-Type" : 'application/json'
-                }
-            })
-        
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
             const json = await res.json();
 
-            if(!json.error) {
-                const imageUrl : string = json.imageUrl;
+            if (!json.error) {
+                const imageUrl: string = json.imageUrl;
                 setImageUrl(imageUrl);
                 setPreviousPath(json.imagePath);
             } else {
-                console.error(json.error)
+                console.error(json.error);
             }
-        }
+        };
 
         fetchImageUrl();
-    }, [dialogIsOpen, eventInfo.id])
+    }, [dialogIsOpen, eventInfo.id]);
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
-          setDialogIsOpen(open);
+            setDialogIsOpen(open);
         },
-        [setDialogIsOpen]
+        [setDialogIsOpen],
     );
 
-    const handleImageInputChange = (event : ChangeEvent<HTMLInputElement>) => {
-
+    const handleImageInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const files: FileList | null = event.target.files;
 
-        if(files && files.length >= 1) {
+        if (files && files.length >= 1) {
             const file: File = files[0];
             const fileReader = new FileReader();
 
             fileReader.onloadend = () => {
-                const resultUrl : string | ArrayBuffer | null = fileReader.result;
-                if(typeof resultUrl == 'string') {
-                    setImageUrl(resultUrl); 
+                const resultUrl: string | ArrayBuffer | null =
+                    fileReader.result;
+                if (typeof resultUrl == "string") {
+                    setImageUrl(resultUrl);
                 }
-            }
+            };
             fileReader.readAsDataURL(file);
         }
-    }
-    
+    };
+
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
-    if (formState?.success) {
-        handleOpenChange(false);
-    }
+        if (formState?.success) {
+            handleOpenChange(false);
+        }
     }, [formState, handleOpenChange]);
 
-    return(
+    return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
@@ -135,98 +144,168 @@ export default function EditEventButtonClient({eventInfo} : {eventInfo : EventIn
             {/* Content */}
             <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[425px]">
                 <DialogHeader>
-                <DialogTitle>Modifier Evènement</DialogTitle>
-                <DialogDescription>
-                    Attention, tous les champs doivent être remplis et les dates de début et fin doivent être corrrectes
-                </DialogDescription>
+                    <DialogTitle>Modifier Evènement</DialogTitle>
+                    <DialogDescription>
+                        Attention, tous les champs doivent être remplis et les
+                        dates de début et fin doivent être corrrectes
+                    </DialogDescription>
                 </DialogHeader>
 
                 {/* Form */}
-                <form action={formAction} id="editEventForm" className="space-y-3 overflow-y-auto p-2">
-                    <input type="hidden" name="id" value={eventInfo.id}/>
+                <form
+                    action={formAction}
+                    id="editEventForm"
+                    className="space-y-3 overflow-y-auto p-2"
+                >
+                    <input type="hidden" name="id" value={eventInfo.id} />
                     <div>
                         <Label>Nom</Label>
-                        <Input type="text" id="name" name="name" placeholder="Nom de l'évènement" defaultValue={eventInfo.name}/>
+                        <Input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Nom de l'évènement"
+                            defaultValue={eventInfo.name}
+                        />
                     </div>
 
                     <div>
                         <Label>Description</Label>
-                        <Textarea id="description" name="description" maxLength={500} placeholder="(Max: 500 caractères)" className="max-h-[170px]" defaultValue={eventInfo.desc}/>
+                        <Textarea
+                            id="description"
+                            name="description"
+                            maxLength={500}
+                            placeholder="(Max: 500 caractères)"
+                            className="max-h-[170px]"
+                            defaultValue={eventInfo.desc}
+                        />
                     </div>
 
                     <div>
                         <Label htmlFor="picture">Image</Label>
-                        { imageUrl ? <Image src={imageUrl} width={400} height={200} alt="Image de l'évènement" className="rounded-lg outline outline-2 outline-offset-2 outline-black w-32 h-auto my-3"/> : null}
-                        <Input type="file" id="picture" name="picture" onChange={handleImageInputChange} accept="image/*"/>
-                        { previousPath ? <input type="hidden" name="previousPath" value={previousPath}/> : null }
+                        {imageUrl ? (
+                            <Image
+                                src={imageUrl}
+                                width={400}
+                                height={200}
+                                alt="Image de l'évènement"
+                                className="rounded-lg outline outline-2 outline-offset-2 outline-black w-32 h-auto my-3"
+                            />
+                        ) : null}
+                        <Input
+                            type="file"
+                            id="picture"
+                            name="picture"
+                            onChange={handleImageInputChange}
+                            accept="image/*"
+                        />
+                        {previousPath ? (
+                            <input
+                                type="hidden"
+                                name="previousPath"
+                                value={previousPath}
+                            />
+                        ) : null}
                     </div>
 
                     {/* Start Date */}
                     <div className="flex flex-row w-full space-x-4">
                         <div>
                             <Label>Date de début</Label>
-                            <DatePicker name="startDate" defaultValue={eventInfo.startTime} fromYear={new Date().getFullYear() - 10} toYear={new Date().getFullYear() + 10} />
+                            <DatePicker
+                                name="startDate"
+                                defaultValue={eventInfo.startTime}
+                                fromYear={new Date().getFullYear() - 10}
+                                toYear={new Date().getFullYear() + 10}
+                            />
                         </div>
 
                         <div>
                             <Label htmlFor="startHour">Heure de début</Label>
-                            <TimePicker defaultValue={{hours: eventInfo.startTime.getHours(), minutes: eventInfo.startTime.getMinutes()}} hoursInputName="startHour" minutesInputName="startMinute"/>
+                            <TimePicker
+                                defaultValue={{
+                                    hours: eventInfo.startTime.getHours(),
+                                    minutes: eventInfo.startTime.getMinutes(),
+                                }}
+                                hoursInputName="startHour"
+                                minutesInputName="startMinute"
+                            />
                         </div>
                     </div>
-                    
 
                     {/* End Date */}
                     <div className="flex flex-row w-full space-x-4">
                         <div>
                             <Label>Date de fin</Label>
-                            <DatePicker name="endDate" defaultValue={eventInfo.endTime} fromYear={new Date().getFullYear() - 10} toYear={new Date().getFullYear() + 10} />
+                            <DatePicker
+                                name="endDate"
+                                defaultValue={eventInfo.endTime}
+                                fromYear={new Date().getFullYear() - 10}
+                                toYear={new Date().getFullYear() + 10}
+                            />
                         </div>
 
                         <div>
                             <Label htmlFor="endHours">Heure de fin</Label>
-                            <TimePicker defaultValue={{hours: eventInfo.endTime.getHours(), minutes: eventInfo.endTime.getMinutes()}} hoursInputName="endHour" minutesInputName="endMinute"/>
+                            <TimePicker
+                                defaultValue={{
+                                    hours: eventInfo.endTime.getHours(),
+                                    minutes: eventInfo.endTime.getMinutes(),
+                                }}
+                                hoursInputName="endHour"
+                                minutesInputName="endMinute"
+                            />
                         </div>
                     </div>
 
-                    
-
                     <div>
                         <Label htmlFor="location">Lieu</Label>
-                        <LocationPicker defaultValue={eventInfo.location} name="location"/>
+                        <LocationPicker
+                            defaultValue={eventInfo.location}
+                            name="location"
+                        />
                     </div>
 
-                    <div >
-                            <Label htmlFor="category">Catégorie</Label>
-                            <div className="flex flex-row items-center justify-between space-x-4">
-                                <CategorySelect defaultValue={eventInfo.category.name}/>
-                                <div className="flex flex-row items-center space-x-2 flex-1">
-                                    <Switch id="visibility" name="visibility" checked={switchState} onCheckedChange={setSwitchState}/>
-                                    <Label htmlFor="visibility">Visible au public</Label>
-                                </div>
-                                
+                    <div>
+                        <Label htmlFor="category">Catégorie</Label>
+                        <div className="flex flex-row items-center justify-between space-x-4">
+                            <CategorySelect
+                                defaultValue={eventInfo.category.name}
+                            />
+                            <div className="flex flex-row items-center space-x-2 flex-1">
+                                <Switch
+                                    id="visibility"
+                                    name="visibility"
+                                    checked={switchState}
+                                    onCheckedChange={setSwitchState}
+                                />
+                                <Label htmlFor="visibility">
+                                    Visible au public
+                                </Label>
                             </div>
-                            
+                        </div>
                     </div>
 
-                    
-
-                    { formState?.error ? 
-                    <Alert variant="destructive">
-                        <AlertTitle>Erreur</AlertTitle>
-                        <AlertDescription>
-                            {formState.error}
-                        </AlertDescription>
-                    </Alert>
-                    : null 
-                    }
-
+                    {formState?.error ? (
+                        <Alert variant="destructive">
+                            <AlertTitle>Erreur</AlertTitle>
+                            <AlertDescription>
+                                {formState.error}
+                            </AlertDescription>
+                        </Alert>
+                    ) : null}
                 </form>
 
                 <DialogFooter>
-                    <Button variant="outline" type="submit" form="editEventForm">Modifier</Button>
+                    <Button
+                        variant="outline"
+                        type="submit"
+                        form="editEventForm"
+                    >
+                        Modifier
+                    </Button>
                 </DialogFooter>
             </DialogContent>
-            </Dialog>
-    )
-
+        </Dialog>
+    );
 }
