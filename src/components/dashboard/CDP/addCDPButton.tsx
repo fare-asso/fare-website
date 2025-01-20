@@ -36,8 +36,12 @@ import DatePicker from "@/components/ui/input/datePicker";
 import LoadingRing from "../loadingRing";
 import { uploadFile } from "@/helpers/supabase/upload";
 import FileInput from "@/components/ui/fileInput";
+import { z } from "zod";
 
 export default function AddNewCDPButton() {
+
+    const [error, setError] = useState<string|undefined>(undefined);
+
     const [formState, formAction] = useFormState<
         { error?: string; success?: boolean } | undefined,
         any
@@ -61,7 +65,10 @@ export default function AddNewCDPButton() {
     useEffect(() => {
         if (formState?.success) {
             handleOpenChange(false);
+            setError(undefined);
         }
+
+        setError(formState?.error);
         setIsLoading(false);
     }, [formState, handleOpenChange]);
 
@@ -76,7 +83,7 @@ export default function AddNewCDPButton() {
         const file = formData.get("CDPfile") as File;
 
         if (file.type !== "application/pdf") {
-            formAction({ error: "Le fichier doit être en format PDF" });
+            setError("Le fichier doit être en format PDF");
             return;
         }
 
@@ -90,7 +97,8 @@ export default function AddNewCDPButton() {
         );
 
         if (uploadResponse.error) {
-            formAction({ error: uploadResponse.error });
+            setIsLoading(false);
+            setError(uploadResponse.error);
             return;
         }
 
@@ -165,11 +173,11 @@ export default function AddNewCDPButton() {
                         <DatePicker name="date" />
                     </div>
 
-                    {formState?.error ? (
+                    {error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
-                                {formState.error}
+                                {error}
                             </AlertDescription>
                         </Alert>
                     ) : null}
