@@ -91,7 +91,7 @@ export default function AddMemberButton() {
             if (!open) {
                 // Réinitialiser le formulaire lorsque le dialogue est fermé
                 reset();
-                setSuccess(true);
+                setSuccess(false);
             }
         },
         [setDialogIsOpen],
@@ -145,7 +145,7 @@ export default function AddMemberButton() {
         }
 
         if(response.success) {
-            setIsLoading(true);
+            setIsLoading(false);
             setSuccess(true);
             return;
         }
