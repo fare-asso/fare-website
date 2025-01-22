@@ -7,7 +7,7 @@ export default async function DiscordWidget() {
                 height="500"
                 sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
                 className="border-0 bg-transparent"
-                referrerPolicy="strict-origin-when-cross-origin"
+                referrerPolicy="no-referrer"
                 title="Widget Discord"
             />
         </div>
