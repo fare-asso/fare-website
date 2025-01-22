@@ -58,6 +58,7 @@ export default function PartnersCarousel() {
             <div className="absolute z-20 top-1/2 -translate-y-1/2 w-full flex justify-between pointer-events-none">
                 <button
                     onClick={scrollLeft}
+                    title="Bouton partenaires gauche"
                     className="rounded-full w-10 h-10 bg-white/70 border-black border flex items-center justify-center cursor-pointer pointer-events-auto shadow-md hover:bg-white/90 transition-all"
                 >
                     <GoArrowLeft size={20} />
@@ -65,6 +66,7 @@ export default function PartnersCarousel() {
 
                 <button
                     onClick={scrollRight}
+                    title="Bouton partenaires droite"
                     className="rounded-full w-10 h-10 bg-white/70 border-black border flex items-center justify-center cursor-pointer pointer-events-auto shadow-md hover:bg-white/90 transition-all"
                 >
                     <GoArrowRight size={20} />
@@ -94,7 +96,7 @@ export default function PartnersCarousel() {
                             <Image
                                 src={partner.logo}
                                 alt={`Logo de notre partenaire ${partner.name}`}
-                                className="object-contain max-w-full max-h-full h-full"
+                                className="object-contain max-w-full max-h-full h-full w-auto"
                                 priority
                             />
                         </div>
@@ -106,6 +108,7 @@ export default function PartnersCarousel() {
             <div className="flex justify-center mt-4 space-x-2">
                 {partners.map((_, index) => (
                     <button
+                    title={`Position carousel ${index}`}
                         key={index}
                         onClick={() => {
                             setCurrentIndex(index);
