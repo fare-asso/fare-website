@@ -167,15 +167,16 @@ export default async function Home() {
                             de la FAHB 👇
                         </p>
                         <iframe
-                            width="853"
-                            height="480"
-                            src={`https://www.youtube.com/embed/_nu4cbdJ8do?si=_OAfgGASwAr1jEg5`}
+                            width="560"
+                            height="315"
+                            src="https://www.youtube-nocookie.com/embed/_nu4cbdJ8do?si=o2KlDcO3qnKorlsh"
+                            title="Vidéo Discord"
                             frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerPolicy="strict-origin-when-cross-origin"
                             allowFullScreen
-                            title="Embedded youtube"
                             className="rounded-md w-full h-full aspect-video"
-                        />
+                        ></iframe>
                     </div>
                 </div>
             </div>
