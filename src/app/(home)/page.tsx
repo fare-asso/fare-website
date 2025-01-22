@@ -156,15 +156,15 @@ export default async function Home() {
                     <DiscordWidget />
                     <div className="flex flex-col w-full md:w-1/2 items-center mt-4">
                         <p className="text-lg font-semibold mb-2 text-center">
-                            Vidéo de présentation du{" "}
+                            Vidéo de présentation du&nbsp;
                             <a
                                 href="https://discord.gg/VNK9GcheFr"
                                 title="Lien vers Discord"
                                 className="text-blue-600 hover:text-blue-400 transition-all"
                             >
                                 Discord
-                            </a>{" "}
-                            de la FAHB 👇
+                            </a>
+                            &nbsp;de la FAHB 👇
                         </p>
                         <iframe
                             width="560"
@@ -172,7 +172,7 @@ export default async function Home() {
                             src="https://www.youtube-nocookie.com/embed/_nu4cbdJ8do?si=o2KlDcO3qnKorlsh"
                             title="Vidéo Discord"
                             frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allow="web-share"
                             referrerPolicy="strict-origin-when-cross-origin"
                             allowFullScreen
                             className="rounded-md w-full h-full aspect-video"
