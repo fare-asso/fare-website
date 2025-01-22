@@ -3,29 +3,18 @@ import { Metadata } from "next";
 import DiscordWidget from "@/components/public/discordWidget";
 
 import WelcomeImage from "../../../public/welcome.jpg";
-import FAHBLogo from "../../../public/FAHB_Logo__Nom.png";
 
-import Link from "next/link";
 import LinkButton from "@/components/public/link";
-import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller";
-import prisma from "@/helpers/db";
-import { Association } from "@prisma/client";
-import AnimatedNumber from "@/components/ui/animatedNumber";
 import PartnersCarousel from "@/components/public/partenariats/partnersCarousel";
+import { Suspense } from "react";
+import AssoMap from "@/components/public/AssoMap";
+import KeyNumbers from "@/components/public/keyNumbers";
 
 export const metadata: Metadata = {
     title: "Accueil | FAHB",
 };
 
 export default async function Home() {
-    let associations: Association[] | undefined;
-
-    try {
-        associations = await prisma.association.findMany();
-    } catch (e) {
-        console.error("Failed to fetch associations");
-    }
-
     return (
         <div className="w-full md:w-[90%] flex flex-col items-center">
             {/* Welcome picture */}
@@ -37,38 +26,9 @@ export default async function Home() {
                 />
             </div>
 
-            {/* Key numbers */}
-            <div className="w-full md:w-2/3 flex flex-col md:flex-row items-center justify-center mt-2 md:mt-0 md:ml-4 [&>div]:h-32 space-y-2 md:space-y-0 space-x-0 md:space-x-2">
-                <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full w-full md:w-1/3">
-                    <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
-                        <AnimatedNumber
-                            end={associations ? associations.length : 20}
-                            duration={1.5}
-                        />
-                    </span>
-                    <span className="text-xl md:p-1 opacity-95 text-center text-white">
-                        Associations étudiantes
-                    </span>
-                </div>
-
-                <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full w-full md:w-1/3">
-                    <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
-                        <AnimatedNumber end={88000} duration={3} />
-                    </span>
-                    <span className="text-xl md:p-1 opacity-95 text-center text-white">
-                        Étudiant.e.s
-                    </span>
-                </div>
-
-                <div className="rounded-xl bg-fahbyellow flex flex-col items-center justify-center p-4 md:p-2 h-full w-full md:w-1/3">
-                    <span className="text-2xl md:text-[2.5rem] font-semibold text-white">
-                        <AnimatedNumber end={28} duration={4} />
-                    </span>
-                    <span className="text-xl md:p-1 opacity-95 text-center text-white">
-                        Élu.e.s universitaires & CROUS
-                    </span>
-                </div>
-            </div>
+            <Suspense fallback={"loading..."}>
+                <KeyNumbers />
+            </Suspense>
 
             {/* Qui sommes-nous ? */}
             <div className="my-10 w-full flex flex-col items-center">
@@ -114,13 +74,9 @@ export default async function Home() {
             {/* Le réseau */}
             <div className="my-10 w-full flex flex-col">
                 <h2 className="text-2xl font-semibold mb-2">Notre réseau</h2>
-                <div className="flex flex-col items-center">
-                    {associations ? (
-                        <AssociationMapCaller associations={associations} />
-                    ) : (
-                        <span>Echec de la récupération des associations</span>
-                    )}
-                </div>
+                <Suspense fallback={"Loading..."}>
+                    <AssoMap />
+                </Suspense>
             </div>
 
             {/* Les évènements à venir
