@@ -8,25 +8,31 @@ interface EmailPayload {
 
 // Configuration du transporteur
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || "587"),
+    service: process.env.SMTP_SERVICE || "Gmail",
+    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.SMTP_PORT || "465"),
     secure: process.env.SMTP_SECURE === "true",
     auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-    },
-    tls: {
-        ciphers: "SSLv3", // requis pour OVH
+        pass: process.env.SMTP_APP_PASS,
     },
 });
 
-export const sendEmail = async (payload: EmailPayload) => {
+export async function sendEmail(
+    payload: EmailPayload,
+): Promise<{ error?: string; success?: boolean }> {
     const { to, subject, html } = payload;
 
-    return await transporter.sendMail({
-        from: process.env.SMTP_FROM_EMAIL,
-        to,
-        subject,
-        html,
-    });
-};
+    try {
+        const response = await transporter.sendMail({
+            from: process.env.SMTP_FROM_EMAIL,
+            to,
+            subject,
+            html,
+        });
+        return { success: true };
+    } catch (error: any) {
+        console.error("Error sendEmail: ", error);
+        return { success: false, error: error.message };
+    }
+}
