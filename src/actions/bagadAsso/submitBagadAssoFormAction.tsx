@@ -123,6 +123,8 @@ export default async function submitBagadAssoFormAction(
             html: bagadAssoTicketEmailTemplate(
                 ticketRecord.id,
                 ticketRecord.assocation,
+                ticketRecord.eventDate,
+                ticketRecord.eventName,
             ),
         });
 
