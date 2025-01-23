@@ -5,8 +5,9 @@ import { sanitizeString } from "@/helpers/string";
 import { createClient } from "@/helpers/supabase/server";
 import { format } from "date-fns";
 import { PDFDocument, PDFPage, rgb, StandardFonts } from "pdf-lib";
-import cornerSVG from "/public/corner-pdf-FAHB.svg";
 import { revalidatePath } from "next/cache";
+import { sendEmail } from "@/helpers/email";
+import { adhesionEmailTemplate } from "@/lib/htmlTemplates";
 
 interface ValidationError {
     field: string;
@@ -595,6 +596,16 @@ export async function processAdhesionForm(
                 folderPath: folderName,
             },
         });
+
+        const emailTransporterResponse = await sendEmail({
+            to: "secretariat@fahb.eu",
+            subject: `Une nouvelle adhésion a été reçue - ${record.association}`,
+            html: adhesionEmailTemplate(record.association),
+        });
+
+        if (emailTransporterResponse.error) {
+            console.log("[ERROR] Failed to send email notification");
+        }
         revalidatePath("/dashboard/adhesions");
         return { success: true };
     } catch (error) {

@@ -5,6 +5,8 @@ import prisma from "@/helpers/db";
 import { revalidatePath } from "next/cache";
 
 import { verifyCaptcha } from "@/helpers/captcha";
+import { sendEmail } from "@/helpers/email";
+import { bagadAssoTicketEmailTemplate } from "@/lib/htmlTemplates";
 
 export default async function submitBagadAssoFormAction(
     prevState: { error?: string; success?: boolean } | undefined,
@@ -114,6 +116,19 @@ export default async function submitBagadAssoFormAction(
                 equipments: equipment_input,
             },
         });
+
+        const emailTransporterResponse = await sendEmail({
+            to: "evenement@fahb.eu",
+            subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
+            html: bagadAssoTicketEmailTemplate(
+                ticketRecord.id,
+                ticketRecord.assocation,
+            ),
+        });
+
+        if (emailTransporterResponse.error) {
+            console.log("[ERROR] Failed to send email notification email");
+        }
 
         revalidatePath("/dashboard/bagadAsso");
         return { success: true };
