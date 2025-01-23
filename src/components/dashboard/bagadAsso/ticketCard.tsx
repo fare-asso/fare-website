@@ -1,21 +1,35 @@
 "use client";
 
 import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction";
-import { useToast } from "@/components/ui/use-toast";
 import { BagadAssoTicket } from "@prisma/client";
 import { format, isBefore } from "date-fns";
 import Link from "next/link";
 import { MdDelete } from "react-icons/md";
 import LoadingRing from "../loadingRing";
 import { useState } from "react";
+import { ToastActionElement, ToastProps } from "@/components/ui/toast";
+
+type ToasterToast = ToastProps & {
+    id: string;
+    title?: React.ReactNode;
+    description?: React.ReactNode;
+    action?: ToastActionElement;
+};
+
+type Toast = Omit<ToasterToast, "id">;
 
 export default function BagadAssoTicketCard({
     ticket,
+    toast,
 }: {
     ticket: BagadAssoTicket;
+    toast: ({ ...props }: Toast) => {
+        id: string;
+        dismiss: () => void;
+        update: (props: ToasterToast) => void;
+    };
 }) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const { toast } = useToast();
 
     const onDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
