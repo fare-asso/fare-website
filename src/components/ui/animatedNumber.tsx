@@ -41,13 +41,15 @@ export default function AnimatedNumber({
             { threshold: 0.1 },
         );
 
-        if (ref.current) {
-            observer.observe(ref.current);
+        const localRef = ref.current;
+
+        if (localRef) {
+            observer.observe(localRef);
         }
 
         return () => {
-            if (ref.current) {
-                observer.unobserve(ref.current);
+            if (localRef) {
+                observer.unobserve(localRef);
             }
             if (animationRef.current !== null) {
                 cancelAnimationFrame(animationRef.current);
