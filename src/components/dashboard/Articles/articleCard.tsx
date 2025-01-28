@@ -53,7 +53,7 @@ export default function ArticleCard({ article }: { article: Article }) {
             });
         }
         setIsLoading(false);
-    });
+    }, [formState, article.title, toast]);
 
     return (
         <div className="flex h-16 w-full flex-row items-center justify-between rounded-lg border bg-card px-4 py-4 text-card-foreground shadow-sm">
