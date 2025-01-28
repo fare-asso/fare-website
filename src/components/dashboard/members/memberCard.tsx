@@ -61,7 +61,7 @@ export default function MemberCard({
     return (
         <div
             className={clsx(
-                "flex flex-col rounded-lg border bg-card p-3 text-card-foreground shadow-sm",
+                "flex h-full w-full flex-col rounded-lg border bg-card p-3 text-card-foreground shadow-sm",
                 hidden && "hidden",
             )}
         >
@@ -69,7 +69,7 @@ export default function MemberCard({
                 {/* Profile picture + buttons */}
                 <div className="relative">
                     {/* Hover buttons */}
-                    <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-0 hover:opacity-100">
+                    <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 hover:opacity-100 md:opacity-0">
                         <EditMemberButton
                             member={member}
                             pictureUrl={pictureUrl}
@@ -97,15 +97,15 @@ export default function MemberCard({
                     />
                 </div>
                 {/* First name + Last name */}
-                <div className="mb-[0.125rem] flex w-full flex-row space-x-1 font-medium text-card-foreground">
+                <p className="w-full overflow-hidden text-ellipsis text-nowrap font-medium text-card-foreground">
                     {member.firstName} {member.lastName}
-                </div>
+                </p>
             </div>
 
             {/* Position */}
-            <div className="mt-auto flex items-center rounded-lg bg-card-foreground px-2 py-1 text-xs font-semibold text-primary-foreground">
+            <p className="overflow-hidden text-ellipsis text-nowrap text-xs text-foreground/70">
                 {member.position}
-            </div>
+            </p>
         </div>
     );
 }
