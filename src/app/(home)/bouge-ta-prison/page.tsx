@@ -8,7 +8,7 @@ import logoBTP from "/public/BTP/LOGO_BTP_2024.webp";
 
 export default function BougeTaPrison() {
     return (
-        <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16 mb-20">
+        <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
             {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Bouge Ta Prison</h1> */}
 
             <Image
@@ -17,9 +17,9 @@ export default function BougeTaPrison() {
                 className="w-full md:w-1/2"
             />
 
-            <div className="max-w-4xl w-full space-y-12">
+            <div className="w-full max-w-4xl space-y-12">
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Qu'est-ce que le projet Bouge Ta Prison ?
                     </h2>
                     <p className="mb-4">
@@ -31,7 +31,7 @@ export default function BougeTaPrison() {
                     </p>
                 </section>
 
-                <div className="flex flex-col md:flex-row space-y-3 space-x-0 md:space-y-0 md:space-x-2 [&>img]:rounded-xl [&>img]:w-full md:[&>img]:w-1/2 [&>img]:object-cover">
+                <div className="flex flex-col space-x-0 space-y-3 md:flex-row md:space-x-2 md:space-y-0 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
                     <Image
                         src={assemblee0}
                         alt="Photo d'une conférence de sensibilisation du milieu carcéral à l'Université de Rennes 2 qui s'est déroulée en février 2024"
@@ -43,7 +43,7 @@ export default function BougeTaPrison() {
                 </div>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Sensibilisation au milieu carcéral
                     </h2>
                     <p className="mb-4">
@@ -68,7 +68,7 @@ export default function BougeTaPrison() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Réinsertion des personnes placées sous main de justice
                     </h2>
                     <p className="mb-4">
@@ -98,7 +98,7 @@ export default function BougeTaPrison() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Couverture médiatique
                     </h2>
                     <p className="mb-4">
@@ -106,7 +106,7 @@ export default function BougeTaPrison() {
                         de presse dans le Ouest France, France 3 et des journaux
                         locaux.
                     </p>
-                    <ul className="list-disc list-inside space-y-2">
+                    <ul className="list-inside list-disc space-y-2">
                         <li>
                             <Link
                                 href="https://france3-regions.francetvinfo.fr/bretagne/ille-et-vilaine/rennes/temoignage-si-je-peux-aider-un-peu-pour-leur-reinsertion-tant-mieux-pourquoi-cette-etudiante-accompagne-les-detenus-qui-reprennent-leurs-etudes-2912339.html"

@@ -80,7 +80,7 @@ export default function LocationPicker({
                         const elements = results.map((response) => (
                             <Button
                                 variant="outline"
-                                className="w-full mb-1 text-start whitespace-normal justify-start h-auto"
+                                className="mb-1 h-auto w-full justify-start whitespace-normal text-start"
                                 key={response.place_id}
                                 onClick={() =>
                                     handleSuggestionClick(
@@ -96,7 +96,7 @@ export default function LocationPicker({
                             </Button>
                         ));
                         setSearchResultElements(
-                            <ScrollArea className="w-[350px] rounded-md mt-1 p-1">
+                            <ScrollArea className="mt-1 w-[350px] rounded-md p-1">
                                 {elements}
                             </ScrollArea>,
                         );
@@ -150,22 +150,20 @@ export default function LocationPicker({
             <Input
                 ref={inputRef}
                 defaultValue={
-                    isDefaultValueJson
-                        ? JSON.parse(defaultValue).displayName
-                        : defaultValue
+                    isDefaultValueJson ?
+                        JSON.parse(defaultValue).displayName
+                    :   defaultValue
                 }
                 onChange={handleSearchChange}
                 autoComplete="off"
             />
-            <div id="results" className="absolute overflow-auto z-20">
-                {isLoading ? (
-                    <div className="w-[350px] rounded-md mt-2 px-3 py-1 bg-card border text-foreground flex flex-row items-center justify-center">
+            <div id="results" className="absolute z-20 overflow-auto">
+                {isLoading ?
+                    <div className="mt-2 flex w-[350px] flex-row items-center justify-center rounded-md border bg-card px-3 py-1 text-foreground">
                         {" "}
                         <LoadingRing /> Chargement...
                     </div>
-                ) : (
-                    searchResultElements
-                )}
+                :   searchResultElements}
             </div>
         </div>
     );

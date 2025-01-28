@@ -31,8 +31,8 @@ export default async function MemberList() {
         ));
 
         return (
-            <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 w-full h-full overflow-y-auto">
+            <div className="h-full w-full rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+                <div className="grid h-full w-full grid-cols-1 gap-8 overflow-y-auto sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
                     {memberCards}
                 </div>
             </div>

@@ -13,14 +13,14 @@ import { Suspense } from "react";
 
 export default async function CommuDePresse() {
     return (
-        <Card className="w-full h-full flex-1 flex flex-col">
+        <Card className="flex h-full w-full flex-1 flex-col">
             <CardHeader>
                 <CardTitle>Communiqués de presse</CardTitle>
                 <CardDescription>
                     Espace de gestion des communiqués de presse de la Fédération
                 </CardDescription>
             </CardHeader>
-            <CardContent className="overflow-y-auto flex-1">
+            <CardContent className="flex-1 overflow-y-auto">
                 <Suspense fallback={<p>Chargements...</p>}>
                     <CDPList />
                 </Suspense>

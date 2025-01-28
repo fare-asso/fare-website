@@ -15,8 +15,8 @@ export default async function Bureau() {
     });
 
     return (
-        <div className="flex flex-col items-center justify-start w-full">
-            <h1 className="py-12 sm:py-24 md:py-32 lg:py-44 text-[3rem] font-semibold">
+        <div className="flex w-full flex-col items-center justify-start">
+            <h1 className="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
                 Le Bureau
             </h1>
             <MemberList members={bureau} />

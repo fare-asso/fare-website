@@ -56,7 +56,7 @@ export default function DeleteEquipmentButton({
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="p-2 aspect-square" variant="destructive">
+                <Button className="aspect-square p-2" variant="destructive">
                     <MdDelete size={20} />
                 </Button>
             </AlertDialogTrigger>
@@ -73,7 +73,10 @@ export default function DeleteEquipmentButton({
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete}>
-                        {isLoading ? <LoadingRing /> : null} Supprimer
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Supprimer
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

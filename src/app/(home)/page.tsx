@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 
 export default async function Home() {
     return (
-        <div className="w-full md:w-[90%] flex flex-col items-center">
+        <div className="flex w-full flex-col items-center md:w-[90%]">
             {/* Welcome picture */}
-            <div className="w-full md:w-1/2 mb-8">
+            <div className="mb-8 w-full md:w-1/2">
                 <Image
                     src={WelcomeImage}
                     alt="Image des membres du bureau"
@@ -31,9 +31,9 @@ export default async function Home() {
             </Suspense>
 
             {/* Qui sommes-nous ? */}
-            <div className="my-10 w-full flex flex-col items-center">
-                <div className="w-full md:w-[80%] rounded-xl flex flex-col items-start justify-between px-12 py-8 bg-black text-lg text-white">
-                    <h2 className="text-2xl mb-2 font-semibold">
+            <div className="my-10 flex w-full flex-col items-center">
+                <div className="flex w-full flex-col items-start justify-between rounded-xl bg-black px-12 py-8 text-lg text-white md:w-[80%]">
+                    <h2 className="mb-2 text-2xl font-semibold">
                         Qui sommes-nous ?
                     </h2>
                     <p className="text-justify">
@@ -45,7 +45,7 @@ export default async function Home() {
                         étudiant.e.s du territoire grâce à des projets
                         construits "par et pour les étudiant.e.s".
                     </p>
-                    <div className="w-full flex items-center flex-col pt-8">
+                    <div className="flex w-full flex-col items-center pt-8">
                         <LinkButton
                             href="/a-propos"
                             title="En savoir +"
@@ -72,8 +72,8 @@ export default async function Home() {
       </div> */}
 
             {/* Le réseau */}
-            <div className="my-10 w-full flex flex-col">
-                <h2 className="text-2xl font-semibold mb-2">Notre réseau</h2>
+            <div className="my-10 flex w-full flex-col">
+                <h2 className="mb-2 text-2xl font-semibold">Notre réseau</h2>
                 <Suspense fallback={"Loading..."}>
                     <AssoMap />
                 </Suspense>
@@ -91,9 +91,9 @@ export default async function Home() {
       </div> */}
 
             {/* Discord */}
-            <div className="my-10 w-full flex flex-col">
-                <h2 className="text-2xl font-semibold mb-2">Discord</h2>
-                <p className="text-justify mb-12">
+            <div className="my-10 flex w-full flex-col">
+                <h2 className="mb-2 text-2xl font-semibold">Discord</h2>
+                <p className="mb-12 text-justify">
                     Intéressé·e par la FAHB et son réseau ? Étudiant·e en
                     Ille-et-Vilaine ou Côtes d'Armor ? La FAHB possède un
                     serveur Discord, conçu par les étudiant·e·s à destination
@@ -108,15 +108,15 @@ export default async function Home() {
                     flou persistent, voici une vidéo de présentation du Discord
                     de la FAHB qui devrait vous aider !
                 </p>
-                <div className="flex flex-col md:flex-row items-center justify-center space-y-6 md:space-x-12">
+                <div className="flex flex-col items-center justify-center space-y-6 md:flex-row md:space-x-12">
                     <DiscordWidget />
-                    <div className="flex flex-col w-full md:w-1/2 items-center mt-4">
-                        <p className="text-lg font-semibold mb-2 text-center">
+                    <div className="mt-4 flex w-full flex-col items-center md:w-1/2">
+                        <p className="mb-2 text-center text-lg font-semibold">
                             Vidéo de présentation du&nbsp;
                             <a
                                 href="https://discord.gg/VNK9GcheFr"
                                 title="Lien vers Discord"
-                                className="text-blue-600 hover:text-blue-400 transition-all"
+                                className="text-blue-600 transition-all hover:text-blue-400"
                             >
                                 Discord
                             </a>
@@ -131,15 +131,15 @@ export default async function Home() {
                             allow="web-share"
                             referrerPolicy="strict-origin-when-cross-origin"
                             allowFullScreen
-                            className="rounded-md w-full h-full aspect-video"
+                            className="aspect-video h-full w-full rounded-md"
                         ></iframe>
                     </div>
                 </div>
             </div>
 
             {/* Nos partenaires */}
-            <div className="my-10 w-full flex flex-col">
-                <h2 className="text-2xl font-semibold mb-2">Nos partenaires</h2>
+            <div className="my-10 flex w-full flex-col">
+                <h2 className="mb-2 text-2xl font-semibold">Nos partenaires</h2>
                 <PartnersCarousel />
             </div>
 

@@ -14,7 +14,7 @@ import { Suspense } from "react";
 
 export default async function EventsPage() {
     return (
-        <Card className="w-full h-full flex-1 flex flex-col">
+        <Card className="flex h-full w-full flex-1 flex-col">
             <CardHeader>
                 <CardTitle>Evènements</CardTitle>
                 <CardDescription>

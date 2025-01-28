@@ -50,24 +50,24 @@ const memberSchema = z.object({
     firstName: z.string().min(1, "Le prénom est obligatoire"),
     position: z.string().min(1, "Le poste est obligatoire"),
     picture:
-        typeof window === "undefined"
-            ? z.any()
-            : z
-                  .instanceof(FileList)
-                  .optional()
-                  .transform((fl) => {
-                      if (!fl || fl.length === 0) return undefined;
-                      return fl[0];
-                  })
-                  .refine(
-                      (file) => !file || file.type.split("/")[0] === "image",
-                      "Le format de l'image n'est pas valide",
-                  )
-                  .refine(
-                      (file) =>
-                          !file || file.size <= 1024 * 1024 * maxUploadSizeInMb,
-                      "La taille de l'image est trop grande",
-                  ),
+        typeof window === "undefined" ?
+            z.any()
+        :   z
+                .instanceof(FileList)
+                .optional()
+                .transform((fl) => {
+                    if (!fl || fl.length === 0) return undefined;
+                    return fl[0];
+                })
+                .refine(
+                    (file) => !file || file.type.split("/")[0] === "image",
+                    "Le format de l'image n'est pas valide",
+                )
+                .refine(
+                    (file) =>
+                        !file || file.size <= 1024 * 1024 * maxUploadSizeInMb,
+                    "La taille de l'image est trop grande",
+                ),
     email: z.string().email("L'email doit être valide"),
     facebook: z
         .string()
@@ -136,10 +136,10 @@ export default function EditMemberButton({
     const onSubmit = async (data: TMemberSchema) => {
         setIsLoading(true);
 
-        let newPicturePath : string | undefined = undefined
+        let newPicturePath: string | undefined = undefined;
 
         // If a picture is provided, upload it and get the path
-        if(data.picture) {
+        if (data.picture) {
             // Upload picture
             const uploadResponse = await uploadFile(
                 "member-pictures",
@@ -149,7 +149,7 @@ export default function EditMemberButton({
                 maxUploadSizeInMb,
                 ["png", "jpeg", "jpg", "webp", "gif"],
             );
-    
+
             if (uploadResponse.error) {
                 setError(uploadResponse.error);
                 setIsLoading(false);
@@ -158,7 +158,6 @@ export default function EditMemberButton({
 
             // Set the new picture path
             newPicturePath = uploadResponse.path!;
-
         }
 
         // Build the formData with data values
@@ -167,7 +166,10 @@ export default function EditMemberButton({
         });
 
         // Add the picture to the formData
-        formData.append("picturePath", data.picture ? newPicturePath! : member.picturePath);
+        formData.append(
+            "picturePath",
+            data.picture ? newPicturePath! : member.picturePath,
+        );
 
         console.log(formDataToString(formData));
 
@@ -192,7 +194,7 @@ export default function EditMemberButton({
             {/* Trigger */}
             <DialogTrigger asChild>
                 <Button
-                    className="p-1 h-auto whitespace-normal"
+                    className="h-auto whitespace-normal p-1"
                     variant="outline"
                 >
                     <MdEdit size={18} />
@@ -221,7 +223,7 @@ export default function EditMemberButton({
                         defaultValue={member.id}
                     />
                     {errors.id && (
-                            <p className="text-red-500">{`${errors.id.message}`}</p>
+                        <p className="text-red-500">{`${errors.id.message}`}</p>
                     )}
 
                     <div>
@@ -324,7 +326,7 @@ export default function EditMemberButton({
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="facebook">Lien Facebook</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -345,7 +347,7 @@ export default function EditMemberButton({
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="instagram">Lien Instagram</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -366,7 +368,7 @@ export default function EditMemberButton({
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="twitter">Lien X</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -385,12 +387,12 @@ export default function EditMemberButton({
                         )}
                     </div>
 
-                    {error ? (
+                    {error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>
@@ -400,7 +402,10 @@ export default function EditMemberButton({
                         form="editMemberForm"
                         disabled={isLoading}
                     >
-                        {isLoading ? <LoadingRing /> : null} Modifier
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Modifier
                     </Button>
                 </DialogFooter>
             </DialogContent>

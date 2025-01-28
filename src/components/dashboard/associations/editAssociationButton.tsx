@@ -96,7 +96,7 @@ export default function EditAssociationButton({
             {/* Trigger */}
             <DialogTrigger asChild>
                 <Button
-                    className="p-1 h-auto whitespace-normal"
+                    className="h-auto whitespace-normal p-1"
                     variant="outline"
                 >
                     <MdEdit size={18} />
@@ -175,7 +175,7 @@ export default function EditAssociationButton({
                                     <div className="text-sm text-muted-foreground">
                                         Taille maximale : 15 Mo
                                     </div>
-                                    <div className="text-sm text-muted-foreground mb-1">
+                                    <div className="mb-1 text-sm text-muted-foreground">
                                         Format recommandée: carré
                                     </div>
                                     <Input
@@ -250,7 +250,7 @@ export default function EditAssociationButton({
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="website">Site internet</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -267,7 +267,7 @@ export default function EditAssociationButton({
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="facebook">Lien Facebook</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -284,7 +284,7 @@ export default function EditAssociationButton({
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="instagram">Lien Instagram</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -301,7 +301,7 @@ export default function EditAssociationButton({
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="twitter">Lien X</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -321,7 +321,7 @@ export default function EditAssociationButton({
                             <Label htmlFor="discord">
                                 Lien Serveur Discord
                             </Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -336,14 +336,14 @@ export default function EditAssociationButton({
                         />
                     </div>
 
-                    {formState?.error ? (
+                    {formState?.error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>
@@ -352,8 +352,10 @@ export default function EditAssociationButton({
                         form="editAssociationForm"
                         disabled={isLoading}
                     >
-                        {isLoading ? <LoadingRing /> : null} Valider
-                        modifications
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Valider modifications
                     </Button>
                 </DialogFooter>
             </DialogContent>

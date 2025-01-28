@@ -45,8 +45,8 @@ export default function EquipmentSelection({
     );
 
     return (
-        <div className="container mx-auto p-4 border border-gray-300 rounded-xl">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+        <div className="container mx-auto rounded-xl border border-gray-300 p-4">
+            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {equipmentList.map((equipment) => (
                     <EquipmentCard
                         key={equipment.id}

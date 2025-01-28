@@ -10,37 +10,37 @@ import { MdOutlineEmail } from "react-icons/md";
 
 export default function Contact() {
     return (
-        <div className="flex flex-col items-center justify-start w-full md:px-8 lg:px-16 mb-16">
+        <div className="mb-16 flex w-full flex-col items-center justify-start md:px-8 lg:px-16">
             {/* Main header */}
-            <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">
+            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
                 Vous souhaitez nous contacter ?
             </h1>
 
             {/* Links */}
-            <div className="flex flex-col w-full md:w-[80%] space-y-4 mb-12">
+            <div className="mb-12 flex w-full flex-col space-y-4 md:w-[80%]">
                 {/* Email */}
                 <Link
-                    className="group flex flex-row items-center justify-between rounded-xl bg-[#4B6CB7] w-full p-4 text-white"
+                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-[#4B6CB7] p-4 text-white"
                     href="mailto:contact@fahb.eu"
                 >
-                    <div className="flex flex-row space-x-4 items-center">
+                    <div className="flex flex-row items-center space-x-4">
                         <MdOutlineEmail size={50} />
                         <p className="text-xl font-semibold transition-all">
                             Email
                         </p>
                     </div>
                     {/* Arrow */}
-                    <div className="opacity-0 scale-75 translate-x-14 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 duration-500 transition-all">
+                    <div className="translate-x-14 scale-75 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100">
                         <FaArrowLeft size={40} />
                     </div>
                 </Link>
 
                 {/* Instagram */}
                 <Link
-                    className="group flex flex-row items-center justify-between rounded-xl bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] w-full p-4 text-white"
+                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] p-4 text-white"
                     href="https://www.instagram.com/la_fahb/"
                 >
-                    <div className="flex flex-row space-x-4 items-center">
+                    <div className="flex flex-row items-center space-x-4">
                         <FaInstagram size={50} />
                         <p className="text-xl font-semibold transition-all">
                             Instagram
@@ -48,7 +48,7 @@ export default function Contact() {
                     </div>
 
                     {/* Arrow */}
-                    <div className="opacity-0 scale-75 translate-x-14 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 duration-500 transition-all">
+                    <div className="translate-x-14 scale-75 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100">
                         <FaArrowLeft size={40} />
                     </div>
                 </Link>
@@ -72,27 +72,27 @@ export default function Contact() {
 
                 {/* Bluesky */}
                 <Link
-                    className="group flex flex-row items-center justify-between rounded-xl bg-gradient-to-r from-[#14171a] to-[#2d3236] w-full p-4 text-white"
+                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-gradient-to-r from-[#14171a] to-[#2d3236] p-4 text-white"
                     href="https://bsky.app/profile/fahb.bsky.social"
                 >
-                    <div className="flex flex-row space-x-4 items-center">
+                    <div className="flex flex-row items-center space-x-4">
                         <FaBluesky size={50} />
                         <p className="text-xl font-semibold transition-all">
                             Bluesky
                         </p>
                     </div>
 
-                    <div className="opacity-0 scale-75 translate-x-14 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 duration-500 transition-all">
+                    <div className="translate-x-14 scale-75 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100">
                         <FaArrowLeft size={40} />
                     </div>
                 </Link>
 
                 {/* Facebook */}
                 <Link
-                    className="group flex flex-row items-center justify-between rounded-xl bg-gradient-to-l from-[#00c6ff] to-[#0072ff] w-full p-4 text-white"
+                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-gradient-to-l from-[#00c6ff] to-[#0072ff] p-4 text-white"
                     href="https://www.facebook.com/la.fahb"
                 >
-                    <div className="flex flex-row space-x-4 items-center">
+                    <div className="flex flex-row items-center space-x-4">
                         <FaFacebook size={50} />
                         <p className="text-xl font-semibold transition-all">
                             Facebook
@@ -100,7 +100,7 @@ export default function Contact() {
                     </div>
 
                     {/* Arrow */}
-                    <div className="opacity-0 scale-75 translate-x-14 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 duration-500 transition-all">
+                    <div className="translate-x-14 scale-75 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100">
                         <FaArrowLeft size={40} />
                     </div>
                 </Link>

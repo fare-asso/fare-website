@@ -8,18 +8,18 @@ export default async function BagadAsso() {
     const equipmentList = await prisma.bagadAssoEquipment.findMany();
 
     return (
-        <div className="flex flex-col items-center justify-start w-full">
+        <div className="flex w-full flex-col items-center justify-start">
             {/* <h1 className="py-12 sm:py-24 md:py-32 lg:py-44 text-[3rem] font-semibold">{"Bagad'Asso"}</h1> */}
 
             <Image
                 src={logoBagadAsso}
                 alt="Logo du projet Bagad'Asso"
-                className="w-[90%] md:w-[40%] mb-12"
+                className="mb-12 w-[90%] md:w-[40%]"
             />
 
             {/* Présentation du projet */}
-            <div className="max-w-4xl text-justify mb-12 rounded-xl bg-black text-white p-8">
-                <h2 className="text-xl font-semibold mb-4">
+            <div className="mb-12 max-w-4xl rounded-xl bg-black p-8 text-justify text-white">
+                <h2 className="mb-4 text-xl font-semibold">
                     Présentation du projet
                 </h2>
                 <p className="mb-4">
@@ -61,14 +61,14 @@ export default async function BagadAsso() {
                 </p>
             </div>
 
-            <section className="w-full max-w-4xl mb-12">
-                <h2 className="text-2xl font-bold mb-4">Nos services</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <section className="mb-12 w-full max-w-4xl">
+                <h2 className="mb-4 text-2xl font-bold">Nos services</h2>
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                     <div>
-                        <h3 className="text-xl font-semibold mb-2">
+                        <h3 className="mb-2 text-xl font-semibold">
                             Logistique
                         </h3>
-                        <ul className="list-disc list-inside">
+                        <ul className="list-inside list-disc">
                             <li>Enceinte</li>
                             <li>Jeu de lumières</li>
                             <li>Machine à fumée</li>
@@ -77,10 +77,10 @@ export default async function BagadAsso() {
                         </ul>
                     </div>
                     <div>
-                        <h3 className="text-xl font-semibold mb-2">
+                        <h3 className="mb-2 text-xl font-semibold">
                             Prévention
                         </h3>
-                        <ul className="list-disc list-inside">
+                        <ul className="list-inside list-disc">
                             <li>Préservatifs</li>
                             <li>Capotes de verre</li>
                             <li>Boules quies</li>
@@ -89,8 +89,8 @@ export default async function BagadAsso() {
                         </ul>
                     </div>
                     <div>
-                        <h3 className="text-xl font-semibold mb-2">Services</h3>
-                        <ul className="list-disc list-inside">
+                        <h3 className="mb-2 text-xl font-semibold">Services</h3>
+                        <ul className="list-inside list-disc">
                             <li>Personnes de confiance</li>
                             <li>Tarif réduit sur la SACEM</li>
                             <li>Tarifs réduits sur les goodies</li>

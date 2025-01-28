@@ -54,34 +54,32 @@ export default function AssociationCard({
     return (
         <div
             className={clsx(
-                "flex flex-col items-start rounded-lg border bg-card text-card-foreground shadow-sm p-3 h-min",
+                "flex h-min flex-col items-start rounded-lg border bg-card p-3 text-card-foreground shadow-sm",
                 hidden && "hidden",
             )}
         >
             <div className="relative">
                 {/* Hover buttons */}
-                <div className="w-full h-full flex flex-row opacity-100 lg:opacity-0 lg:hover:opacity-100 absolute items-start justify-end p-2 space-x-1">
+                <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 lg:opacity-0 lg:hover:opacity-100">
                     <DeleteAssociationButton association={association} />
                     <EditAssociationButton association={association} />
-                    {association.representativeId ? (
+                    {association.representativeId ?
                         <DeleteRepresentativeButton association={association} />
-                    ) : (
-                        <SendInvitationLinkButton association={association} />
-                    )}
+                    :   <SendInvitationLinkButton association={association} />}
                 </div>
                 <Image
                     src={logoUrl}
                     width={1000}
                     height={1000}
                     alt={"Logo de l'association " + association.name}
-                    className="rounded-md shadow-sm aspect-square object-cover mb-1"
+                    className="mb-1 aspect-square rounded-md object-cover shadow-sm"
                 />
             </div>
 
-            <div className="w-full flex flex-row space-x-1 text-card-foreground font-medium mb-[0.125rem]">
+            <div className="mb-[0.125rem] flex w-full flex-row space-x-1 font-medium text-card-foreground">
                 {association.name}
             </div>
-            <div className="inline-flex items-center bg-card-foreground rounded-full px-2.5 py-0.5 text-primary-foreground text-xs font-semibold whitespace-nowrap">
+            <div className="inline-flex items-center whitespace-nowrap rounded-full bg-card-foreground px-2.5 py-0.5 text-xs font-semibold text-primary-foreground">
                 {association.major}
             </div>
         </div>

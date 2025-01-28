@@ -9,7 +9,6 @@ type AllowedValue =
     | undefined;
 type DataObject = Record<string, AllowedValue | AllowedValue[]>;
 
-
 /**
  * Converts a data object to FormData, with options to exclude certain fields and format dates.
  *
@@ -71,9 +70,9 @@ function formatValue(
     dateFormat: "iso" | "timestamp",
 ): string | File | Blob {
     if (value instanceof Date) {
-        return dateFormat === "iso"
-            ? value.toISOString()
-            : value.getTime().toString();
+        return dateFormat === "iso" ?
+                value.toISOString()
+            :   value.getTime().toString();
     }
 
     if (value instanceof File || value instanceof Blob) {

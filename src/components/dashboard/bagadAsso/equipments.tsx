@@ -16,9 +16,9 @@ export default async function Equipments() {
     const equipments = await prisma.bagadAssoEquipment.findMany();
 
     return (
-        <Card className="flex flex-col w-full h-full p-4">
+        <Card className="flex h-full w-full flex-col p-4">
             <CardContent className="h-full w-full">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-8 w-full h-auto">
+                <div className="grid h-auto w-full grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5">
                     {equipments.map((equipment) => (
                         <EquipmentCard
                             key={equipment.id}

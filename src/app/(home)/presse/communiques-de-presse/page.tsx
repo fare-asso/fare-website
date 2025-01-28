@@ -13,21 +13,20 @@ export default async function CommuniquesDePresse() {
     });
 
     return (
-        <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16 mb-20">
-            <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">
+        <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
+            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
                 Communiqués de presse
             </h1>
 
-            <div className="w-3/4 flex flex-col items-center space-y-2">
-                {communiques.length > 0 ? (
+            <div className="flex w-3/4 flex-col items-center space-y-2">
+                {communiques.length > 0 ?
                     communiques.map((cdp) => (
                         <CommuniquesCard key={cdp.id} communique={cdp} />
                     ))
-                ) : (
-                    <span className="text-xl">
+                :   <span className="text-xl">
                         {"Nous n'avons pas encore de communiqués de presse.🥲"}
                     </span>
-                )}
+                }
             </div>
         </div>
     );

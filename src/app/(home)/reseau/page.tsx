@@ -17,16 +17,16 @@ export default async function Reseau() {
     });
 
     return (
-        <div className="flex flex-col items-center justify-start w-full pb-20">
-            <h1 className="py-12 sm:py-24 md:py-32 lg:py-44 text-[3rem] font-semibold">
+        <div className="flex w-full flex-col items-center justify-start pb-20">
+            <h1 className="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
                 Le Réseau Associatif
             </h1>
             <AssociationMapCaller associations={assos} />
             <AssociationList associations={assos} />
 
             {/* Nous rejoindre card */}
-            <div className="w-full md:w-1/2 flex flex-col p-8 rounded-xl bg-black text-white">
-                <h2 className="text-lg font-semibold mb-2">
+            <div className="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-1/2">
+                <h2 className="mb-2 text-lg font-semibold">
                     Votre association souhaite intégrer notre réseau ?{" "}
                 </h2>
                 <p>
@@ -38,7 +38,7 @@ export default async function Reseau() {
                 </p>
                 <Link
                     href="/adhesion"
-                    className="rounded-full font-semibold bg-white text-black border-white px-4 py-2 mt-4 ml-auto text-center w-full md:w-1/3 hover:scale-105 transition-all"
+                    className="ml-auto mt-4 w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
                 >
                     Nous rejoindre
                 </Link>

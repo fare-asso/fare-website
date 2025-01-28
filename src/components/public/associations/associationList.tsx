@@ -7,11 +7,11 @@ export default function AssociationList({
     associations: Association[];
 }) {
     return (
-        <div className="w-[90%] mb-20">
-            <h2 className="text-[1.75rem] font-semibold mb-6">
+        <div className="mb-20 w-[90%]">
+            <h2 className="mb-6 text-[1.75rem] font-semibold">
                 Les Associations
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full h-full">
+            <div className="grid h-full w-full grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
                 {associations.map((asso) => (
                     <AssociationCard key={asso.id} association={asso} />
                 ))}

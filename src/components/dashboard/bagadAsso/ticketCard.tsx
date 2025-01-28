@@ -60,21 +60,21 @@ export default function BagadAssoTicketCard({
 
     return (
         <div
-            className={`w-full border border-gray-300 rounded-lg p-4 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-shadow duration-300 ${isExpired ? "bg-red-100" : ""}`}
+            className={`flex w-full flex-col items-center justify-between rounded-lg border border-gray-300 p-4 shadow-sm transition-shadow duration-300 hover:shadow-md md:flex-row ${isExpired ? "bg-red-100" : ""}`}
         >
-            <div className="flex flex-col md:flex-row items-center w-full md:w-auto">
-                <span className="hidden sm:block bg-gray-800 text-sm px-2 py-1 rounded-md text-white font-mono mb-2 md:mb-0 md:mr-4">
+            <div className="flex w-full flex-col items-center md:w-auto md:flex-row">
+                <span className="mb-2 hidden rounded-md bg-gray-800 px-2 py-1 font-mono text-sm text-white sm:block md:mb-0 md:mr-4">
                     #{ticket.id}
                 </span>
                 <Link
                     href={`/dashboard/bagadAsso/tickets/${ticket.id}`}
-                    className="underline text-black hover:text-gray-600 transition-colors duration-300 mb-2 md:mb-0 md:mr-4"
+                    className="mb-2 text-black underline transition-colors duration-300 hover:text-gray-600 md:mb-0 md:mr-4"
                 >
-                    {ticket.assocation.length > 12
-                        ? `${ticket.assocation.substring(0, 12)}...`
-                        : ticket.assocation}
+                    {ticket.assocation.length > 12 ?
+                        `${ticket.assocation.substring(0, 12)}...`
+                    :   ticket.assocation}
                 </Link>
-                <span className="text-gray-600 mb-2 md:mb-0 md:mr-4">
+                <span className="mb-2 text-gray-600 md:mb-0 md:mr-4">
                     {format(ticket.creationDate, "dd/MM/yyyy")}
                 </span>
                 <span
@@ -86,13 +86,11 @@ export default function BagadAssoTicketCard({
             <button
                 title={`Supprimer le ticket n°${ticket}`}
                 onClick={onDelete}
-                className="flex flex-row  items-center justify-center bg-red-500 text-white px-2 py-2 rounded-md hover:bg-red-600 transition-colors duration-300 mt-2 md:mt-0"
+                className="mt-2 flex flex-row items-center justify-center rounded-md bg-red-500 px-2 py-2 text-white transition-colors duration-300 hover:bg-red-600 md:mt-0"
             >
-                {isLoading ? (
+                {isLoading ?
                     <LoadingRing className="!m-0" />
-                ) : (
-                    <MdDelete size="20" />
-                )}
+                :   <MdDelete size="20" />}
             </button>
         </div>
     );

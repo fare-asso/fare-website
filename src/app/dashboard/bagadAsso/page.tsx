@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function BagadAsso() {
     return (
-        <Card className="w-full h-full flex-1 flex flex-col">
+        <Card className="flex h-full w-full flex-1 flex-col">
             <CardHeader>
                 <CardTitle>Espace Bagad'Asso</CardTitle>
                 <CardDescription>
@@ -24,9 +24,9 @@ export default function BagadAsso() {
             <CardContent className="flex-1 overflow-y-auto">
                 <Tabs
                     defaultValue="tickets"
-                    className="w-full h-full flex flex-col items-center"
+                    className="flex h-full w-full flex-col items-center"
                 >
-                    <TabsList className="grid w-full md:w-1/2 grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-2 md:w-1/2">
                         <TabsTrigger value="tickets">Tickets</TabsTrigger>
                         <TabsTrigger value="materials">Matériels</TabsTrigger>
                     </TabsList>

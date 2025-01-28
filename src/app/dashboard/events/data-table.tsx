@@ -32,7 +32,7 @@ export function DataTable<TData, TValue>({
     });
 
     return (
-        <div className="rounded-md border h-full overflow-y-auto">
+        <div className="h-full overflow-y-auto rounded-md border">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -40,13 +40,12 @@ export function DataTable<TData, TValue>({
                             {headerGroup.headers.map((header) => {
                                 return (
                                     <TableHead key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                  header.column.columnDef
-                                                      .header,
-                                                  header.getContext(),
-                                              )}
+                                        {header.isPlaceholder ? null : (
+                                            flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext(),
+                                            )
+                                        )}
                                     </TableHead>
                                 );
                             })}
@@ -54,7 +53,7 @@ export function DataTable<TData, TValue>({
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows?.length ? (
+                    {table.getRowModel().rows?.length ?
                         table.getRowModel().rows.map((row) => (
                             <TableRow
                                 key={row.id}
@@ -70,8 +69,7 @@ export function DataTable<TData, TValue>({
                                 ))}
                             </TableRow>
                         ))
-                    ) : (
-                        <TableRow>
+                    :   <TableRow>
                             <TableCell
                                 colSpan={columns.length}
                                 className="h-24 text-center"
@@ -79,7 +77,7 @@ export function DataTable<TData, TValue>({
                                 No results.
                             </TableCell>
                         </TableRow>
-                    )}
+                    }
                 </TableBody>
             </Table>
         </div>

@@ -47,9 +47,10 @@ export async function uploadFile(
     const supabase = createClient();
 
     // Generate a file name
-    const fileName = name
-        ? `${sanitizeString(name)}.${fileExt}`
-        : `${Math.random().toString(36).slice(2)}.${fileExt}`;
+    const fileName =
+        name ?
+            `${sanitizeString(name)}.${fileExt}`
+        :   `${Math.random().toString(36).slice(2)}.${fileExt}`;
     const filePath = folder ? `${folder}/${fileName}` : fileName;
 
     const { data: uploadData, error: uploadError } = await supabase.storage

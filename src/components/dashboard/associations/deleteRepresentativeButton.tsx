@@ -10,7 +10,7 @@ export default function DeleteRepresentativeButton({
     association: Association;
 }) {
     return (
-        <Button className="p-1 h-auto whitespace-normal" variant="destructive">
+        <Button className="h-auto whitespace-normal p-1" variant="destructive">
             <FaUserSlash size={20} />
         </Button>
     );

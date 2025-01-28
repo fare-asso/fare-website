@@ -135,35 +135,12 @@ export default function AdhesionForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="space-y-8 w-full lg:w-[60%] flex flex-col items-start
-                                            [&_input]:border [&_input]:border-gray-300 [&_input]:text-black
-                                            [&_input]:text-base [&_input]:rounded-lg [&_input]:focus:ring-yellow-400
-                                            [&_input]:focus:border-yellow-400 [&_input]:block [&_input]:w-full [&_input]:p-2.5
-                                            [&_input]:dark:bg-gray-700 [&_input]:dark:border-gray-600 
-                                            [&_input]:dark:placeholder-gray-400 [&_input]:dark:text-white 
-                                            [&_input]:dark:focus:ring-yellow-400 [&_input]:dark:focus:border-yellow-400
-                                            
-                                            [&_select]:border [&_select]:border-gray-300 [&_select]:text-black [&_select]:text-base
-                                            [&_select]:rounded-lg [&_select]:focus:ring-yellow-400 [&_select]:focus:border-yellow-400
-                                            [&_select]:block [&_select]:w-full [&_select]:p-2.5 [&_select]:dark:bg-gray-700 [&_select]:mb-1
-                                            [&_select]:dark:border-gray-600 [&_select]:dark:placeholder-gray-400 [&_select]:dark:text-white
-                                            [&_select]:dark:focus:ring-yellow-400 [&_select]:dark:focus:border-yellow-400
-                                            
-                                            [&_option]:font-sans
-
-                                            [&_label]:mt-6 [&_label]:mb-1 [&_label]:text-lg [&_label]:font-semibold
-
-                                            [&_p]:text-gray-400 [&_p]:italic
-
-                                            [&_h2]:text-2xl [&_h2]:mb-4
-
-                                            [&>section]:mb-12
-                                            "
+            className="flex w-full flex-col items-start space-y-8 lg:w-[60%] [&>section]:mb-12 [&_h2]:mb-4 [&_h2]:text-2xl [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black [&_input]:focus:border-yellow-400 [&_input]:focus:ring-yellow-400 [&_input]:dark:border-gray-600 [&_input]:dark:bg-gray-700 [&_input]:dark:text-white [&_input]:dark:placeholder-gray-400 [&_input]:dark:focus:border-yellow-400 [&_input]:dark:focus:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_label]:text-lg [&_label]:font-semibold [&_option]:font-sans [&_p]:italic [&_p]:text-gray-400 [&_select]:mb-1 [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black [&_select]:focus:border-yellow-400 [&_select]:focus:ring-yellow-400 [&_select]:dark:border-gray-600 [&_select]:dark:bg-gray-700 [&_select]:dark:text-white [&_select]:dark:placeholder-gray-400 [&_select]:dark:focus:border-yellow-400 [&_select]:dark:focus:ring-yellow-400"
         >
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="mb-2 text-3xl font-bold">
                 {"Formulaire d'adhésion"}
             </h1>
-            <p className="!mt-1 !not-italic !text-base !opacity-100 !text-black">
+            <p className="!mt-1 !text-base !not-italic !text-black !opacity-100">
                 En cas de difficulté pour remplir ce formulaire d'adhésion,
                 merci de contacter le secrétariat général de la FAHB en privé ou
                 sur
@@ -183,7 +160,7 @@ export default function AdhesionForm() {
 
             {/* Informations générales */}
             <section className="w-full">
-                <h2 className="text-xl font-semibold mb-4">
+                <h2 className="mb-4 text-xl font-semibold">
                     Informations générales
                 </h2>
                 <div className="space-y-4">
@@ -249,7 +226,7 @@ export default function AdhesionForm() {
 
             {/* Administratif */}
             <section className="w-full">
-                <h2 className="text-xl font-semibold mb-4">Administratif</h2>
+                <h2 className="mb-4 text-xl font-semibold">Administratif</h2>
                 <div className="space-y-4">
                     <div>
                         <label htmlFor="college">
@@ -367,11 +344,11 @@ export default function AdhesionForm() {
                     </div>
                 </div>
                 <div className="mt-4">
-                    <label className="flex flex-row items-start justify-start !font-normal !text-base">
+                    <label className="flex flex-row items-start justify-start !text-base !font-normal">
                         <input
                             name="engagementCotisation"
                             type="checkbox"
-                            className="mt-2 mr-4 !w-4 !h-4"
+                            className="mr-4 mt-2 !h-4 !w-4"
                             required
                         />
                         <span>
@@ -385,7 +362,7 @@ export default function AdhesionForm() {
 
             {/* Documents à fournir */}
             <section className="w-full">
-                <h2 className="text-xl font-semibold mb-4">
+                <h2 className="mb-4 text-xl font-semibold">
                     Documents à fournir
                 </h2>
                 <div className="space-y-4 md:[&_input]:!w-1/2">
@@ -487,7 +464,7 @@ export default function AdhesionForm() {
 
             {/* Contacts */}
             <section className="w-full">
-                <h2 className="text-xl font-semibold mb-4">Contacts</h2>
+                <h2 className="mb-4 text-xl font-semibold">Contacts</h2>
                 <div className="space-y-4">
                     <div>
                         <label htmlFor="emailAssociation">
@@ -547,14 +524,14 @@ export default function AdhesionForm() {
                 {boardMembers.map((member, index) => (
                     <div
                         key={member.id}
-                        className="mb-4 border-gray-300 border rounded-lg p-2 sm:p-4"
+                        className="mb-4 rounded-lg border border-gray-300 p-2 sm:p-4"
                     >
-                        <label className="flex flex-row items-center justify-start !mt-0 p-2">
+                        <label className="!mt-0 flex flex-row items-center justify-start p-2">
                             <input
                                 id={`bureau.${index}.isAdmin`}
                                 name={`bureau.${index}.isAdmin`}
                                 type="checkbox"
-                                className="mr-2 !w-4 !h-4"
+                                className="mr-2 !h-4 !w-4"
                                 checked={member.isAdmin}
                                 onChange={(e) => {
                                     const newBoardMembers = [...boardMembers];
@@ -587,7 +564,7 @@ export default function AdhesionForm() {
                                 <MdDelete size={25} />
                             </button>
                         </label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                             <input
                                 id={`bureau.${index}.poste`}
                                 name={`bureau.${index}.poste`}
@@ -645,7 +622,7 @@ export default function AdhesionForm() {
                     <button
                         type="button"
                         onClick={addBoardMember}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                        className="rounded-md bg-blue-500 px-4 py-2 text-white"
                     >
                         + Ajouter un membre du bureau
                     </button>
@@ -678,14 +655,14 @@ export default function AdhesionForm() {
         </section>
       ))} */}
 
-            {formState?.error ? (
+            {formState?.error ?
                 <Alert variant="destructive">
                     <AlertTitle>Erreur</AlertTitle>
                     <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
-            ) : null}
+            :   null}
 
-            {formState?.success ? (
+            {formState?.success ?
                 <Alert variant="default">
                     <AlertTitle>
                         Votre demande d'adhésion à bien été soumise
@@ -694,16 +671,18 @@ export default function AdhesionForm() {
                         {`Nous reviendrons vers vous par e-mail dans les plus brefs délais pour vous fournir une réponse concernant votre demande.`}
                     </AlertDescription>
                 </Alert>
-            ) : null}
+            :   null}
 
-            <div className="w-full flex flex-col items-center">
+            <div className="flex w-full flex-col items-center">
                 <button
                     type="submit"
-                    className="bg-black text-white px-4 py-2 rounded-lg font-bold flex flex-row items-center disabled:opacity-75 transition-all"
+                    className="flex flex-row items-center rounded-lg bg-black px-4 py-2 font-bold text-white transition-all disabled:opacity-75"
                     disabled={isLoading}
                 >
-                    {isLoading ? <LoadingRing /> : null} Envoyer le formulaire
-                    d'adhésion
+                    {isLoading ?
+                        <LoadingRing />
+                    :   null}{" "}
+                    Envoyer le formulaire d'adhésion
                 </button>
             </div>
         </form>

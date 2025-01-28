@@ -15,13 +15,13 @@ export default function EluCard({
     picture: StaticImageData;
 }) {
     return (
-        <div className="rounded-lg flex flex-col items-center p-4">
+        <div className="flex flex-col items-center rounded-lg p-4">
             <Image
                 src={picture}
                 alt={`Photo de ${elu.firstName} ${elu.lastName}`}
                 className="aspect-square rounded-full object-cover"
             />
-            <div className="flex flex-col w-full items-center">
+            <div className="flex w-full flex-col items-center">
                 <span className="font-semibold">{`${elu.firstName} ${elu.lastName}`}</span>
                 <span className="text-center italic">{elu.position}</span>
                 {/* <Link href={`mailto:${member.email}`} className="text-sm flex flex-row items-center justify-center"><MdAlternateEmail size={16}/>{`: ${member.email}`}</Link> */}

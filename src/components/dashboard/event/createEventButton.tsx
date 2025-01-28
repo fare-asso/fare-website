@@ -135,7 +135,7 @@ export default function CreateEventButton() {
                         />
                     </div>
 
-                    <div className="flex flex-row w-full space-x-4">
+                    <div className="flex w-full flex-row space-x-4">
                         <div>
                             <Label htmlFor="startDate">Date de début</Label>
                             <DatePicker
@@ -155,7 +155,7 @@ export default function CreateEventButton() {
                         </div>
                     </div>
 
-                    <div className="flex flex-row w-full space-x-4">
+                    <div className="flex w-full flex-row space-x-4">
                         <div>
                             <Label>Date de fin</Label>
                             <DatePicker
@@ -184,7 +184,7 @@ export default function CreateEventButton() {
                         <Label htmlFor="category">Catégorie</Label>
                         <div className="flex flex-row items-center justify-between space-x-4">
                             <CategorySelect defaultValue="" />
-                            <div className="flex flex-row items-center space-x-2 flex-1">
+                            <div className="flex flex-1 flex-row items-center space-x-2">
                                 <Switch id="visibility" name="visibility" />
                                 <Label htmlFor="visibility">
                                     Visible au public
@@ -193,14 +193,14 @@ export default function CreateEventButton() {
                         </div>
                     </div>
 
-                    {formState?.error ? (
+                    {formState?.error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>
@@ -209,7 +209,10 @@ export default function CreateEventButton() {
                         form="createEventForm"
                         disabled={isLoading}
                     >
-                        {isLoading ? <LoadingRing /> : null} Créer
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Créer
                     </Button>
                 </DialogFooter>
             </DialogContent>

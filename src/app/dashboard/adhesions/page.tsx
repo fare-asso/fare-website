@@ -12,14 +12,14 @@ import { Suspense } from "react";
 
 export default async function Adhesions() {
     return (
-        <Card className="w-full h-full flex-1 flex flex-col">
+        <Card className="flex h-full w-full flex-1 flex-col">
             <CardHeader>
                 <CardTitle>Demandes d'adhésion</CardTitle>
                 <CardDescription>
                     Espace de gestion des demandes d'adhésion à la FAHB
                 </CardDescription>
             </CardHeader>
-            <CardContent className="overflow-y-auto flex-1">
+            <CardContent className="flex-1 overflow-y-auto">
                 <Suspense fallback={<p>Chargements...</p>}>
                     <AdhesionList />
                 </Suspense>

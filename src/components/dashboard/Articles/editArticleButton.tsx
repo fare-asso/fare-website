@@ -167,7 +167,7 @@ export default function EditArticleButton({
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="max-w-[90%] md:max-w-[60%] max-h-[90%]">
+            <DialogContent className="max-h-[90%] max-w-[90%] md:max-w-[60%]">
                 <DialogHeader>
                     <DialogTitle>{"Modification de l'Article"}</DialogTitle>
                     <DialogDescription>
@@ -214,14 +214,14 @@ export default function EditArticleButton({
                         />
                     </div>
 
-                    {formState?.error ? (
+                    {formState?.error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>
@@ -230,7 +230,10 @@ export default function EditArticleButton({
                         form="editArticleForm"
                         disabled={isLoading}
                     >
-                        {isLoading ? <LoadingRing /> : null} Modifier
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Modifier
                     </Button>
                 </DialogFooter>
             </DialogContent>

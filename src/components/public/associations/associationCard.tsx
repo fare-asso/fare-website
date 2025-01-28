@@ -44,7 +44,7 @@ export default function AssociationCard({
     return (
         <Link
             href={`/reseau/associations/${association.id}`}
-            className="relative flex flex-col p-4 hover:scale-105 bg-white outline outline-1 outline-black rounded-lg transition-all"
+            className="relative flex flex-col rounded-lg bg-white p-4 outline outline-1 outline-black transition-all hover:scale-105"
         >
             <Image
                 src={
@@ -55,14 +55,14 @@ export default function AssociationCard({
                 width={400}
                 height={400}
                 alt={association.name + " logo"}
-                className=" rounded-lg border border-black aspect-square object-cover w-full"
+                className="aspect-square w-full rounded-lg border border-black object-cover"
             />
-            <div className="flex flex-row w-full">
-                <div className="flex flex-col mt-2">
-                    <span className="font-semibold text-xl">
+            <div className="flex w-full flex-row">
+                <div className="mt-2 flex flex-col">
+                    <span className="text-xl font-semibold">
                         {association.name}
                     </span>
-                    <span className="border border-black text-xs px-4 py-[2px] rounded-full text-center font-semibold">
+                    <span className="rounded-full border border-black px-4 py-[2px] text-center text-xs font-semibold">
                         {association.major}
                     </span>
                 </div>

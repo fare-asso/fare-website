@@ -69,7 +69,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     }
 
     return (
-        <div className="w-[90%] flex flex-col items-start pt-14">
+        <div className="flex w-[90%] flex-col items-start pt-14">
             <Link
                 href="/actualites"
                 className="text-sm opacity-40 hover:underline"
@@ -78,25 +78,18 @@ export default async function Page({ params }: { params: { id: string } }) {
             </Link>
 
             {/* Title */}
-            <h1 className="text-3xl font-bold mt-2">{articleRecord.title}</h1>
+            <h1 className="mt-2 text-3xl font-bold">{articleRecord.title}</h1>
 
             {/* Date */}
-            <span className="text-black opacity-75 text-sm">{`Publié le ${format(articleRecord.writtenOn, "dd/MM/yyyy")} à ${format(articleRecord.writtenOn, "HH'h'mm")}`}</span>
+            <span className="text-sm text-black opacity-75">{`Publié le ${format(articleRecord.writtenOn, "dd/MM/yyyy")} à ${format(articleRecord.writtenOn, "HH'h'mm")}`}</span>
 
             {/* Content */}
-            <div
-                className="w-full flex flex-col mt-8 [&_*]:transition-all
-            [&_ol]:list-decimal
-            [&_ul]:list-disc 
-            [&_a]:text-yellow-500 [&_a]:underline [&_a]:underline-offset-2 [&_a]:tracking-wide hover:[&_a]:text-yellow-300 hover:[&_a]:underline-offset-4
-            [&_img]:w-full [&_img]:max-w-[500px] [&_img]:mx-auto [&_img]:my-4 [&_img]:rounded-sm
-            "
-            >
+            <div className="mt-8 flex w-full flex-col [&_*]:transition-all [&_a]:tracking-wide [&_a]:text-yellow-500 [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-yellow-300 hover:[&_a]:underline-offset-4 [&_img]:mx-auto [&_img]:my-4 [&_img]:w-full [&_img]:max-w-[500px] [&_img]:rounded-sm [&_ol]:list-decimal [&_ul]:list-disc">
                 {/* Parse article content to HTML */}
                 {convertDeltaToHTML(articleRecord.content)}
             </div>
 
-            <div className="w-full flex flex-col items-center mt-12">
+            <div className="mt-12 flex w-full flex-col items-center">
                 <div className="w-full lg:w-[75%]">
                     <MoreArticles currentArticleId={articleRecord.id} />
                 </div>

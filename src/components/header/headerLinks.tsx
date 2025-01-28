@@ -60,11 +60,10 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                             <Link
                                 href={link.href}
                                 className={clsx(
-                                    pathname.startsWith(link.href)
-                                        ? "font-bold"
-                                        : "font-normal",
-                                    `text-lg flex-1`,
-                                    level > 0 && "!text-base pb-1",
+                                    pathname.startsWith(link.href) ? "font-bold"
+                                    :   "font-normal",
+                                    `flex-1 text-lg`,
+                                    level > 0 && "pb-1 !text-base",
                                 )}
                                 onClick={() => setMenuIsOpen(false)}
                                 style={{ marginLeft: level * 20 }}
@@ -76,11 +75,9 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                                     onClick={() => toggleSubMenu(link.title)}
                                     className="ml-2"
                                 >
-                                    {isOpen ? (
+                                    {isOpen ?
                                         <MdExpandLess size={20} />
-                                    ) : (
-                                        <MdExpandMore size={20} />
-                                    )}
+                                    :   <MdExpandMore size={20} />}
                                 </button>
                             )}
                         </div>
@@ -140,17 +137,17 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
     return (
         <div>
             {/* Navbar pour les écrans larges */}
-            <nav className="border-black border-2 rounded-full hidden lg:flex flex-row relative items-center">
+            <nav className="relative hidden flex-row items-center rounded-full border-2 border-black lg:flex">
                 <div
                     ref={runner}
-                    className="bg-black z-10 rounded-full absolute h-full opacity-0 transition-all duration-300 ease-out"
+                    className="absolute z-10 h-full rounded-full bg-black opacity-0 transition-all duration-300 ease-out"
                 ></div>
                 {renderDesktopLinks(links, pathname)}
             </nav>
 
             {/* Bouton Burger pour les petits écrans */}
             <button
-                className="block lg:hidden text-black"
+                className="block text-black lg:hidden"
                 onClick={() => setMenuIsOpen(true)}
             >
                 <MdOutlineMenu size={25} />
@@ -161,11 +158,11 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                 ref={menuRef}
                 id="mobileMenu"
                 className={clsx(
-                    "w-80 fixed top-0 right-0 bg-white border-l-2 min-h-screen transition-all duration-500 flex flex-col z-[9999]",
+                    "fixed right-0 top-0 z-[9999] flex min-h-screen w-80 flex-col border-l-2 bg-white transition-all duration-500",
                     menuIsOpen ? "translate-x-0" : "translate-x-80",
                 )}
             >
-                <div className="w-full flex flex-row items-center justify-end p-4">
+                <div className="flex w-full flex-row items-center justify-end p-4">
                     <button
                         id="closeButton"
                         className="hover:font-bold"

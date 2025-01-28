@@ -4,8 +4,8 @@ import logoFAHB from "/public/FAHB_Logo__Nom.png";
 
 export default function APropos() {
     return (
-        <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">
+        <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
+            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
                 Fédération des Associations de Haute-Bretagne (FAHB)
             </h1>
 
@@ -13,12 +13,12 @@ export default function APropos() {
             <Image
                 src={logoFAHB}
                 alt="Logo de la FAHB"
-                className="w-full md:w-1/2 mb-12"
+                className="mb-12 w-full md:w-1/2"
             />
 
-            <div className="max-w-4xl w-full space-y-8 mb-20">
+            <div className="mb-20 w-full max-w-4xl space-y-8">
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Qu'est-ce que la FAHB ?
                     </h2>
                     <p className="mb-4">
@@ -44,7 +44,7 @@ export default function APropos() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Indépendance et représentation
                     </h2>
                     <p className="mb-4">
@@ -57,7 +57,7 @@ export default function APropos() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Des associations étudiantes à votre service
                     </h2>
                     <p className="mb-4">
@@ -75,13 +75,13 @@ export default function APropos() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">Nos actions</h2>
+                    <h2 className="mb-4 text-2xl font-semibold">Nos actions</h2>
                     <p className="mb-4">
                         En tant qu'acteur·rice·s associatif·ve·s, nous réalisons
                         des projets d'innovation sociale à destination des
                         étudiant·e·s et plus largement des jeunes :
                     </p>
-                    <ul className="list-disc list-inside pl-4 space-y-2">
+                    <ul className="list-inside list-disc space-y-2 pl-4">
                         <li>Événements de sensibilisation et de prévention</li>
                         <li>Défense des droits</li>
                         <li>Tutorat auprès des personnes incarcérées</li>

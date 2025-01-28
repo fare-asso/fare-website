@@ -79,19 +79,22 @@ export default function CreatePasswordForm({ email }: { email: string }) {
                             />
                         </div>
 
-                        {formState?.error ? (
+                        {formState?.error ?
                             <Alert variant="destructive">
                                 <AlertTitle>Erreur</AlertTitle>
                                 <AlertDescription>
                                     {formState.error}
                                 </AlertDescription>
                             </Alert>
-                        ) : null}
+                        :   null}
                     </form>
                 </CardContent>
                 <CardFooter>
                     <Button type="submit" form="createPasswordForm">
-                        {isLoading ? <LoadingRing /> : null} Valider
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Valider
                     </Button>
                 </CardFooter>
             </Card>

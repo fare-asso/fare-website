@@ -56,18 +56,18 @@ export default function ArticleCard({ article }: { article: Article }) {
     });
 
     return (
-        <div className="w-full rounded-lg border bg-card text-card-foreground shadow-sm px-4 py-4 h-16 flex flex-row items-center justify-between">
-            <div className="text-xs md:text-sm text-ellipsis overflow-hidden whitespace-nowrap">
+        <div className="flex h-16 w-full flex-row items-center justify-between rounded-lg border bg-card px-4 py-4 text-card-foreground shadow-sm">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm">
                 {article.title}
             </div>
-            <div className="text-sm text-card-foreground/70 hidden md:block">
+            <div className="hidden text-sm text-card-foreground/70 md:block">
                 {format(article.writtenOn, "PPP", { locale: fr })}
             </div>
 
             <div id="buttons" className="flex flex-row items-center">
                 <Button
                     variant={"default"}
-                    className="px-3 mr-2 hidden md:block"
+                    className="mr-2 hidden px-3 md:block"
                 >
                     <Link
                         href={`/actualites/articles/${article.id}`}
@@ -90,11 +90,9 @@ export default function ArticleCard({ article }: { article: Article }) {
                     onClick={handleDelete}
                     disabled={isLoading}
                 >
-                    {isLoading ? (
+                    {isLoading ?
                         <LoadingRing />
-                    ) : (
-                        <MdDelete size={20} className="mr-0 sm:mr-1" />
-                    )}
+                    :   <MdDelete size={20} className="mr-0 sm:mr-1" />}
                     <div className="hidden sm:flex">Supprimer</div>
                 </Button>
             </div>

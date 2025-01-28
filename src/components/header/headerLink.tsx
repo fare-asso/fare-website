@@ -47,25 +47,25 @@ export default function HeaderLink({
 
     return (
         <div
-            className="relative z-20 m-0 [&>div]:hover:opacity-100 [&>div]:hover:scale-100  [&>a]:hover:text-white transition-all"
+            className="relative z-20 m-0 transition-all [&>a]:hover:text-white [&>div]:hover:scale-100 [&>div]:hover:opacity-100"
             onMouseEnter={hoverHandler}
             onMouseLeave={unhoverHandler}
         >
             <Link
                 href={href}
                 className={clsx(
-                    "text-black px-4 py-1 flex flex-col items-center h-full transition-all decoration-2",
+                    "flex h-full flex-col items-center px-4 py-1 text-black decoration-2 transition-all",
                     href.endsWith(pathname) ? "underline" : "",
                 )}
             >
                 {title}
             </Link>
 
-            {subLinks ? (
-                <div className="absolute opacity-0 scale-0 w-max transition-all">
+            {subLinks ?
+                <div className="absolute w-max scale-0 opacity-0 transition-all">
                     <div
                         id="dropdown-links"
-                        className="flex flex-col w-max items-center space-y-1 mt-1 border-2 border-black rounded-xl p-1 bg-black"
+                        className="mt-1 flex w-max flex-col items-center space-y-1 rounded-xl border-2 border-black bg-black p-1"
                     >
                         {subLinks
                             ?.filter((subLink) => !subLink.hidden)
@@ -73,14 +73,14 @@ export default function HeaderLink({
                                 <Link
                                     key={subLink.href}
                                     href={subLink.href}
-                                    className="text-sm text-start text-white hover:bg-white/20 w-full px-3 py-1 rounded-[0.5rem]"
+                                    className="w-full rounded-[0.5rem] px-3 py-1 text-start text-sm text-white hover:bg-white/20"
                                 >
                                     {subLink.title}
                                 </Link>
                             ))}
                     </div>
                 </div>
-            ) : null}
+            :   null}
         </div>
     );
 }

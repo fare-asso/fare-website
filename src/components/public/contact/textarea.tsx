@@ -16,14 +16,14 @@ const TextArea = React.forwardRef<
     }
 >(({ className, error, ...props }, ref) => {
     return (
-        <div className="relative flex flex-row items-center justify-end w-full">
+        <div className="relative flex w-full flex-row items-center justify-end">
             <textarea className={cn(className)} ref={ref} {...props} />
 
             {/* Error */}
             {error && ( // Afficher uniquement si une erreur est présente
-                <div className="absolute flex flex-row items-end bottom-0 right-0 p-2">
+                <div className="absolute bottom-0 right-0 flex flex-row items-end p-2">
                     <RiErrorWarningFill
-                        className="text-red-500 group-hover:scale-105 transition-all"
+                        className="text-red-500 transition-all group-hover:scale-105"
                         size={20}
                         title={error.message} // Optionnel : pour afficher un tooltip avec l'erreur
                     />

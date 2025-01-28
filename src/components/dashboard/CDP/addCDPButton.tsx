@@ -39,8 +39,7 @@ import FileInput from "@/components/ui/fileInput";
 import { z } from "zod";
 
 export default function AddNewCDPButton() {
-
-    const [error, setError] = useState<string|undefined>(undefined);
+    const [error, setError] = useState<string | undefined>(undefined);
 
     const [formState, formAction] = useFormState<
         { error?: string; success?: boolean } | undefined,
@@ -116,7 +115,7 @@ export default function AddNewCDPButton() {
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="sm:max-w-[60%] md:max-w-[50%] lg:max-w-[30%] sm:w-[90%]">
+            <DialogContent className="sm:w-[90%] sm:max-w-[60%] md:max-w-[50%] lg:max-w-[30%]">
                 <DialogHeader>
                     <DialogTitle>Nouveau document</DialogTitle>
                     <DialogDescription>
@@ -173,14 +172,12 @@ export default function AddNewCDPButton() {
                         <DatePicker name="date" />
                     </div>
 
-                    {error ? (
+                    {error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {error}
-                            </AlertDescription>
+                            <AlertDescription>{error}</AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>
@@ -189,7 +186,10 @@ export default function AddNewCDPButton() {
                         form="createCDPForm"
                         disabled={isLoading}
                     >
-                        {isLoading ? <LoadingRing /> : null}Ajouter
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}
+                        Ajouter
                     </Button>
                 </DialogFooter>
             </DialogContent>

@@ -58,9 +58,9 @@ export default function CdpCard({
     return (
         <div className={clsx("flex flex-col items-center", hidden && "hidden")}>
             <Link href={url} target="blank">
-                <div className="relative h-32 w-32 rounded-lg border bg-card text-card-foreground shadow-sm p-6 flex items-center justify-center hover:outline hover:outline-2 outline-black/30 outline-offset-2 cursor-pointer">
+                <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-sm outline-offset-2 outline-black/30 hover:outline hover:outline-2">
                     {/* Hover buttons */}
-                    <div className="w-full h-full flex flex-row opacity-0 hover:opacity-100 absolute items-start justify-end p-1 space-x-1">
+                    <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-0 hover:opacity-100">
                         <button
                             id="downloadIcon"
                             onClick={(event) => {
@@ -68,32 +68,30 @@ export default function CdpCard({
                                 event.stopPropagation();
                                 downloadFile(dlUrl);
                             }}
-                            className="bg-black/10 rounded-md p-1 hover:bg-black/20"
+                            className="rounded-md bg-black/10 p-1 hover:bg-black/20"
                         >
                             <MdOutlineFileDownload size={20} />
                         </button>
                         <button
                             id="deleteIcon"
                             onClick={handleDelete}
-                            className="bg-black/10 rounded-md p-1 hover:bg-black/20"
+                            className="rounded-md bg-black/10 p-1 hover:bg-black/20"
                         >
                             <MdDelete size={20} />
                         </button>
                     </div>
 
-                    {cdp.type == "CDP" ? (
+                    {cdp.type == "CDP" ?
                         <FaRegFilePdf size={55} className="text-red-600" />
-                    ) : (
-                        <FaRegFolderOpen size={55} className="text-red-600" />
-                    )}
+                    :   <FaRegFolderOpen size={55} className="text-red-600" />}
                 </div>
             </Link>
 
-            <div className="flex flex-col items-center justify-start mt-2">
+            <div className="mt-2 flex flex-col items-center justify-start">
                 <Link
                     href={url}
                     target="blank"
-                    className="font-medium text-sm hover:underline text-center"
+                    className="text-center text-sm font-medium hover:underline"
                 >
                     {cdp.name}
                 </Link>

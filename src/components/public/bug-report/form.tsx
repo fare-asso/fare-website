@@ -45,33 +45,7 @@ export default function BugReportForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className={`w-full lg:w-[60%] flex flex-col items-start
-                                            [&_input]:border [&_input]:border-gray-300 [&_input]:text-black
-                                            [&_input]:text-base [&_input]:rounded-lg [&_input]:focus:ring-yellow-400
-                                            [&_input]:focus:border-yellow-400 [&_input]:block [&_input]:w-full [&_input]:p-2.5
-                                            [&_input]:dark:bg-gray-700 [&_input]:dark:border-gray-600 
-                                            [&_input]:dark:placeholder-gray-400 [&_input]:dark:text-white 
-                                            [&_input]:dark:focus:ring-yellow-400 [&_input]:dark:focus:border-yellow-400
-
-                                            [&_textarea]:border [&_textarea]:border-gray-300 [&_textarea]:text-black
-                                            [&_textarea]:text-base [&_textarea]:rounded-lg [&_textarea]:focus:ring-yellow-400
-                                            [&_textarea]:focus:border-yellow-400 [&_textarea]:block [&_textarea]:w-full [&_textarea]:p-2.5
-                                            [&_textarea]:dark:bg-gray-700 [&_textarea]:dark:border-gray-600 
-                                            [&_textarea]:dark:placeholder-gray-400 [&_textarea]:dark:text-white 
-                                            [&_textarea]:dark:focus:ring-yellow-400 [&_textarea]:dark:focus:border-yellow-400
-                                            
-                                            [&_select]:border [&_select]:border-gray-300 [&_select]:text-black [&_select]:text-base
-                                            [&_select]:rounded-lg [&_select]:focus:ring-yellow-400 [&_select]:focus:border-yellow-400
-                                            [&_select]:block [&_select]:w-full [&_select]:p-2.5 [&_select]:dark:bg-gray-700
-                                            [&_select]:dark:border-gray-600 [&_select]:dark:placeholder-gray-400 [&_select]:dark:text-white
-                                            [&_select]:dark:focus:ring-yellow-400 [&_select]:dark:focus:border-yellow-400
-                                            
-                                            [&_option]:font-sans
-
-                                            [&_label]:mt-6 [&_label]:mb-1
-
-                                            [&>div]:w-full [&>div]:mb-4
-                                            `}
+            className={`flex w-full flex-col items-start lg:w-[60%] [&>div]:mb-4 [&>div]:w-full [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black [&_input]:focus:border-yellow-400 [&_input]:focus:ring-yellow-400 [&_input]:dark:border-gray-600 [&_input]:dark:bg-gray-700 [&_input]:dark:text-white [&_input]:dark:placeholder-gray-400 [&_input]:dark:focus:border-yellow-400 [&_input]:dark:focus:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_option]:font-sans [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black [&_select]:focus:border-yellow-400 [&_select]:focus:ring-yellow-400 [&_select]:dark:border-gray-600 [&_select]:dark:bg-gray-700 [&_select]:dark:text-white [&_select]:dark:placeholder-gray-400 [&_select]:dark:focus:border-yellow-400 [&_select]:dark:focus:ring-yellow-400 [&_textarea]:block [&_textarea]:w-full [&_textarea]:rounded-lg [&_textarea]:border [&_textarea]:border-gray-300 [&_textarea]:p-2.5 [&_textarea]:text-base [&_textarea]:text-black [&_textarea]:focus:border-yellow-400 [&_textarea]:focus:ring-yellow-400 [&_textarea]:dark:border-gray-600 [&_textarea]:dark:bg-gray-700 [&_textarea]:dark:text-white [&_textarea]:dark:placeholder-gray-400 [&_textarea]:dark:focus:border-yellow-400 [&_textarea]:dark:focus:ring-yellow-400`}
         >
             {/* Email */}
             <div>
@@ -159,7 +133,7 @@ export default function BugReportForm() {
 
             <div>
                 <label htmlFor="description">Description du bug</label>
-                <div className="w-full relative">
+                <div className="relative w-full">
                     <textarea
                         name="description"
                         id="description"
@@ -172,11 +146,10 @@ export default function BugReportForm() {
                     <span
                         style={{
                             color:
-                                charactersLength == maxCharactersLength
-                                    ? "red"
-                                    : "black",
+                                charactersLength == maxCharactersLength ? "red"
+                                :   "black",
                         }}
-                        className="absolute bottom-0 right-0 m-2 mr-4 p-1 rounded-lg bg-white text-sm opacity-80 select-none"
+                        className="absolute bottom-0 right-0 m-2 mr-4 select-none rounded-lg bg-white p-1 text-sm opacity-80"
                     >
                         {`${charactersLength}/${maxCharactersLength}`}
                     </span>
@@ -188,17 +161,17 @@ export default function BugReportForm() {
                 <Captcha onChange={setCaptchaValue} />
             </div>
 
-            {formState?.error ? (
+            {formState?.error ?
                 <Alert variant="destructive">
                     <AlertTitle>Erreur</AlertTitle>
                     <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
-            ) : null}
+            :   null}
 
-            {formState?.success ? (
+            {formState?.success ?
                 <Alert
                     variant="destructive"
-                    className="border-green-600 text-green-600 mt-4"
+                    className="mt-4 border-green-600 text-green-600"
                 >
                     <AlertDescription>
                         {
@@ -206,15 +179,18 @@ export default function BugReportForm() {
                         }
                     </AlertDescription>
                 </Alert>
-            ) : null}
+            :   null}
 
             <button
                 type="submit"
-                className="disabled:pointer-events-none disabled:opacity-50 px-4 py-2 rounded-lg bg-black text-white hover:scale-105 transition-all mt-4 flex flex-row items-center"
+                className="mt-4 flex flex-row items-center rounded-lg bg-black px-4 py-2 text-white transition-all hover:scale-105 disabled:pointer-events-none disabled:opacity-50"
                 disabled={isLoading}
             >
                 {" "}
-                {isLoading ? <LoadingRing /> : null} Envoyer le rapport de bug
+                {isLoading ?
+                    <LoadingRing />
+                :   null}{" "}
+                Envoyer le rapport de bug
             </button>
         </form>
     );

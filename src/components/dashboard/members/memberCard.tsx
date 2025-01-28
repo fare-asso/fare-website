@@ -61,7 +61,7 @@ export default function MemberCard({
     return (
         <div
             className={clsx(
-                "flex flex-col rounded-lg border bg-card text-card-foreground shadow-sm p-3",
+                "flex flex-col rounded-lg border bg-card p-3 text-card-foreground shadow-sm",
                 hidden && "hidden",
             )}
         >
@@ -69,7 +69,7 @@ export default function MemberCard({
                 {/* Profile picture + buttons */}
                 <div className="relative">
                     {/* Hover buttons */}
-                    <div className="w-full h-full flex flex-row opacity-0 hover:opacity-100 absolute items-start justify-end p-2 space-x-1">
+                    <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-0 hover:opacity-100">
                         <EditMemberButton
                             member={member}
                             pictureUrl={pictureUrl}
@@ -77,7 +77,7 @@ export default function MemberCard({
                         <Button
                             id="deleteButton"
                             onClick={handleDelete}
-                            className="p-1 h-auto whitespace-normal"
+                            className="h-auto whitespace-normal p-1"
                             variant="destructive"
                         >
                             <MdDelete size={20} />
@@ -93,17 +93,17 @@ export default function MemberCard({
                             " " +
                             member.lastName
                         }
-                        className="rounded-full shadow-sm aspect-square object-cover mb-1"
+                        className="mb-1 aspect-square rounded-full object-cover shadow-sm"
                     />
                 </div>
                 {/* First name + Last name */}
-                <div className="w-full flex flex-row space-x-1 text-card-foreground font-medium mb-[0.125rem]">
+                <div className="mb-[0.125rem] flex w-full flex-row space-x-1 font-medium text-card-foreground">
                     {member.firstName} {member.lastName}
                 </div>
             </div>
 
             {/* Position */}
-            <div className="mt-auto flex items-center bg-card-foreground rounded-lg px-2 py-1 text-primary-foreground text-xs font-semibold">
+            <div className="mt-auto flex items-center rounded-lg bg-card-foreground px-2 py-1 text-xs font-semibold text-primary-foreground">
                 {member.position}
             </div>
         </div>

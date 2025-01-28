@@ -15,9 +15,9 @@ export default function EquipmentCard({
     const supabase = createClient();
 
     return (
-        <div className="flex flex-col h-full border-grey-300 border p-4 rounded-lg">
-            <div className="w-full mb-4">
-                {equipment.imagePath ? (
+        <div className="border-grey-300 flex h-full flex-col rounded-lg border p-4">
+            <div className="mb-4 w-full">
+                {equipment.imagePath ?
                     <Image
                         width={300}
                         height={300}
@@ -30,15 +30,14 @@ export default function EquipmentCard({
                         alt={`${equipment.name} picture`}
                         className="aspect-square"
                     />
-                ) : (
-                    <div className="w-full aspect-square h-min bg-gray-200 flex items-center justify-center">
+                :   <div className="flex aspect-square h-min w-full items-center justify-center bg-gray-200">
                         No Image
                     </div>
-                )}
+                }
             </div>
-            <h2 className="text-lg font-semibold mb-2">{equipment.name}</h2>
-            <p className="text-sm text-gray-600 mb-1">{`Quantité disponible: ${equipment.quantity}`}</p>
-            <p className="text-sm text-gray-600 mb-4">{`Caution par objet: ${equipment.deposit}€`}</p>
+            <h2 className="mb-2 text-lg font-semibold">{equipment.name}</h2>
+            <p className="mb-1 text-sm text-gray-600">{`Quantité disponible: ${equipment.quantity}`}</p>
+            <p className="mb-4 text-sm text-gray-600">{`Caution par objet: ${equipment.deposit}€`}</p>
             <div className="mt-auto">
                 <NumberInput
                     name={equipment.id.toString()}

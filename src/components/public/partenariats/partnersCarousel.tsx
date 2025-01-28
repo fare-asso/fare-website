@@ -53,13 +53,13 @@ export default function PartnersCarousel() {
     }, [currentIndex]);
 
     return (
-        <div className="relative w-full max-w-4xl mx-auto overflow-hidden">
+        <div className="relative mx-auto w-full max-w-4xl overflow-hidden">
             {/* Navigation Arrows */}
-            <div className="absolute z-20 top-1/2 -translate-y-1/2 w-full flex justify-between pointer-events-none">
+            <div className="pointer-events-none absolute top-1/2 z-20 flex w-full -translate-y-1/2 justify-between">
                 <button
                     onClick={scrollLeft}
                     title="Bouton partenaires gauche"
-                    className="rounded-full w-10 h-10 bg-white/70 border-black border flex items-center justify-center cursor-pointer pointer-events-auto shadow-md hover:bg-white/90 transition-all"
+                    className="pointer-events-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-black bg-white/70 shadow-md transition-all hover:bg-white/90"
                 >
                     <GoArrowLeft size={20} />
                 </button>
@@ -67,20 +67,20 @@ export default function PartnersCarousel() {
                 <button
                     onClick={scrollRight}
                     title="Bouton partenaires droite"
-                    className="rounded-full w-10 h-10 bg-white/70 border-black border flex items-center justify-center cursor-pointer pointer-events-auto shadow-md hover:bg-white/90 transition-all"
+                    className="pointer-events-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-black bg-white/70 shadow-md transition-all hover:bg-white/90"
                 >
                     <GoArrowRight size={20} />
                 </button>
             </div>
 
             {/* Gradient Overlays */}
-            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-white to-transparent"></div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-white to-transparent"></div>
 
             {/* Partners Container */}
             <div
                 ref={carouselRef}
-                className="flex overflow-x-hidden scroll-smooth no-scrollbar space-x-8"
+                className="no-scrollbar flex space-x-8 overflow-x-hidden scroll-smooth"
                 style={{
                     scrollSnapType: "x mandatory",
                     WebkitOverflowScrolling: "touch",
@@ -89,14 +89,14 @@ export default function PartnersCarousel() {
                 {partners.map((partner) => (
                     <div
                         key={partner.id}
-                        className="flex-shrink-0 w-full h-32 flex items-center justify-center"
+                        className="flex h-32 w-full flex-shrink-0 items-center justify-center"
                         style={{ scrollSnapAlign: "start" }}
                     >
-                        <div className="md:grayscale hover:grayscale-0 transition-all duration-300 ease-in-out h-full">
+                        <div className="h-full transition-all duration-300 ease-in-out hover:grayscale-0 md:grayscale">
                             <Image
                                 src={partner.logo}
                                 alt={`Logo de notre partenaire ${partner.name}`}
-                                className="object-contain max-w-full max-h-full h-full w-auto"
+                                className="h-full max-h-full w-auto max-w-full object-contain"
                                 priority
                             />
                         </div>
@@ -105,10 +105,10 @@ export default function PartnersCarousel() {
             </div>
 
             {/* Pagination Dots */}
-            <div className="flex justify-center mt-4 space-x-2">
+            <div className="mt-4 flex justify-center space-x-2">
                 {partners.map((_, index) => (
                     <button
-                    title={`Position carousel ${index}`}
+                        title={`Position carousel ${index}`}
                         key={index}
                         onClick={() => {
                             setCurrentIndex(index);
@@ -121,9 +121,9 @@ export default function PartnersCarousel() {
                             }
                         }}
                         className={`h-2 w-2 rounded-full transition-all ${
-                            currentIndex === index
-                                ? "bg-black"
-                                : "bg-gray-300 hover:bg-gray-400"
+                            currentIndex === index ? "bg-black" : (
+                                "bg-gray-300 hover:bg-gray-400"
+                            )
                         }`}
                     />
                 ))}

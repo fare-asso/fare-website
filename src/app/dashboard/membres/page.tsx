@@ -14,14 +14,14 @@ import { Suspense } from "react";
 
 export default async function Membres() {
     return (
-        <Card className="w-full h-full flex-1 flex flex-col">
+        <Card className="flex h-full w-full flex-1 flex-col">
             <CardHeader>
                 <CardTitle>Membres</CardTitle>
                 <CardDescription>
                     Espace de gestion des membres de la Fédération
                 </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 h-1/2">
+            <CardContent className="h-1/2 flex-1">
                 <Suspense fallback={<p>Chargements...</p>}>
                     <MemberList />
                 </Suspense>

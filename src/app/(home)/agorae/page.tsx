@@ -10,7 +10,7 @@ import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBenef
 
 export default function AGORAe() {
     return (
-        <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16">
+        <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
             {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">AGORAé</h1> */}
 
             <Image
@@ -19,9 +19,9 @@ export default function AGORAe() {
                 className="w-full md:w-1/2"
             />
 
-            <div className="max-w-4xl w-full space-y-12 mb-20 flex flex-col items-center">
+            <div className="mb-20 flex w-full max-w-4xl flex-col items-center space-y-12">
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         L'AGORAé, la lutte contre la pauvreté étudiante sur
                         Saint-Brieuc
                     </h2>
@@ -87,13 +87,13 @@ export default function AGORAe() {
                     </p>
                 </section>
 
-                <div className="flex flex-col md:flex-row space-y-3 space-x-0 md:space-y-0 md:space-x-2 [&>img]:rounded-xl [&>img]:w-full md:[&>img]:w-1/2 [&>img]:object-cover">
+                <div className="flex flex-col space-x-0 space-y-3 md:flex-row md:space-x-2 md:space-y-0 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
                     <Image src={salle} alt="Cantine de l'AGORAé" />
                     <Image src={food} alt="Nourriture proposée à l'AGORAé" />
                 </div>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Comment devenir bénéficiaire de l'AGORAé ?
                     </h2>
                     <p className="mb-4">
@@ -104,7 +104,7 @@ export default function AGORAe() {
                         est calculé selon la formule suivante :
                     </p>
 
-                    <div className="w-full flex flex-col items-center">
+                    <div className="flex w-full flex-col items-center">
                         <Image
                             src={recettesParMois}
                             alt="Schéma du calcul pour devenir bénéficiaire de l'AGORAé"
@@ -117,7 +117,7 @@ export default function AGORAe() {
                         de panier mensuel à proposer à chaque étudiant·e :
                     </p>
 
-                    <div className="w-full flex flex-col items-center">
+                    <div className="flex w-full flex-col items-center">
                         <Image
                             src={tableauRAV}
                             alt="Tableau de calcul d'éligibilité à l'aide alimentaire mensuel"
@@ -162,7 +162,7 @@ export default function AGORAe() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Envie de participer au projet AGORAé ?
                     </h2>
                     <p className="mb-4">
@@ -185,7 +185,7 @@ export default function AGORAe() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Quand venir à l'AGORAé ?
                     </h2>
                     <p>

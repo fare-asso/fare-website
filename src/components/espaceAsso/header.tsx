@@ -30,8 +30,8 @@ export default async function Header() {
         .getPublicUrl(association.logoPath).data.publicUrl;
 
     return (
-        <div className="w-full h-12 flex flex-row items-center justify-between bg-black text-white p-3">
-            <span className="font-semibold text-xl">Espace Asso FAHB</span>
+        <div className="flex h-12 w-full flex-row items-center justify-between bg-black p-3 text-white">
+            <span className="text-xl font-semibold">Espace Asso FAHB</span>
             <AssociationAccountDropdown
                 associationName={association.name}
                 logoUrl={logoUrl}

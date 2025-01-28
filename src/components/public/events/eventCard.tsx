@@ -51,7 +51,7 @@ export default function EventCard({
 
     return (
         <div
-            className={`h-32 lg:h-44 rounded-xl w-full md:w-2/3 lg:w-1/2 p-2 flex flex-row`}
+            className={`flex h-32 w-full flex-row rounded-xl p-2 md:w-2/3 lg:h-44 lg:w-1/2`}
             style={{ backgroundColor }}
         >
             <Image
@@ -59,20 +59,20 @@ export default function EventCard({
                 width={600}
                 height={400}
                 alt={`Photo de l'évènement ${event.name}`}
-                className="rounded-md object-cover h-full w-1/3 lg:w-1/4"
+                className="h-full w-1/3 rounded-md object-cover lg:w-1/4"
             />
 
-            <div className="w-2/3 md:w-1/4 flex flex-col items-start pl-2 mr-4">
+            <div className="mr-4 flex w-2/3 flex-col items-start pl-2 md:w-1/4">
                 {/* Title */}
                 <span
-                    className={`font-semibold text-xl`}
+                    className={`text-xl font-semibold`}
                     style={{ color: fontColor }}
                 >
                     {event.name}
                 </span>
                 {/* Category */}
                 <div
-                    className={`rounded-full text-center px-4 text-sm`}
+                    className={`rounded-full px-4 text-center text-sm`}
                     style={{
                         backgroundColor: fontColor,
                         color: backgroundColor,
@@ -82,26 +82,26 @@ export default function EventCard({
                 </div>
                 {/* Date */}
                 <div
-                    className="rounded-full px-2 outline outline-1 text-sm text-center mt-2 text-balance"
+                    className="mt-2 text-balance rounded-full px-2 text-center text-sm outline outline-1"
                     style={{ outlineColor: fontColor, color: fontColor }}
                 >
                     {`${format(event.startTime, "dd/MM/yy")} au ${format(event.endTime, "dd/MM/yy")}`}
                 </div>
                 {/* Location */}
                 <div
-                    className="flex flex-row items-end w-full justify-start"
+                    className="flex w-full flex-row items-end justify-start"
                     style={{ color: fontColor }}
                 >
-                    <MdLocationPin size={20} className="min-w-4 min-h-4" />
-                    <span className="text-nowrap text-ellipsis overflow-hidden text-sm mt-1">
-                        {location.json
-                            ? location.json.displayName.split(",")[0]
-                            : location.string!.split(",")[0]}
+                    <MdLocationPin size={20} className="min-h-4 min-w-4" />
+                    <span className="mt-1 overflow-hidden text-ellipsis text-nowrap text-sm">
+                        {location.json ?
+                            location.json.displayName.split(",")[0]
+                        :   location.string!.split(",")[0]}
                     </span>
                 </div>
             </div>
 
-            <div className="hidden md:flex text-white p-1 flex-1 flex-col items-center">
+            <div className="hidden flex-1 flex-col items-center p-1 text-white md:flex">
                 {/* Description */}
                 <p
                     className="line-clamp-3 h-1/2 flex-1 text-ellipsis"
@@ -113,10 +113,10 @@ export default function EventCard({
                     {event.desc}
                 </p>
 
-                <div className="w-full h-1/2 flex flex-col items-center justify-center">
+                <div className="flex h-1/2 w-full flex-col items-center justify-center">
                     <Link
                         href={`/evenements/${event.id}`}
-                        className="px-4 py-1 text-center text font-semibold rounded-full mt-1 transition-all outline hover:outline-2"
+                        className="text mt-1 rounded-full px-4 py-1 text-center font-semibold outline transition-all hover:outline-2"
                         style={{
                             backgroundColor: fontColor,
                             color: backgroundColor,

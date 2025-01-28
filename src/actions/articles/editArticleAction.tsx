@@ -32,9 +32,10 @@ export default async function createArticleAction(
     const supabase = createClient();
 
     // retrieve form data fields
-    const id: number | undefined = isNaN(Number(formData.get("id")))
-        ? undefined
-        : Number(formData.get("id"));
+    const id: number | undefined =
+        isNaN(Number(formData.get("id"))) ? undefined : (
+            Number(formData.get("id"))
+        );
     const title = formData.get("title")?.toString();
     const content = formData.get("delta")?.toString();
     const date = formData.get("date")?.toString();

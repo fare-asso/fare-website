@@ -13,11 +13,9 @@ export default async function AssoMap() {
 
     return (
         <div className="flex flex-col items-center">
-            {associations ? (
+            {associations ?
                 <AssociationMapCaller associations={associations} />
-            ) : (
-                <span>Echec de la récupération des associations</span>
-            )}
+            :   <span>Echec de la récupération des associations</span>}
         </div>
     );
 }

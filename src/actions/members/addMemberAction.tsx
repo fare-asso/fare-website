@@ -12,9 +12,21 @@ const MemberSchema = z.object({
     position: z.string().min(1, "Le poste est obligatoire"),
     picturePath: z.string().min(1, "Le chemin de l'image est obligatoire"),
     email: z.string().email("L'email doit être valide"),
-    facebook: z.string().url("L'URL Facebook doit être valide").optional().or(z.literal('')),
-    instagram: z.string().url("L'URL Instagram doit être valide").optional().or(z.literal('')),
-    twitter: z.string().url("L'URL Twitter doit être valide").optional().or(z.literal('')),
+    facebook: z
+        .string()
+        .url("L'URL Facebook doit être valide")
+        .optional()
+        .or(z.literal("")),
+    instagram: z
+        .string()
+        .url("L'URL Instagram doit être valide")
+        .optional()
+        .or(z.literal("")),
+    twitter: z
+        .string()
+        .url("L'URL Twitter doit être valide")
+        .optional()
+        .or(z.literal("")),
 });
 
 export default async function addMemberAction(
@@ -87,7 +99,8 @@ export default async function addMemberAction(
         return { success: true };
     } catch {
         return {
-            success: false, error: "La création du membre dans la base de données a échoué... Veuillez contacter un administrateur",
+            success: false,
+            error: "La création du membre dans la base de données a échoué... Veuillez contacter un administrateur",
         };
     }
 }

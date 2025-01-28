@@ -23,12 +23,12 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-                <div className="flex flex-col lg:flex-row h-screen">
+                <div className="flex h-screen flex-col lg:flex-row">
                     <SideBar>
                         <CurrentUser />
                         <SignOutButton />
                     </SideBar>
-                    <main className="h-[90%] lg:min-h-screen flex flex-col items-center p-4 lg:p-8 w-full lg:h-screen lg:max-h-screen">
+                    <main className="flex h-[90%] w-full flex-col items-center p-4 lg:h-screen lg:max-h-screen lg:min-h-screen lg:p-8">
                         {children}
                     </main>
                     <Toaster />

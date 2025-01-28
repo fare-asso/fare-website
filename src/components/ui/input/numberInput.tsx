@@ -49,15 +49,15 @@ export default function NumberInput({
     };
 
     return (
-        <div className={"relative flex items-center max-w-[8rem] " + className}>
+        <div className={"relative flex max-w-[8rem] items-center " + className}>
             <button
                 type="button"
                 onClick={decrement}
                 disabled={number === min}
-                className="disabled:pointer-events-none disabled:opacity-50 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                className="h-11 rounded-s-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
             >
                 <svg
-                    className="w-3 h-3 text-gray-900 dark:text-white"
+                    className="h-3 w-3 text-gray-900 dark:text-white"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -79,7 +79,7 @@ export default function NumberInput({
                 min={min}
                 max={max}
                 onChange={handleChange}
-                className="bg-gray-50 !rounded-none border-x-0 border-y border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="block h-11 w-full !rounded-none border-x-0 border-y border-gray-300 bg-gray-50 py-2.5 text-center text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 placeholder={placeholder}
                 value={number}
                 required
@@ -88,10 +88,10 @@ export default function NumberInput({
                 type="button"
                 onClick={increment}
                 disabled={number === max}
-                className="disabled:pointer-events-none disabled:opacity-50 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                className="h-11 rounded-e-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
             >
                 <svg
-                    className="w-3 h-3 text-gray-900 dark:text-white"
+                    className="h-3 w-3 text-gray-900 dark:text-white"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

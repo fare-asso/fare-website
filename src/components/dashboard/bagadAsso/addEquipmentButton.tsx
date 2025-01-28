@@ -98,7 +98,7 @@ export default function AddEquipmentButton() {
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="sm:max-w-[60%] md:max-w-[50%] lg:max-w-[30%] sm:w-[90%]">
+            <DialogContent className="sm:w-[90%] sm:max-w-[60%] md:max-w-[50%] lg:max-w-[30%]">
                 <DialogHeader>
                     <DialogTitle>Nouveau matériel</DialogTitle>
                     <DialogDescription>
@@ -149,10 +149,10 @@ export default function AddEquipmentButton() {
                                     height={300}
                                     src={file}
                                     alt={`Photo du matériel`}
-                                    className="rounded-lg border my-2 h-48 aspect-auto outline outline-1 outline-offset-1"
+                                    className="my-2 aspect-auto h-48 rounded-lg border outline outline-1 outline-offset-1"
                                 />
                                 <Button
-                                    className="absolute m-1 top-0 right-0 p-3"
+                                    className="absolute right-0 top-0 m-1 p-3"
                                     variant="destructive"
                                     onClick={handleDeleteImage}
                                 >
@@ -170,14 +170,14 @@ export default function AddEquipmentButton() {
                         />
                     </div>
 
-                    {formState?.error ? (
+                    {formState?.error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>
@@ -187,7 +187,10 @@ export default function AddEquipmentButton() {
                         className="mt-4"
                         disabled={isLoading}
                     >
-                        {isLoading ? <LoadingRing /> : null} Ajouter
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Ajouter
                     </Button>
                 </DialogFooter>
             </DialogContent>

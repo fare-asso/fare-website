@@ -31,12 +31,12 @@ export default function CurrencyAmountInput({
                 type="text"
                 name={name}
                 id={name}
-                className="border-r-0 rounded-r-none pr-2 w-[15%]"
+                className="w-[15%] rounded-r-none border-r-0 pr-2"
                 placeholder={placeholder ?? "0"}
                 onChange={handleChange}
                 value={amount}
             />
-            <span className="opacity-90 select-none py-2 px-3 bg-black/10 rounded-r-lg">
+            <span className="select-none rounded-r-lg bg-black/10 px-3 py-2 opacity-90">
                 {currency}
             </span>
         </div>

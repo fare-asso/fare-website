@@ -93,18 +93,18 @@ export default function AssociationMap({
             zoom={9}
             scrollWheelZoom={false}
             className={
-                "h-[600px] w-[90%] rounded-xl border-[1.5px] border-black mb-20 " +
+                "mb-20 h-[600px] w-[90%] rounded-xl border-[1.5px] border-black " +
                 inter.className
             }
             ref={mapRef}
         >
-            <div className="h-20 w-full absolute mt-5 z-[999] hidden md:flex md:flex-col md:justify-start md:items-center">
+            <div className="absolute z-[999] mt-5 hidden h-20 w-full md:flex md:flex-col md:items-center md:justify-start">
                 <AssociationMapSearchBar
                     value={searchQuery}
                     onChange={handleSearchChange}
                 />
                 {searchError && (
-                    <div className="text-white/90 text-center mt-2 rounded-full border-1 bg-black/50 py-1 px-2">
+                    <div className="border-1 mt-2 rounded-full bg-black/50 px-2 py-1 text-center text-white/90">
                         {searchError}
                     </div>
                 )}
@@ -129,7 +129,7 @@ export default function AssociationMap({
                             alt={association.name}
                         >
                             <Popup>
-                                <div className="flex flex-row w-full">
+                                <div className="flex w-full flex-row">
                                     <Image
                                         src={
                                             supabase.storage
@@ -144,7 +144,7 @@ export default function AssociationMap({
                                             "Logo de l'association " +
                                             association.name
                                         }
-                                        className="aspect-square object-cover rounded-md"
+                                        className="aspect-square rounded-md object-cover"
                                     />
                                     <div className="ml-3">
                                         <h2 className="text-base font-semibold">

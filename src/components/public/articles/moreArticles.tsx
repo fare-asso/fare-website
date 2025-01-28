@@ -23,10 +23,10 @@ export default async function MoreArticles({
     }
 
     return (
-        <div className="w-full mt-12">
+        <div className="mt-12 w-full">
             <span className="text-lg font-semibold">Autres articles:</span>
 
-            <div className="w-full mt-2 flex flex-col items-center space-y-4">
+            <div className="mt-2 flex w-full flex-col items-center space-y-4">
                 {articles.map((article) => (
                     <ArticleCard key={article.id} article={article} />
                 ))}

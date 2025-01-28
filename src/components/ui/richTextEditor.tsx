@@ -43,7 +43,7 @@ export default function RichTextEditor(
             value={value}
             onChange={onChange}
             modules={modules}
-            className="[&_.ql-editor]:min-h-40 [&_.ql-container]:rounded-b-md [&_.ql-toolbar]:rounded-t-md [&_img]:max-h-36 [&_.ql-container]:overflow-auto [&_.ql-container]:max-h-72"
+            className="[&_.ql-container]:max-h-72 [&_.ql-container]:overflow-auto [&_.ql-container]:rounded-b-md [&_.ql-editor]:min-h-40 [&_.ql-toolbar]:rounded-t-md [&_img]:max-h-36"
         />
     );
 }

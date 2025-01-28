@@ -152,7 +152,7 @@ export const columns: ColumnDef<Event>[] = [
                 return (
                     <TooltipProvider delayDuration={100}>
                         <Tooltip>
-                            <TooltipTrigger className="flex flex-row items-center justify-center w-full">
+                            <TooltipTrigger className="flex w-full flex-row items-center justify-center">
                                 <MdVisibility size={17} />
                             </TooltipTrigger>
                             <TooltipContent>
@@ -165,7 +165,7 @@ export const columns: ColumnDef<Event>[] = [
                 return (
                     <TooltipProvider delayDuration={100}>
                         <Tooltip>
-                            <TooltipTrigger className="flex flex-row items-center justify-center w-full">
+                            <TooltipTrigger className="flex w-full flex-row items-center justify-center">
                                 <MdVisibilityOff size={17} />
                             </TooltipTrigger>
                             <TooltipContent>

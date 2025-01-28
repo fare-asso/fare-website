@@ -2,7 +2,8 @@
 import React, { ChangeEventHandler, useState, forwardRef } from "react";
 import { File, Upload } from "lucide-react";
 
-interface FileInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value'> {
+interface FileInputProps
+    extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "value"> {
     maxSize?: number;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -11,7 +12,9 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
     ({ id, maxSize, onChange, ...props }, ref) => {
         const [filename, setFilename] = useState<string | undefined>(undefined);
 
-        const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const handleChangeFile = (
+            event: React.ChangeEvent<HTMLInputElement>,
+        ) => {
             // Mettre à jour le nom du fichier
             if (event.target.files && event.target.files.length > 0) {
                 setFilename(event.target.files[0].name);
@@ -27,21 +30,20 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
 
         return (
             <div className="w-full max-w-md">
-                <div className="flex items-center justify-center w-full">
-                    <label 
+                <div className="flex w-full items-center justify-center">
+                    <label
                         htmlFor={id}
-                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                        className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-gray-50 hover:bg-gray-100"
                     >
-                        {filename ? (
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <File className="w-8 h-8 mb-4 text-gray-500" />
+                        {filename ?
+                            <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                                <File className="mb-4 h-8 w-8 text-gray-500" />
                                 <p className="text-sm text-gray-500">
                                     {filename}
                                 </p>
                             </div>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <Upload className="w-8 h-8 mb-4 text-gray-500" />
+                        :   <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                                <Upload className="mb-4 h-8 w-8 text-gray-500" />
                                 <p className="text-sm text-gray-500">
                                     Cliquez ou glissez un fichier ici
                                 </p>
@@ -51,7 +53,7 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
                                     </p>
                                 )}
                             </div>
-                        )}
+                        }
                         <input
                             id={id}
                             type="file"
@@ -64,7 +66,7 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
                 </div>
             </div>
         );
-    }
+    },
 );
 
 FileInput.displayName = "FileInput";

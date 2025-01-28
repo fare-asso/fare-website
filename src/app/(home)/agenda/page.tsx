@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 
 export default async function Reseau() {
     return (
-        <div className="flex flex-col items-center justify-start w-full">
+        <div className="flex w-full flex-col items-center justify-start">
             <h1 className="py-44 text-3xl font-semibold">
                 {"L'Agenda du réseau"}
             </h1>
-            <div className="flex flex-col w-full h-full items-center">
+            <div className="flex h-full w-full flex-col items-center">
                 <CurrentEvents />
                 <SoonEvents />
                 <EventArchive />

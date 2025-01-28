@@ -23,13 +23,11 @@ export default async function AdhesionList() {
         ));
 
         return (
-            <div className="relative w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-6 ">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 w-full h-full overflow-auto p-1">
-                    {adhesionCards.length > 0 ? (
+            <div className="relative h-full w-full rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+                <div className="grid h-full w-full grid-cols-1 gap-8 overflow-auto p-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
+                    {adhesionCards.length > 0 ?
                         adhesionCards
-                    ) : (
-                        <span>Aucunes demandes d'adhésion.</span>
-                    )}
+                    :   <span>Aucunes demandes d'adhésion.</span>}
                 </div>
             </div>
         );

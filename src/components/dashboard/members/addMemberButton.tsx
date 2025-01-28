@@ -37,18 +37,18 @@ export const memberSchema = z.object({
     firstName: z.string().min(1, "Le prénom est obligatoire"),
     position: z.string().min(1, "Le poste est obligatoire"),
     picture:
-        typeof window === "undefined"
-            ? z.any()
-            : z
-                  .instanceof(FileList)
-                  .refine((fl) => fl.length > 0, {
-                      message: "Pas de fichier selectionné",
-                  })
-                  .refine((fl) => fl[0].type.split("/")[0] === "image", {
-                      message: "Le format de l'image n'est pas valide",
-                  })
-                  .refine((fl) => fl[0].size <= 1024 * 1024 * maxUploadSizeInMb)
-                  .transform((fl) => fl[0]),
+        typeof window === "undefined" ?
+            z.any()
+        :   z
+                .instanceof(FileList)
+                .refine((fl) => fl.length > 0, {
+                    message: "Pas de fichier selectionné",
+                })
+                .refine((fl) => fl[0].type.split("/")[0] === "image", {
+                    message: "Le format de l'image n'est pas valide",
+                })
+                .refine((fl) => fl[0].size <= 1024 * 1024 * maxUploadSizeInMb)
+                .transform((fl) => fl[0]),
     email: z.string().email("L'email doit être valide"),
     facebook: z
         .string()
@@ -140,11 +140,11 @@ export default function AddMemberButton() {
 
         if (response.error) {
             setIsLoading(false);
-            setError(response.error)
+            setError(response.error);
             return;
         }
 
-        if(response.success) {
+        if (response.success) {
             setIsLoading(false);
             setSuccess(true);
             return;
@@ -253,7 +253,7 @@ export default function AddMemberButton() {
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="facebook">Lien Facebook</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -271,7 +271,7 @@ export default function AddMemberButton() {
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="instagram">Lien Instagram</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -289,7 +289,7 @@ export default function AddMemberButton() {
                     <div>
                         <div className="flex flex-row items-center space-x-1">
                             <Label htmlFor="twitter">Lien X</Label>
-                            <div className="opacity-50 text-sm">
+                            <div className="text-sm opacity-50">
                                 (Optionnel)
                             </div>
                         </div>
@@ -305,12 +305,12 @@ export default function AddMemberButton() {
                         )}
                     </div>
 
-                    {error ? (
+                    {error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>
@@ -319,7 +319,10 @@ export default function AddMemberButton() {
                         form="addMemberForm"
                         disabled={isLoading}
                     >
-                        {isLoading ? <LoadingRing /> : null} Ajouter
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Ajouter
                     </Button>
                 </DialogFooter>
             </DialogContent>

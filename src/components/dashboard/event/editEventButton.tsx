@@ -183,15 +183,15 @@ export default function EditEventButtonClient({
 
                     <div>
                         <Label htmlFor="picture">Image</Label>
-                        {imageUrl ? (
+                        {imageUrl ?
                             <Image
                                 src={imageUrl}
                                 width={400}
                                 height={200}
                                 alt="Image de l'évènement"
-                                className="rounded-lg outline outline-2 outline-offset-2 outline-black w-32 h-auto my-3"
+                                className="my-3 h-auto w-32 rounded-lg outline outline-2 outline-offset-2 outline-black"
                             />
-                        ) : null}
+                        :   null}
                         <Input
                             type="file"
                             id="picture"
@@ -199,17 +199,17 @@ export default function EditEventButtonClient({
                             onChange={handleImageInputChange}
                             accept="image/*"
                         />
-                        {previousPath ? (
+                        {previousPath ?
                             <input
                                 type="hidden"
                                 name="previousPath"
                                 value={previousPath}
                             />
-                        ) : null}
+                        :   null}
                     </div>
 
                     {/* Start Date */}
-                    <div className="flex flex-row w-full space-x-4">
+                    <div className="flex w-full flex-row space-x-4">
                         <div>
                             <Label>Date de début</Label>
                             <DatePicker
@@ -234,7 +234,7 @@ export default function EditEventButtonClient({
                     </div>
 
                     {/* End Date */}
-                    <div className="flex flex-row w-full space-x-4">
+                    <div className="flex w-full flex-row space-x-4">
                         <div>
                             <Label>Date de fin</Label>
                             <DatePicker
@@ -272,7 +272,7 @@ export default function EditEventButtonClient({
                             <CategorySelect
                                 defaultValue={eventInfo.category.name}
                             />
-                            <div className="flex flex-row items-center space-x-2 flex-1">
+                            <div className="flex flex-1 flex-row items-center space-x-2">
                                 <Switch
                                     id="visibility"
                                     name="visibility"
@@ -286,14 +286,14 @@ export default function EditEventButtonClient({
                         </div>
                     </div>
 
-                    {formState?.error ? (
+                    {formState?.error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>

@@ -149,7 +149,7 @@ const links: Link[] = [
 
 export default function Header() {
     return (
-        <div className="w-full h-20 py-4 px-8 flex flex-row items-center justify-between">
+        <div className="flex h-20 w-full flex-row items-center justify-between px-8 py-4">
             <HeaderLogo />
             <HeaderLinks links={links} />
         </div>

@@ -8,26 +8,26 @@ import { StorageError } from "@supabase/storage-js";
 
 import { randomUUID } from "crypto";
 
-import { DeltaStatic } from 'quill';
+import { DeltaStatic } from "quill";
 
 import { base64ToFile } from "@/helpers/image";
 import getCurrentUserId from "@/helpers/user/id";
 import { revalidatePath } from "next/cache";
 import getCurrentUserRole from "@/helpers/user/role";
 
-type UploadResponse = 
+type UploadResponse =
     | {
-        data: {
-            id: string;
-            path: string;
-            fullPath: string;
-        };
-        error: null;
-    }
+          data: {
+              id: string;
+              path: string;
+              fullPath: string;
+          };
+          error: null;
+      }
     | {
-        data: null;
-        error: StorageError;
-    };
+          data: null;
+          error: StorageError;
+      };
 
 export default async function createArticleAction(
     prevState: { error?: string; success?: boolean } | undefined,

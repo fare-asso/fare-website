@@ -16,14 +16,14 @@ const Input = React.forwardRef<
     }
 >(({ className, error, ...props }, ref) => {
     return (
-        <div className="relative flex flex-row items-center justify-end w-full">
+        <div className="relative flex w-full flex-row items-center justify-end">
             <input className={cn(className)} ref={ref} {...props} />
 
             {/* Error */}
             {error && ( // Afficher uniquement si une erreur est présente
-                <div className="absolute mr-3 h-full flex flex-row items-center">
+                <div className="absolute mr-3 flex h-full flex-row items-center">
                     <RiErrorWarningFill
-                        className="text-red-500 group-hover:scale-105 transition-all"
+                        className="text-red-500 transition-all group-hover:scale-105"
                         size={20}
                         title={error.message} // Optionnel : pour afficher un tooltip avec l'erreur
                     />

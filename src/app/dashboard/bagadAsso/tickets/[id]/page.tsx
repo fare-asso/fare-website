@@ -44,14 +44,14 @@ export default async function Page({ params }: { params: { id: string } }) {
     );
 
     return (
-        <div className="w-full h-full">
+        <div className="h-full w-full">
             <Link
                 href="/dashboard/bagadAsso"
-                className="text-sm underline hover:font-bold transition-all opacity-80"
+                className="text-sm underline opacity-80 transition-all hover:font-bold"
             >
                 &lsaquo; Retour aux tickets
             </Link>
-            <h1 className="font-semibold text-2xl mt-4">
+            <h1 className="mt-4 text-2xl font-semibold">
                 🗒️Ticket{" "}
                 <span className="font-mono opacity-80">#{ticket.id}</span>
             </h1>
@@ -63,9 +63,9 @@ export default async function Page({ params }: { params: { id: string } }) {
             </span>
 
             {/* Divide space in two (large screen) */}
-            <div className="w-full flex flex-col md:flex-row m-0">
+            <div className="m-0 flex w-full flex-col md:flex-row">
                 {/* Left Part (Top mobile) */}
-                <div className="h-full w-full p-4 flex flex-col">
+                <div className="flex h-full w-full flex-col p-4">
                     <span>
                         Soumis par:{" "}
                         <b>
@@ -79,7 +79,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                         Email de l'association:{" "}
                         <a
                             href={`mailto:${ticket.associationEmail}`}
-                            className="underline hover:font-semibold transition-all"
+                            className="underline transition-all hover:font-semibold"
                         >
                             ✉️{ticket.associationEmail}
                         </a>
@@ -95,7 +95,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                         Email de contact:{" "}
                         <a
                             href={`mailto:${ticket.representativeEmail}`}
-                            className="underline hover:font-semibold transition-all"
+                            className="underline transition-all hover:font-semibold"
                         >
                             ✉️{ticket.representativeEmail}
                         </a>
@@ -122,7 +122,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                         <a
                             href={`https://www.google.fr/maps/search/${ticket.eventAddr}`}
                             target="blank"
-                            className="underline hover:font-bold transition-all"
+                            className="underline transition-all hover:font-bold"
                         >
                             🗺️{ticket.eventAddr}
                         </a>
@@ -140,9 +140,9 @@ export default async function Page({ params }: { params: { id: string } }) {
 
                 {/* Right Part (Bottom mobile) */}
                 <div className="h-full w-full p-4">
-                    <h2 className="font-bold text-xl">🪩Matériels demandés:</h2>
+                    <h2 className="text-xl font-bold">🪩Matériels demandés:</h2>
                     {/* Equipments List */}
-                    <div className="px-2 py-1 flex flex-col">
+                    <div className="flex flex-col px-2 py-1">
                         {allEquipments.map((equipment) => (
                             <div key={equipment.id} id={`${equipment.id}`}>
                                 {equipment.quantity}&times; {equipment.name}{" "}

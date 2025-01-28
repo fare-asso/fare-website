@@ -13,15 +13,15 @@ export default function DossierDePresseCard({
     const su = new StorageUtils();
 
     return (
-        <div className="w-full flex flex-col md:flex-row items-center rounded-md border border-grey-300 space-x-2 p-2">
-            <FaRegFilePdf size={50} className="text-red-600 m-4" />
+        <div className="border-grey-300 flex w-full flex-col items-center space-x-2 rounded-md border p-2 md:flex-row">
+            <FaRegFilePdf size={50} className="m-4 text-red-600" />
             <div className="flex flex-col">
                 <Link
                     href={su
                         .from("communique-de-presse")
                         .getPublicUrl(dossier.filePath, false)}
                     target="_blank"
-                    className="underline text-md md:text-lg hover:opacity-80 transition-all"
+                    className="text-md underline transition-all hover:opacity-80 md:text-lg"
                 >
                     {dossier.name}
                 </Link>
@@ -33,7 +33,7 @@ export default function DossierDePresseCard({
                 </span>
             </div>
 
-            <div className="hidden md:flex h-full items-center !ml-auto mt-auto mb-auto p-4">
+            <div className="!ml-auto mb-auto mt-auto hidden h-full items-center p-4 md:flex">
                 <Link
                     href={su
                         .from("communique-de-presse")
@@ -41,7 +41,7 @@ export default function DossierDePresseCard({
                 >
                     <FiDownload
                         size={35}
-                        className="hover:scale-110 transition-all"
+                        className="transition-all hover:scale-110"
                     />
                 </Link>
             </div>

@@ -64,14 +64,14 @@ export default async function Page({ params }: { params: { id: string } }) {
     }
 
     return (
-        <div className="w-[90%] flex flex-col items-start pt-14">
+        <div className="flex w-[90%] flex-col items-start pt-14">
             <Link href="/reseau" className="text-sm opacity-40 hover:underline">
                 &lt; Retour aux associations
             </Link>
-            <h1 className="text-3xl font-bold mt-2">
+            <h1 className="mt-2 text-3xl font-bold">
                 {associationRecord.name}
             </h1>
-            <div className="w-full flex flex-row">
+            <div className="flex w-full flex-row">
                 <p>{associationRecord.desc}</p>
                 <Image
                     src={
@@ -83,7 +83,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                     width={400}
                     height={400}
                     alt={associationRecord.name + " logo"}
-                    className=" rounded-lg border border-black aspect-square object-cover h-60 w-60"
+                    className="aspect-square h-60 w-60 rounded-lg border border-black object-cover"
                 />
             </div>
         </div>

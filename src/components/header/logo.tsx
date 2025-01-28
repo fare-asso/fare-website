@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function HeaderLogo() {
     return (
-        <div className="h-3/4 w-auto flex flex-row">
+        <div className="flex h-3/4 w-auto flex-row">
             <Link href="/" className="h-full w-max">
                 <Image
                     src={FAHBLogo}
@@ -14,7 +14,7 @@ export default function HeaderLogo() {
                     priority
                 />
             </Link>
-            <div className="*:uppercase *:text-sm *:font-bold *:tracking-tight *:leading-3 *:select-none flex flex-col h-full  justify-center ml-1">
+            <div className="ml-1 flex h-full flex-col justify-center *:select-none *:text-sm *:font-bold *:uppercase *:leading-3 *:tracking-tight">
                 <span>federation des</span>
                 <span>associations de</span>
                 <span>haute bretagne</span>

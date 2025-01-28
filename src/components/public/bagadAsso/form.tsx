@@ -42,24 +42,7 @@ export default function BagadAssoForm({
     return (
         <form
             onSubmit={handleSubmit}
-            className={`w-full lg:w-[60%] flex flex-col items-start
-                                            [&_input]:border [&_input]:border-gray-300 [&_input]:text-black
-                                            [&_input]:text-base [&_input]:rounded-lg [&_input]:focus:ring-yellow-400
-                                            [&_input]:focus:border-yellow-400 [&_input]:block [&_input]:w-full [&_input]:p-2.5
-                                            [&_input]:dark:bg-gray-700 [&_input]:dark:border-gray-600 
-                                            [&_input]:dark:placeholder-gray-400 [&_input]:dark:text-white 
-                                            [&_input]:dark:focus:ring-yellow-400 [&_input]:dark:focus:border-yellow-400
-                                            
-                                            [&_select]:border [&_select]:border-gray-300 [&_select]:text-black [&_select]:text-base
-                                            [&_select]:rounded-lg [&_select]:focus:ring-yellow-400 [&_select]:focus:border-yellow-400
-                                            [&_select]:block [&_select]:w-full [&_select]:p-2.5 [&_select]:dark:bg-gray-700
-                                            [&_select]:dark:border-gray-600 [&_select]:dark:placeholder-gray-400 [&_select]:dark:text-white
-                                            [&_select]:dark:focus:ring-yellow-400 [&_select]:dark:focus:border-yellow-400
-                                            
-                                            [&_option]:font-sans
-
-                                            [&_label]:mt-6 [&_label]:mb-1
-                                            `}
+            className={`flex w-full flex-col items-start lg:w-[60%] [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black [&_input]:focus:border-yellow-400 [&_input]:focus:ring-yellow-400 [&_input]:dark:border-gray-600 [&_input]:dark:bg-gray-700 [&_input]:dark:text-white [&_input]:dark:placeholder-gray-400 [&_input]:dark:focus:border-yellow-400 [&_input]:dark:focus:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_option]:font-sans [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black [&_select]:focus:border-yellow-400 [&_select]:focus:ring-yellow-400 [&_select]:dark:border-gray-600 [&_select]:dark:bg-gray-700 [&_select]:dark:text-white [&_select]:dark:placeholder-gray-400 [&_select]:dark:focus:border-yellow-400 [&_select]:dark:focus:ring-yellow-400`}
         >
             {/* Association représentée */}
             <label htmlFor="association-name">Association représentée</label>
@@ -174,17 +157,17 @@ export default function BagadAssoForm({
             />
 
             {/* Termes et conditions */}
-            <div className="flex flex-row items-center mt-6 mb-8">
+            <div className="mb-8 mt-6 flex flex-row items-center">
                 <input
                     id="terms-and-conditions"
                     name="terms-and-conditions"
                     type="checkbox"
-                    className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                    className="focus:ring-3 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
                     required
                 />
                 <label
                     htmlFor="terms-and-conditions"
-                    className="!m-0 text-nowrap !ml-2  text-sm font-medium text-gray-900 dark:text-gray-300"
+                    className="!m-0 !ml-2 text-nowrap text-sm font-medium text-gray-900 dark:text-gray-300"
                 >
                     J'accepte les{" "}
                     <a
@@ -202,17 +185,17 @@ export default function BagadAssoForm({
                 <Captcha onChange={setCaptchaValue} />
             </div>
 
-            {formState?.error ? (
+            {formState?.error ?
                 <Alert variant="destructive">
                     <AlertTitle>Erreur</AlertTitle>
                     <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
-            ) : null}
+            :   null}
 
-            {formState?.success ? (
+            {formState?.success ?
                 <Alert
                     variant="destructive"
-                    className="border-green-600 text-green-600 mt-4"
+                    className="mt-4 border-green-600 text-green-600"
                 >
                     <AlertDescription>
                         {
@@ -220,16 +203,18 @@ export default function BagadAssoForm({
                         }
                     </AlertDescription>
                 </Alert>
-            ) : null}
+            :   null}
 
             <button
                 type="submit"
-                className="disabled:pointer-events-none disabled:opacity-50 px-4 py-2 rounded-lg bg-black text-white hover:scale-105 transition-all mt-4 flex flex-row items-center"
+                className="mt-4 flex flex-row items-center rounded-lg bg-black px-4 py-2 text-white transition-all hover:scale-105 disabled:pointer-events-none disabled:opacity-50"
                 disabled={isLoading}
             >
                 {" "}
-                {isLoading ? <LoadingRing /> : null} Valider la demande de
-                matériel
+                {isLoading ?
+                    <LoadingRing />
+                :   null}{" "}
+                Valider la demande de matériel
             </button>
         </form>
     );

@@ -1,7 +1,7 @@
 export default function AdhesionDescription() {
     return (
-        <div className="w-full max-w-3xl mb-8 text-left">
-            <h2 className="text-2xl font-bold mb-4">Adhésion à la FAHB :</h2>
+        <div className="mb-8 w-full max-w-3xl text-left">
+            <h2 className="mb-4 text-2xl font-bold">Adhésion à la FAHB :</h2>
             <p className="mb-4">
                 La Fédération des Associations de Haute-Bretagne (FAHB) étant
                 une organisation représentative asyndicale, les étudiant.e.s ne
@@ -23,14 +23,14 @@ export default function AdhesionDescription() {
                 Passation.
             </p>
 
-            <h2 className="text-2xl font-bold mt-8 mb-4">
+            <h2 className="mb-4 mt-8 text-2xl font-bold">
                 Pourquoi adhérer à la FAHB ? :
             </h2>
             <p className="mb-4">
                 Concrètement, à quoi ça sert d'adhérer à la FAHB pour les
                 associations étudiantes ?
             </p>
-            <ul className="list-disc pl-6 mb-4">
+            <ul className="mb-4 list-disc pl-6">
                 <li className="mb-2">
                     <strong>
                         Être membre d'un réseau associatif fort et soudé :
@@ -108,14 +108,14 @@ export default function AdhesionDescription() {
                 </li>
             </ul>
 
-            <h2 className="text-2xl font-bold mt-8 mb-4">
+            <h2 className="mb-4 mt-8 text-2xl font-bold">
                 Comment adhérer à la FAHB ? :
             </h2>
             <p className="mb-4">
                 Pour adhérer à la FAHB, quelques éléments sont demandés à une
                 association étudiante :
             </p>
-            <ul className="list-disc pl-6 mb-4">
+            <ul className="mb-4 list-disc pl-6">
                 <li>
                     Être indépendante de tout parti politique, syndicat
                     professionnel ou de toute confession regroupant des
@@ -127,7 +127,7 @@ export default function AdhesionDescription() {
                 </li>
                 <li>
                     Fournir les pièces administratives suivantes :
-                    <ul className="list-disc pl-6 mt-2">
+                    <ul className="mt-2 list-disc pl-6">
                         <li>
                             Récepissé de déclaration du bureau de l'association
                             en préfecture

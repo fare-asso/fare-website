@@ -13,7 +13,7 @@ export default function TicketList({
     const { toast } = useToast();
 
     return (
-        <Card className="flex flex-col w-full h-full p-4 space-y-2">
+        <Card className="flex h-full w-full flex-col space-y-2 p-4">
             {tickets.map((ticket) => (
                 <BagadAssoTicketCard
                     key={ticket.id}

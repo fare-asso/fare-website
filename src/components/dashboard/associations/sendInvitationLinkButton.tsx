@@ -76,7 +76,7 @@ export default function SendInvitationLinkButton({
             {/* Trigger */}
             <DialogTrigger asChild>
                 <Button
-                    className="p-1 h-auto whitespace-normal"
+                    className="h-auto whitespace-normal p-1"
                     variant="outline"
                 >
                     <TbMailPlus size={18} />
@@ -117,14 +117,14 @@ export default function SendInvitationLinkButton({
                         />
                     </div>
 
-                    {formState?.error ? (
+                    {formState?.error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>
@@ -133,7 +133,10 @@ export default function SendInvitationLinkButton({
                         form="sendInvitationLinkForm"
                         disabled={isLoading}
                     >
-                        {isLoading ? <LoadingRing /> : null} Inviter
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Inviter
                     </Button>
                 </DialogFooter>
             </DialogContent>

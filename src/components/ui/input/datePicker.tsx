@@ -34,7 +34,7 @@ export default function DatePicker({
         <div>
             <Popover>
                 <PopoverTrigger asChild className="flex flex-col">
-                    <Button variant="outline" className="flex flex-row w-52">
+                    <Button variant="outline" className="flex w-52 flex-row">
                         <svg
                             className="mr-2 h-4 w-4"
                             xmlns="http://www.w3.org/2000/svg"
@@ -52,11 +52,9 @@ export default function DatePicker({
                             <rect width="18" height="18" x="3" y="4" rx="2" />
                             <path d="M3 10h18" />
                         </svg>
-                        {date ? (
+                        {date ?
                             format(date, "PPP", { locale: fr })
-                        ) : (
-                            <span>Sélectionne une date</span>
-                        )}
+                        :   <span>Sélectionne une date</span>}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full">

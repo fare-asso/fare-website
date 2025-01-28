@@ -52,7 +52,7 @@ export default function CalculateurBeneficiaire() {
     };
 
     return (
-        <Card className="w-full max-w-lg mx-auto">
+        <Card className="mx-auto w-full max-w-lg">
             <CardHeader>
                 <CardTitle>Calculateur d'éligibilité AGORAÉ</CardTitle>
             </CardHeader>
@@ -96,7 +96,7 @@ export default function CalculateurBeneficiaire() {
                             className={`${determinerPanier(rav).classe} border-none`}
                         >
                             <CardContent className="pt-6">
-                                <div className="text-center space-y-2">
+                                <div className="space-y-2 text-center">
                                     <p className="font-medium">
                                         Denrées en valeurs marchande :{" "}
                                         {determinerPanier(rav).montantPanier}

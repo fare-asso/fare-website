@@ -4,7 +4,7 @@ import logoFage from "/public/Logo_FAGE.png";
 
 export default function FAGE() {
     return (
-        <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16">
+        <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
             {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Fédération des Associations Générales Étudiantes (FAGE)</h1> */}
 
             <Image
@@ -13,9 +13,9 @@ export default function FAGE() {
                 className="w-full md:w-1/2"
             />
 
-            <div className="max-w-4xl w-full space-y-8 mb-20">
+            <div className="mb-20 w-full max-w-4xl space-y-8">
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Présentation
                     </h2>
                     <p className="mb-4 italic">
@@ -43,7 +43,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Reconnaissance et indépendance
                     </h2>
                     <p className="mb-4">
@@ -65,7 +65,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Rôle et valeurs
                     </h2>
                     <p className="mb-4">
@@ -82,7 +82,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">Histoire</h2>
+                    <h2 className="mb-4 text-2xl font-semibold">Histoire</h2>
                     <p className="mb-4">
                         À la fin des années 80, l'idée de fonder une
                         organisation germe à Lyon. Plusieurs réunions, se
@@ -105,7 +105,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Projet éducatif
                     </h2>
                     <p className="mb-4">

@@ -92,9 +92,9 @@ export default async function createCDPAction(
         revalidatePath("/dashboard/communiques-de-presse");
         revalidatePath("/presse");
         revalidatePath(
-            type == "CDP"
-                ? "/presse/communiques-de-presse"
-                : "/presse/dossiers-de-presse",
+            type == "CDP" ?
+                "/presse/communiques-de-presse"
+            :   "/presse/dossiers-de-presse",
         );
 
         return {

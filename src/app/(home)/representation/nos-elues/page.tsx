@@ -21,7 +21,7 @@ interface Elu {
 const EluCard = ({ elu }: { elu: Elu }) => {
     return (
         <Card className="w-full">
-            <CardContent className="p-4 space-y-4">
+            <CardContent className="space-y-4 p-4">
                 {/* <img 
           src="/api/placeholder/200/200" 
           alt={`Photo de ${elu.firstName} ${elu.lastName}`}
@@ -43,8 +43,8 @@ const EluCard = ({ elu }: { elu: Elu }) => {
 
 export default function Elues() {
     return (
-        <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">
+        <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
+            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
                 Nos élu·e·s étudiant·e·s de la FAHB
             </h1>
 
@@ -54,8 +54,8 @@ export default function Elues() {
                 <Image src={logoBougeTonCampus} alt="Logo Bouge Ton Campus" className='w-44 h-auto'/>
             </div> */}
 
-            <div className="max-w-4xl w-full space-y-12 mb-20">
-                <div className="prose max-w-none mb-20 bg-black text-white rounded-lg p-6">
+            <div className="mb-20 w-full max-w-4xl space-y-12">
+                <div className="prose mb-20 max-w-none rounded-lg bg-black p-6 text-white">
                     <p>
                         La FAHB a parmi ses missions principales de représenter
                         l'ensemble des étudiant.e.s de Haute-Bretagne. Pour ce
@@ -68,25 +68,25 @@ export default function Elues() {
                 {/* Elu.e.s "Bouge ton Crous" */}
                 <section className="space-y-6">
                     <div className="flex flex-col items-center space-y-6">
-                        <div className="w-full flex flex-row items-center justify-center space-x-6 mt-20">
+                        <div className="mt-20 flex w-full flex-row items-center justify-center space-x-6">
                             <Image
                                 src={logoBougeTonCrous}
                                 alt="Logo Bouge Ton Crous"
-                                className="w-32 h-auto md:w-auto md:h-44"
+                                className="h-auto w-32 md:h-44 md:w-auto"
                             />
                             <Image
                                 src={logoCrous}
                                 alt="Logo du Crous Bretagne"
-                                className="w-32 h-auto md:w-auto md:h-44"
+                                className="h-auto w-32 md:h-44 md:w-auto"
                             />
                         </div>
 
-                        <h2 className="text-2xl font-semibold mb-4">
+                        <h2 className="mb-4 text-2xl font-semibold">
                             Nos élu.e.s “Bouge Ton CROUS” au CROUS Bretagne
                         </h2>
                     </div>
 
-                    <div className="prose max-w-none mb-4">
+                    <div className="prose mb-4 max-w-none">
                         <p>
                             Le Conseil d'Administration d'un CROUS (Centre
                             Régional des Œuvres Universitaires et Scolaires) est
@@ -108,7 +108,7 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
                                 firstName: "Zoée",
@@ -155,28 +155,28 @@ export default function Elues() {
                 {/* Elu.e.s "Bouge ton Campus" de l'Université de Rennes */}
                 <section className="space-y-6">
                     <div className="flex flex-col items-center space-y-6">
-                        <div className="w-full flex flex-row items-center justify-center space-x-6 mt-20">
+                        <div className="mt-20 flex w-full flex-row items-center justify-center space-x-6">
                             <Image
                                 src={logoBougeTonCampus}
                                 alt="Logo de Bouge Ton Campus"
-                                className="w-32 h-auto md:w-auto md:h-44"
+                                className="h-auto w-32 md:h-44 md:w-auto"
                             />
                             <Image
                                 src={logoUR}
                                 alt="Logo de l'Université de Rennes"
-                                className="w-32 h-auto md:w-auto md:h-44"
+                                className="h-auto w-32 md:h-44 md:w-auto"
                             />
                         </div>
 
-                        <h2 className="text-2xl font-semibold mb-4">
+                        <h2 className="mb-4 text-2xl font-semibold">
                             Nos élu.e.s “Bouge Ton Campus” de l'Université de
                             Rennes
                         </h2>
                     </div>
 
                     {/* VPE */}
-                    <div className="prose max-w-none mb-4">
-                        <h3 className="text-xl font-semibold mb-4">
+                    <div className="prose mb-4 max-w-none">
+                        <h3 className="mb-4 text-xl font-semibold">
                             Vice-Présidence Étudiante (VPE)
                         </h3>
                         <p>
@@ -211,7 +211,7 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
                                 firstName: "Mathilde",
@@ -225,8 +225,8 @@ export default function Elues() {
                     </div>
 
                     {/* CA */}
-                    <div className="prose max-w-none mb-4">
-                        <h3 className="text-xl font-semibold mb-4">
+                    <div className="prose mb-4 max-w-none">
+                        <h3 className="mb-4 text-xl font-semibold">
                             Conseil d'Administration (CA)
                         </h3>
                         <p>
@@ -246,7 +246,7 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
                                 firstName: "Mathilde",
@@ -278,8 +278,8 @@ export default function Elues() {
                     </div>
 
                     {/* CFVE */}
-                    <div className="prose max-w-none mb-4">
-                        <h3 className="text-xl font-semibold mb-4">
+                    <div className="prose mb-4 max-w-none">
+                        <h3 className="mb-4 text-xl font-semibold">
                             Conseil de Formation & Vie Étudiante (CFVE)
                         </h3>
                         <p>
@@ -299,7 +299,7 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
                                 firstName: "Valentin",
@@ -349,8 +349,8 @@ export default function Elues() {
                     </div>
 
                     {/* Conseil d'Unité de Formation & de Recherche (UFR) */}
-                    <div className="prose max-w-none mb-4">
-                        <h3 className="text-xl font-semibold mb-4">
+                    <div className="prose mb-4 max-w-none">
+                        <h3 className="mb-4 text-xl font-semibold">
                             Conseil d'Unité de Formation & de Recherche (UFR)
                         </h3>
                         <p>
@@ -371,7 +371,7 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
                                 firstName: "Gabrielle",
@@ -412,27 +412,27 @@ export default function Elues() {
                 {/* Elu.e.s "Bouge ton Campus" de l'Université de Rennes 2 */}
                 <section className="space-y-6">
                     <div className="flex flex-col items-center space-y-6">
-                        <div className="w-full flex flex-row items-center justify-center space-x-6 mt-20">
+                        <div className="mt-20 flex w-full flex-row items-center justify-center space-x-6">
                             <Image
                                 src={logoBougeTonCampus}
                                 alt="Logo de Bouge Ton Campus"
-                                className="w-32 h-auto md:w-auto md:h-44"
+                                className="h-auto w-32 md:h-44 md:w-auto"
                             />
                             <Image
                                 src={logoUR2}
                                 alt="Logo de l'Université de Rennes 2"
-                                className="w-32 h-auto md:w-auto md:h-44"
+                                className="h-auto w-32 md:h-44 md:w-auto"
                             />
                         </div>
-                        <h2 className="text-2xl font-semibold mb-4">
+                        <h2 className="mb-4 text-2xl font-semibold">
                             Nos élu.e.s “Bouge Ton Campus” de l'Université de
                             Rennes 2
                         </h2>
                     </div>
 
                     {/* CA */}
-                    <div className="prose max-w-none mb-4">
-                        <h3 className="text-xl font-semibold mb-4">
+                    <div className="prose mb-4 max-w-none">
+                        <h3 className="mb-4 text-xl font-semibold">
                             Conseil d'Administration (CA)
                         </h3>
                         <p>
@@ -452,7 +452,7 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
                                 firstName: "Robin",
@@ -472,8 +472,8 @@ export default function Elues() {
                     </div>
 
                     {/* CFVU */}
-                    <div className="prose max-w-none mb-4">
-                        <h3 className="text-xl font-semibold mb-4">
+                    <div className="prose mb-4 max-w-none">
+                        <h3 className="mb-4 text-xl font-semibold">
                             Conseil de Formation & Vie Universitaire (CFVU)
                         </h3>
                         <p>
@@ -493,7 +493,7 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
                                 firstName: "Elisa",
@@ -520,8 +520,8 @@ export default function Elues() {
                     </div>
 
                     {/* Conseil d’Unité de Formation & de Recherche (UFR) */}
-                    <div className="prose max-w-none mb-4">
-                        <h3 className="text-xl font-semibold mb-4">
+                    <div className="prose mb-4 max-w-none">
+                        <h3 className="mb-4 text-xl font-semibold">
                             Conseil d'Unité de Formation & de Recherche (UFR)
                         </h3>
                         <p>
@@ -542,7 +542,7 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
                                 firstName: "Elisa",

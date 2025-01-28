@@ -11,7 +11,7 @@ export default async function CurrentUser() {
     } else {
         const email: string = data.user.email!;
         return (
-            <div className="text-sm text-black lg:flex lg:flex-col items-center hidden">
+            <div className="hidden items-center text-sm text-black lg:flex lg:flex-col">
                 Connecté en tant que
                 <div className="font-semibold">{email}</div>
             </div>

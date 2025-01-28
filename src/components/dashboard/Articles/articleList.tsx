@@ -40,7 +40,7 @@ export default async function ArticleList() {
         ));
 
         return (
-            <div className="w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm p-3 md:p-6 overflow-y-auto space-y-4">
+            <div className="h-full w-full space-y-4 overflow-y-auto rounded-lg border bg-card p-3 text-card-foreground shadow-sm md:p-6">
                 {articleCards}
             </div>
         );

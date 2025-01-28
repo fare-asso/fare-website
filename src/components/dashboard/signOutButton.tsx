@@ -22,7 +22,7 @@ export default function SignOutButton() {
     return (
         <Button
             onClick={handleSignOut}
-            className="flex flex-row items-center justify-center h-auto px-4"
+            className="flex h-auto flex-row items-center justify-center px-4"
             disabled={loading}
         >
             <MdLogout className="mr-1" size={20} />

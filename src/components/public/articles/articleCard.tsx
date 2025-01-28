@@ -6,21 +6,21 @@ import Link from "next/link";
 
 export default function ArticleCard({ article }: { article: Article }) {
     return (
-        <div className="bg-yellow-400 p-2 h-72 md:h-48 w-full rounded-lg flex flex-col md:flex-row">
+        <div className="flex h-72 w-full flex-col rounded-lg bg-yellow-400 p-2 md:h-48 md:flex-row">
             {/* Image */}
-            <div className="bg-black opacity-35 h-full w-full md:w-1/3 *:md:min-w-[33%] md:max-w-[50%] object-cover rounded-md"></div>
+            <div className="h-full w-full rounded-md bg-black object-cover opacity-35 md:w-1/3 md:max-w-[50%] *:md:min-w-[33%]"></div>
 
-            <div className="mt-2 md:mt-0 ml-0 md:ml-4 flex flex-col flex-1">
+            <div className="ml-0 mt-2 flex flex-1 flex-col md:ml-4 md:mt-0">
                 {/* Title */}
-                <span className="font-bold text-lg">{article.title}</span>
+                <span className="text-lg font-bold">{article.title}</span>
 
                 {/* Date */}
-                <span className="opacity-80 text-sm">
+                <span className="text-sm opacity-80">
                     {format(article.writtenOn, "dd MMMM yyyy", { locale: fr })}
                 </span>
 
                 {/* Text start */}
-                <p className="hidden md:block text-sm mt-0 md:mt-2">
+                <p className="mt-0 hidden text-sm md:mt-2 md:block">
                     {extractFirstWords(
                         10,
                         JSON.parse(JSON.stringify(article.content)),
@@ -30,7 +30,7 @@ export default function ArticleCard({ article }: { article: Article }) {
                 {/* Lire plus */}
                 <Link
                     href={`/actualites/articles/${article.id}`}
-                    className="w-full md:w-fit mt-2 outline-1 outline-black rounded-full bg-black text-white px-8 py-1 text-center font-semibold hover:text-black hover:bg-white hover:outline transition-all"
+                    className="mt-2 w-full rounded-full bg-black px-8 py-1 text-center font-semibold text-white outline-1 outline-black transition-all hover:bg-white hover:text-black hover:outline md:w-fit"
                 >
                     En savoir +
                 </Link>

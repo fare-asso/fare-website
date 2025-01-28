@@ -92,7 +92,7 @@ export default function CreateArticleButton() {
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="max-w-[90%] md:max-w-[60%] max-h-[90%]">
+            <DialogContent className="max-h-[90%] max-w-[90%] md:max-w-[60%]">
                 <DialogHeader>
                     <DialogTitle>Nouvel Article</DialogTitle>
                     <DialogDescription>
@@ -126,14 +126,14 @@ export default function CreateArticleButton() {
                         />
                     </div>
 
-                    {formState?.error ? (
+                    {formState?.error ?
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    ) : null}
+                    :   null}
                 </form>
 
                 <DialogFooter>
@@ -142,7 +142,10 @@ export default function CreateArticleButton() {
                         form="createArticleForm"
                         disabled={isLoading}
                     >
-                        {isLoading ? <LoadingRing /> : null} Valider
+                        {isLoading ?
+                            <LoadingRing />
+                        :   null}{" "}
+                        Valider
                     </Button>
                 </DialogFooter>
             </DialogContent>
