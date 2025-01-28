@@ -3,15 +3,15 @@ import MemberCard from "./memberCard";
 
 export default async function MembersList({ members }: { members: Member[] }) {
     const positionOrder: { [key: string]: number } = {
-        Président: 1,
+        "Président": 1,
         "Porte-Parole": 2,
-        Trésorier: 3,
+        "Trésorier": 3,
         "Secrétaire Général": 4,
         "VP Générale en charge de l'Accompagnement": 5,
-        Réseau: 6,
-        Formation: 7,
-        Culture: 8,
-        AGORAé: 9,
+        "Réseau": 6,
+        "Formation": 7,
+        "Culture": 8,
+        "AGORAé": 9,
         "Évènementiel & Projets": 10,
         "Affaires de Santé en charge de la Communication": 11,
         "Outils Numériques": 12,
@@ -20,7 +20,6 @@ export default async function MembersList({ members }: { members: Member[] }) {
     };
 
     function extractRole(position: string): string | undefined {
-        console.log("Rôle: " + position);
         const rolesPrincipaux = Object.keys(positionOrder);
         for (const role of rolesPrincipaux) {
             if (position.toLowerCase().includes(role.toLowerCase()))
