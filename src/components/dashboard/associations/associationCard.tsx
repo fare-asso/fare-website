@@ -16,7 +16,7 @@ export default function AssociationCard({
     logoUrl: string;
 }) {
     return (
-        <div className="flex h-min w-full flex-col items-start rounded-lg border bg-card p-3 text-card-foreground shadow-sm">
+        <div className="flex h-full w-full flex-col items-start rounded-lg border bg-card p-3 text-card-foreground shadow-sm">
             <div className="relative">
                 {/* Hover buttons */}
                 <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 lg:opacity-0 lg:hover:opacity-100">
