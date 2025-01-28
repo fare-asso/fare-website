@@ -28,7 +28,7 @@ export default function RootLayout({
                         <CurrentUser />
                         <SignOutButton />
                     </SideBar>
-                    <main className="flex h-[90%] w-full flex-col items-center p-4 lg:h-screen lg:max-h-screen lg:min-h-screen lg:p-8">
+                    <main className="flex h-[90%] w-full flex-col items-center lg:h-screen lg:max-h-screen lg:min-h-screen">
                         {children}
                     </main>
                     <Toaster />
