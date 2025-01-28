@@ -26,7 +26,7 @@ export default function SideBar({ children }: { children: JSX.Element[] }) {
     };
 
     return (
-        <div className="flex h-auto w-full flex-row items-center justify-between p-4 lg:min-h-screen lg:w-1/6 lg:flex-col lg:border-r">
+        <div className="flex h-auto w-full flex-row items-center justify-between border-b p-4 lg:min-h-screen lg:w-1/6 lg:flex-col lg:border-b-0 lg:border-r">
             <div className="select-none text-lg font-semibold">Dashboard</div>
 
             <div className="hidden h-full flex-row items-center justify-center lg:mt-10 lg:flex lg:flex-1 lg:flex-col lg:justify-between lg:space-y-2">
