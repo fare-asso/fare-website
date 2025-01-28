@@ -9,6 +9,7 @@ import { Contact, ContactSchema } from "@/schemas/contact";
 import { useState } from "react";
 import LoadingRing from "@/components/dashboard/loadingRing";
 import submitContactFormAction from "@/actions/contact/submitContactFormAction";
+import { RiCheckFill } from "react-icons/ri";
 
 export default function ContactForm() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -40,10 +41,10 @@ export default function ContactForm() {
     };
 
     return (
-        <div className="flex flex-col md:flex-row w-full md:w-[70%] bg-black mt-12 p-4 md:p-8 rounded-3xl">
+        <div className="mt-12 flex w-full flex-col rounded-3xl bg-black p-4 md:w-[70%] md:flex-row md:p-8">
             {/* Text Section */}
-            <div className="flex flex-col justify-center w-full md:w-1/2 pr-0 md:pr-8 mb-6 md:mb-0">
-                <h2 className="text-2xl text-white font-semibold mb-4">
+            <div className="mb-6 flex w-full flex-col justify-center pr-0 md:mb-0 md:w-1/2 md:pr-8">
+                <h2 className="mb-4 text-2xl font-semibold text-white">
                     Vous avez une question ?
                 </h2>
                 <p className="text-gray-300">
@@ -54,24 +55,24 @@ export default function ContactForm() {
 
             {/* Form Section */}
             <form
-                className="flex flex-col w-full md:w-1/2 space-y-4 text-white"
+                className="flex w-full flex-col space-y-4 text-white md:w-1/2"
                 onSubmit={form.handleSubmit(onSubmit)}
             >
                 {/* First name + Last name */}
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <div className="flex w-full flex-col gap-4 sm:flex-row">
                     <Input
                         {...form.register("firstName")}
                         error={form.formState.errors.firstName}
                         type="text"
                         placeholder="Prénom"
-                        className="flex-1 text-center bg-[#202124] py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/20 w-full"
+                        className="w-full flex-1 rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-none focus:ring-2 focus:ring-white/20"
                     />
                     <Input
                         {...form.register("lastName")}
                         error={form.formState.errors.lastName}
                         type="text"
                         placeholder="Nom"
-                        className="flex-1 text-center bg-[#202124] py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/20 w-full"
+                        className="w-full flex-1 rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-none focus:ring-2 focus:ring-white/20"
                     />
                 </div>
 
@@ -81,7 +82,7 @@ export default function ContactForm() {
                     error={form.formState.errors.email}
                     type="email"
                     placeholder="Email"
-                    className="w-full text-center bg-[#202124] py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/20"
+                    className="w-full rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-none focus:ring-2 focus:ring-white/20"
                 />
 
                 {/* Message */}
@@ -89,7 +90,7 @@ export default function ContactForm() {
                     {...form.register("message")}
                     error={form.formState.errors.message}
                     placeholder="Entrez votre message ici"
-                    className="w-full text-center bg-[#202124] py-3 px-4 rounded-xl h-32 resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
+                    className="h-32 w-full resize-none rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-none focus:ring-2 focus:ring-white/20"
                 ></TextArea>
 
                 {/* Submit button */}
@@ -97,22 +98,22 @@ export default function ContactForm() {
                     type="submit"
                     disabled={isLoading || success}
                     className={clsx(
-                        "w-full flex flex-row items-center justify-center rounded-full bg-white/20 py-3 text-lg text-gray-200 hover:bg-white/30 transition-colors duration-200",
+                        "flex w-full flex-row items-center justify-center rounded-full bg-white/20 py-3 text-lg text-gray-200 transition-colors duration-200 hover:bg-white/30",
                         getFirstError() &&
-                            "!bg-red-500 hover:bg-red-500 cursor-not-allowed",
+                            "cursor-not-allowed !bg-red-500 hover:bg-red-500",
                         success &&
-                            "!bg-green-500 hover:bg-green-500 cursor-default",
+                            "cursor-default !bg-green-500 hover:bg-green-500",
                         isLoading && "cursor-wait",
                     )}
                 >
                     {getFirstError() ??
-                        (isLoading ? (
-                            <LoadingRing className="!size-[28px]" />
-                        ) : success ? (
-                            "Demande envoyée"
-                        ) : (
-                            "Envoyer"
-                        ))}
+                        (isLoading ? <LoadingRing className="!size-[28px]" />
+                        : success ?
+                            <div className="flex flex-row items-center justify-center">
+                                <RiCheckFill size={25} className="mr-1" />{" "}
+                                Demande envoyée
+                            </div>
+                        :   "Envoyer")}
                 </button>
             </form>
         </div>
