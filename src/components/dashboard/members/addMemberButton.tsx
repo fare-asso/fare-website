@@ -94,7 +94,7 @@ export default function AddMemberButton() {
                 setSuccess(false);
             }
         },
-        [setDialogIsOpen],
+        [setDialogIsOpen, reset],
     );
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès

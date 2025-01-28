@@ -121,7 +121,7 @@ export default function EditMemberButton({
                 setIsLoading(false);
             }
         },
-        [setDialogIsOpen],
+        [setDialogIsOpen, reset],
     );
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
