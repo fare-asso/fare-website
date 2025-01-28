@@ -32,7 +32,7 @@ export default async function MemberList() {
 
         return (
             <div className="h-full w-full rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-                <div className="grid h-full w-full grid-cols-1 gap-8 overflow-y-auto sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
+                <div className="grid h-full w-full grid-cols-1 gap-4 overflow-y-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
                     {memberCards}
                 </div>
             </div>
