@@ -14,7 +14,7 @@ import ArticleList from "@/components/dashboard/Articles/articleList";
 
 export default async function Articles() {
     return (
-        <Card className="flex h-full w-full flex-1 flex-col">
+        <Card className="flex h-full w-full flex-1 flex-col border-none">
             <CardHeader>
                 <CardTitle>Articles</CardTitle>
                 <CardDescription>

@@ -13,7 +13,7 @@ import { Suspense } from "react";
 
 export default async function CommuDePresse() {
     return (
-        <Card className="flex h-full w-full flex-1 flex-col">
+        <Card className="flex h-full w-full flex-1 flex-col border-none">
             <CardHeader>
                 <CardTitle>Communiqués de presse</CardTitle>
                 <CardDescription>

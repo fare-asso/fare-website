@@ -12,7 +12,7 @@ import { Suspense } from "react";
 
 export default async function Adhesions() {
     return (
-        <Card className="flex h-full w-full flex-1 flex-col">
+        <Card className="flex h-full w-full flex-1 flex-col border-none">
             <CardHeader>
                 <CardTitle>Demandes d'adhésion</CardTitle>
                 <CardDescription>

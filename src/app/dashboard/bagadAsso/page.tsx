@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function BagadAsso() {
     return (
-        <Card className="flex h-full w-full flex-1 flex-col">
+        <Card className="flex h-full w-full flex-1 flex-col border-none">
             <CardHeader>
                 <CardTitle>Espace Bagad'Asso</CardTitle>
                 <CardDescription>
