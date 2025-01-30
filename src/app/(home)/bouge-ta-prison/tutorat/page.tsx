@@ -1,4 +1,7 @@
-import Link from "next/link";
+// Create metadata for the page
+export const metadata = {
+    title: "Devenir tuteur Bouge Ta Prison | FAHB",
+};
 
 export default function Tutorat() {
     return (
