@@ -6,6 +6,11 @@ import assemblee1 from "/public/BTP/assemblee2.jpg";
 
 import logoBTP from "/public/BTP/LOGO_BTP_2024.webp";
 
+// Create metadata for the page
+export const metadata = {
+    title: "Bouge Ta Prison | FAHB",
+};
+
 export default function BougeTaPrison() {
     return (
         <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
@@ -109,12 +114,10 @@ export default function BougeTaPrison() {
                                 Intéressé pour devenir tuteur?
                             </h2>
                             <p>
-                                La FAHB accueille de nouveaux membres partageant
-                                nos objectifs pour la vie étudiante. En nous
-                                rejoignant, vous aurez accès à notre réseau, nos
-                                ressources et notre soutien. <br />
-                                Pour plus d'informations sur l'adhésion, cliquez
-                                ci-dessous.
+                                Le projet Bouge Ta Prison accueille de nouveaux
+                                tuteurs chaque année. <br />
+                                Pour en savoir plus sur le tutorat, les
+                                prérequis et les modalités, cliquez ci-dessous.
                             </p>
                             <Link
                                 href="/bouge-ta-prison/tutorat"
