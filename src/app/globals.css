@@ -73,6 +73,22 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    h1 {
+        @apply mb-4 text-4xl font-semibold;
+    }
+
+    h2 {
+        @apply mb-4 text-2xl font-semibold;
+    }
+
+    .title {
+        @apply py-12 text-center text-4xl font-bold sm:py-24;
+    }
+
+    .link {
+        @apply text-blue-600 hover:underline;
+    }
 }
 
 .rdp [aria-hidden="true"] {
