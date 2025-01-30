@@ -137,9 +137,7 @@ export default function AdhesionForm() {
             onSubmit={handleSubmit}
             className="flex w-full flex-col items-start space-y-8 lg:w-[60%] [&>section]:mb-12 [&_h2]:mb-4 [&_h2]:text-2xl [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black [&_input]:focus:border-yellow-400 [&_input]:focus:ring-yellow-400 [&_input]:dark:border-gray-600 [&_input]:dark:bg-gray-700 [&_input]:dark:text-white [&_input]:dark:placeholder-gray-400 [&_input]:dark:focus:border-yellow-400 [&_input]:dark:focus:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_label]:text-lg [&_label]:font-semibold [&_option]:font-sans [&_p]:italic [&_p]:text-gray-400 [&_select]:mb-1 [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black [&_select]:focus:border-yellow-400 [&_select]:focus:ring-yellow-400 [&_select]:dark:border-gray-600 [&_select]:dark:bg-gray-700 [&_select]:dark:text-white [&_select]:dark:placeholder-gray-400 [&_select]:dark:focus:border-yellow-400 [&_select]:dark:focus:ring-yellow-400"
         >
-            <h1 className="mb-2 text-3xl font-bold">
-                {"Formulaire d'adhésion"}
-            </h1>
+            <h1>{"Formulaire d'adhésion"}</h1>
             <p className="!mt-1 !text-base !not-italic !text-black !opacity-100">
                 En cas de difficulté pour remplir ce formulaire d'adhésion,
                 merci de contacter le secrétariat général de la FAHB en privé ou
@@ -147,7 +145,7 @@ export default function AdhesionForm() {
                 <a
                     href="mailto:secretariat@fahb.eu"
                     title="Mail de contact en cas de difficulté ou question"
-                    className="text-blue-600 hover:underline"
+                    className="link"
                 >
                     {" "}
                     secretariat@fahb.eu
