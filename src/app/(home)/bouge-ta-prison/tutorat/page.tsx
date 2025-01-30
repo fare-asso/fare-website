@@ -38,7 +38,7 @@ export default function Tutorat() {
                 <section>
                     <h2 className="mb-4 text-2xl font-semibold">Candidature</h2>
                     <p className="mb-4">Pour candidater les prérequis sont :</p>
-                    <ul className="mb-4 ml-4 list-inside list-disc space-y-2">
+                    <ul className="mb-8 ml-4 list-inside list-disc space-y-2">
                         <li>
                             être <strong>minimum en L3</strong> sur l'année
                             <strong> 2025-2026</strong>
