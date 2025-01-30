@@ -2,17 +2,22 @@ import Image from "next/image";
 
 import logoFAHB from "/public/FAHB_Logo__Nom.png";
 
+// Create metadata for the page
+export const metadata = {
+    title: "À propos de la FAHB | FAHB",
+};
+
 export default function APropos() {
     return (
         <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
+            {/* <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
                 Fédération des Associations de Haute-Bretagne (FAHB)
-            </h1>
+            </h1> */}
 
             {/* TODO : Need to crop the picture to fit the logo and improve the svg file */}
             <Image
                 src={logoFAHB}
-                alt="Logo de la FAHB"
+                alt="Logo de la Fédération des Associations de Haute-Bretagne"
                 className="mb-12 w-full md:w-1/2"
             />
 
