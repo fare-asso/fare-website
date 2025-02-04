@@ -123,6 +123,18 @@ model Adhesion {
   folderPath     String
 }
 
+model BTPTutorApplication {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  firstName   String
+  lastName    String
+  email       String
+  major       String
+  studyYear   String
+  mlPath      String
+  cvPath      String
+}
+
 model LocationCache {
   id             Int      @id @default(autoincrement())
   query          String   @unique
