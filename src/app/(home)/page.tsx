@@ -18,7 +18,7 @@ export default async function Home() {
     return (
         <div className="flex w-full flex-col items-center md:w-[90%]">
             {/* Welcome picture */}
-            <div className="mb-8 w-full md:w-1/2">
+            <div className="mb-8 w-full md:w-[70%]">
                 <Image
                     src={WelcomeImage}
                     alt="Image des membres du bureau"
@@ -32,7 +32,7 @@ export default async function Home() {
 
             {/* Qui sommes-nous ? */}
             <div className="my-10 flex w-full flex-col items-center">
-                <div className="flex w-full flex-col items-start justify-between rounded-xl bg-black px-12 py-8 text-lg text-white md:w-[80%]">
+                <div className="flex w-full flex-col items-start justify-between rounded-xl bg-black p-8 text-lg text-white md:w-[80%]">
                     <h2 className="mb-2 text-2xl font-semibold">
                         Qui sommes-nous ?
                     </h2>
@@ -45,7 +45,7 @@ export default async function Home() {
                         étudiant.e.s du territoire grâce à des projets
                         construits "par et pour les étudiant.e.s".
                     </p>
-                    <div className="flex w-full flex-col items-center pt-8">
+                    <div className="flex w-full flex-col items-center pt-4">
                         <LinkButton
                             href="/a-propos"
                             title="En savoir +"
