@@ -26,8 +26,14 @@ export async function sendEmail(
     try {
         const response = await transporter.sendMail({
             from: process.env.SMTP_FROM_EMAIL,
-            to,
-            subject,
+            to:
+                process.env.NODE_ENV == "production" ?
+                    to
+                :   "outils-numeriques@fahb.eu",
+            subject:
+                process.env.NODE_ENV == "production" ?
+                    subject
+                :   "TEST - " + subject,
             html,
         });
         return { success: true };
