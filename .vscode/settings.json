@@ -3,5 +3,6 @@
     "editor.formatOnSave": true,
     "prettier.prettierPath": "./node_modules/prettier",
     "prettier.configPath": ".prettierrc",
-    "prettier.ignorePath": ".prettierignore"
+    "prettier.ignorePath": ".prettierignore",
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }
