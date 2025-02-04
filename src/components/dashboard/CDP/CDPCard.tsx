@@ -34,13 +34,10 @@ export default function CdpCard({
 }) {
     const { toast } = useToast();
 
-    const [hidden, setIsHidden] = useState<boolean>(false);
-
     const handleDelete = async (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         event.stopPropagation();
 
-        setIsHidden(true);
         const res = await deleteCDPAction({ id: cdp.id });
         if (res.error) {
             toast({
@@ -50,14 +47,18 @@ export default function CdpCard({
             });
         } else {
             toast({
-                description: `Le communiqué ${name} a bien été supprimé`,
+                description: `Le communiqué ${cdp.name} a bien été supprimé`,
             });
         }
     };
 
     return (
-        <div className={clsx("flex flex-col items-center", hidden && "hidden")}>
-            <Link href={url} target="blank">
+        <div className="flex h-full w-full flex-col items-center">
+            <Link
+                href={url}
+                target="blank"
+                className="flex h-min w-full flex-col items-center"
+            >
                 <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-sm outline-offset-2 outline-black/30 hover:outline hover:outline-2">
                     {/* Hover buttons */}
                     <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-0 hover:opacity-100">
@@ -87,12 +88,15 @@ export default function CdpCard({
                 </div>
             </Link>
 
-            <div className="mt-2 flex flex-col items-center justify-start">
+            <div className="mt-2 flex w-full flex-col items-center justify-start">
                 <Link
                     href={url}
                     target="blank"
-                    className="text-center text-sm font-medium hover:underline"
+                    className="w-full overflow-hidden text-ellipsis text-nowrap text-center text-sm font-medium hover:underline"
                 >
+                    {/* {cdp.name.length > 20 ?
+                        cdp.name.slice(0, 20) + "..."
+                    :   cdp.name} */}
                     {cdp.name}
                 </Link>
 
