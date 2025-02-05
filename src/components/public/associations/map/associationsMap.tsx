@@ -93,7 +93,7 @@ export default function AssociationMap({
             zoom={9}
             scrollWheelZoom={false}
             className={
-                "mb-20 h-[600px] w-[90%] rounded-xl border-[1.5px] border-black " +
+                "h-[400px] w-full rounded-xl border-[1.5px] border-black md:h-[600px] " +
                 inter.className
             }
             ref={mapRef}
