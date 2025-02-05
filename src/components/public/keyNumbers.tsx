@@ -12,7 +12,7 @@ export default async function KeyNumbers() {
     }
 
     return (
-        <div className="mt-2 flex w-full flex-col items-center justify-center space-x-0 space-y-2 md:ml-4 md:mt-0 md:w-2/3 md:flex-row md:space-x-2 md:space-y-0 [&>div]:h-32">
+        <div className="mt-2 flex w-[90%] flex-col items-center justify-center space-x-0 space-y-2 md:ml-4 md:mt-0 md:w-2/3 md:flex-row md:space-x-2 md:space-y-0 [&>div]:h-36 md:[&>div]:h-44">
             <div className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-fahbyellow p-4 md:w-1/3 md:p-2">
                 <span className="text-2xl font-semibold text-white md:text-[2.5rem]">
                     <AnimatedNumber
