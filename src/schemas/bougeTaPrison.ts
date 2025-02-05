@@ -8,13 +8,21 @@ export const BTPTutorApplicationSchema = z.object({
     studyYear: z.enum(["L3", "M1", "M2"], {
         message: "L'année d'étude est obligatoire",
     }),
-    cv: z.instanceof(File).refine((file) => file.type === "application/pdf", {
-        message: "Le CV doit être un fichier PDF",
-    }),
+    cv: z
+        .instanceof(File)
+        .refine((file) => file.type === "application/pdf", {
+            message: "Le CV doit être un fichier PDF",
+        })
+        .refine((file) => file.size < 5 * 1024 * 1024, {
+            message: "La taille du fichier doit être inférieure à 5Mo",
+        }),
     motivationLetter: z
         .instanceof(File)
         .refine((file) => file.type === "application/pdf", {
             message: "La lettre de motivation doit être un fichier PDF",
+        })
+        .refine((file) => file.size < 5 * 1024 * 1024, {
+            message: "La taille du fichier doit être inférieure à 5Mo",
         }),
 });
 
