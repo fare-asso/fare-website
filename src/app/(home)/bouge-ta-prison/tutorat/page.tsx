@@ -1,3 +1,5 @@
+import TutorApplicationForm from "./TutorApplicationForm";
+
 // Create metadata for the page
 export const metadata = {
     title: "Devenir tuteur Bouge Ta Prison | FAHB",
@@ -75,6 +77,7 @@ export default function Tutorat() {
                     <p className="mb-4">
                         Vous avez jusqu'au 30 mai pour postuler.
                     </p>
+                    <TutorApplicationForm />
                 </section>
             </div>
         </div>
