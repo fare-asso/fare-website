@@ -1,7 +1,6 @@
 "use server";
 
 import { sendEmail } from "@/helpers/email";
-import { z } from "zod";
 import { Contact, ContactSchema } from "@/schemas/contact";
 import { contactEmailTemplate } from "@/lib/htmlTemplates";
 
