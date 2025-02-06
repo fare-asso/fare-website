@@ -1,6 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 
+import logoFage from "/public/Logo_FAGE.png";
+import gifElues from "/public/elues/elues.gif";
+
 export default function Representation() {
     return (
         <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
@@ -8,30 +11,31 @@ export default function Representation() {
                 Représentation
             </h1>
 
-            <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-x-20">
+            <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-x-20 md:space-y-0">
                 <Link
                     href="/bouge-ta-prison"
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
-                    {/* <Image
-                        src={logoBTP}
-                        alt="Logo du projet Bouge Ta Prison"
-                        className="w-52 h-auto aspect-square object-contain"
-                    /> */}
-                    <h2>La FAGE</h2>
+                    <Image
+                        src={logoFage}
+                        alt="Logo de la FAGE"
+                        className="aspect-square h-auto w-52 object-contain"
+                        placeholder="empty"
+                    />
+                    <h2 className="text-center">La FAGE</h2>
                 </Link>
 
                 <Link
                     href="/bagadAsso"
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
-                    {/* <Image
-                        src={logoBA}
-                        alt="Logo du projet Bagad'Asso"
-                        className="w-52 h-auto aspect-square object-contain"
-                    /> */}
+                    <Image
+                        src={gifElues}
+                        alt="Logo des élues"
+                        className="aspect-square h-auto w-52 object-contain"
+                    />
                     {/* TODO: ajout de l'écriture inclusive */}
-                    <h2>Nos élues</h2>
+                    <h2 className="text-center">Nos élues</h2>
                 </Link>
             </div>
         </div>
