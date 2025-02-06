@@ -22,7 +22,7 @@ export default async function Projets() {
                         alt="Logo de l'AGORAé"
                         className="aspect-square h-auto w-52 object-contain"
                     />
-                    <h2>Projet AGORAé</h2>
+                    <h2 className="text-center">Projet AGORAé</h2>
                 </Link>
 
                 <Link
@@ -34,19 +34,19 @@ export default async function Projets() {
                         alt="Logo du projet Bouge Ta Prison"
                         className="aspect-square h-auto w-52 object-contain"
                     />
-                    <h2>Projet Bouge Ta Prison</h2>
+                    <h2 className="text-center">Projet Bouge Ta Prison</h2>
                 </Link>
 
                 <Link
                     href="/bagadAsso"
-                    className="flex flex-col items-center transition-all hover:scale-105"
+                    className="flex flex-col items-center p-4 transition-all hover:scale-105"
                 >
                     <Image
                         src={logoBA}
                         alt="Logo du projet Bagad'Asso"
                         className="aspect-square h-auto w-52 object-contain"
                     />
-                    <h2>Projet Bagad'Asso</h2>
+                    <h2 className="text-center">Projet Bagad'Asso</h2>
                 </Link>
             </div>
         </div>
