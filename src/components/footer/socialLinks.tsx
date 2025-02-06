@@ -1,7 +1,12 @@
 import Link from "next/link";
 
-import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok } from "react-icons/fa6";
-import { FaXTwitter } from "react-icons/fa6";
+import {
+    FaBluesky,
+    FaFacebook,
+    FaInstagram,
+    FaLinkedin,
+    FaTiktok,
+} from "react-icons/fa6";
 import { TbBrandLinktree } from "react-icons/tb";
 
 export default function SocialLinks() {
@@ -12,9 +17,12 @@ export default function SocialLinks() {
                 <FaInstagram size={25} />
             </Link>
 
-            {/* Twitter */}
-            <Link href="https://x.com/la_fahb" title="X">
-                <FaXTwitter size={25} />
+            {/* Bluesky */}
+            <Link
+                href="https://bsky.app/profile/fahb.bsky.social"
+                title="Bluesky"
+            >
+                <FaBluesky size={25} />
             </Link>
 
             {/* Facebook - caché sur mobile */}
