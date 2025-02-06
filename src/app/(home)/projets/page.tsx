@@ -12,7 +12,7 @@ export default async function Projets() {
                 Projets
             </h1>
 
-            <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-x-20">
+            <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-x-20 md:space-y-0">
                 <Link
                     href="/agorae"
                     className="flex flex-col items-center transition-all hover:scale-105"
