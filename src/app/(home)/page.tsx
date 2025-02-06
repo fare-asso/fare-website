@@ -23,6 +23,8 @@ export default async function Home() {
                     src={WelcomeImage}
                     alt="Image des membres du bureau"
                     className="w-full rounded-xl"
+                    priority={true}
+                    placeholder="blur"
                 />
             </div>
 
