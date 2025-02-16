@@ -1,4 +1,4 @@
-import { BTPTutorApplication } from "@/schemas/bougeTaPrison";
+import { BTPTutorApplication, BTPTutorQuestion } from "@/schemas/bougeTaPrison";
 import { Contact } from "@/schemas/contact";
 import { format } from "date-fns";
 
@@ -34,4 +34,15 @@ export const tutorApplicationEmailTemplate = (
             <p style="text-align: center;"><strong>Prénom:</strong> ${data.firstName}</p>
             <p style="text-align: center;"><strong>Email:</strong> ${data.email}</p>
             <p style="text-align: center;">Vous pouvez consulter les détails de cette candidature sur le <a href="${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/bouge-ta-prison/candidatures-tutorat">tableau de bord des candidatures tutorats du projet Bouge Ta Prison</a></p>
+            `;
+
+export const tutorQuestionEmailTemplate = (data: BTPTutorQuestion): string => `
+            <p style="text-align: center;">Une nouvelle question de tutorat à été reçue.</p>
+            <p style="text-align: center;"><strong>Nom:</strong> ${data.lastName}</p>
+            <p style="text-align: center;"><strong>Prénom:</strong> ${data.firstName}</p>
+            <p style="text-align: center;"><strong>Email:</strong> ${data.email}</p>
+            <p style="text-align: center;"><strong>Filière:</strong> ${data.major}</p>
+            <p style="text-align: center;"><strong>Année d'étude:</strong> ${data.studyYear}</p>
+            <p style="text-align: center;"><strong>Message:</strong></p>
+            <p style="text-align: center;">${data.message}</p>
             `;
