@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+/* BTP Tutor Application */
+
 export const BTPTutorApplicationSchema = z.object({
     firstName: z.string().min(1, { message: "Le prénom est obligatoire" }),
     lastName: z.string().min(1, { message: "Le nom est obligatoire" }),
@@ -27,3 +29,23 @@ export const BTPTutorApplicationSchema = z.object({
 });
 
 export type BTPTutorApplication = z.infer<typeof BTPTutorApplicationSchema>;
+
+/* BTP Tutor Question */
+
+export const BTPTutorQuestionSchema = z.object({
+    lastName: z.string().min(1, { message: "Le nom est obligatoire" }),
+    firstName: z.string().min(1, { message: "Le prénom est obligatoire" }),
+    email: z.string().email({ message: "Email non-valide" }),
+    major: z.string().min(1, { message: "La filière est obligatoire" }),
+    studyYear: z.enum(["L3", "M1", "M2", "other"], {
+        message: "L'année d'étude est obligatoire",
+    }),
+    message: z
+        .string()
+        .min(1, { message: "Le message est obligatoire" })
+        .max(1000, {
+            message: "Le message doit faire moins de 1000 caractères",
+        }),
+});
+
+export type BTPTutorQuestion = z.infer<typeof BTPTutorQuestionSchema>;
