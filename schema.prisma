@@ -135,6 +135,18 @@ model BTPTutorApplication {
   cvPath      String
 }
 
+model BTPTutorQuestion {
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String
+  major       String
+  studyYear   String
+  question    String
+  createdAt   DateTime @default(now())
+  read        Boolean  @default(false)
+}
+
 model LocationCache {
   id             Int      @id @default(autoincrement())
   query          String   @unique
