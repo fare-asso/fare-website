@@ -1,6 +1,7 @@
 "use client";
 
 import submitTutorApplication from "@/actions/bouge-ta-prison/submitTutorApplication";
+import Captcha from "@/components/captcha/recaptcha";
 import LoadingRing from "@/components/dashboard/loadingRing";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -269,6 +270,7 @@ export default function TutorApplicationForm() {
                                 </FormItem>
                             )}
                         />
+                        <Captcha onChange={() => console.log("Captcha")} />
                         <Button
                             type="submit"
                             variant="default"
