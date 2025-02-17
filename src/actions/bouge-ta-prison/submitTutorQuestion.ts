@@ -1,11 +1,13 @@
 "use server";
 
+import prisma from "@/helpers/db";
 import { sendEmail } from "@/helpers/email";
 import { tutorQuestionEmailTemplate } from "@/lib/htmlTemplates";
 import {
     BTPTutorQuestion,
     BTPTutorQuestionSchema,
 } from "@/schemas/bougeTaPrison";
+import { revalidatePath } from "next/cache";
 
 export default async function submitTutorQuestion(
     data: BTPTutorQuestion,
@@ -19,10 +21,24 @@ export default async function submitTutorQuestion(
         return { success: false, errors: issues };
     }
 
+    // Insert the data into the database
+    const BTPTutorQuestion = await prisma.bTPTutorQuestion.create({
+        data: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            major: data.major,
+            studyYear: data.studyYear,
+            question: data.message,
+        },
+    });
+
     const emailTransporterRes = await sendEmail({
         to: "intervention-carceral@fahb.eu",
         subject: "Nouvelle question tutorat Bouge Ta Prison",
-        html: tutorQuestionEmailTemplate(data),
+        html: tutorQuestionEmailTemplate(data, BTPTutorQuestion.id),
     });
+
+    revalidatePath("/dashboard/bouge-ta-prison?tab=questions");
     return { success: true };
 }
