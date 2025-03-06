@@ -9,6 +9,7 @@ import {
 import TabSwitcher from "./tabSwitcher";
 import QuestionList from "./questions/questionList";
 import ApplicationList from "./candidatures-tutorat/applicationList";
+import { Suspense } from "react";
 
 export default function EspaceBougeTaPrison() {
     return (
@@ -22,8 +23,12 @@ export default function EspaceBougeTaPrison() {
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto">
                 <TabSwitcher>
-                    <ApplicationList />
-                    <QuestionList />
+                    <Suspense fallback={<div>Chargement...</div>}>
+                        <ApplicationList />
+                    </Suspense>
+                    <Suspense fallback={<div>Chargement...</div>}>
+                        <QuestionList />
+                    </Suspense>
                 </TabSwitcher>
             </CardContent>
             <CardFooter></CardFooter>
