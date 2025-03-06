@@ -5,7 +5,7 @@ import AssociationCard from "./associationCard";
 
 export default async function AssociationList() {
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // fetch all members from DB
     const assos = await prisma.association.findMany({
