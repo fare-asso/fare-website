@@ -1,27 +1,20 @@
 "use client";
 
-import { useFormState } from "react-dom";
-import { useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import LoadingRing from "@/components/dashboard/loadingRing";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Captcha from "@/components/captcha/recaptcha";
 import bugReportAction from "@/actions/bug-report/bugReportAction";
 
 export default function BugReportForm() {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(bugReportAction, undefined);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [captchaValue, setCaptchaValue] = useState<string | null>(null);
     const [charactersLength, setCharactersLength] = useState<number>(0);
 
     const maxCharactersLength: number = 500;
-
-    // Arrêter le chargement lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        setIsLoading(false);
-    }, [formState]);
 
     // Gestion de la longueure de la description du bug
     const handleDescriptionChange = (
@@ -37,9 +30,9 @@ export default function BugReportForm() {
 
         const formData = new FormData(event.currentTarget);
 
-        setIsLoading(true);
-
-        formAction(formData);
+        startTransition(() => {
+            formAction(formData);
+        });
     };
 
     return (
@@ -184,10 +177,10 @@ export default function BugReportForm() {
             <button
                 type="submit"
                 className="mt-4 flex flex-row items-center rounded-lg bg-black px-4 py-2 text-white transition-all hover:scale-105 disabled:pointer-events-none disabled:opacity-50"
-                disabled={isLoading}
+                disabled={pending}
             >
                 {" "}
-                {isLoading ?
+                {pending ?
                     <LoadingRing />
                 :   null}{" "}
                 Envoyer le rapport de bug
