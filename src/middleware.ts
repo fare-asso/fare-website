@@ -7,7 +7,7 @@ import { createClient } from "./helpers/supabase/server";
 import { Role } from "@prisma/client";
 
 export async function middleware(request: NextRequest) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const response = await updateSession(request);
 
