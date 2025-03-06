@@ -32,12 +32,12 @@ function processLocationData(value: string): {
     }
 }
 
-export default function AssociationCard({
+export default async function AssociationCard({
     association,
 }: {
     association: Association;
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const processedLocationData = processLocationData(association.location);
 
