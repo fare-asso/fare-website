@@ -12,11 +12,11 @@ import MoreArticles from "@/components/public/articles/moreArticles";
 export async function generateMetadata({
     params,
 }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-    const id = params.id;
+    const { id } = await params;
 
-    if (isNaN(Number(params.id)))
+    if (isNaN(Number(id)))
         return {
             title: "Article",
             description: "Un article",
@@ -44,9 +44,14 @@ export async function generateMetadata({
     };
 }
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
+    const { id } = await params;
     // check if the parameter is correct
-    if (isNaN(Number(params.id))) {
+    if (isNaN(Number(id))) {
         return (
             <div>
                 <span>{"L'article recherché n'existe pas"}</span>
@@ -56,7 +61,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
     const articleRecord = await prisma.article.findUnique({
         where: {
-            id: Number(params.id),
+            id: Number(id),
         },
     });
 

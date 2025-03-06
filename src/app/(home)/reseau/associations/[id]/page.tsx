@@ -7,11 +7,11 @@ import Link from "next/link";
 export async function generateMetadata({
     params,
 }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-    const id = params.id;
+    const { id } = await params;
 
-    if (isNaN(Number(params.id)))
+    if (isNaN(Number(id)))
         return {
             title: "Association",
             description: "Page d'association",
@@ -37,11 +37,16 @@ export async function generateMetadata({
     };
 }
 
-export default async function Page({ params }: { params: { id: string } }) {
-    const supabase = createClient();
+export default async function Page({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
+    const supabase = await createClient();
+    const { id } = await params;
 
     // check if the parameter is correct
-    if (isNaN(Number(params.id))) {
+    if (isNaN(Number(id))) {
         return (
             <div>
                 <span>{"L'association recherchée n'existe pas"}</span>
@@ -51,7 +56,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
     const associationRecord = await prisma.association.findUnique({
         where: {
-            id: Number(params.id),
+            id: Number(id),
         },
     });
 
