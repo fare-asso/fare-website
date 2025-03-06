@@ -13,7 +13,7 @@ export default function Representation() {
 
             <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-x-20 md:space-y-0">
                 <Link
-                    href="/bouge-ta-prison"
+                    href="/representation/fage"
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
                     <Image
@@ -26,7 +26,7 @@ export default function Representation() {
                 </Link>
 
                 <Link
-                    href="/bagadAsso"
+                    href="/representation/nos-elues"
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
                     <Image
