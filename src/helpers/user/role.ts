@@ -9,7 +9,7 @@ export default async function getCurrentUserRole(): Promise<{
     error?: string;
 }> {
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // fetch current user
     const {
