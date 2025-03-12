@@ -1,3 +1,7 @@
 export default async function Dashboard() {
-    return <>DASHBOARD</>;
+    return (
+        <div className="p-4">
+            <h2>Dashboard</h2>
+        </div>
+    );
 }
