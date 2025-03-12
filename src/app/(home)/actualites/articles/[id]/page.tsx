@@ -1,13 +1,13 @@
 import prisma from "@/helpers/db";
-import { createClient } from "@/helpers/supabase/server";
 import Link from "next/link";
 import { Metadata } from "next";
 
-import { extractFirstWords } from "@/helpers/quill";
-import { convertDeltaToHTML } from "@/helpers/quill";
+import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml";
 
 import { format } from "date-fns";
 import MoreArticles from "@/components/public/articles/moreArticles";
+import { JSONContent } from "@tiptap/react";
+import ContentHTML from "@/components/ui/rich-text-editor/contentHTML";
 
 export async function generateMetadata({
     params,
@@ -73,6 +73,10 @@ export default async function Page({
         );
     }
 
+    const articleContent: JSONContent = JSON.parse(
+        JSON.stringify(articleRecord.content),
+    );
+
     return (
         <div className="flex w-[90%] flex-col items-start pt-14">
             <Link
@@ -91,7 +95,7 @@ export default async function Page({
             {/* Content */}
             <div className="mt-8 flex w-full flex-col [&_*]:transition-all [&_a]:tracking-wide [&_a]:text-yellow-500 [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-yellow-300 hover:[&_a]:underline-offset-4 [&_img]:mx-auto [&_img]:my-4 [&_img]:w-full [&_img]:max-w-[500px] [&_img]:rounded-sm [&_ol]:list-decimal [&_ul]:list-disc">
                 {/* Parse article content to HTML */}
-                {convertDeltaToHTML(articleRecord.content)}
+                <ContentHTML content={articleContent} />
             </div>
 
             <div className="mt-12 flex w-full flex-col items-center">
