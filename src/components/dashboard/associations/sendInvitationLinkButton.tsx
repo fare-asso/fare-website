@@ -17,14 +17,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 
-import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
 
 import LoadingRing from "../loadingRing";
 
-import addAssociationAction from "@/actions/associations/addAssociationAction";
 import { Association } from "@prisma/client";
 import { TbMailPlus } from "react-icons/tb";
 import inviteRepresentativeAction from "@/actions/associations/inviteRepresentativeAction";
@@ -34,7 +32,7 @@ export default function SendInvitationLinkButton({
 }: {
     association: Association;
 }) {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(inviteRepresentativeAction, undefined);

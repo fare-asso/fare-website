@@ -1,35 +1,36 @@
 "use client";
 
-import { DeltaStatic, Sources } from "quill";
-
 import { fr } from "date-fns/locale";
 import { format } from "date-fns";
 
-import { Article } from "./articleList";
-
 import { Button } from "@/components/ui/button";
 
-import { MdDelete, MdVisibility } from "react-icons/md";
+import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
 
-import EditArticleButton from "./editArticleButton";
+// import EditArticleButton from "./editArticleButton";
 
 import deleteArticleAction from "@/actions/articles/deleteArticleAction";
 
 import { useToast } from "@/components/ui/use-toast";
-import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import LoadingRing from "../loadingRing";
 import Link from "next/link";
+import { Article } from "@prisma/client";
+import prisma from "@/helpers/db";
+import switchVisibilityAction from "@/actions/articles/switchVisibilityAction";
+import EditArticleButton from "./editArticleButton";
 
 export default function ArticleCard({ article }: { article: Article }) {
     const { toast } = useToast();
 
-    const [formState, formAction] = useFormState<
+    const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         number
     >(deleteArticleAction, undefined);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isSwitchingVisibility, setIsSwitchingVisibility] =
+        useState<boolean>(false);
 
     const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -37,7 +38,9 @@ export default function ArticleCard({ article }: { article: Article }) {
 
         setIsLoading(true);
 
-        formAction(article.id);
+        startTransition(() => {
+            formAction(article.id);
+        });
     };
 
     useEffect(() => {
@@ -55,11 +58,21 @@ export default function ArticleCard({ article }: { article: Article }) {
         setIsLoading(false);
     }, [formState, article.title, toast]);
 
+    async function HandleVisibility() {
+        setIsSwitchingVisibility(true);
+        await switchVisibilityAction(article.id);
+        setIsSwitchingVisibility(false);
+    }
+
     return (
         <div className="flex h-16 w-full flex-row items-center justify-between rounded-lg border bg-card px-4 py-4 text-card-foreground shadow-sm">
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm">
+            <Link
+                href={`/actualites/articles/${article.id}`}
+                title={article.title}
+                className="overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm"
+            >
                 {article.title}
-            </div>
+            </Link>
             <div className="hidden text-sm text-card-foreground/70 md:block">
                 {format(article.writtenOn, "PPP", { locale: fr })}
             </div>
@@ -68,22 +81,18 @@ export default function ArticleCard({ article }: { article: Article }) {
                 <Button
                     variant={"default"}
                     className="mr-2 hidden px-3 md:block"
+                    onClick={HandleVisibility}
+                    disabled={isSwitchingVisibility}
                 >
-                    <Link
-                        href={`/actualites/articles/${article.id}`}
-                        className=""
-                    >
-                        <MdVisibility size={17} />
-                    </Link>
+                    {isSwitchingVisibility ?
+                        <LoadingRing className="!mr-0" />
+                    : article.published ?
+                        <MdVisibility size={17} title="publié" />
+                    :   <MdVisibilityOff size={17} title="draft" />}
                 </Button>
 
-                <EditArticleButton
-                    className="mr-2 px-2 py-2 sm:px-4"
-                    article={article}
-                >
-                    <MdEdit size={20} className="mr-0 sm:mr-1" />
-                    <div className="hidden sm:flex">Modifier</div>
-                </EditArticleButton>
+                <EditArticleButton article={article} />
+
                 <Button
                     variant="destructive"
                     className="px-2 py-2 sm:px-4"

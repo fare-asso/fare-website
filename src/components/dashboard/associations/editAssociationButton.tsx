@@ -24,21 +24,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { useState } from "react";
-
-import { useFormState } from "react-dom";
+import { useActionState, useState } from "react";
 import { useEffect, useCallback } from "react";
 
 import LoadingRing from "../loadingRing";
 import LocationPicker from "@/components/ui/location/locationPicker";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 
 import editAssociationAction from "@/actions/associations/editAssociationAction";
 import { Association } from "@prisma/client";
@@ -51,7 +41,7 @@ export default function EditAssociationButton({
 }: {
     association: Association;
 }) {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(editAssociationAction, undefined);

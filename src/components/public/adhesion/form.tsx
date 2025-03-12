@@ -4,14 +4,8 @@ import { processAdhesionForm } from "@/actions/adhesion/processAdhesionFormActio
 import LoadingRing from "@/components/dashboard/loadingRing";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import NumberInput from "@/components/ui/input/numberInput";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
-import {
-    MdAdminPanelSettings,
-    MdDelete,
-    MdDeleteOutline,
-} from "react-icons/md";
+import React, { useActionState, useEffect, useState } from "react";
+import { MdAdminPanelSettings, MdDelete } from "react-icons/md";
 
 interface BoardMember {
     id: string;
@@ -45,7 +39,7 @@ interface FormState {
 }
 
 export default function AdhesionForm() {
-    const [formState, formAction] = useFormState<FormState, FormData>(
+    const [formState, formAction] = useActionState<FormState, FormData>(
         processAdhesionForm,
         {},
     );

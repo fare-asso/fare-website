@@ -15,9 +15,8 @@ import {
 
 import LoadingRing from "../loadingRing";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 
-import { useFormState } from "react-dom";
 import { useEffect } from "react";
 import { MdDelete } from "react-icons/md";
 
@@ -30,7 +29,7 @@ export default function DeleteAssociationButton({
 }: {
     association: Association;
 }) {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(deleteAssociationAction, undefined);

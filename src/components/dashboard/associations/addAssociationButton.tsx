@@ -24,28 +24,18 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 
-import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
 
 import LoadingRing from "../loadingRing";
 import LocationPicker from "@/components/ui/location/locationPicker";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-
 import addAssociationAction from "@/actions/associations/addAssociationAction";
 import { Textarea } from "@/components/ui/textarea";
 import DatePicker from "@/components/ui/input/datePicker";
 
 export default function AddAssociationButton() {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(addAssociationAction, undefined);

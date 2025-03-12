@@ -12,12 +12,6 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { Input } from "@/components/ui/input";
@@ -27,22 +21,18 @@ import { Switch } from "@/components/ui/switch";
 
 import { Textarea } from "@/components/ui/textarea";
 
-import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import TimePicker from "../../ui/input/timePicker";
 import createEventAction from "@/actions/events/createEventAction";
 import LocationPicker from "../../ui/location/locationPicker";
 import CategorySelect from "../../ui/category/categorySelect";
-import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
 import LoadingRing from "../loadingRing";
 import DatePicker from "@/components/ui/input/datePicker";
 
 export default function CreateEventButton() {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(createEventAction, undefined);

@@ -17,9 +17,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 
-import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
 
 import createCDPAction from "@/actions/CDP/createCDPAction";
@@ -36,12 +35,11 @@ import DatePicker from "@/components/ui/input/datePicker";
 import LoadingRing from "../loadingRing";
 import { uploadFile } from "@/helpers/supabase/upload";
 import FileInput from "@/components/ui/fileInput";
-import { z } from "zod";
 
 export default function AddNewCDPButton() {
     const [error, setError] = useState<string | undefined>(undefined);
 
-    const [formState, formAction] = useFormState<
+    const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(createCDPAction, undefined);

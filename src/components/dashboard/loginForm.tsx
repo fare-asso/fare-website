@@ -4,11 +4,11 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import loginAction from "@/actions/auth/loginAction";
 
-import { useFormState } from "react-dom";
 import LoginButton from "./loginButton";
+import { useActionState } from "react";
 
 export default function LoginForm() {
-    const [error, formAction] = useFormState<
+    const [error, formAction] = useActionState<
         { emailError?: string; passwordError?: string } | undefined,
         any
     >(loginAction, { emailError: "", passwordError: "" });

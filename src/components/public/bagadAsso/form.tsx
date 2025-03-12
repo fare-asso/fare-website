@@ -4,9 +4,8 @@ import DatePicker from "@/components/ui/input/datePicker";
 import NumberInput from "@/components/ui/input/numberInput";
 import EquipmentSelection from "./equipmentSelection";
 import { BagadAssoEquipment } from "@prisma/client";
-import { useFormState } from "react-dom";
 import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction";
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import LoadingRing from "@/components/dashboard/loadingRing";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Captcha from "@/components/captcha/recaptcha";
@@ -16,7 +15,7 @@ export default function BagadAssoForm({
 }: {
     equipmentList: BagadAssoEquipment[];
 }) {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(submitBagadAssoFormAction, undefined);

@@ -15,9 +15,7 @@ import {
 
 import LoadingRing from "../loadingRing";
 
-import { useState } from "react";
-
-import { useFormState } from "react-dom";
+import { startTransition, useActionState } from "react";
 import { useEffect } from "react";
 import { MdDelete } from "react-icons/md";
 
@@ -28,19 +26,15 @@ export default function DeleteEquipmentButton({
 }: {
     equipmentId: number;
 }) {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(deleteEquipmentAction, undefined);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
-            setIsLoading(false);
         }
-
-        setIsLoading(false);
     }, [formState]);
 
     const handleDelete = async (
@@ -48,9 +42,9 @@ export default function DeleteEquipmentButton({
     ) => {
         event.preventDefault();
 
-        setIsLoading(true);
-
-        formAction(equipmentId);
+        startTransition(() => {
+            formAction(equipmentId);
+        });
     };
 
     return (
@@ -73,7 +67,7 @@ export default function DeleteEquipmentButton({
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete}>
-                        {isLoading ?
+                        {pending ?
                             <LoadingRing />
                         :   null}{" "}
                         Supprimer

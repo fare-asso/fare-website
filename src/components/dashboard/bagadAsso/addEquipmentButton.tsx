@@ -17,9 +17,15 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { ChangeEvent, MouseEvent, useRef, useState } from "react";
+import {
+    ChangeEvent,
+    MouseEvent,
+    startTransition,
+    useActionState,
+    useRef,
+    useState,
+} from "react";
 
-import { useFormState } from "react-dom";
 import { useEffect, useCallback } from "react";
 
 import addEquipmentAction from "@/actions/bagadAsso/addEquipmentAction";
@@ -30,13 +36,11 @@ import LoadingRing from "../loadingRing";
 import Image from "next/image";
 
 export default function AddEquipmentButton() {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(addEquipmentAction, undefined);
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-
-    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [file, setFile] = useState<string | undefined>(undefined);
 
@@ -76,7 +80,6 @@ export default function AddEquipmentButton() {
         if (formState?.success) {
             handleOpenChange(false);
         }
-        setIsLoading(false);
     }, [formState, handleOpenChange]);
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
@@ -85,9 +88,9 @@ export default function AddEquipmentButton() {
 
         const formData = new FormData(event.currentTarget);
 
-        setIsLoading(true);
-
-        formAction(formData);
+        startTransition(() => {
+            formAction(formData);
+        });
     };
 
     return (
@@ -185,9 +188,9 @@ export default function AddEquipmentButton() {
                         type="submit"
                         form="addEquipmentForm"
                         className="mt-4"
-                        disabled={isLoading}
+                        disabled={pending}
                     >
-                        {isLoading ?
+                        {pending ?
                             <LoadingRing />
                         :   null}{" "}
                         Ajouter
