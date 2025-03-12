@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/helpers/supabase/server";
 
 export default async function SignOutAction() {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase.auth.signOut();
 

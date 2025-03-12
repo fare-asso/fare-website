@@ -8,12 +8,12 @@ import { MdDelete } from "react-icons/md";
 import { MdModeEditOutline } from "react-icons/md";
 import DeleteEquipmentButton from "./deleteEquipmentButton";
 
-export default function EquipmentCard({
+export default async function EquipmentCard({
     equipment,
 }: {
     equipment: BagadAssoEquipment;
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     return (
         <div className="flex flex-col space-y-1 rounded-lg border bg-card p-4 text-card-foreground shadow-sm">

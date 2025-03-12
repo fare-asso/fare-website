@@ -14,7 +14,7 @@ export default async function loginAction(
     currentState: { emailError?: string; passwordError?: string } | undefined,
     formData: FormData,
 ) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const email = formData.get("email");
     const password = formData.get("password");
@@ -74,14 +74,4 @@ export default async function loginAction(
         revalidatePath("/dashboard");
         redirect("../dashboard");
     }
-
-    // if(email === "blasster35@gmail.com") {
-    //     redirect("../dashboard")
-    // }
-    // else {
-    //     return {
-    //         usernameError: "wrong username",
-    //         passwordError: ""
-    //     }
-    // }
 }

@@ -18,7 +18,7 @@ export default async function editAssociationAction(
         };
 
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // retrieve form data fields
     const id = Number(formData.get("id")?.toString() ?? NaN);

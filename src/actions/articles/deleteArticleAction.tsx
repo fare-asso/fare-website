@@ -20,7 +20,7 @@ export default async function deleteArticleAction(
         };
 
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // fetch article to delete
     const article = await prisma.article.findUnique({
@@ -57,7 +57,7 @@ export default async function deleteArticleAction(
         revalidatePath("/dashboard/articles");
         revalidatePath("/actualites");
         return { success: true };
-    } catch (_) {
+    } catch (error) {
         return {
             error: "Echec de la suppression de l'article",
         };

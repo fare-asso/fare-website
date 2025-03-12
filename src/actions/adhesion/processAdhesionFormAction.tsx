@@ -92,7 +92,7 @@ export async function processAdhesionForm(
     prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData,
 ) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     console.log(formData);
 

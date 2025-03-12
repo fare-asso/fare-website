@@ -6,7 +6,7 @@ import MemberCard from "./memberCard";
 
 export default async function MemberList() {
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // fetch all members from DB
     const members = await prisma.member.findMany();

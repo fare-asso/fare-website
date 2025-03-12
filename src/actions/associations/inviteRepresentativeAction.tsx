@@ -21,7 +21,7 @@ export default async function inviteRepresentativeAction(
         };
 
     // supabase Admin client
-    const supabase = createAdminClient();
+    const supabase = await createAdminClient();
 
     /* Data Validation */
     const email = formData.get("email")?.toString();

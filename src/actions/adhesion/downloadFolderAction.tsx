@@ -24,7 +24,7 @@ export async function downloadFolderAction(
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
         };
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     if (!folderPath) {
         return { error: "Le nom du dossier est invalide" };

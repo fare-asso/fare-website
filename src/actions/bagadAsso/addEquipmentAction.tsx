@@ -22,7 +22,7 @@ export default async function addEquipmentAction(
         };
 
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // retrieve form data fields
     const name = formData.get("name")?.toString();

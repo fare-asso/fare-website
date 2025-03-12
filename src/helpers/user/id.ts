@@ -5,7 +5,7 @@ export default async function getCurrentUserId(): Promise<{
     error?: string;
 }> {
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // fetch current user
     const {
