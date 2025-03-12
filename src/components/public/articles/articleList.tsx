@@ -9,18 +9,18 @@ export default async function ArticleList() {
         take: 10,
     });
 
-    const communiques = await prisma.communiqueDePresse.findMany({
-        orderBy: {
-            createdAt: "desc",
-        },
-        take: 10,
-    });
+    const filteredArticles = articles.filter((article) => article.published);
 
     return (
-        <div className="flex w-full flex-col space-y-4 md:w-3/4 lg:w-1/2">
-            {articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-            ))}
+        <div className="flex w-full flex-col items-center space-y-4 md:w-3/4 lg:w-1/2">
+            {filteredArticles.length === 0 ?
+                <span className="text-xl text-gray-700">
+                    Aucun article n'est disponible pour le moment...
+                </span>
+            :   filteredArticles.map((article) => (
+                    <ArticleCard key={article.id} article={article} />
+                ))
+            }
         </div>
     );
 }
