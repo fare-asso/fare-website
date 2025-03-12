@@ -1,4 +1,4 @@
-import { extractFirstWords } from "@/helpers/quill";
+import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml";
 import { Article } from "@prisma/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
