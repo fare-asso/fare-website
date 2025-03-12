@@ -20,7 +20,7 @@ export default async function deleteEquipmentAction(
         };
 
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // fetch association to delete
     const equipment = await prisma.bagadAssoEquipment.findUnique({
