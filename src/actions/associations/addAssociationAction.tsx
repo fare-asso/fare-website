@@ -107,6 +107,7 @@ export default async function addAssociationAction(
         if (newAssociation) {
             revalidatePath("/dashboard/associations");
             revalidatePath("/reseau");
+            revalidatePath("/(home)");
             return { success: true };
         } else {
             return {

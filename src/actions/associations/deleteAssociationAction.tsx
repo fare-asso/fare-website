@@ -74,6 +74,7 @@ export default async function deleteAssociationAction(
         });
         revalidatePath("/dashboard/associations");
         revalidatePath("/reseau");
+        revalidatePath("/(home)");
         return { success: true };
     } catch (_) {
         return {
