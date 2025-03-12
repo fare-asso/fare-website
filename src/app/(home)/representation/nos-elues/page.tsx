@@ -8,15 +8,16 @@ import logoUR2 from "/public/univ/Logo_univ-rennes2-2016.png";
 
 import logoBougeTonCampus from "/public/elues/logo-Bouge-Ton-Campus.png";
 import logoBougeTonCrous from "/public/elues/logo-Bouge-Ton-Crous.png";
+import logoEHESP from "/public/elues/ehesp/ehesp.png";
 
 import Image from "next/image";
 
-interface Elu {
+type Elu = {
     firstName: string;
     lastName: string;
     position: string;
-    details: string;
-}
+    details?: string;
+};
 
 const EluCard = ({ elu }: { elu: Elu }) => {
     return (
@@ -84,6 +85,9 @@ export default function Elues() {
                         <h2 className="mb-4 text-2xl font-semibold">
                             Nos élu.e.s “Bouge Ton CROUS” au CROUS Bretagne
                         </h2>
+                        <p className="py-3 text-sm font-medium">
+                            Contact : elus.crous@fahb.eu
+                        </p>
                     </div>
 
                     <div className="prose mb-4 max-w-none">
@@ -102,9 +106,6 @@ export default function Elues() {
                             de développement. Il joue un rôle clé dans
                             l'amélioration des conditions de vie et d'études des
                             étudiants dans sa région.
-                        </p>
-                        <p className="text-sm font-medium">
-                            Contact : elus.crous@fahb.eu
                         </p>
                     </div>
 
@@ -172,6 +173,9 @@ export default function Elues() {
                             Nos élu.e.s “Bouge Ton Campus” de l'Université de
                             Rennes
                         </h2>
+                        <p className="py-3 text-sm font-medium">
+                            Contact : btc.univrennes@fahb.eu
+                        </p>
                     </div>
 
                     {/* VPE */}
@@ -205,9 +209,6 @@ export default function Elues() {
                             étudiantes à travers des consultations régulières
                             avec les différentes instances et services
                             universitaires.
-                        </p>
-                        <p className="text-sm font-medium">
-                            Contact : elus.univ@fahb.eu
                         </p>
                     </div>
 
@@ -314,10 +315,9 @@ export default function Elues() {
                                 details: "Étudiant en IUT",
                             },
                             {
-                                firstName: "Jérémy",
-                                lastName: "PREMEL",
+                                firstName: "Claudia",
+                                lastName: "PERREIRA",
                                 position: "Titulaire",
-                                details: "Étudiant en Droit",
                             },
                             {
                                 firstName: "Carla",
@@ -326,16 +326,15 @@ export default function Elues() {
                                 details: "Étudiante en Odontologie",
                             },
                             {
+                                firstName: "Morgane",
+                                lastName: "GRAND",
+                                position: "Titulaire",
+                            },
+                            {
                                 firstName: "Bryan",
                                 lastName: "GROUSSARD",
                                 position: "Suppléant",
                                 details: "Étudiant en Soins infirmiers",
-                            },
-                            {
-                                firstName: "Estela",
-                                lastName: "STANKOV",
-                                position: "Suppléante",
-                                details: "Étudiante en Biologie",
                             },
                             {
                                 firstName: "Paol",
@@ -374,6 +373,12 @@ export default function Elues() {
                     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
+                                firstName: "Mattéo",
+                                lastName: "BECART",
+                                position: "Titulaire",
+                                details: "Étudiant en Kinésithérapie",
+                            },
+                            {
                                 firstName: "Gabrielle",
                                 lastName: "CORREIA",
                                 position: "Titulaire",
@@ -386,12 +391,6 @@ export default function Elues() {
                                 details: "Étudiante en Soins infirmiers",
                             },
                             {
-                                firstName: "Carla",
-                                lastName: "RICHARD",
-                                position: "Titulaire",
-                                details: "Étudiante en Odontologie",
-                            },
-                            {
                                 firstName: "Liz-Marie",
                                 lastName: "PRAUD",
                                 position: "Titulaire",
@@ -402,6 +401,91 @@ export default function Elues() {
                                 lastName: "ALLAIN",
                                 position: "Titulaire",
                                 details: "Étudiant en Odontologie",
+                            },
+                            {
+                                firstName: "Émile",
+                                lastName: "CHAPPÉ",
+                                position: "Suppléant",
+                                details: "Étudiant en Odontologie",
+                            },
+                            {
+                                firstName: "Carla",
+                                lastName: "RICHARD",
+                                position: "Suppléante",
+                                details: "Étudiante en Odontologie",
+                            },
+                            {
+                                firstName: "Alexandre",
+                                lastName: "JAMES",
+                                position: "Suppléant",
+                                details: "Étudiant en Odontologie",
+                            },
+                            {
+                                firstName: "Adèle",
+                                lastName: "SERRE",
+                                position: "Suppléante",
+                                details: "Étudiante en Odontologie",
+                            },
+                            {
+                                firstName: "Maëlle",
+                                lastName: "VERGNON",
+                                position: "Titulaire",
+                                details: "Étudiante en Odontologie",
+                            },
+                        ].map((elu, index) => (
+                            <EluCard key={index} elu={elu} />
+                        ))}
+                    </div>
+
+                    {/* Elu.e.s "EHESP Rennes" */}
+                    <div className="flex flex-col items-center space-y-6">
+                        <div className="mt-20 flex w-full flex-row items-center justify-center space-x-6">
+                            <Image
+                                src={logoEHESP}
+                                alt="Logo EHESP Rennes"
+                                className="h-auto w-32 md:h-44 md:w-auto"
+                            />
+                        </div>
+
+                        <h2 className="mb-4 text-2xl font-semibold">
+                            Nos élu.e.s au CA de l'EHESP Rennes
+                        </h2>
+                        <p className="py-3 text-sm font-medium">
+                            Contact : btc.univrennes@fahb.eu
+                        </p>
+                    </div>
+
+                    <div className="prose mb-4 max-w-none">
+                        <p>
+                            L'EHESP (École des Hautes Études en Santé Publique)
+                            est un établissement d'enseignement supérieur et de
+                            recherche spécialisé dans les domaines de la santé
+                            publique, de la gestion des services de santé et de
+                            l'action sociale. Les étudiants de l'EHESP sont
+                            représentés au sein des instances de l'école par des
+                            élu.e.s qui participent à la vie démocratique de
+                            l'établissement et contribuent à l'amélioration des
+                            conditions d'études et de vie des étudiants. Ces
+                            élu.e.s sont des interlocuteurs privilégiés pour
+                            faire remonter les préoccupations des étudiants et
+                            proposer des actions en faveur de leur bien-être et
+                            de leur réussite.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                        {[
+                            {
+                                firstName: "Clémence",
+                                lastName: "GAIGNEUX",
+                                position: "Titulaire",
+                                details: "Étudiante en Santé Publique",
+                            },
+                            {
+                                firstName: "Emma",
+                                lastName: "PELTAIS",
+                                position: "Suppléante",
+                                details: "Étudiante en Santé Publique",
                             },
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
@@ -428,6 +512,9 @@ export default function Elues() {
                             Nos élu.e.s “Bouge Ton Campus” de l'Université de
                             Rennes 2
                         </h2>
+                        <p className="py-3 text-sm font-medium">
+                            Contact : btc.univrennes2@fahb.eu
+                        </p>
                     </div>
 
                     {/* CA */}
@@ -496,12 +583,6 @@ export default function Elues() {
                     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
-                                firstName: "Elisa",
-                                lastName: "BOINET",
-                                position: "Titulaire",
-                                details: "Étudiante en STAPS",
-                            },
-                            {
                                 firstName: "Eliott",
                                 lastName: "LESUEUR",
                                 position: "Titulaire",
@@ -509,10 +590,32 @@ export default function Elues() {
                                     "Étudiant en Information-Communication",
                             },
                             {
+                                firstName: "Elisa",
+                                lastName: "BOINET",
+                                position: "Titulaire",
+                                details: "Étudiante en STAPS",
+                            },
+                            {
+                                firstName: "Lysia",
+                                lastName: "LE COENT",
+                                position: "Titulaire",
+                                details: "Étudiante en STAPS",
+                            },
+                            {
                                 firstName: "Alexis",
                                 lastName: "WALTER",
-                                position: "Titulaire",
+                                position: "Suppléant",
                                 details: "Étudiant en AES",
+                            },
+                            {
+                                firstName: "Alexandre",
+                                lastName: "JOUGLA",
+                                position: "Suppléant",
+                            },
+                            {
+                                firstName: "Elouan",
+                                lastName: "DANIEL",
+                                position: "Suppléant",
                             },
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
@@ -545,20 +648,14 @@ export default function Elues() {
                     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[
                             {
-                                firstName: "Elisa",
-                                lastName: "BOINET",
-                                position: "Titulaire",
-                                details: "Étudiante en STAPS",
-                            },
-                            {
                                 firstName: "Manaël",
                                 lastName: "FORGET",
                                 position: "Titulaire",
                                 details: "Étudiant en STAPS",
                             },
                             {
-                                firstName: "Anthony",
-                                lastName: "GUYOMARD",
+                                firstName: "Kenan",
+                                lastName: "BRIAND",
                                 position: "Titulaire",
                                 details: "Étudiant en STAPS",
                             },
@@ -567,6 +664,42 @@ export default function Elues() {
                                 lastName: "LE COENT",
                                 position: "Titulaire",
                                 details: "Étudiante en STAPS",
+                            },
+                            {
+                                firstName: "Logan",
+                                lastName: "PEREZ",
+                                position: "Titulaire",
+                                details: "Étudiant en STAPS",
+                            },
+                            {
+                                firstName: "Albane",
+                                lastName: "ROZE",
+                                position: "Titulaire",
+                                details: "Étudiante en STAPS",
+                            },
+                            {
+                                firstName: "Anthony",
+                                lastName: "GUYOMARD",
+                                position: "Suppléant",
+                                details: "Étudiant en STAPS",
+                            },
+                            {
+                                firstName: "Elisa",
+                                lastName: "BOINET",
+                                position: "Suppléante",
+                                details: "Étudiante en STAPS",
+                            },
+                            {
+                                firstName: "Tom",
+                                lastName: "PORTENEUVE",
+                                position: "Suppléant",
+                                details: "Étudiant en STAPS",
+                            },
+                            {
+                                firstName: "Ana",
+                                lastName: "PORS",
+                                position: "Suppléant",
+                                details: "Étudiant en STAPS",
                             },
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
