@@ -41,7 +41,7 @@ export default async function addMemberAction(
         };
 
     // Create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Retrieve form data fields
     const memberData = {

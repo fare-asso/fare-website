@@ -37,7 +37,7 @@ export default async function submitTutorApplication(
     const folderName = crypto.randomUUID() + "-" + sanitizedName;
 
     // Upload the CV and the motivation letter to the storage
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data: cvUploadData, error: cvUploadError } = await supabase.storage
         .from("btp-tutor-application")

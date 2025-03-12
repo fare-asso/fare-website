@@ -25,7 +25,7 @@ export default async function SoonEvents() {
         return <></>;
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     return (
         <div className="mb-8 flex w-full flex-col">

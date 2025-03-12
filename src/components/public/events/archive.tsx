@@ -4,7 +4,7 @@ import { createClient } from "@/helpers/supabase/server";
 import prisma from "@/helpers/db";
 
 export default async function EventArchive() {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const now = new Date();
 

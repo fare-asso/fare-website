@@ -34,7 +34,7 @@ export default async function createEventAction(
         };
 
     // instantiate supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // retrieve form data fields
     const name = formData.get("name");

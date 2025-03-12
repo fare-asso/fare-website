@@ -16,7 +16,7 @@ export default async function deleteCDPAction({ id }: { id: number }) {
         };
 
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Delete Record from DB
     const deletedCdpRecord = await prisma.communiqueDePresse.delete({

@@ -16,7 +16,7 @@ export default async function deleteMemberAction({ id }: { id: number }) {
         };
 
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const res = await prisma.member.delete({
         where: { id: id },

@@ -1,11 +1,10 @@
 import prisma from "@/helpers/db";
 import { createClient } from "@/helpers/supabase/server";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import AssociationAccountDropdown from "./accountDropdown";
 
 export default async function Header() {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase.auth.getUser();
 

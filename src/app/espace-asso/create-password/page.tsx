@@ -1,9 +1,8 @@
 import CreatePasswordForm from "@/components/espaceAsso/createPasswordForm";
 import { createClient } from "@/helpers/supabase/server";
-import { redirect } from "next/navigation";
 
 export default async function CreatePasswordPage() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data, error } = await supabase.auth.getUser();
 
     if (error) {

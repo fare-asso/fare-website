@@ -17,7 +17,7 @@ export default async function createPasswordForRepresentativeAction(
         };
 
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // retrieve formdata fields
     const password = formData.get("password")?.toString();

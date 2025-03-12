@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 export default async function deleteTutorApplication(
     id: number,
 ): Promise<{ success?: boolean; error?: string }> {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Fetch current application
     let application: BTPTutorApplication | null;

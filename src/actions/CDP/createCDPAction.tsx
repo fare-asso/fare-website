@@ -35,7 +35,7 @@ export default async function createCDPAction(
         };
 
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // retrieve form data fields
     const name = formData.get("name")?.toString();

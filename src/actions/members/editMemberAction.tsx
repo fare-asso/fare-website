@@ -39,7 +39,7 @@ export default async function editMemberAction(formData: FormData, id: number) {
         };
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Extraction des données du formulaire
     const memberData = {

@@ -20,7 +20,7 @@ export default async function deleteEventAction({
         };
 
     // create supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // fetch event Image url
     const imageUrl = await prisma.event.findUnique({
