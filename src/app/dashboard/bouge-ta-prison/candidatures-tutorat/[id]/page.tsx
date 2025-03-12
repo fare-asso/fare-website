@@ -11,6 +11,10 @@ export default async function TutorApplicationPage({
 }) {
     const id = (await params).id;
 
+    if (isNaN(Number(id))) {
+        return <span>Cette candidature n'existe pas 😔</span>;
+    }
+
     const tutorApplication = await prisma.bTPTutorApplication.findUnique({
         where: {
             id: Number(id),
@@ -21,7 +25,7 @@ export default async function TutorApplicationPage({
         return <span>Cette candidature n'existe pas 😔</span>;
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data: cvSignedUrlData, error: cvSignedUrlError } =
         await supabase.storage

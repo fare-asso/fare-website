@@ -7,18 +7,15 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import Link from "next/link";
 
-export default async function Page({ params }: { params: { id: string } }) {
-    let ticketId: number | undefined;
+export default async function Page({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
+    const ticketId = Number((await params).id);
 
-    // check if the parameter is correct
-    if (isNaN(Number(params.id))) {
-        return (
-            <div>
-                <span>{"L'adresse du ticket n'est pas valide."}</span>
-            </div>
-        );
-    } else {
-        ticketId = Number(params.id);
+    if (isNaN(ticketId)) {
+        return <span>Le ticket n'existe pas 😔</span>;
     }
 
     const ticket = await prisma.bagadAssoTicket.findUnique({
