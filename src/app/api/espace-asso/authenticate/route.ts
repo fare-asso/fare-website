@@ -3,7 +3,7 @@ import { EmailOtpType } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
 export async function GET(request: Request) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { searchParams } = new URL(request.url);
 

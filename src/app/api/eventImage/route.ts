@@ -2,7 +2,7 @@ import prisma from "@/helpers/db";
 import { createClient } from "@/helpers/supabase/server";
 
 export async function GET(request: Request) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
