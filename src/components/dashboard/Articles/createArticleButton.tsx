@@ -12,42 +12,82 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 
-import { DeltaStatic, Sources } from "quill";
-import { UnprivilegedEditor } from "react-quill";
-
-import RichTextEditor from "@/components/ui/richTextEditor";
+import RichTextEditor from "@/components/ui/rich-text-editor/richTextEditor";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { useState } from "react";
-
-import { useFormState } from "react-dom";
-import { useEffect, useCallback } from "react";
+import {
+    useActionState,
+    useState,
+    useEffect,
+    useCallback,
+    startTransition,
+} from "react";
 
 import LoadingRing from "../loadingRing";
 
 import createArticleAction from "@/actions/articles/createArticleAction";
+import { JSONContent } from "@tiptap/react";
+import { base64ToFile } from "@/helpers/image";
+import { v4 as uuidv4 } from "uuid";
+
+/**
+ * Extract and replace images in the JSON content with UUIDs
+ * @param content JSON content
+ * @returns Updated content and extracted images
+ * @example
+ * const { updatedContent, images } = extractAndReplaceImages(content);
+ * images.forEach((image) => {
+ *    formData.append(`images`, image.file);
+ * });
+ * formData.append("content", updatedContent);
+ */
+function extractAndReplaceImages(content: JSONContent): {
+    updatedContent: JSONContent;
+    images: { file: File; filename: string }[];
+} {
+    const images: { file: File; filename: string }[] = [];
+
+    const traverseNodes = (node: JSONContent) => {
+        if (node.type === "image" && node.attrs?.src) {
+            if (node.attrs.src.startsWith("data:image")) {
+                const filename = uuidv4();
+                const file = base64ToFile(node.attrs.src, filename);
+                images.push({ file, filename });
+
+                // Remplacer l'image base64 par un UUID (qui sera le nom du fichier sur le serveur)
+                node.attrs.src = `/${filename}`;
+            }
+        }
+
+        if (node.content) {
+            node.content.forEach(traverseNodes);
+        }
+    };
+
+    const updatedContent = JSON.parse(JSON.stringify(content)); // Cloner le contenu pour éviter les mutations directes
+    traverseNodes(updatedContent);
+
+    return { updatedContent, images };
+}
 
 export default function CreateArticleButton() {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(createArticleAction, undefined);
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [content, setContent] = useState("");
-    const [delta, setDelta] = useState<DeltaStatic>();
+
+    const [content, setContent] = useState<JSONContent>({}); // Rich Text Editor content
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
             setDialogIsOpen(open);
             if (!open) {
-                setIsLoading(false);
-                setContent(""); // empty Rich Text Editor
-                // Réinitialiser le formulaire lorsque le dialogue est fermé
+                setContent({}); // Reset editor content
             }
         },
         [setDialogIsOpen],
@@ -58,30 +98,27 @@ export default function CreateArticleButton() {
         if (formState?.success) {
             handleOpenChange(false);
         }
-        setIsLoading(false);
     }, [formState, handleOpenChange]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const formData = new FormData(event.currentTarget);
-        formData.append("delta", JSON.stringify(delta));
+        const { updatedContent, images } = extractAndReplaceImages(content);
 
-        setIsLoading(true);
+        images.forEach((image) => {
+            formData.append(`images`, image.file);
+        });
+        formData.append("content", JSON.stringify(updatedContent));
 
-        console.log("Delta: " + formData.get("delta"));
-
-        formAction(formData);
+        startTransition(() => {
+            formAction(formData);
+        });
     };
 
-    const handleRichTextEditorChange = (
-        value: string,
-        delta: DeltaStatic,
-        sources: Sources,
-        editor: UnprivilegedEditor,
-    ) => {
-        setContent(value);
-        setDelta(editor.getContents());
+    const handleRichTextEditorChange = (content: JSONContent) => {
+        // console.log(content);
+        setContent(content);
     };
 
     return (
@@ -120,10 +157,7 @@ export default function CreateArticleButton() {
                     </div>
 
                     <div>
-                        <RichTextEditor
-                            value={content}
-                            onChange={handleRichTextEditorChange}
-                        />
+                        <RichTextEditor onChange={handleRichTextEditorChange} />
                     </div>
 
                     {formState?.error ?
@@ -140,9 +174,9 @@ export default function CreateArticleButton() {
                     <Button
                         type="submit"
                         form="createArticleForm"
-                        disabled={isLoading}
+                        disabled={pending}
                     >
-                        {isLoading ?
+                        {pending ?
                             <LoadingRing />
                         :   null}{" "}
                         Valider

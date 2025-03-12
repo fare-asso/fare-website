@@ -12,95 +12,129 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 
-import { DeltaStatic, Sources } from "quill";
-import { UnprivilegedEditor } from "react-quill";
-
-import RichTextEditor from "@/components/ui/richTextEditor";
+import RichTextEditor from "@/components/ui/rich-text-editor/richTextEditor";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { Suspense, useState } from "react";
-
-import { useFormState } from "react-dom";
-import { useEffect, useCallback } from "react";
+import {
+    useActionState,
+    useState,
+    useEffect,
+    useCallback,
+    startTransition,
+} from "react";
 
 import LoadingRing from "../loadingRing";
 
+import createArticleAction from "@/actions/articles/createArticleAction";
+import { JSONContent } from "@tiptap/react";
+import { base64ToFile } from "@/helpers/image";
+import { v4 as uuidv4 } from "uuid";
 import editArticleAction from "@/actions/articles/editArticleAction";
+import { Article } from "@prisma/client";
+import { MdEdit } from "react-icons/md";
+import jsonToHtml from "@/helpers/tiptap/jsonToHtml";
+import { StorageUtils } from "@/helpers/supabase/storageUtils";
 
-import { Article } from "./articleList";
-import { isUrl } from "@/helpers/string";
-import TimePicker from "@/components/ui/input/timePicker";
-import DatePicker from "@/components/ui/input/datePicker";
+/**
+ * Extract and replace images in the JSON content with UUIDs
+ * @param content JSON content
+ * @returns Updated content and extracted images
+ * @example
+ * const { updatedContent, images } = extractAndReplaceImages(content);
+ * images.forEach((image) => {
+ *    formData.append(`images`, image.file);
+ * });
+ * formData.append("content", updatedContent);
+ */
+function extractAndReplaceImages(content: JSONContent): {
+    updatedContent: JSONContent;
+    images: { file: File; filename: string }[];
+} {
+    const images: { file: File; filename: string }[] = [];
 
-export async function deltaImagesUrlToBase64Delta(
-    delta: DeltaStatic,
-): Promise<DeltaStatic> {
-    if (delta.ops && delta.ops.length > 0) {
-        /* Filter all operations that contain images */
-        const opsLength: number = delta.ops.length;
-        const images: Map<number, string> = new Map<number, string>(); // number is operation index and string is the images
+    const traverseNodes = (node: JSONContent) => {
+        if (node.type === "image" && node.attrs?.src) {
+            if (node.attrs.src.startsWith("data:image")) {
+                const filename = uuidv4();
+                const file = base64ToFile(node.attrs.src, filename);
+                images.push({ file, filename });
 
-        for (let i = 0; i < opsLength; i++) {
-            // iterate through all operations
-            const currentOp = delta.ops[i].insert;
-            if (currentOp && currentOp.image && isUrl(currentOp.image)) {
-                // current operation is an image and is an url
-                const url: string = currentOp.image;
-                const base64Image: string = await fetchImageAsBase64(url);
-                images.set(i, base64Image);
+                // Remplacer l'image base64 par un UUID (qui sera le nom du fichier sur le serveur)
+                node.attrs.src = `/${filename}`;
             }
         }
 
-        // Replace URLs with base64 images in the delta
-        images.forEach((base64Image, index) => {
-            delta.ops![index].insert.image = base64Image;
+        if (node.content) {
+            node.content.forEach(traverseNodes);
+        }
+    };
+
+    const updatedContent = JSON.parse(JSON.stringify(content)); // Cloner le contenu pour éviter les mutations directes
+    traverseNodes(updatedContent);
+
+    return { updatedContent, images };
+}
+
+async function replaceImagesWithBase64(
+    content: JSONContent,
+): Promise<JSONContent> {
+    const fetchBase64 = async (url: string): Promise<string> => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
         });
-    }
+    };
 
-    return delta;
+    const su = new StorageUtils();
+
+    const traverseNodes = async (node: JSONContent) => {
+        if (node.type === "image" && node.attrs?.src) {
+            if (node.attrs.src.startsWith("/")) {
+                const filename = node.attrs.src.slice(1);
+                const imageUrl = su
+                    .from("article-pictures")
+                    .getPublicUrl(filename);
+
+                node.attrs.src = await fetchBase64(imageUrl);
+            }
+        }
+
+        if (node.content) {
+            await Promise.all(node.content.map(traverseNodes));
+        }
+    };
+
+    const updatedContent = JSON.parse(JSON.stringify(content)); // Cloner le contenu pour éviter les mutations directes
+    await traverseNodes(updatedContent);
+
+    return updatedContent;
 }
 
-async function fetchImageAsBase64(url: string): Promise<string> {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            resolve(reader.result as string);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-}
-
-export default function EditArticleButton({
-    className,
-    children,
-    article,
-}: {
-    className?: string;
-    children: React.ReactNode;
-    article: Article;
-}) {
-    const [formState, formAction] = useFormState<
+export default function EditArticleButton({ article }: { article: Article }) {
+    const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
     >(editArticleAction, undefined);
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [content, setContent] = useState<string | DeltaStatic>("");
-    const [delta, setDelta] = useState<DeltaStatic>();
+
+    const [content, setContent] = useState<JSONContent | undefined>(undefined); // Rich Text Editor content
 
     const handleOpenChange = useCallback(
-        (open: boolean) => {
+        async (open: boolean) => {
             setDialogIsOpen(open);
-            if (!open) {
-                setIsLoading(false);
-                // Réinitialiser le formulaire lorsque le dialogue est fermé
+
+            if (open) {
+                const updatedContent = await replaceImagesWithBase64(
+                    JSON.parse(JSON.stringify(article.content)),
+                );
+                setContent(updatedContent);
             }
         },
         [setDialogIsOpen],
@@ -111,69 +145,47 @@ export default function EditArticleButton({
         if (formState?.success) {
             handleOpenChange(false);
         }
-        setIsLoading(false);
     }, [formState, handleOpenChange]);
-
-    // tranform delta images to b64 images
-    useEffect(() => {
-        if (article.content) {
-            const defaultDelta: DeltaStatic = JSON.parse(
-                JSON.stringify(article.content.valueOf()),
-            );
-            const b64Delta = async () => {
-                const deltaImagesb64 =
-                    await deltaImagesUrlToBase64Delta(defaultDelta);
-                setContent(deltaImagesb64);
-            };
-
-            b64Delta();
-        }
-    }, [article.content, setDialogIsOpen]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
+        if (!content) return;
+
         const formData = new FormData(event.currentTarget);
-        formData.append("delta", JSON.stringify(delta));
+        const { updatedContent, images } = extractAndReplaceImages(content);
 
-        setIsLoading(true);
+        images.forEach((image) => {
+            formData.append(`images`, image.file);
+        });
+        formData.append("content", JSON.stringify(updatedContent));
 
-        console.log("Delta: " + formData.get("delta"));
-
-        formAction(formData);
+        startTransition(() => {
+            formAction(formData);
+        });
     };
 
-    const handleRichTextEditorChange = (
-        value: string,
-        delta: DeltaStatic,
-        sources: Sources,
-        editor: UnprivilegedEditor,
-    ) => {
-        setContent(value);
-        setDelta(editor.getContents());
+    const handleRichTextEditorChange = (content: JSONContent) => {
+        // console.log(content);
+        setContent(content);
     };
-
-    if (article.content == null) {
-        return null;
-    }
 
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button variant={"outline"} className={className}>
-                    {children}
+                <Button variant="outline" className="mr-2 px-2 py-2 sm:px-4">
+                    <MdEdit size={20} className="mr-0 sm:mr-1" />
+                    <div className="hidden sm:flex">Modifier</div>
                 </Button>
             </DialogTrigger>
 
             {/* Content */}
             <DialogContent className="max-h-[90%] max-w-[90%] md:max-w-[60%]">
                 <DialogHeader>
-                    <DialogTitle>{"Modification de l'Article"}</DialogTitle>
+                    <DialogTitle>Modifier l'article</DialogTitle>
                     <DialogDescription>
-                        {
-                            "Ceci est le formulaire de rédaction des articles de la Fédération"
-                        }
+                        {"Ceci est un formulaire de modification d'article"}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -184,7 +196,6 @@ export default function EditArticleButton({
                     className="space-y-3"
                 >
                     <input type="hidden" name="id" value={article.id} />
-
                     <div>
                         <Label htmlFor="title">Titre</Label>
                         <Input
@@ -192,26 +203,18 @@ export default function EditArticleButton({
                             id="title"
                             name="title"
                             placeholder="Titre de l'article"
-                            defaultValue={article.title}
                             required
+                            defaultValue={article.title}
                         />
                     </div>
 
                     <div>
-                        <Suspense fallback={<div>Chargement</div>}>
+                        {content && (
                             <RichTextEditor
-                                value={content}
                                 onChange={handleRichTextEditorChange}
+                                defaultContent={content}
                             />
-                        </Suspense>
-                    </div>
-
-                    <div>
-                        <Label htmlFor="date">Date de publication</Label>
-                        <DatePicker
-                            name="date"
-                            defaultValue={article.writtenOn}
-                        />
+                        )}
                     </div>
 
                     {formState?.error ?
@@ -228,12 +231,12 @@ export default function EditArticleButton({
                     <Button
                         type="submit"
                         form="editArticleForm"
-                        disabled={isLoading}
+                        disabled={pending}
                     >
-                        {isLoading ?
+                        {pending ?
                             <LoadingRing />
                         :   null}{" "}
-                        Modifier
+                        Valider
                     </Button>
                 </DialogFooter>
             </DialogContent>
