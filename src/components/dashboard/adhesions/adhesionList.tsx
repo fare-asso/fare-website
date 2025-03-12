@@ -9,6 +9,9 @@ export default async function AdhesionList() {
     // fetch all adhesion from DB
     const adhesions = await prisma.adhesion.findMany({
         take: 32,
+        orderBy: {
+            createdAt: "desc",
+        },
     });
 
     if (!adhesions) {
