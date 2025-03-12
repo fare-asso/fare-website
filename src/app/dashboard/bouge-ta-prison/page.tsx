@@ -22,14 +22,16 @@ export default function EspaceBougeTaPrison() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto">
-                <TabSwitcher>
-                    <Suspense fallback={<div>Chargement...</div>}>
-                        <ApplicationList />
-                    </Suspense>
-                    <Suspense fallback={<div>Chargement...</div>}>
-                        <QuestionList />
-                    </Suspense>
-                </TabSwitcher>
+                <Suspense fallback={<div>Chargement...</div>}>
+                    <TabSwitcher>
+                        <Suspense fallback={<div>Chargement...</div>}>
+                            <ApplicationList />
+                        </Suspense>
+                        <Suspense fallback={<div>Chargement...</div>}>
+                            <QuestionList />
+                        </Suspense>
+                    </TabSwitcher>
+                </Suspense>
             </CardContent>
             <CardFooter></CardFooter>
         </Card>
