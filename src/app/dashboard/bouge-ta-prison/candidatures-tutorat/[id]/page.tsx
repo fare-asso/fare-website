@@ -1,8 +1,15 @@
 import prisma from "@/helpers/db";
 import { createClient } from "@/helpers/supabase/server";
-import { StorageUtils } from "@/helpers/supabase/storageUtils";
 import { format } from "date-fns";
 import Link from "next/link";
+import SendApprovalButton from "./sendApprovalButton";
+import { FaCheckCircle, FaQuestionCircle } from "react-icons/fa";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default async function TutorApplicationPage({
     params,
@@ -50,6 +57,28 @@ export default async function TutorApplicationPage({
                 <span className="font-mono opacity-80">
                     #{tutorApplication.id}
                 </span>
+                <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            {tutorApplication.approved ?
+                                <FaCheckCircle
+                                    size={18}
+                                    className="ml-2 inline-block text-green-500"
+                                />
+                            :   <FaQuestionCircle
+                                    size={20}
+                                    className="ml-2 inline-block text-amber-500"
+                                />
+                            }
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            {tutorApplication.approved ?
+                                "Cette candidature a été approuvée"
+                            :   "Cette candidature est en attente d'approbation"
+                            }
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </h1>
             <span className="text-sm">
                 Soumise le{" "}
@@ -124,6 +153,13 @@ export default async function TutorApplicationPage({
                         </li>
                     </ul>
                 </div>
+            </div>
+
+            {/* Bottom Part */}
+            <div className="flex w-full flex-col items-center md:ml-8 md:mt-8 md:items-start">
+                {!tutorApplication.approved && (
+                    <SendApprovalButton application={tutorApplication} />
+                )}
             </div>
         </div>
     );
