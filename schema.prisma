@@ -134,6 +134,7 @@ model BTPTutorApplication {
   studyYear   String
   mlPath      String
   cvPath      String
+  approved    Boolean  @default(false)
 }
 
 model BTPTutorQuestion {
