@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import { PDFDocument, PDFPage, rgb, StandardFonts } from "pdf-lib";
 import { revalidatePath } from "next/cache";
 import { sendEmail } from "@/helpers/email";
-import { adhesionEmailTemplate } from "@/lib/htmlTemplates";
+import { adhesionEmailTemplate } from "@/lib/htmlEmailTemplates";
 
 interface ValidationError {
     field: string;

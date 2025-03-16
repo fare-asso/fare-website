@@ -2,7 +2,7 @@
 
 import { sendEmail } from "@/helpers/email";
 import { Contact, ContactSchema } from "@/schemas/contact";
-import { contactEmailTemplate } from "@/lib/htmlTemplates";
+import { contactEmailTemplate } from "@/lib/htmlEmailTemplates";
 
 export default async function submitContactFormAction(
     data: Contact,

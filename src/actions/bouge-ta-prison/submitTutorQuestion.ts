@@ -2,7 +2,7 @@
 
 import prisma from "@/helpers/db";
 import { sendEmail } from "@/helpers/email";
-import { tutorQuestionEmailTemplate } from "@/lib/htmlTemplates";
+import { tutorQuestionEmailTemplate } from "@/lib/htmlEmailTemplates";
 import {
     BTPTutorQuestion,
     BTPTutorQuestionSchema,

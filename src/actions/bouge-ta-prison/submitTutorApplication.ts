@@ -4,7 +4,7 @@ import prisma from "@/helpers/db";
 import { sendEmail } from "@/helpers/email";
 import { sanitizeString } from "@/helpers/string";
 import { createClient } from "@/helpers/supabase/server";
-import { tutorApplicationEmailTemplate } from "@/lib/htmlTemplates";
+import { tutorApplicationEmailTemplate } from "@/lib/htmlEmailTemplates";
 import {
     BTPTutorApplicationSchema,
     BTPTutorApplication,

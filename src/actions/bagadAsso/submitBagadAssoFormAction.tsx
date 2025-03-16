@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 
 import { verifyCaptcha } from "@/helpers/captcha";
 import { sendEmail } from "@/helpers/email";
-import { bagadAssoTicketEmailTemplate } from "@/lib/htmlTemplates";
+import { bagadAssoTicketEmailTemplate } from "@/lib/htmlEmailTemplates";
 
 export default async function submitBagadAssoFormAction(
     prevState: { error?: string; success?: boolean } | undefined,
