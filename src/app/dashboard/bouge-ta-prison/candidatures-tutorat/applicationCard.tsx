@@ -7,6 +7,7 @@ import { BTPTutorApplication } from "@prisma/client";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useState } from "react";
+import { FaCheckCircle, FaQuestionCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 export default function ApplicationCard({
@@ -46,12 +47,24 @@ export default function ApplicationCard({
                     </Link>
                 </span>
 
+                {application.approved ?
+                    <FaCheckCircle
+                        size={18}
+                        className="ml-2 inline-block text-green-500"
+                    />
+                :   <FaQuestionCircle
+                        size={20}
+                        className="ml-2 inline-block text-amber-500"
+                    />
+                }
+
                 <span className="hidden text-sm opacity-75 md:block">
                     {format(application.createdAt, "dd/MM/yyyy")}
                 </span>
             </div>
 
             <div>
+                {/* Delete */}
                 <Button
                     variant="destructive"
                     className="p-3"
