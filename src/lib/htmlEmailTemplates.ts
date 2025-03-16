@@ -1,4 +1,5 @@
 import { BTPTutorApplication, BTPTutorQuestion } from "@/schemas/bougeTaPrison";
+import { BTPTutorApplication as BTPTutorApplicationPrisma } from "@prisma/client";
 import { Contact } from "@/schemas/contact";
 import { format } from "date-fns";
 
@@ -45,4 +46,13 @@ export const tutorQuestionEmailTemplate = (
             <p style="text-align: center;"><strong>Prénom:</strong> ${data.firstName}</p>
             <p style="text-align: center;"><strong>Email:</strong> ${data.email}</p>
             <p style="text-align: center;">Vous pouvez consulter les détails de cette question sur le <a href="${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/bouge-ta-prison/questions/${id}">tableau de bord des questions tutorats du projet Bouge Ta Prison</a></p>
+            `;
+
+export const tutorApplicationApprovalEmailTemplate = (
+    data: BTPTutorApplicationPrisma,
+): string => `
+            <p style="text-align: center;">Bonjour ${data.firstName} ${data.lastName},</p>
+            <p style="text-align: center;">Merci pour l'intérêt que tu portes au projet, j'ai bien reçu ta candidature pour devenir tuteur pour l'année 2025-2026. Je reviens vers toi prochainement. </p>
+            <br />
+            <p style="text-align: center;">A bientôt, <br /> l'équipe Bouge Ta Prison</p>
             `;
