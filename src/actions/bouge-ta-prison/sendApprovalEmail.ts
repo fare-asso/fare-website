@@ -1,6 +1,8 @@
 "use server";
 
 import prisma from "@/helpers/db";
+import { sendEmail } from "@/helpers/email";
+import { tutorApplicationApprovalEmailTemplate } from "@/lib/htmlEmailTemplates";
 import { BTPTutorApplication } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -11,6 +13,19 @@ export default async function sendApprovalEmail(
     error: string | null;
 }> {
     console.log("Sending approval email to", application.email);
+    // Send email
+    const { success, error } = await sendEmail({
+        to: application.email,
+        subject: "Bouge Ta Prison - Informations sur votre candidature",
+        html: tutorApplicationApprovalEmailTemplate(application),
+    });
+
+    if (!success) {
+        return {
+            success: false,
+            error: " L'email n'a pas pu être envoyé. Veuillez réessayer plus tard.",
+        };
+    }
     const updatedApplication = await prisma.bTPTutorApplication.update({
         where: {
             id: application.id,
