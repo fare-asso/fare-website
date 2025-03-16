@@ -75,7 +75,9 @@ export default async function TutorApplicationPage({
                 <div className="h-full w-full p-4">
                     <h2 className="text-xl font-bold">📝Message:</h2>
                     <div>
-                        <p>{tutorQuestion.question}</p>
+                        <p className="whitespace-break-spaces text-justify">
+                            {tutorQuestion.question}
+                        </p>
                     </div>
                 </div>
             </div>
