@@ -36,7 +36,7 @@ export default async function KeyNumbers() {
 
             <div className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-fahbyellow p-4 md:w-1/3 md:p-2">
                 <span className="text-2xl font-semibold text-white md:text-[2.5rem]">
-                    <AnimatedNumber end={28} duration={4} />
+                    <AnimatedNumber end={45} duration={4} />
                 </span>
                 <span className="text-center text-xl text-white opacity-95 md:p-1">
                     Élu.e.s universitaires & CROUS
