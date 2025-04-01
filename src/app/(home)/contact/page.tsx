@@ -37,7 +37,7 @@ export default function Contact() {
 
                 {/* Instagram */}
                 <Link
-                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] p-4 text-white"
+                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-linear-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] p-4 text-white"
                     href="https://www.instagram.com/la_fahb/"
                 >
                     <div className="flex flex-row items-center space-x-4">
@@ -55,7 +55,7 @@ export default function Contact() {
 
                 {/* Twitter - Not used anymore */}
                 {/* <Link
-                    className="group flex flex-row items-center justify-between rounded-xl bg-gradient-to-r from-[#14171a] to-[#2d3236] w-full p-4 text-white"
+                    className="group flex flex-row items-center justify-between rounded-xl bg-linear-to-r from-[#14171a] to-[#2d3236] w-full p-4 text-white"
                     href="https://instagram.com/"
                 >
                     <div className="flex flex-row space-x-4 items-center">
@@ -72,7 +72,7 @@ export default function Contact() {
 
                 {/* Bluesky */}
                 <Link
-                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-gradient-to-r from-[#14171a] to-[#2d3236] p-4 text-white"
+                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-linear-to-r from-[#14171a] to-[#2d3236] p-4 text-white"
                     href="https://bsky.app/profile/fahb.bsky.social"
                 >
                     <div className="flex flex-row items-center space-x-4">
@@ -89,7 +89,7 @@ export default function Contact() {
 
                 {/* Facebook */}
                 <Link
-                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-gradient-to-l from-[#00c6ff] to-[#0072ff] p-4 text-white"
+                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-linear-to-l from-[#00c6ff] to-[#0072ff] p-4 text-white"
                     href="https://www.facebook.com/la.fahb"
                 >
                     <div className="flex flex-row items-center space-x-4">

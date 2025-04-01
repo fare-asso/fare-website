@@ -27,7 +27,7 @@ export default function ApplicationCard({
     };
 
     return (
-        <div className="flex w-full flex-row items-center justify-between rounded-lg border p-2 shadow-sm md:p-4">
+        <div className="flex w-full flex-row items-center justify-between rounded-lg border p-2 shadow-xs md:p-4">
             <div className="flex flex-row items-center gap-2">
                 <span className="ml-1 text-base font-semibold capitalize">
                     <Link
@@ -77,7 +77,7 @@ export default function ApplicationCard({
                         </span>
                     :   <span className="mr-1 hidden md:block">Supprimer</span>}
                     {isDeleting ?
-                        <LoadingRing className="!mr-0" />
+                        <LoadingRing className="mr-0!" />
                     :   <MdDelete size={20} />}
                 </Button>
             </div>

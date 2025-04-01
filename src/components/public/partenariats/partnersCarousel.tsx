@@ -74,8 +74,8 @@ export default function PartnersCarousel() {
             </div>
 
             {/* Gradient Overlays */}
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-white to-transparent"></div>
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-white to-transparent"></div>
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-linear-to-r from-white to-transparent"></div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-linear-to-l from-white to-transparent"></div>
 
             {/* Partners Container */}
             <div
@@ -89,7 +89,7 @@ export default function PartnersCarousel() {
                 {partners.map((partner) => (
                     <div
                         key={partner.id}
-                        className="flex h-32 w-full flex-shrink-0 items-center justify-center"
+                        className="flex h-32 w-full shrink-0 items-center justify-center"
                         style={{ scrollSnapAlign: "start" }}
                     >
                         <div className="h-full transition-all duration-300 ease-in-out hover:grayscale-0 md:grayscale">

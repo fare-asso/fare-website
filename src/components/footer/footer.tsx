@@ -6,7 +6,7 @@ export default function Footer() {
     return (
         <footer className="mt-auto flex h-24 w-full flex-col justify-end bg-black p-8 text-white">
             <div className="flex w-full flex-row items-end justify-between">
-                <div className="flex flex-row space-x-1 text-xs opacity-75 md:space-x-4 hover:[&>a]:underline">
+                <div className="flex flex-row space-x-1 text-xs opacity-75 md:space-x-4 [&>a]:hover:underline">
                     <Link href="/mentions-legales">Mentions Légales</Link>
                     <span>© 2024 FAHB. Tous droits réservés.</span>
                     <Link

@@ -61,7 +61,7 @@ export default function MemberCard({
     return (
         <div
             className={clsx(
-                "flex h-full w-full flex-col rounded-lg border bg-card p-3 text-card-foreground shadow-sm",
+                "flex h-full w-full flex-col rounded-lg border bg-card p-3 text-card-foreground shadow-xs",
                 hidden && "hidden",
             )}
         >
@@ -93,7 +93,7 @@ export default function MemberCard({
                             " " +
                             member.lastName
                         }
-                        className="mb-1 aspect-square rounded-full object-cover shadow-sm"
+                        className="mb-1 aspect-square rounded-full object-cover shadow-xs"
                     />
                 </div>
                 {/* First name + Last name */}

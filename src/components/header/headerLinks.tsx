@@ -63,7 +63,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                                     pathname.startsWith(link.href) ? "font-bold"
                                     :   "font-normal",
                                     `flex-1 text-lg`,
-                                    level > 0 && "pb-1 !text-base",
+                                    level > 0 && "pb-1 text-base!",
                                 )}
                                 onClick={() => setMenuIsOpen(false)}
                                 style={{ marginLeft: level * 20 }}
@@ -158,7 +158,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                 ref={menuRef}
                 id="mobileMenu"
                 className={clsx(
-                    "fixed right-0 top-0 z-[9999] flex min-h-screen w-80 flex-col border-l-2 bg-white transition-all duration-500",
+                    "fixed right-0 top-0 z-9999 flex min-h-screen w-80 flex-col border-l-2 bg-white transition-all duration-500",
                     menuIsOpen ? "translate-x-0" : "translate-x-80",
                 )}
             >

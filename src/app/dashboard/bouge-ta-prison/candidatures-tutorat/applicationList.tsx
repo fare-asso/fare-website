@@ -8,7 +8,7 @@ export default async function ApplicationList() {
         },
     });
     return (
-        <div className="flex h-full flex-col items-center space-y-2 rounded-lg border p-4 shadow-sm">
+        <div className="flex h-full flex-col items-center space-y-2 rounded-lg border p-4 shadow-xs">
             {applications.length > 0 ?
                 applications.map((application) => (
                     <ApplicationCard

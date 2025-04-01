@@ -47,7 +47,7 @@ export default function HeaderLink({
 
     return (
         <div
-            className="relative z-20 m-0 transition-all [&>a]:hover:text-white [&>div]:hover:scale-100 [&>div]:hover:opacity-100"
+            className="relative z-20 m-0 transition-all hover:[&>a]:text-white hover:[&>div]:scale-100 hover:[&>div]:opacity-100"
             onMouseEnter={hoverHandler}
             onMouseLeave={unhoverHandler}
         >

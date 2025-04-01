@@ -65,7 +65,7 @@ export default function ArticleCard({ article }: { article: Article }) {
     }
 
     return (
-        <div className="flex h-16 w-full flex-row items-center justify-between rounded-lg border bg-card px-4 py-4 text-card-foreground shadow-sm">
+        <div className="flex h-16 w-full flex-row items-center justify-between rounded-lg border bg-card px-4 py-4 text-card-foreground shadow-xs">
             <Link
                 href={`/actualites/articles/${article.id}`}
                 title={article.title}
@@ -85,7 +85,7 @@ export default function ArticleCard({ article }: { article: Article }) {
                     disabled={isSwitchingVisibility}
                 >
                     {isSwitchingVisibility ?
-                        <LoadingRing className="!mr-0" />
+                        <LoadingRing className="mr-0!" />
                     : article.published ?
                         <MdVisibility size={17} title="publié" />
                     :   <MdVisibilityOff size={17} title="draft" />}

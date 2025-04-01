@@ -59,7 +59,7 @@ export default function CdpCard({
                 target="blank"
                 className="flex h-min w-full flex-col items-center"
             >
-                <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-sm outline-offset-2 outline-black/30 hover:outline hover:outline-2">
+                <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-xs outline-offset-2 outline-black/30 hover:outline hover:outline-2">
                     {/* Hover buttons */}
                     <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-0 hover:opacity-100">
                         <button

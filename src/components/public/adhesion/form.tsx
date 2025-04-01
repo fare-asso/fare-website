@@ -129,10 +129,10 @@ export default function AdhesionForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="flex w-full flex-col items-start space-y-8 lg:w-[60%] [&>section]:mb-12 [&_h2]:mb-4 [&_h2]:text-2xl [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black [&_input]:focus:border-yellow-400 [&_input]:focus:ring-yellow-400 [&_input]:dark:border-gray-600 [&_input]:dark:bg-gray-700 [&_input]:dark:text-white [&_input]:dark:placeholder-gray-400 [&_input]:dark:focus:border-yellow-400 [&_input]:dark:focus:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_label]:text-lg [&_label]:font-semibold [&_option]:font-sans [&_p]:italic [&_p]:text-gray-400 [&_select]:mb-1 [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black [&_select]:focus:border-yellow-400 [&_select]:focus:ring-yellow-400 [&_select]:dark:border-gray-600 [&_select]:dark:bg-gray-700 [&_select]:dark:text-white [&_select]:dark:placeholder-gray-400 [&_select]:dark:focus:border-yellow-400 [&_select]:dark:focus:ring-yellow-400"
+            className="flex w-full flex-col items-start space-y-8 lg:w-[60%] [&>section]:mb-12 [&_h2]:mb-4 [&_h2]:text-2xl [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black focus:[&_input]:border-yellow-400 focus:[&_input]:ring-yellow-400 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-700 dark:[&_input]:text-white dark:[&_input]:placeholder-gray-400 dark:focus:[&_input]:border-yellow-400 dark:focus:[&_input]:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_label]:text-lg [&_label]:font-semibold [&_option]:font-sans [&_p]:italic [&_p]:text-gray-400 [&_select]:mb-1 [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black focus:[&_select]:border-yellow-400 focus:[&_select]:ring-yellow-400 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-700 dark:[&_select]:text-white dark:[&_select]:placeholder-gray-400 dark:focus:[&_select]:border-yellow-400 dark:focus:[&_select]:ring-yellow-400"
         >
             <h1>{"Formulaire d'adhésion"}</h1>
-            <p className="!mt-1 !text-base !not-italic !text-black !opacity-100">
+            <p className="mt-1! text-base! not-italic! text-black! opacity-100!">
                 En cas de difficulté pour remplir ce formulaire d'adhésion,
                 merci de contacter le secrétariat général de la FAHB en privé ou
                 sur
@@ -336,11 +336,11 @@ export default function AdhesionForm() {
                     </div>
                 </div>
                 <div className="mt-4">
-                    <label className="flex flex-row items-start justify-start !text-base !font-normal">
+                    <label className="flex flex-row items-start justify-start text-base! font-normal!">
                         <input
                             name="engagementCotisation"
                             type="checkbox"
-                            className="mr-4 mt-2 !h-4 !w-4"
+                            className="mr-4 mt-2 h-4! w-4!"
                             required
                         />
                         <span>
@@ -357,7 +357,7 @@ export default function AdhesionForm() {
                 <h2 className="mb-4 text-xl font-semibold">
                     Documents à fournir
                 </h2>
-                <div className="space-y-4 md:[&_input]:!w-1/2">
+                <div className="space-y-4 md:[&_input]:w-1/2!">
                     <div>
                         <label htmlFor="statuts">
                             Statuts de l'association
@@ -518,12 +518,12 @@ export default function AdhesionForm() {
                         key={member.id}
                         className="mb-4 rounded-lg border border-gray-300 p-2 sm:p-4"
                     >
-                        <label className="!mt-0 flex flex-row items-center justify-start p-2">
+                        <label className="mt-0! flex flex-row items-center justify-start p-2">
                             <input
                                 id={`bureau.${index}.isAdmin`}
                                 name={`bureau.${index}.isAdmin`}
                                 type="checkbox"
-                                className="mr-2 !h-4 !w-4"
+                                className="mr-2 h-4! w-4!"
                                 checked={member.isAdmin}
                                 onChange={(e) => {
                                     const newBoardMembers = [...boardMembers];

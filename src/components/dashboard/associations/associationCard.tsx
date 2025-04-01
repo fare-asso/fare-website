@@ -16,7 +16,7 @@ export default function AssociationCard({
     logoUrl: string;
 }) {
     return (
-        <div className="flex h-full w-full flex-col items-start rounded-lg border bg-card p-3 text-card-foreground shadow-sm">
+        <div className="flex h-full w-full flex-col items-start rounded-lg border bg-card p-3 text-card-foreground shadow-xs">
             <div className="relative">
                 {/* Hover buttons */}
                 <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 lg:opacity-0 lg:hover:opacity-100">
@@ -31,7 +31,7 @@ export default function AssociationCard({
                     width={1000}
                     height={1000}
                     alt={"Logo de l'association " + association.name}
-                    className="mb-1 aspect-square rounded-md object-cover shadow-sm"
+                    className="mb-1 aspect-square rounded-md object-cover shadow-xs"
                 />
             </div>
 

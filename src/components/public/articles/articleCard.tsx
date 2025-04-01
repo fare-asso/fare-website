@@ -8,7 +8,7 @@ export default function ArticleCard({ article }: { article: Article }) {
     return (
         <div className="flex h-72 w-full flex-col rounded-lg bg-yellow-400 p-2 md:h-48 md:flex-row">
             {/* Image */}
-            <div className="h-full w-full rounded-md bg-black object-cover opacity-35 md:w-1/3 md:max-w-[50%] *:md:min-w-[33%]"></div>
+            <div className="h-full w-full rounded-md bg-black object-cover opacity-35 md:w-1/3 md:max-w-[50%] md:*:min-w-[33%]"></div>
 
             <div className="ml-0 mt-2 flex flex-1 flex-col md:ml-4 md:mt-0">
                 {/* Title */}
