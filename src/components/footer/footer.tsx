@@ -8,7 +8,7 @@ export default function Footer() {
             <div className="flex w-full flex-row items-end justify-between">
                 <div className="flex flex-row space-x-1 text-xs opacity-75 md:space-x-4 hover:[&>a]:underline">
                     <Link href="/mentions-legales">Mentions Légales</Link>
-                    <span>© 2024 FAHB. Tous droits réservés.</span>
+                    <span>© {new Date().getFullYear()} FAHB. Tous droits réservés.</span>
                     <Link
                         className="hidden flex-row items-center space-x-1 md:flex"
                         href="/bug-report"
