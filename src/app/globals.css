@@ -96,6 +96,12 @@
     }
 }
 
+@layer base {
+    label {
+        margin-bottom: 0.5rem;
+    }
+}
+
 @utility no-scrollbar {
     &::-webkit-scrollbar {
         display: none;
