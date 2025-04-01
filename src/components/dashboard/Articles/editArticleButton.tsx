@@ -175,7 +175,7 @@ export default function EditArticleButton({ article }: { article: Article }) {
             {/* Trigger */}
             <DialogTrigger asChild>
                 <Button variant="outline" className="mr-2 px-2 py-2 sm:px-4">
-                    <MdEdit size={20} className="mr-0 sm:mr-1" />
+                    <MdEdit size={20} />
                     <div className="hidden sm:flex">Modifier</div>
                 </Button>
             </DialogTrigger>
