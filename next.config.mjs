@@ -1,7 +1,4 @@
-import nextra from "nextra";
-
-const withNextra = nextra({});
-
+// This file is used to configure Next.js settings and options.
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     experimental: {
@@ -21,4 +18,4 @@ const nextConfig = {
     },
 };
 
-export default withNextra(nextConfig);
+export default nextConfig;
