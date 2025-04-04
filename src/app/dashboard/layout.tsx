@@ -20,18 +20,26 @@ export default function RootLayout({
 }>) {
     return (
         <SidebarProvider>
-            <SideBarApp />
+            <div className="flex h-screen w-screen overflow-hidden">
+                {/* Sidebar à gauche */}
+                <SideBarApp />
 
-            <div className="flex h-screen w-full flex-col">
-                <header className="flex h-12 w-full flex-row items-center p-4">
-                    <SidebarTrigger />
-                </header>
-                <main
-                    // className="flex h-[90%] w-full flex-col items-center lg:h-screen lg:max-h-screen lg:min-h-screen"
-                    className="h-full w-full"
-                >
-                    {children}
-                </main>
+                {/* Contenu principal */}
+                <div className="flex h-full w-full flex-col">
+                    {/* Barre du haut */}
+                    <header className="flex h-12 w-full flex-row items-center p-4">
+                        <SidebarTrigger />
+                        {/* <div className="ml-auto flex items-center gap-2">
+                            <CurrentUser />
+                            <SignOutButton />
+                        </div> */}
+                    </header>
+
+                    {/* Zone de contenu scrollable */}
+                    <main className="flex-1 overflow-y-auto p-4">
+                        {children}
+                    </main>
+                </div>
             </div>
 
             <Toaster />
