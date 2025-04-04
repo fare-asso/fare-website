@@ -59,10 +59,7 @@ export default function DeleteAssociationButton({
     return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
-                <Button
-                    className="h-auto whitespace-normal p-1"
-                    variant="destructive"
-                >
+                <Button className="aspect-square" variant="destructive">
                     <MdDelete size={18} />
                 </Button>
             </AlertDialogTrigger>

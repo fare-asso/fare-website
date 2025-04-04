@@ -193,10 +193,7 @@ export default function EditMemberButton({
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button
-                    className="h-auto whitespace-normal p-1"
-                    variant="outline"
-                >
+                <Button className="aspect-square" variant="outline">
                     <MdEdit size={18} />
                 </Button>
             </DialogTrigger>
@@ -270,15 +267,15 @@ export default function EditMemberButton({
 
                     <div>
                         <Label htmlFor="picture">Photo</Label>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                             {
                                 "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
                             }
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                             Taille maximale : 10 Mo
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                             Résolution recommandée : 400x400 pixels
                         </div>
 

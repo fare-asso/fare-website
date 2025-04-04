@@ -8,7 +8,7 @@ export default async function QuestionList() {
         },
     });
     return (
-        <div className="flex h-full flex-col items-center space-y-2 rounded-lg border p-4 shadow-sm">
+        <div className="flex h-full flex-col items-center space-y-2 rounded-lg border p-4 shadow-xs">
             {questions.length > 0 ?
                 questions.map((question) => (
                     <QuestionCard question={question} key={question.id} />

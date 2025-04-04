@@ -60,7 +60,7 @@ export default function BagadAssoTicketCard({
 
     return (
         <div
-            className={`flex w-full flex-col items-center justify-between rounded-lg border border-gray-300 p-4 shadow-sm transition-shadow duration-300 hover:shadow-md md:flex-row ${isExpired ? "bg-red-100" : ""}`}
+            className={`flex w-full flex-col items-center justify-between rounded-lg border border-gray-300 p-4 shadow-xs transition-shadow duration-300 hover:shadow-md md:flex-row ${isExpired ? "bg-red-100" : ""}`}
         >
             <div className="flex w-full flex-col items-center md:w-auto md:flex-row">
                 <span className="mb-2 hidden rounded-md bg-gray-800 px-2 py-1 font-mono text-sm text-white sm:block md:mb-0 md:mr-4">
@@ -89,7 +89,7 @@ export default function BagadAssoTicketCard({
                 className="mt-2 flex flex-row items-center justify-center rounded-md bg-red-500 px-2 py-2 text-white transition-colors duration-300 hover:bg-red-600 md:mt-0"
             >
                 {isLoading ?
-                    <LoadingRing className="!m-0" />
+                    <LoadingRing className="m-0!" />
                 :   <MdDelete size="20" />}
             </button>
         </div>

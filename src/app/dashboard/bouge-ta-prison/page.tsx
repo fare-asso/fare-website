@@ -13,15 +13,15 @@ import { Suspense } from "react";
 
 export default function EspaceBougeTaPrison() {
     return (
-        <Card className="flex h-full w-full flex-1 flex-col border-none">
-            <CardHeader>
+        <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
+            <CardHeader className="p-0">
                 <CardTitle>Espace Bouge Ta Prison</CardTitle>
                 <CardDescription>
                     Espace de gestion des question et candidatures tutorat du
                     projet Bouge Ta Prison
                 </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto">
+            <CardContent className="h-1/2 flex-1 p-0">
                 <Suspense fallback={<div>Chargement...</div>}>
                     <TabSwitcher>
                         <Suspense fallback={<div>Chargement...</div>}>
@@ -33,7 +33,7 @@ export default function EspaceBougeTaPrison() {
                     </TabSwitcher>
                 </Suspense>
             </CardContent>
-            <CardFooter></CardFooter>
+            <CardFooter className="p-0"></CardFooter>
         </Card>
     );
 }

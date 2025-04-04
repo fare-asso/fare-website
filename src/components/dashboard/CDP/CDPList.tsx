@@ -30,7 +30,7 @@ export default async function CDPList() {
         ));
 
         return (
-            <div className="h-full w-full overflow-y-auto rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+            <div className="h-full w-full overflow-y-auto rounded-lg border bg-card p-6 text-card-foreground shadow-xs">
                 <div className="grid h-auto w-full grid-cols-1 gap-4 overflow-y-auto p-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                     {cdpCards.length > 0 ?
                         cdpCards

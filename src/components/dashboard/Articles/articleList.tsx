@@ -22,8 +22,10 @@ export default async function ArticleList() {
         ));
 
         return (
-            <div className="h-full w-full space-y-4 overflow-y-auto rounded-lg border bg-card p-3 text-card-foreground shadow-sm md:p-6">
-                {articleCards}
+            <div className="bg-card text-card-foreground flex h-full w-full flex-col items-center space-y-4 overflow-y-auto rounded-lg border p-3 shadow-xs md:p-6">
+                {articleCards.length > 0 ?
+                    articleCards
+                :   <p>Aucun article trouvé</p>}
             </div>
         );
     }

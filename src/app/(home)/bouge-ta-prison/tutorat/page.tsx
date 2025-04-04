@@ -80,7 +80,7 @@ export default function Tutorat() {
                     </p>
 
                     {/* Intéressé pour devenir tuteur? */}
-                    <div className="flex h-auto w-full flex-col items-center py-4 !pb-8">
+                    <div className="flex h-auto w-full flex-col items-center py-4 pb-8!">
                         <div className="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-3/4">
                             <h2 className="mb-2 text-lg font-semibold">
                                 Vous avez des questions ?

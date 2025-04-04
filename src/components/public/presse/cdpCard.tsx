@@ -33,7 +33,7 @@ export default function CommuniquesCard({
                 </span>
             </div>
 
-            <div className="!ml-auto mb-auto mt-auto hidden h-full items-center p-4 md:flex">
+            <div className="ml-auto! mb-auto mt-auto hidden h-full items-center p-4 md:flex">
                 <Link
                     href={su
                         .from("communique-de-presse")

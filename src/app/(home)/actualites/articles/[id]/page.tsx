@@ -93,7 +93,7 @@ export default async function Page({
             <span className="text-sm text-black opacity-75">{`Publié le ${format(articleRecord.writtenOn, "dd/MM/yyyy")} à ${format(articleRecord.writtenOn, "HH'h'mm")}`}</span>
 
             {/* Content */}
-            <div className="mt-8 flex w-full flex-col [&_*]:transition-all [&_a]:tracking-wide [&_a]:text-yellow-500 [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-yellow-300 hover:[&_a]:underline-offset-4 [&_img]:mx-auto [&_img]:my-4 [&_img]:w-full [&_img]:max-w-[500px] [&_img]:rounded-sm [&_ol]:list-decimal [&_ul]:list-disc">
+            <div className="mt-8 flex w-full flex-col **:transition-all [&_a]:tracking-wide [&_a]:text-yellow-500 [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-yellow-300 [&_a]:hover:underline-offset-4 [&_img]:mx-auto [&_img]:my-4 [&_img]:w-full [&_img]:max-w-[500px] [&_img]:rounded-sm [&_ol]:list-decimal [&_ul]:list-disc">
                 {/* Parse article content to HTML */}
                 <ContentHTML content={articleContent} />
             </div>

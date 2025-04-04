@@ -17,7 +17,6 @@ import { startTransition, useActionState, useEffect, useState } from "react";
 import LoadingRing from "../loadingRing";
 import Link from "next/link";
 import { Article } from "@prisma/client";
-import prisma from "@/helpers/db";
 import switchVisibilityAction from "@/actions/articles/switchVisibilityAction";
 import EditArticleButton from "./editArticleButton";
 
@@ -65,15 +64,15 @@ export default function ArticleCard({ article }: { article: Article }) {
     }
 
     return (
-        <div className="flex h-16 w-full flex-row items-center justify-between rounded-lg border bg-card px-4 py-4 text-card-foreground shadow-sm">
+        <div className="bg-card text-card-foreground flex h-16 w-full flex-row items-center justify-between rounded-lg border px-4 py-4 shadow-xs">
             <Link
                 href={`/actualites/articles/${article.id}`}
                 title={article.title}
-                className="overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm"
+                className="overflow-hidden text-xs text-ellipsis whitespace-nowrap md:text-sm"
             >
                 {article.title}
             </Link>
-            <div className="hidden text-sm text-card-foreground/70 md:block">
+            <div className="text-card-foreground/70 hidden text-sm md:block">
                 {format(article.writtenOn, "PPP", { locale: fr })}
             </div>
 
@@ -85,7 +84,7 @@ export default function ArticleCard({ article }: { article: Article }) {
                     disabled={isSwitchingVisibility}
                 >
                     {isSwitchingVisibility ?
-                        <LoadingRing className="!mr-0" />
+                        <LoadingRing className="mr-0!" />
                     : article.published ?
                         <MdVisibility size={17} title="publié" />
                     :   <MdVisibilityOff size={17} title="draft" />}
@@ -101,7 +100,7 @@ export default function ArticleCard({ article }: { article: Article }) {
                 >
                     {isLoading ?
                         <LoadingRing />
-                    :   <MdDelete size={20} className="mr-0 sm:mr-1" />}
+                    :   <MdDelete size={20} />}
                     <div className="hidden sm:flex">Supprimer</div>
                 </Button>
             </div>

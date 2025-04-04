@@ -65,14 +65,14 @@ export default function ContactForm() {
                         error={form.formState.errors.firstName}
                         type="text"
                         placeholder="Prénom"
-                        className="w-full flex-1 rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-none focus:ring-2 focus:ring-white/20"
+                        className="w-full flex-1 rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-hidden focus:ring-2 focus:ring-white/20"
                     />
                     <Input
                         {...form.register("lastName")}
                         error={form.formState.errors.lastName}
                         type="text"
                         placeholder="Nom"
-                        className="w-full flex-1 rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-none focus:ring-2 focus:ring-white/20"
+                        className="w-full flex-1 rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-hidden focus:ring-2 focus:ring-white/20"
                     />
                 </div>
 
@@ -82,7 +82,7 @@ export default function ContactForm() {
                     error={form.formState.errors.email}
                     type="email"
                     placeholder="Email"
-                    className="w-full rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-none focus:ring-2 focus:ring-white/20"
+                    className="w-full rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-hidden focus:ring-2 focus:ring-white/20"
                 />
 
                 {/* Message */}
@@ -90,7 +90,7 @@ export default function ContactForm() {
                     {...form.register("message")}
                     error={form.formState.errors.message}
                     placeholder="Entrez votre message ici"
-                    className="h-32 w-full resize-none rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-none focus:ring-2 focus:ring-white/20"
+                    className="h-32 w-full resize-none rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-hidden focus:ring-2 focus:ring-white/20"
                 ></TextArea>
 
                 {/* Submit button */}
@@ -100,14 +100,14 @@ export default function ContactForm() {
                     className={clsx(
                         "flex w-full flex-row items-center justify-center rounded-full bg-white/20 py-3 text-lg text-gray-200 transition-colors duration-200 hover:bg-white/30",
                         getFirstError() &&
-                            "cursor-not-allowed !bg-red-500 hover:bg-red-500",
+                            "cursor-not-allowed bg-red-500! hover:bg-red-500",
                         success &&
-                            "cursor-default !bg-green-500 hover:bg-green-500",
+                            "cursor-default bg-green-500! hover:bg-green-500",
                         isLoading && "cursor-wait",
                     )}
                 >
                     {getFirstError() ??
-                        (isLoading ? <LoadingRing className="!size-[28px]" />
+                        (isLoading ? <LoadingRing className="size-[28px]!" />
                         : success ?
                             <div className="flex flex-row items-center justify-center">
                                 <RiCheckFill size={25} className="mr-1" />{" "}

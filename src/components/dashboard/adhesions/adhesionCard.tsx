@@ -92,7 +92,7 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
 
     return (
         <div className={clsx("flex flex-col items-center", hidden && "hidden")}>
-            <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-sm outline-offset-2 outline-black/30 hover:outline hover:outline-2">
+            <div className="bg-card text-card-foreground relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border p-6 shadow-xs outline-offset-2 outline-black/30 hover:outline-2">
                 {/* Hover buttons */}
                 <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-100 md:opacity-0 md:hover:opacity-100">
                     <button
@@ -102,7 +102,7 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
                         className="rounded-md bg-black/10 p-1 hover:bg-black/20"
                     >
                         {isLoading ?
-                            <LoadingRing className="!mr-0" />
+                            <LoadingRing className="mr-0!" />
                         :   <MdOutlineFileDownload size={20} />}
                     </button>
                     {/* <button id="deleteIcon" onClick={handleDelete} className="bg-black/10 rounded-md p-1 hover:bg-black/20"><MdDelete size={20}/></button> */}

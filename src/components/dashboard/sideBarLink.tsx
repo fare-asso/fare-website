@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MouseEventHandler } from "react";
@@ -25,9 +26,13 @@ export default function SideBarLink({
     return (
         <Link
             onClick={onClick}
-            className={
-                path.startsWith(href) ? linkClassActive : linkClassInactive
-            }
+            className={clsx(
+                "w-auto rounded-full px-3 py-1 text-left text-base font-medium opacity-50 outline-2 outline-gray-600/50 transition-all duration-75 hover:bg-gray-100 hover:opacity-80 hover:outline lg:w-full lg:rounded-lg lg:px-4 lg:py-2 lg:text-center",
+                path.startsWith(href) ?? "bg-red-500 opacity-100",
+            )}
+            // className={
+            //     path.startsWith(href) ? linkClassActive : linkClassInactive
+            // }
             href={href}
         >
             {title}

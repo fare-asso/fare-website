@@ -16,7 +16,7 @@ export default async function EquipmentCard({
     const supabase = await createClient();
 
     return (
-        <div className="flex flex-col space-y-1 rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
+        <div className="bg-card text-card-foreground flex flex-col space-y-1 rounded-lg border p-4 shadow-xs">
             {/* Image */}
             <div className="flex aspect-square h-auto w-full flex-col items-center justify-center rounded-md bg-gray-100 object-contain">
                 {equipment.imagePath ?

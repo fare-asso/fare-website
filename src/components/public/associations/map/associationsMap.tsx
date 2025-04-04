@@ -98,7 +98,7 @@ export default function AssociationMap({
             }
             ref={mapRef}
         >
-            <div className="absolute z-[999] mt-5 hidden h-20 w-full md:flex md:flex-col md:items-center md:justify-start">
+            <div className="absolute z-999 mt-5 hidden h-20 w-full md:flex md:flex-col md:items-center md:justify-start">
                 <AssociationMapSearchBar
                     value={searchQuery}
                     onChange={handleSearchChange}
