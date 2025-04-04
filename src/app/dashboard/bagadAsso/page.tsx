@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 
 import TabSwitcher from "./tabSwitcher";
+import { Suspense } from "react";
 
 export default function BagadAsso() {
     return (
@@ -22,10 +23,16 @@ export default function BagadAsso() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="h-1/2 flex-1 p-0">
-                <TabSwitcher>
-                    <Tickets />
-                    <Equipments />
-                </TabSwitcher>
+                <Suspense fallback={<div>Chargement...</div>}>
+                    <TabSwitcher>
+                        <Suspense fallback={<div>Chargement...</div>}>
+                            <Tickets />
+                        </Suspense>
+                        <Suspense fallback={<div>Chargement...</div>}>
+                            <Equipments />
+                        </Suspense>
+                    </TabSwitcher>
+                </Suspense>
             </CardContent>
             <CardFooter className="p-0"></CardFooter>
         </Card>
