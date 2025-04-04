@@ -38,7 +38,7 @@ export default function TabSwitcher({
     return (
         <Tabs
             defaultValue={defaultTab}
-            className="flex h-full w-full flex-col items-center"
+            className="flex h-full w-full flex-col items-center gap-2"
         >
             <TabsList className="grid w-full grid-cols-2 md:w-1/2">
                 <TabsTrigger
@@ -54,10 +54,10 @@ export default function TabSwitcher({
                     Questions
                 </TabsTrigger>
             </TabsList>
-            <TabsContent value="candidatures" className="w-full flex-1">
+            <TabsContent value="candidatures" className="h-0 w-full">
                 {React.Children.toArray(children)[0]}
             </TabsContent>
-            <TabsContent value="questions" className="w-full flex-1">
+            <TabsContent value="questions" className="h-0 w-full">
                 {React.Children.toArray(children)[1]}
             </TabsContent>
         </Tabs>

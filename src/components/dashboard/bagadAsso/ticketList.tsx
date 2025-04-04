@@ -13,14 +13,23 @@ export default function TicketList({
     const { toast } = useToast();
 
     return (
-        <Card className="flex h-full w-full flex-col space-y-2 p-4">
-            {tickets.map((ticket) => (
-                <BagadAssoTicketCard
-                    key={ticket.id}
-                    ticket={ticket}
-                    toast={toast}
-                />
-            ))}
-        </Card>
+        <div className="flex h-full flex-col">
+            <div className="flex-1 overflow-y-auto rounded-lg border p-4 shadow-xs">
+                <div className="flex h-auto flex-col gap-2">
+                    {tickets.length > 0 ?
+                        tickets.map((ticket) => (
+                            <BagadAssoTicketCard
+                                key={ticket.id}
+                                ticket={ticket}
+                                toast={toast}
+                            />
+                        ))
+                    :   <span className="text-sm opacity-50">
+                            Il n'y a pas encore de tickets.😔
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
     );
 }

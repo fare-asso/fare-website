@@ -13,19 +13,19 @@ import { Suspense } from "react";
 
 export default async function Associations() {
     return (
-        <Card className="flex h-full w-full flex-1 flex-col border-none">
-            <CardHeader>
+        <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
+            <CardHeader className="p-0">
                 <CardTitle>Associations</CardTitle>
                 <CardDescription>
                     Espace de gestion du réseau de la Fédération
                 </CardDescription>
             </CardHeader>
-            <CardContent className="h-1/2 flex-1">
+            <CardContent className="h-1/2 flex-1 p-0">
                 <Suspense fallback={<p>Chargements...</p>}>
                     <AssociationList />
                 </Suspense>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="p-0">
                 <AddAssociationButton />
             </CardFooter>
         </Card>
