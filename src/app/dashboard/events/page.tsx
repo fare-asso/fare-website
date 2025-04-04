@@ -14,19 +14,19 @@ import { Suspense } from "react";
 
 export default async function EventsPage() {
     return (
-        <Card className="flex h-full w-full flex-1 flex-col border-none">
-            <CardHeader>
+        <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
+            <CardHeader className="p-0">
                 <CardTitle>Evènements</CardTitle>
                 <CardDescription>
                     Espace de gestion des évènements de la Fédération
                 </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto">
+            <CardContent className="flex-1 overflow-y-auto p-0">
                 <Suspense fallback={<p>Chargements...</p>}>
                     <EventDataTable />
                 </Suspense>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="p-0">
                 <CreateEventButton />
             </CardFooter>
         </Card>
