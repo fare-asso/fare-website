@@ -73,10 +73,7 @@ export default function SendInvitationLinkButton({
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button
-                    className="h-auto whitespace-normal p-1"
-                    variant="outline"
-                >
+                <Button className="aspect-square" variant="outline">
                     <TbMailPlus size={18} />
                 </Button>
             </DialogTrigger>

@@ -85,10 +85,7 @@ export default function EditAssociationButton({
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button
-                    className="h-auto whitespace-normal p-1"
-                    variant="outline"
-                >
+                <Button className="aspect-square" variant="outline">
                     <MdEdit size={18} />
                 </Button>
             </DialogTrigger>
@@ -157,15 +154,15 @@ export default function EditAssociationButton({
                                     <Label htmlFor="logo-picture">Logo</Label>
                                 </AccordionTrigger>
                                 <AccordionContent>
-                                    <div className="text-sm text-muted-foreground">
+                                    <div className="text-muted-foreground text-sm">
                                         {
                                             "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
                                         }
                                     </div>
-                                    <div className="text-sm text-muted-foreground">
+                                    <div className="text-muted-foreground text-sm">
                                         Taille maximale : 15 Mo
                                     </div>
-                                    <div className="mb-1 text-sm text-muted-foreground">
+                                    <div className="text-muted-foreground mb-1 text-sm">
                                         Format recommandée: carré
                                     </div>
                                     <Input
@@ -186,12 +183,12 @@ export default function EditAssociationButton({
                                     </Label>
                                 </AccordionTrigger>
                                 <AccordionContent>
-                                    <div className="text-sm text-muted-foreground">
+                                    <div className="text-muted-foreground text-sm">
                                         {
                                             "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
                                         }
                                     </div>
-                                    <div className="text-sm text-muted-foreground">
+                                    <div className="text-muted-foreground text-sm">
                                         Taille maximale : 15 Mo
                                     </div>
                                     <Input

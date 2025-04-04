@@ -61,7 +61,7 @@ export default function MemberCard({
     return (
         <div
             className={clsx(
-                "flex h-full w-full flex-col rounded-lg border bg-card p-3 text-card-foreground shadow-xs",
+                "bg-card text-card-foreground flex h-full w-full flex-col rounded-lg border p-3 shadow-xs",
                 hidden && "hidden",
             )}
         >
@@ -77,7 +77,7 @@ export default function MemberCard({
                         <Button
                             id="deleteButton"
                             onClick={handleDelete}
-                            className="h-auto whitespace-normal p-1"
+                            className="aspect-square"
                             variant="destructive"
                         >
                             <MdDelete size={20} />
@@ -97,13 +97,13 @@ export default function MemberCard({
                     />
                 </div>
                 {/* First name + Last name */}
-                <p className="w-full overflow-hidden text-ellipsis text-nowrap font-medium text-card-foreground">
+                <p className="text-card-foreground w-full overflow-hidden font-medium text-nowrap text-ellipsis">
                     {member.firstName} {member.lastName}
                 </p>
             </div>
 
             {/* Position */}
-            <p className="overflow-hidden text-ellipsis text-nowrap text-xs text-foreground/70">
+            <p className="text-foreground/70 overflow-hidden text-xs text-nowrap text-ellipsis">
                 {member.position}
             </p>
         </div>
