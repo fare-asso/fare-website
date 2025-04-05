@@ -16,62 +16,60 @@ export default async function loginAction(
 ) {
     const supabase = await createClient();
 
-    const email = formData.get("email");
-    const password = formData.get("password");
+    const email = formData.get("email")?.toString();
+    const password = formData.get("password")?.toString();
 
-    const credentials: Data = {};
-
-    // TODO: Auth validation for admins
-    if (email != null && typeof email == "string") {
-        // valid username
-        credentials.email = email.toString();
-    } else {
+    // Fields validation
+    if (!email) {
         return {
-            emailError: "Email incorrect",
+            emailError: "Veuillez entrer une adresse email",
         };
     }
 
-    if (password != null && typeof password == "string") {
-        // valid password
-        credentials.password = password.toString();
-    } else {
+    if (!password) {
         return {
-            passwordError: "Password incorrect",
+            passwordError: "Veuillez entrer un mot de passe",
         };
     }
 
     const { error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password,
+        email,
+        password,
     });
 
+    // Check if the user is authenticated and handle errors
     if (error) {
-        if (error.message == "Invalid login credentials") {
-            return {
-                passwordError: "Mot de passe ou nom d'utilisateur invalide",
-            };
-        } else {
-            return {
-                passwordError: "Une erreur inattendue est survenue",
-            };
+        console.log(error.code);
+        switch (error.code) {
+            case "invalid_credentials":
+                return {
+                    passwordError: "Mot de passe ou nom d'utilisateur invalide",
+                };
+            default:
+                return {
+                    passwordError: "Une erreur inattendue est survenue",
+                };
         }
-    } else {
-        // fetch user role
-        const { role, error } = await getCurrentUserRole();
+    }
 
-        if (error) {
-            return {
-                passwordError:
-                    "Impossible de récupérer les informations de l'utilisateur",
-            };
-        }
+    // fetch user role
+    const { role, error: roleError } = await getCurrentUserRole();
 
-        if (role === "ASSO_OWNER") {
+    if (roleError) {
+        return {
+            passwordError:
+                "Impossible de récupérer les informations de l'utilisateur",
+        };
+    }
+
+    // Redirect user based on their role
+    switch (role) {
+        case "ADMIN":
+            redirect("/dashboard");
+        case "ASSO_OWNER":
             revalidatePath("/espace-asso");
-            redirect("../espace-asso");
-        }
-
-        revalidatePath("/dashboard");
-        redirect("../dashboard");
+            redirect("/espace-asso");
+        case "MEMBER":
+            redirect("/dashboard");
     }
 }
