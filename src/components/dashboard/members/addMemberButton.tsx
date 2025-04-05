@@ -76,7 +76,7 @@ export default function AddMemberButton() {
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors },
         reset,
     } = useForm<TMemberSchema>({
         resolver: zodResolver(memberSchema),
@@ -215,15 +215,15 @@ export default function AddMemberButton() {
 
                     <div>
                         <Label htmlFor="picture">Photo</Label>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                             {
                                 "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
                             }
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                             Taille maximale : {maxUploadSizeInMb} Mo
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                             Résolution recommandée : 400x400 pixels
                         </div>
                         <FileInput
