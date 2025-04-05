@@ -30,6 +30,8 @@ import Image from "next/image";
 import LogoFAHB from "/public/logo.webp";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
+import CurrentUserClient from "./currentUserClient";
+import Link from "next/link";
 
 export default function SideBarApp() {
     const pathname = usePathname();
@@ -80,11 +82,13 @@ export default function SideBarApp() {
     return (
         <Sidebar>
             <SidebarHeader className="flex items-center justify-center py-4">
-                <Image
-                    src={LogoFAHB}
-                    alt="Logo de la FAHB"
-                    className="w-16 opacity-85"
-                ></Image>
+                <Link href="/dashboard" className="flex items-center gap-2">
+                    <Image
+                        src={LogoFAHB}
+                        alt="Logo de la FAHB"
+                        className="w-16 opacity-85"
+                    ></Image>
+                </Link>
                 <b>Dashboard</b>
             </SidebarHeader>
             <SidebarContent>
@@ -117,6 +121,7 @@ export default function SideBarApp() {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
+                <CurrentUserClient />
                 <SignOutButton />
             </SidebarFooter>
         </Sidebar>
