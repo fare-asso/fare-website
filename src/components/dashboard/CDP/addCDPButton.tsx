@@ -17,7 +17,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 
 import { useEffect, useCallback } from "react";
 
@@ -53,6 +53,8 @@ export default function AddNewCDPButton() {
             setDialogIsOpen(open);
             if (!open) {
                 // Réinitialiser le formulaire lorsque le dialogue est fermé
+                setError(undefined);
+                setIsLoading(false);
             }
         },
         [setDialogIsOpen],
@@ -63,9 +65,10 @@ export default function AddNewCDPButton() {
         if (formState?.success) {
             handleOpenChange(false);
             setError(undefined);
+        } else if (formState?.error) {
+            setError(formState?.error);
         }
 
-        setError(formState?.error);
         setIsLoading(false);
     }, [formState, handleOpenChange]);
 
@@ -102,7 +105,9 @@ export default function AddNewCDPButton() {
         formData.delete("CDPfile"); // Delete the file from the form data so it doesn't get sent to the API
         formData.set("CDPfilePath", uploadResponse.path!);
 
-        formAction(formData);
+        startTransition(() => {
+            formAction(formData);
+        });
     };
 
     return (
