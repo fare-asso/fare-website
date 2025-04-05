@@ -29,10 +29,6 @@ export default function RootLayout({
                     {/* Barre du haut */}
                     <header className="flex h-12 w-full flex-row items-center p-4">
                         <SidebarTrigger />
-                        {/* <div className="ml-auto flex items-center gap-2">
-                            <CurrentUser />
-                            <SignOutButton />
-                        </div> */}
                     </header>
 
                     {/* Zone de contenu scrollable */}
