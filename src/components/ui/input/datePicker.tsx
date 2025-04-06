@@ -16,13 +16,11 @@ import { fr } from "date-fns/locale";
 export default function DatePicker({
     defaultValue,
     name,
-    enableMonthYearDropdown,
     fromYear,
     toYear,
 }: {
     defaultValue?: Date;
     name?: string;
-    enableMonthYearDropdown?: boolean;
     fromYear?: number;
     toYear?: number;
 }) {
