@@ -87,6 +87,8 @@ export default function SideBarApp() {
                         src={LogoFAHB}
                         alt="Logo de la FAHB"
                         className="w-16 opacity-85"
+                        priority={true}
+                        placeholder="empty"
                     ></Image>
                 </Link>
                 <b>Dashboard</b>
