@@ -9,6 +9,7 @@ import PartnersCarousel from "@/components/public/partenariats/partnersCarousel"
 import { Suspense } from "react";
 import AssoMap from "@/components/public/AssoMap";
 import KeyNumbers from "@/components/public/keyNumbers";
+import { YouTubeEmbed } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
     title: "Accueil | FAHB",
@@ -124,17 +125,12 @@ export default async function Home() {
                             </a>
                             &nbsp;de la FAHB 👇
                         </p>
-                        <iframe
-                            width="560"
-                            height="315"
-                            src="https://www.youtube-nocookie.com/embed/_nu4cbdJ8do?si=o2KlDcO3qnKorlsh"
-                            title="Vidéo Discord"
-                            frameBorder="0"
-                            allow="web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            className="aspect-video h-full w-full rounded-md"
-                        ></iframe>
+                        <div className="aspect-video h-full w-full rounded-md">
+                            <YouTubeEmbed
+                                videoid="_nu4cbdJ8do"
+                                style="width: 100%; height: 100%; border-radius: 0.5rem;"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
