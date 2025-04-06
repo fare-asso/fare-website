@@ -85,8 +85,8 @@ export default function MemberCard({
                     </div>
                     <Image
                         src={pictureUrl}
-                        width={1080}
-                        height={1920}
+                        width={500}
+                        height={500}
                         alt={
                             "Photo de " +
                             member.firstName +
