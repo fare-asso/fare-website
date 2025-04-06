@@ -209,9 +209,9 @@ export default function EditAssociationButton({
                         </Label>
                         <DatePicker
                             name="birthdate"
-                            enableMonthYearDropdown
                             defaultValue={association.birthdate}
                             fromYear={1950}
+                            toYear={new Date().getFullYear() + 1}
                         />
                     </div>
 
