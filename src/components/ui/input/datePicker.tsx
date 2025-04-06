@@ -63,11 +63,10 @@ export default function DatePicker({
                         selected={date}
                         onSelect={setDate}
                         className="mb-3"
-                        captionLayout={
-                            enableMonthYearDropdown ? "dropdown" : "buttons"
+                        startMonth={
+                            fromYear ? new Date(fromYear, 0) : undefined
                         }
-                        fromYear={fromYear ?? 1971}
-                        toYear={toYear ?? new Date().getFullYear()}
+                        endMonth={toYear ? new Date(toYear, 11) : undefined}
                     />
                 </PopoverContent>
             </Popover>
