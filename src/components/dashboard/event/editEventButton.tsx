@@ -189,7 +189,7 @@ export default function EditEventButtonClient({
                                 width={400}
                                 height={200}
                                 alt="Image de l'évènement"
-                                className="my-3 h-auto w-32 rounded-lg outline outline-2 outline-offset-2 outline-black"
+                                className="my-3 h-auto w-32 rounded-lg outline-2 outline-offset-2 outline-black"
                             />
                         :   null}
                         <Input
