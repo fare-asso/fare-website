@@ -87,6 +87,6 @@ export default async function submitTutorApplication(
         html: tutorApplicationEmailTemplate(parsedData.data),
     });
 
-    revalidatePath("/dashboard/bouge-ta-prison?tab=candidatures");
+    revalidatePath("/dashboard/bouge-ta-prison");
     return { success: true };
 }

@@ -39,6 +39,6 @@ export default async function submitTutorQuestion(
         html: tutorQuestionEmailTemplate(data, BTPTutorQuestion.id),
     });
 
-    revalidatePath("/dashboard/bouge-ta-prison?tab=questions");
+    revalidatePath("/dashboard/bouge-ta-prison");
     return { success: true };
 }
