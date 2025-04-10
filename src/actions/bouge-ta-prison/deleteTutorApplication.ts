@@ -50,6 +50,6 @@ export default async function deleteTutorApplication(
         return { error: "Echec de la suppression de la candidature" };
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison?tab=candidatures");
+    revalidatePath("/dashboard/bouge-ta-prison");
     return { success: true };
 }

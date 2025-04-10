@@ -17,6 +17,6 @@ export default async function deleteTutorQuestion(
         return { error: "Echec de la suppression de la question" };
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison?tab=questions");
+    revalidatePath("/dashboard/bouge-ta-prison");
     return { success: true };
 }
