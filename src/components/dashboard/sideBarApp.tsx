@@ -17,8 +17,8 @@ import {
 import SignOutButton from "./signOutButton";
 
 // Link icons
-import { LuPartyPopper } from "react-icons/lu"; // Bagad'Asso
-import { FaHandcuffs } from "react-icons/fa6"; // Bouge Ta Prison
+import { LuPartyPopper, LuUser } from "react-icons/lu"; // Bagad'Asso
+import { FaHandcuffs, FaUser } from "react-icons/fa6"; // Bouge Ta Prison
 import { FaPeopleGroup } from "react-icons/fa6"; // Membres
 import { FaRegNewspaper } from "react-icons/fa6"; // Presse
 import { FaUsers } from "react-icons/fa6"; // Adhésions
@@ -32,8 +32,14 @@ import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import CurrentUserClient from "./currentUserClient";
 import Link from "next/link";
+import { Permission } from "@prisma/client";
+import path from "path";
 
-export default function SideBarApp() {
+export default function SideBarApp({
+    permissions,
+}: {
+    permissions?: Permission[];
+}) {
     const pathname = usePathname();
 
     const links = [
@@ -41,6 +47,7 @@ export default function SideBarApp() {
             href: "/dashboard/events",
             title: "Evènements",
             icon: <FaRegCalendarAlt />,
+            hidden: true,
         },
         {
             href: "/dashboard/associations",
@@ -66,16 +73,25 @@ export default function SideBarApp() {
             href: "/dashboard/bagadAsso",
             title: "Bagad'Asso",
             icon: <LuPartyPopper />,
+            hidden: !permissions?.find((p) => p.name === "access:bagad-asso"),
         },
         {
             href: "/dashboard/adhesions",
             title: "Adhésions",
             icon: <FaUsers />,
+            hidden: !permissions?.find((p) => p.name === "access:adhesions"),
         },
         {
             href: "/dashboard/bouge-ta-prison",
             title: "Bouge Ta Prison",
             icon: <FaHandcuffs />,
+            hidden: !permissions?.find((p) => p.name === "access:btp"),
+        },
+        {
+            href: "/dashboard/users",
+            title: "Utilisateurs",
+            icon: <LuUser />,
+            hidden: !permissions?.find((p) => p.name === "access:users"),
         },
     ];
 
@@ -100,24 +116,23 @@ export default function SideBarApp() {
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {links.map((link) => (
-                                <SidebarMenuItem key={link.href}>
-                                    <SidebarMenuButton asChild>
-                                        <a
-                                            href={link.href}
-                                            className={clsx(
-                                                pathname.startsWith(
-                                                    link.href,
-                                                ) &&
-                                                    "bg-primary text-primary-foreground hover:!bg-primary/90 hover:!text-primary-foreground",
+                            {links
+                                .filter((link) => !link.hidden)
+                                .map((link) => (
+                                    <SidebarMenuItem key={link.href}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={pathname.startsWith(
+                                                link.href,
                                             )}
                                         >
-                                            {link.icon && link.icon}
-                                            <span>{link.title}</span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
+                                            <a href={link.href}>
+                                                {link.icon && link.icon}
+                                                <span>{link.title}</span>
+                                            </a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

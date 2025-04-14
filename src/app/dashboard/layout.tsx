@@ -3,26 +3,40 @@ import "../globals.css";
 
 import { Toaster } from "@/components/ui/toaster";
 
-import CurrentUser from "@/components/dashboard/currentUser";
-import SignOutButton from "@/components/dashboard/signOutButton";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import SideBarApp from "@/components/dashboard/sideBarApp";
+import getCurrentUserId from "@/helpers/user/id";
+import { redirect } from "next/navigation";
+import prisma from "@/helpers/db";
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth";
 
 export const metadata: Metadata = {
     title: "Dashboard",
     description: "",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    // Check user permissions
+    const user = await getCurrentUserWithPermissions();
+
+    if (!user) {
+        redirect("/login");
+    }
+
+    // Check if user has access to dashboard
+    const permissions = user.permissions.map(
+        (permission) => permission.permission,
+    );
+
     return (
         <SidebarProvider>
             <div className="flex h-screen w-screen overflow-hidden">
                 {/* Sidebar à gauche */}
-                <SideBarApp />
+                <SideBarApp permissions={permissions} />
 
                 {/* Contenu principal */}
                 <div className="flex h-full w-full flex-col">
