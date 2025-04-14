@@ -1,7 +1,7 @@
 import prisma from "@/helpers/db";
 import { createClient } from "@/helpers/supabase/server";
 import StorageChart from "@/app/dashboard/components/storageChart/storageChart";
-import DbSizeChart from "./components/storageChart/dbSizeChart/dbSizeChart";
+import DbSizeChart from "@/app/dashboard/components/dbSizeChart/dbSizeChart";
 
 export default async function Dashboard() {
     const supabase = await createClient();
