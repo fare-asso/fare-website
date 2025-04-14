@@ -96,7 +96,7 @@ export default function SideBarApp({
     ];
 
     return (
-        <Sidebar>
+        <Sidebar variant="inset" collapsible="offcanvas">
             <SidebarHeader className="flex items-center justify-center py-4">
                 <Link href="/dashboard" className="flex items-center gap-2">
                     <Image
