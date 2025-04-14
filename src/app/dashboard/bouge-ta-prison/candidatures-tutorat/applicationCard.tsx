@@ -32,7 +32,7 @@ export default function ApplicationCard({
                 <span className="ml-1 text-base font-semibold capitalize">
                     <Link
                         href={`/dashboard/bouge-ta-prison/candidatures-tutorat/${application.id}`}
-                        className="w-full overflow-hidden text-ellipsis text-nowrap underline transition-all hover:opacity-75"
+                        className="w-full overflow-hidden text-sm text-nowrap text-ellipsis underline transition-all hover:opacity-75"
                     >
                         {(
                             (application.firstName + " " + application.lastName)
@@ -49,12 +49,12 @@ export default function ApplicationCard({
 
                 {application.approved ?
                     <FaCheckCircle
-                        size={18}
-                        className="ml-2 inline-block text-green-500"
+                        size={15}
+                        className="inline-block text-green-500"
                     />
                 :   <FaQuestionCircle
-                        size={20}
-                        className="ml-2 inline-block text-amber-500"
+                        size={15}
+                        className="inline-block text-amber-500"
                     />
                 }
 
