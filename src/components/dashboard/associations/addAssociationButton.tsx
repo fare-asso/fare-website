@@ -94,7 +94,7 @@ export default function AddAssociationButton() {
                 <form
                     onSubmit={handleSubmit}
                     id="addAssociationForm"
-                    className="space-y-3 overflow-y-auto p-2"
+                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
                 >
                     {/* Name */}
                     <div>

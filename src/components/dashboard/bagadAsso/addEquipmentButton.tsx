@@ -115,7 +115,7 @@ export default function AddEquipmentButton() {
                 <form
                     onSubmit={handleSubmit}
                     id="addEquipmentForm"
-                    className="space-y-3"
+                    className="space-y-3 [&_label]:mb-2"
                 >
                     {/* Name */}
                     <div>
@@ -152,10 +152,10 @@ export default function AddEquipmentButton() {
                                     height={300}
                                     src={file}
                                     alt={`Photo du matériel`}
-                                    className="my-2 aspect-auto h-48 rounded-lg border outline outline-1 outline-offset-1"
+                                    className="my-2 aspect-auto h-48 rounded-lg border outline outline-offset-1"
                                 />
                                 <Button
-                                    className="absolute right-0 top-0 m-1 p-3"
+                                    className="absolute top-0 right-0 m-1 p-3"
                                     variant="destructive"
                                     onClick={handleDeleteImage}
                                 >

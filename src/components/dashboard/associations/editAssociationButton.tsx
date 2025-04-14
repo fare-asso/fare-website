@@ -47,9 +47,6 @@ export default function EditAssociationButton({
     >(editAssociationAction, undefined);
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [birthdate, setBirthdate] = useState<Date | undefined>(
-        association.birthdate,
-    );
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
@@ -105,7 +102,7 @@ export default function EditAssociationButton({
                 <form
                     onSubmit={handleSubmit}
                     id="editAssociationForm"
-                    className="space-y-3 overflow-y-auto p-2"
+                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
                 >
                     <input type="hidden" name="id" value={association.id} />
 

@@ -29,14 +29,12 @@ import {
 
 import LoadingRing from "../loadingRing";
 
-import createArticleAction from "@/actions/articles/createArticleAction";
+import editArticleAction from "@/actions/articles/editArticleAction";
 import { JSONContent } from "@tiptap/react";
 import { base64ToFile } from "@/helpers/image";
 import { v4 as uuidv4 } from "uuid";
-import editArticleAction from "@/actions/articles/editArticleAction";
 import { Article } from "@prisma/client";
 import { MdEdit } from "react-icons/md";
-import jsonToHtml from "@/helpers/tiptap/jsonToHtml";
 import { StorageUtils } from "@/helpers/supabase/storageUtils";
 
 /**
@@ -193,7 +191,7 @@ export default function EditArticleButton({ article }: { article: Article }) {
                 <form
                     onSubmit={handleSubmit}
                     id="editArticleForm"
-                    className="space-y-3"
+                    className="space-y-3 [&_label]:mb-2"
                 >
                     <input type="hidden" name="id" value={article.id} />
                     <div>

@@ -212,7 +212,7 @@ export default function EditMemberButton({
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     id="editMemberForm"
-                    className="space-y-3 overflow-y-auto p-2"
+                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
                 >
                     <input
                         type="hidden"

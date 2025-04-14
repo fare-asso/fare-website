@@ -172,7 +172,7 @@ export default function AddMemberButton() {
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     id="addMemberForm"
-                    className="space-y-3 overflow-y-auto p-2"
+                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
                 >
                     <div>
                         <Label htmlFor="first-name">Prénom</Label>

@@ -143,7 +143,7 @@ export default function CreateArticleButton() {
                 <form
                     onSubmit={handleSubmit}
                     id="createArticleForm"
-                    className="space-y-3"
+                    className="space-y-3 [&_label]:mb-2"
                 >
                     <div>
                         <Label htmlFor="title">Titre</Label>

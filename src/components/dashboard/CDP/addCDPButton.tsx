@@ -130,7 +130,7 @@ export default function AddNewCDPButton() {
                 <form
                     onSubmit={handleSubmit}
                     id="createCDPForm"
-                    className="space-y-3"
+                    className="space-y-3 [&_label]:mb-2"
                 >
                     <div>
                         <Label>Nom</Label>

@@ -79,7 +79,7 @@ export default function SendInvitationLinkButton({
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="h-auto max-h-[90%] sm:max-w-[40%] lg:max-w-[20%]">
+            <DialogContent className="h-auto max-h-[90%] w-full md:w-[50%] lg:w-[30%]">
                 <DialogHeader>
                     <DialogTitle>Invitation Représentant</DialogTitle>
                     <DialogDescription>
@@ -94,7 +94,7 @@ export default function SendInvitationLinkButton({
                 <form
                     onSubmit={handleSubmit}
                     id="sendInvitationLinkForm"
-                    className="space-y-3 overflow-y-auto p-2"
+                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
                 >
                     <input
                         type="hidden"

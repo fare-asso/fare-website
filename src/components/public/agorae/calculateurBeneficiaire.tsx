@@ -57,7 +57,7 @@ export default function CalculateurBeneficiaire() {
                 <CardTitle>Calculateur d'éligibilité AGORAÉ</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="space-y-4">
+                <div className="space-y-4 [&>div]:space-y-2">
                     <div>
                         <Label htmlFor="recettes">Recettes par mois (€)</Label>
                         <Input
@@ -95,7 +95,7 @@ export default function CalculateurBeneficiaire() {
                         <Card
                             className={`${determinerPanier(rav).classe} border-none`}
                         >
-                            <CardContent className="pt-6">
+                            <CardContent>
                                 <div className="space-y-2 text-center">
                                     <p className="font-medium">
                                         Denrées en valeurs marchande :{" "}

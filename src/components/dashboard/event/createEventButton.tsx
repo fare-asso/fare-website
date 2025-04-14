@@ -92,7 +92,7 @@ export default function CreateEventButton() {
                 <form
                     onSubmit={handleSubmit}
                     id="createEventForm"
-                    className="space-y-3 overflow-y-auto p-2"
+                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
                 >
                     <div>
                         <Label>Nom</Label>

@@ -155,7 +155,7 @@ export default function EditEventButtonClient({
                 <form
                     action={formAction}
                     id="editEventForm"
-                    className="space-y-3 overflow-y-auto p-2"
+                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
                 >
                     <input type="hidden" name="id" value={eventInfo.id} />
                     <div>
