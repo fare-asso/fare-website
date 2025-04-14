@@ -14,7 +14,7 @@ export default function LoadingRing({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className={"mr-2 h-4 w-4 animate-spin " + className}
+            className={"h-4 w-4 animate-spin " + className}
         >
             <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
         </svg>
