@@ -4,7 +4,7 @@ import TicketList from "./ticketList";
 export default async function Tickets() {
     const tickets = await prisma.bagadAssoTicket.findMany({
         orderBy: {
-            creationDate: "asc",
+            creationDate: "desc",
         },
     });
     return <TicketList tickets={tickets} />;
