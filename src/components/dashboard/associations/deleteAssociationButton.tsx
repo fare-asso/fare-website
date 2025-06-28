@@ -15,7 +15,7 @@ import {
 
 import LoadingRing from "../loadingRing";
 
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 
 import { useEffect } from "react";
 import { MdDelete } from "react-icons/md";
@@ -53,7 +53,9 @@ export default function DeleteAssociationButton({
 
         setIsLoading(true);
 
-        formAction(association.id);
+        startTransition(() => {
+            formAction(association.id);
+        });
     };
 
     return (
