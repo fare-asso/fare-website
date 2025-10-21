@@ -3,13 +3,13 @@ import "./styles.css";
 import { useEditor, EditorContent, JSONContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-import TextStyle from "@tiptap/extension-text-style";
+import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import ListKeymap from "@tiptap/extension-list-keymap";
-import FileHandler from "@tiptap-pro/extension-file-handler";
+// import FileHandler from "@tiptap-pro/extension-file-handler";
 
 import clsx from "clsx";
 import { useRef } from "react";
@@ -69,18 +69,18 @@ export default function RichTextEditor({
                 types: ["heading", "paragraph"],
             }),
             Link,
-            FileHandler.configure({
-                onPaste(editor, files, pasteContent) {
-                    if (files[0].type.startsWith("image/")) {
-                        processAndInsertImage(editor, files[0]);
-                    }
-                },
-                onDrop(editor, files, dropContent) {
-                    if (files[0].type.startsWith("image/")) {
-                        processAndInsertImage(editor, files[0]);
-                    }
-                },
-            }),
+            // FileHandler.configure({
+            //     onPaste(editor, files, pasteContent) {
+            //         if (files[0].type.startsWith("image/")) {
+            //             processAndInsertImage(editor, files[0]);
+            //         }
+            //     },
+            //     onDrop(editor, files, dropContent) {
+            //         if (files[0].type.startsWith("image/")) {
+            //             processAndInsertImage(editor, files[0]);
+            //         }
+            //     },
+            // }),
             Image,
             ListKeymap,
         ],
@@ -96,7 +96,7 @@ export default function RichTextEditor({
     return (
         <div
             className={clsx(
-                "m-w-full h-full max-h-96 min-h-64 overflow-y-auto rounded-lg border border-input p-4",
+                "m-w-full border-input h-full max-h-96 min-h-64 overflow-y-auto rounded-lg border p-4",
                 className,
             )}
             ref={editorRef}
