@@ -23,7 +23,7 @@ export function DbSizeChartClient({
 }: {
     size: number;
     total: number;
-}): JSX.Element {
+}): React.ReactElement {
     const chartData = [
         { name: "Utilisé", value: size, fill: "#be8345" },
         { name: "Libre", value: total - size, fill: "#f3f2e6" },
