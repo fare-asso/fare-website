@@ -17,7 +17,7 @@ export default async function ArticleList() {
             </span>
         );
     } else {
-        const articleCards: JSX.Element[] = articles.map((article) => (
+        const articleCards = articles.map((article) => (
             <ArticleCard key={article.id} article={article} />
         ));
 
