@@ -1,4 +1,5 @@
-import { BubbleMenu, Editor } from "@tiptap/react";
+import { Editor } from "@tiptap/react";
+import { BubbleMenu } from "@tiptap/react/menus";
 import {
     MdFormatBold,
     MdFormatItalic,
@@ -22,10 +23,7 @@ export default function EditorBubbleMenu({
     if (!editor) return <></>;
 
     return (
-        <BubbleMenu
-            editor={editor}
-            tippyOptions={{ placement: "bottom-start" }}
-        >
+        <BubbleMenu editor={editor} options={{ placement: "bottom-start" }}>
             <div className="flex w-auto flex-wrap items-center justify-center space-x-1 rounded-xl bg-black/90 p-1 text-white backdrop-blur-lg">
                 <BubbleButton
                     editor={editor}
@@ -55,7 +53,7 @@ export default function EditorBubbleMenu({
                 />
 
                 {/* Spacer */}
-                <div className="h-6 w-[1px] bg-white/30"></div>
+                <div className="w-1px h-6 bg-white/30"></div>
 
                 {/* Bold button */}
                 <BubbleButton
@@ -95,7 +93,7 @@ export default function EditorBubbleMenu({
                 <ColorPicker editor={editor} />
 
                 {/* Spacer */}
-                <div className="h-6 w-[1px] bg-white/30"></div>
+                <div className="w-1px h-6 bg-white/30"></div>
 
                 {/* Link button */}
                 <BubbleButton
@@ -130,7 +128,7 @@ export default function EditorBubbleMenu({
                 />
 
                 {/* Spacer */}
-                <div className="h-6 w-[1px] bg-white/30"></div>
+                <div className="w-1px h-6 bg-white/30"></div>
 
                 {/* Align Dropdown menu */}
                 <TextAlignDropdown editor={editor} />
