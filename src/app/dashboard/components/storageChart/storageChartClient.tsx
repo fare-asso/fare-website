@@ -23,7 +23,7 @@ export function StorageChartClient({
 }: {
     used: number;
     total: number;
-}): JSX.Element {
+}): React.ReactElement {
     const chartData = [
         { name: "Utilisé", value: used, fill: "#304bb7e5" },
         { name: "Libre", value: total - used, fill: "#566cae26" },
