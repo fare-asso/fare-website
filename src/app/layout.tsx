@@ -6,8 +6,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-    title: "FAHB",
-    description: "Fédération des Associations de Haute Bretagne",
+    title: "FARE",
+    description:
+        "Fédération des Associations du Réseau Étudiant de Haute-Bretagne",
 };
 
 export default function RootLayout({

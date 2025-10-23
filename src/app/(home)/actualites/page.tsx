@@ -2,8 +2,8 @@ import ArticleList from "@/components/public/articles/articleList";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Actualités | FAHB",
-    description: "Page regroupant les actualités lié à la FAHB",
+    title: "Actualités | FARE",
+    description: "Page regroupant les actualités lié à la FARE",
 };
 
 export default async function ActualitePage() {

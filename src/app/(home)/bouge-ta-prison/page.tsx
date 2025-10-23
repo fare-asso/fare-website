@@ -8,7 +8,7 @@ import logoBTP from "/public/BTP/LOGO_BTP_2024.webp";
 
 // Create metadata for the page
 export const metadata = {
-    title: "Bouge Ta Prison | FAHB",
+    title: "Bouge Ta Prison | FARE",
 };
 
 export default function BougeTaPrison() {
@@ -45,7 +45,7 @@ export default function BougeTaPrison() {
                         difficultés qu'il présente.
                     </p>
 
-                    <div className="mb-4 flex flex-col space-x-0 space-y-3 md:flex-row md:space-x-2 md:space-y-0 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
+                    <div className="mb-4 flex flex-col space-y-3 space-x-0 md:flex-row md:space-y-0 md:space-x-2 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
                         <Image
                             src={assemblee0}
                             alt="Photo d'une conférence de sensibilisation du milieu carcéral à l'Université de Rennes 2 qui s'est déroulée en février 2024"
@@ -121,7 +121,7 @@ export default function BougeTaPrison() {
                             </p>
                             <Link
                                 href="/bouge-ta-prison/tutorat"
-                                className="ml-auto mt-4 w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
+                                className="mt-4 ml-auto w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
                             >
                                 En savoir plus
                             </Link>

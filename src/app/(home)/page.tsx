@@ -12,7 +12,7 @@ import KeyNumbers from "@/components/public/keyNumbers";
 import { YouTubeEmbed } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
-    title: "Accueil | FAHB",
+    title: "Accueil | FARE",
 };
 
 export default async function Home() {

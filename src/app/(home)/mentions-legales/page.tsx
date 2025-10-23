@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Mentions Légales | FAHB",
+    title: "Mentions Légales | FARE",
 };
 
 export default function MentionsLegales() {
@@ -10,7 +10,7 @@ export default function MentionsLegales() {
             <h1 className="py-24 text-3xl font-semibold">
                 {"Mentions Légales"}
             </h1>
-            <div className="mb-10 flex h-full w-full flex-col items-start md:w-3/5 [&>h2]:mb-2 [&>h2]:mt-6 [&>h2]:text-xl [&>h2]:font-bold [&>h3]:mb-1 [&>h3]:mt-4 [&>h3]:text-lg [&>h3]:font-bold [&>p]:ml-8 [&>ul]:my-2 [&>ul]:ml-16 [&_li]:list-disc">
+            <div className="mb-10 flex h-full w-full flex-col items-start md:w-3/5 [&_li]:list-disc [&>h2]:mt-6 [&>h2]:mb-2 [&>h2]:text-xl [&>h2]:font-bold [&>h3]:mt-4 [&>h3]:mb-1 [&>h3]:text-lg [&>h3]:font-bold [&>p]:ml-8 [&>ul]:my-2 [&>ul]:ml-16">
                 <h2>Définitions:</h2>
                 <p className="mb-1">
                     <b>Client :</b> Tout professionnel ou personne physique
