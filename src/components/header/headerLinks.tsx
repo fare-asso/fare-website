@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, type RefObject } from "react";
 import HeaderLink from "./headerLink";
 import {
     MdClose,
@@ -39,7 +39,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
         links: Link[],
         pathname: string,
         level: number,
-    ): JSX.Element | JSX.Element[] {
+    ): React.ReactElement | React.ReactElement[] {
         return links
             .filter((link) => !link.hidden)
             .map((link) => {
@@ -99,7 +99,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
     function renderDesktopLinks(
         links: Link[],
         pathname: string,
-    ): JSX.Element | JSX.Element[] {
+    ): React.ReactElement | React.ReactElement[] {
         return links
             .filter((link) => !link.hidden)
             .map((link) => (
@@ -108,7 +108,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                     title={link.title}
                     href={link.href}
                     subLinks={link.subLinks}
-                    runnerRef={runner}
+                    runnerRef={runner as RefObject<HTMLDivElement>}
                 />
             ));
     }
@@ -158,7 +158,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                 ref={menuRef}
                 id="mobileMenu"
                 className={clsx(
-                    "fixed right-0 top-0 z-9999 flex min-h-screen w-80 flex-col border-l-2 bg-white transition-all duration-500",
+                    "fixed top-0 right-0 z-9999 flex min-h-screen w-80 flex-col border-l-2 bg-white transition-all duration-500",
                     menuIsOpen ? "translate-x-0" : "translate-x-80",
                 )}
             >

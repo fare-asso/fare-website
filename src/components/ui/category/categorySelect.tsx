@@ -8,7 +8,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 interface Category {
     id: number;
@@ -20,7 +20,9 @@ export default function CategorySelect({
 }: {
     defaultValue: string;
 }) {
-    const [categoryItems, setCategoryItems] = useState<JSX.Element>(<></>);
+    const [categoryItems, setCategoryItems] = useState<React.ReactElement>(
+        <></>,
+    );
 
     useEffect(() => {
         const fetchCategories = async () => {

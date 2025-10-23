@@ -1,8 +1,4 @@
-export default function LoadingRing({
-    className,
-}: {
-    className?: string;
-}): JSX.Element {
+export default function LoadingRing({ className }: { className?: string }) {
     const loadingRing = (
         <svg
             xmlns="http://www.w3.org/2000/svg"

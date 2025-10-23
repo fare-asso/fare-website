@@ -1,8 +1,6 @@
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -10,7 +8,7 @@ import {
 export default function AssociationDropdownMenu({
     children,
 }: {
-    children: JSX.Element[];
+    children: React.ReactElement[];
 }) {
     return (
         <DropdownMenu>

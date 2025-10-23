@@ -18,7 +18,7 @@ export default async function MemberList() {
             </span>
         );
     } else {
-        const memberCards: JSX.Element[] = members.map((member) => (
+        const memberCards = members.map((member) => (
             <MemberCard
                 key={member.id}
                 member={member}
@@ -31,7 +31,7 @@ export default async function MemberList() {
         ));
 
         return (
-            <div className="h-full w-full overflow-y-auto rounded-lg border bg-card p-6 text-card-foreground shadow-xs">
+            <div className="bg-card text-card-foreground h-full w-full overflow-y-auto rounded-lg border p-6 shadow-xs">
                 <div className="grid h-auto w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
                     {memberCards}
                 </div>

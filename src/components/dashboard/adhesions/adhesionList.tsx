@@ -21,12 +21,12 @@ export default async function AdhesionList() {
             </span>
         );
     } else {
-        const adhesionCards: JSX.Element[] = adhesions.map((adhesion) => (
+        const adhesionCards = adhesions.map((adhesion) => (
             <AdhesionCard key={adhesion.id} adhesion={adhesion} />
         ));
 
         return (
-            <div className="relative h-full w-full rounded-lg border bg-card p-6 text-card-foreground shadow-xs">
+            <div className="bg-card text-card-foreground relative h-full w-full rounded-lg border p-6 shadow-xs">
                 <div className="grid h-full w-full grid-cols-1 gap-8 overflow-auto p-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
                     {adhesionCards.length > 0 ?
                         adhesionCards
