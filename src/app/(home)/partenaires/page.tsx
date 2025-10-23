@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Nos partenaires | FAHB",
-    description: "Page des partenariats de la FAHB",
+    title: "Nos partenaires | FARE",
+    description: "Page des partenariats de la FARE",
 };
 
 export default async function Partenariats() {

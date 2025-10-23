@@ -3,8 +3,8 @@ import prisma from "@/helpers/db";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Le Bureau | FAHB",
-    description: "Page des membres du réseau FAHB",
+    title: "Le Bureau | FARE",
+    description: "Page des membres du bureau de la FARE",
 };
 
 export default async function Bureau() {

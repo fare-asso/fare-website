@@ -5,8 +5,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "Réseau | FAHB",
-    description: "Page des associations du réseau FAHB",
+    title: "Réseau | FARE",
+    description: "Page des associations du réseau FARE",
 };
 
 export default async function Reseau() {

@@ -4,8 +4,8 @@ import SoonEvents from "@/components/public/events/soon";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Agenda | FAHB",
-    description: "Page regroupant les événements lié à la FAHB",
+    title: "Agenda | FARE",
+    description: "Page regroupant les événements lié à la FARE",
 };
 
 export default async function Reseau() {
