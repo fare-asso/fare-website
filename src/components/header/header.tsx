@@ -7,7 +7,7 @@ const links: Link[] = [
         href: "/a-propos",
         subLinks: [
             {
-                title: "Qu'est ce que la FAHB ?",
+                title: "Qu'est ce que la FARE ?",
                 href: "/a-propos",
             },
             {
@@ -19,7 +19,7 @@ const links: Link[] = [
                 href: "/reseau",
             },
             {
-                title: "Rejoindre la FAHB",
+                title: "Rejoindre la FARE",
                 href: "/adhesion",
             },
             {
@@ -149,7 +149,7 @@ const links: Link[] = [
 
 export default function Header() {
     return (
-        <div className="flex h-20 w-full flex-row items-center justify-between px-8 py-4">
+        <div className="flex w-full flex-col-reverse items-center justify-between gap-3 px-8 py-4 lg:flex-col">
             <HeaderLogo />
             <HeaderLinks links={links} />
         </div>

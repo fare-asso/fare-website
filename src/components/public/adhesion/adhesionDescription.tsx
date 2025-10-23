@@ -1,17 +1,18 @@
 export default function AdhesionDescription() {
     return (
         <div className="mb-8 w-full max-w-3xl text-left">
-            <h2 className="mb-4 text-2xl font-bold">Adhésion à la FAHB :</h2>
+            <h2 className="mb-4 text-2xl font-bold">Adhésion à la FARE :</h2>
             <p className="mb-4">
-                La Fédération des Associations de Haute-Bretagne (FAHB) étant
-                une organisation représentative asyndicale, les étudiant.e.s ne
-                peuvent pas adhérer à la structure en tant qu'individu.
+                La Fédération des Associations du Réseau Étudiant de
+                Haute-Bretagne (FARE) étant une organisation représentative
+                asyndicale, les étudiant.e.s ne peuvent pas adhérer à la
+                structure en tant qu'individu.
             </p>
             <p className="mb-4">
                 Selon le modèle associatif, les étudiant.e.s participent au
                 système en adhérant et administrant leurs associations locales,
                 de filière ou thématique. De cette manière, les associations
-                étudiantes peuvent adhérer à la FAHB pour représenter les
+                étudiantes peuvent adhérer à la FARE pour représenter les
                 étudiant.e.s de leur filière, ou alors travailler sur des
                 projets ou des thématiques qui concernent leurs étudiant.e.s ou
                 adhérent.e.s.
@@ -23,11 +24,11 @@ export default function AdhesionDescription() {
                 Passation.
             </p>
 
-            <h2 className="mb-4 mt-8 text-2xl font-bold">
-                Pourquoi adhérer à la FAHB ? :
+            <h2 className="mt-8 mb-4 text-2xl font-bold">
+                Pourquoi adhérer à la FARE ? :
             </h2>
             <p className="mb-4">
-                Concrètement, à quoi ça sert d'adhérer à la FAHB pour les
+                Concrètement, à quoi ça sert d'adhérer à la FARE pour les
                 associations étudiantes ?
             </p>
             <ul className="mb-4 list-disc pl-6">
@@ -35,7 +36,7 @@ export default function AdhesionDescription() {
                     <strong>
                         Être membre d'un réseau associatif fort et soudé :
                     </strong>{" "}
-                    la FAHB compte aujourd'hui une vingtaine d'associations
+                    la FARE compte aujourd'hui une vingtaine d'associations
                     adhérentes, de Rennes à Saint-Brieuc, en passant par
                     Saint-Malo ou Lannion par exemple. C'est l'occasion de créer
                     ou maintenir des liens entre les associations, favorisant
@@ -43,14 +44,14 @@ export default function AdhesionDescription() {
                     réseau, c'est aussi avoir la possibilité de faire remonter
                     ses propres positions et problématiques, afin d'être
                     représenté au niveau local, territorial et national grâce à
-                    la FAHB !
+                    la FARE !
                 </li>
                 <li className="mb-2">
                     <strong>
                         Participer aux décisions et aux positions de la
                         fédération :
                     </strong>{" "}
-                    une association étudiante peut administrer la FAHB en jouant
+                    une association étudiante peut administrer la FARE en jouant
                     un rôle central dans la coordination et la représentation,
                     puisque la fédération agit comme un porte-parole des
                     intérêts des étudiants auprès des administrations
@@ -60,7 +61,7 @@ export default function AdhesionDescription() {
                 </li>
                 <li className="mb-2">
                     <strong>Profiter d'un suivi personnalisé :</strong> en
-                    faisant partie du réseau de la FAHB, une association
+                    faisant partie du réseau de la FARE, une association
                     étudiante se fait assigner un.e membre du bureau fédéral,
                     afin d'établir un lien de confiance entre l'association et
                     la fédération. Ce suivi personnalisé, c'est une ressource
@@ -72,22 +73,22 @@ export default function AdhesionDescription() {
                     <strong>
                         Bénéficier de formations enrichissantes et accessibles :
                     </strong>{" "}
-                    en tant que fédération associative, la FAHB forme et
+                    en tant que fédération associative, la FARE forme et
                     accompagne l'ensemble des associatif.ve.s, étudiant.e.s,
                     élu.e.s ou bénévoles qui en font la demande. C'est une
                     mission de notre structure qui permet à chacun.e d'acquérir
                     des compétences et permettre une meilleure appropriation des
                     thématiques, projets ou combats des étudiant.e.s. Ces
                     formations sont réalisées par des formateur.rice.s de la
-                    FAHB, sur des temps personnalisés (semaine ou week-end)
+                    FARE, sur des temps personnalisés (semaine ou week-end)
                     comme sur des événements généraux de la fédération.
                 </li>
                 <li className="mb-2">
                     <strong>
-                        Accéder plus facilement aux projets de la FAHB :
+                        Accéder plus facilement aux projets de la FARE :
                     </strong>{" "}
                     Bagad'Asso, AGORAé ou Bouge Ta Prison, les projets de la
-                    FAHB ne sont pas si éloignés que ça de vous ! Il est
+                    FARE ne sont pas si éloignés que ça de vous ! Il est
                     évidemment possible de s'investir dans ces projets sans être
                     adhérent.e.s à la fédération, mais il n'a jamais été aussi
                     simple d'obtenir du matériel du projet Bagad'Asso,
@@ -101,18 +102,18 @@ export default function AdhesionDescription() {
                     </strong>{" "}
                     des congrès, des conférences, des week-ends thématiques tout
                     au long de l'année, des journées ou projets sont souvent
-                    organisés sur le territoire de Haute-Bretagne, et la FAHB
+                    organisés sur le territoire de Haute-Bretagne, et la FARE
                     est là pour vous y intégrer. En tant qu'association, vous
                     pouvez contribuer à l'évolution de la condition et la vie de
                     vos étudiant.e.s.
                 </li>
             </ul>
 
-            <h2 className="mb-4 mt-8 text-2xl font-bold">
-                Comment adhérer à la FAHB ? :
+            <h2 className="mt-8 mb-4 text-2xl font-bold">
+                Comment adhérer à la FARE ? :
             </h2>
             <p className="mb-4">
-                Pour adhérer à la FAHB, quelques éléments sont demandés à une
+                Pour adhérer à la FARE, quelques éléments sont demandés à une
                 association étudiante :
             </p>
             <ul className="mb-4 list-disc pl-6">
@@ -122,7 +123,7 @@ export default function AdhesionDescription() {
                     étudiant.e.s ou des jeunes
                 </li>
                 <li>
-                    Prendre contact avec le bureau fédéral de la FAHB afin
+                    Prendre contact avec le bureau fédéral de la FARE afin
                     d'échanger sur la situation
                 </li>
                 <li>
@@ -138,7 +139,7 @@ export default function AdhesionDescription() {
                         </li>
                         <li>
                             Extrait de procès-verbal de son instance qualifiée
-                            autorisant l'association à adhérer à la FAHB
+                            autorisant l'association à adhérer à la FARE
                         </li>
                         <li>
                             Les statuts (et règlement intérieur si existant) de
@@ -161,7 +162,7 @@ export default function AdhesionDescription() {
             </ul>
             <p>
                 Une fois ces documents remplis, envoyés puis validés par le
-                secrétariat général de la FAHB, l'adhésion est soumise au vote
+                secrétariat général de la FARE, l'adhésion est soumise au vote
                 du Conseil d'Administration lors du prochain CA pour les
                 associations néo-adhérentes.
             </p>

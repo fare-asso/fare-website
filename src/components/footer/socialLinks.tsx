@@ -13,21 +13,24 @@ export default function SocialLinks() {
     return (
         <div className="flex flex-row items-center space-x-4">
             {/* Instagram */}
-            <Link href="https://www.instagram.com/la_fahb/" title="Instagram">
+            <Link
+                href="https://www.instagram.com/fare_hautebretagne"
+                title="Instagram"
+            >
                 <FaInstagram size={25} />
             </Link>
 
             {/* Bluesky */}
-            <Link
+            {/* <Link
                 href="https://bsky.app/profile/fahb.bsky.social"
                 title="Bluesky"
             >
                 <FaBluesky size={25} />
-            </Link>
+            </Link> */}
 
             {/* Facebook - caché sur mobile */}
             <Link
-                href="https://www.facebook.com/la.fahb/?locale=fr_FR"
+                href="https://www.facebook.com/fare.hautebretagne/?locale=fr_FR"
                 title="Facebook"
                 className="hidden md:inline-block"
             >
@@ -35,22 +38,22 @@ export default function SocialLinks() {
             </Link>
 
             {/* Linkedin - caché sur mobile */}
-            <Link
+            {/* <Link
                 href="https://fr.linkedin.com/company/fahb"
                 title="Linkedin"
                 className="hidden md:inline-block"
             >
                 <FaLinkedin size={25} />
-            </Link>
+            </Link> */}
 
             {/* TikTok */}
-            <Link href="https://www.tiktok.com/@la_fahb" title="TikTok">
+            {/* <Link href="https://www.tiktok.com/@la_fahb" title="TikTok">
                 <FaTiktok size={25} />
-            </Link>
+            </Link> */}
 
             {/* Linktree - caché sur mobile */}
             <Link
-                href="https://linktr.ee/fahb"
+                href="https://linktr.ee/fare_hautebretagne"
                 title="Linktree"
                 className="hidden md:inline-block"
             >

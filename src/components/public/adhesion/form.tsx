@@ -129,20 +129,20 @@ export default function AdhesionForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="flex w-full flex-col items-start space-y-8 lg:w-[60%] [&>section]:mb-12 [&_h2]:mb-4 [&_h2]:text-2xl [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black focus:[&_input]:border-yellow-400 focus:[&_input]:ring-yellow-400 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-700 dark:[&_input]:text-white dark:[&_input]:placeholder-gray-400 dark:focus:[&_input]:border-yellow-400 dark:focus:[&_input]:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_label]:text-lg [&_label]:font-semibold [&_option]:font-sans [&_p]:italic [&_p]:text-gray-400 [&_select]:mb-1 [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black focus:[&_select]:border-yellow-400 focus:[&_select]:ring-yellow-400 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-700 dark:[&_select]:text-white dark:[&_select]:placeholder-gray-400 dark:focus:[&_select]:border-yellow-400 dark:focus:[&_select]:ring-yellow-400"
+            className="flex w-full flex-col items-start space-y-8 lg:w-[60%] [&_h2]:mb-4 [&_h2]:text-2xl [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black focus:[&_input]:border-yellow-400 focus:[&_input]:ring-yellow-400 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-700 dark:[&_input]:text-white dark:[&_input]:placeholder-gray-400 dark:focus:[&_input]:border-yellow-400 dark:focus:[&_input]:ring-yellow-400 [&_label]:mt-6 [&_label]:mb-1 [&_label]:text-lg [&_label]:font-semibold [&_option]:font-sans [&_p]:text-gray-400 [&_p]:italic [&_select]:mb-1 [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black focus:[&_select]:border-yellow-400 focus:[&_select]:ring-yellow-400 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-700 dark:[&_select]:text-white dark:[&_select]:placeholder-gray-400 dark:focus:[&_select]:border-yellow-400 dark:focus:[&_select]:ring-yellow-400 [&>section]:mb-12"
         >
             <h1>{"Formulaire d'adhésion"}</h1>
-            <p className="mt-1! text-base! not-italic! text-black! opacity-100!">
+            <p className="mt-1! text-base! text-black! not-italic! opacity-100!">
                 En cas de difficulté pour remplir ce formulaire d'adhésion,
-                merci de contacter le secrétariat général de la FAHB en privé ou
+                merci de contacter le secrétariat général de la FARE en privé ou
                 sur
                 <a
-                    href="mailto:secretariat@fahb.eu"
+                    href="mailto:secretariat@fare-asso.fr"
                     title="Mail de contact en cas de difficulté ou question"
                     className="link"
                 >
                     {" "}
-                    secretariat@fahb.eu
+                    secretariat@fare-asso.fr
                 </a>
                 .
                 <br />
@@ -340,7 +340,7 @@ export default function AdhesionForm() {
                         <input
                             name="engagementCotisation"
                             type="checkbox"
-                            className="mr-4 mt-2 h-4! w-4!"
+                            className="mt-2 mr-4 h-4! w-4!"
                             required
                         />
                         <span>

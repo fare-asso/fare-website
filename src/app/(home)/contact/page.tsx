@@ -21,7 +21,7 @@ export default function Contact() {
                 {/* Email */}
                 <Link
                     className="group flex w-full flex-row items-center justify-between rounded-xl bg-[#4B6CB7] p-4 text-white"
-                    href="mailto:contact@fahb.eu"
+                    href="mailto:contact@fare-asso.fr"
                 >
                     <div className="flex flex-row items-center space-x-4">
                         <MdOutlineEmail size={50} />
@@ -38,7 +38,7 @@ export default function Contact() {
                 {/* Instagram */}
                 <Link
                     className="group flex w-full flex-row items-center justify-between rounded-xl bg-linear-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] p-4 text-white"
-                    href="https://www.instagram.com/la_fahb/"
+                    href="https://www.instagram.com/fare_hautebretagne"
                 >
                     <div className="flex flex-row items-center space-x-4">
                         <FaInstagram size={50} />
@@ -71,7 +71,7 @@ export default function Contact() {
                 </Link> */}
 
                 {/* Bluesky */}
-                <Link
+                {/* <Link
                     className="group flex w-full flex-row items-center justify-between rounded-xl bg-linear-to-r from-[#14171a] to-[#2d3236] p-4 text-white"
                     href="https://bsky.app/profile/fahb.bsky.social"
                 >
@@ -85,12 +85,12 @@ export default function Contact() {
                     <div className="translate-x-14 scale-75 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100">
                         <FaArrowLeft size={40} />
                     </div>
-                </Link>
+                </Link> */}
 
                 {/* Facebook */}
                 <Link
                     className="group flex w-full flex-row items-center justify-between rounded-xl bg-linear-to-l from-[#00c6ff] to-[#0072ff] p-4 text-white"
-                    href="https://www.facebook.com/la.fahb"
+                    href="https://www.facebook.com/fare.hautebretagne"
                 >
                     <div className="flex flex-row items-center space-x-4">
                         <FaFacebook size={50} />
