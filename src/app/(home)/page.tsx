@@ -40,13 +40,14 @@ export default async function Home() {
                         Qui sommes-nous ?
                     </h2>
                     <p className="text-justify">
-                        La Fédération des Associations de Haute-Bretagne (FAHB)
-                        est une organisation humaniste et militante qui
-                        représente les étudiant.e.s d'Ille-et-Vilaine et des
-                        Côtes d'Armor. Indépendante de tout parti politique,
-                        elle œuvre chaque jour pour améliorer la vie des 88 000
-                        étudiant.e.s du territoire grâce à des projets
-                        construits "par et pour les étudiant.e.s".
+                        La Fédération des Associations du Réseau Étudiant de
+                        Haute-Bretagne (FARE) est une organisation humaniste et
+                        militante qui représente les étudiant.e.s
+                        d'Ille-et-Vilaine et des Côtes-d'Armor. Indépendante de
+                        tout parti politique, elle œuvre chaque jour pour
+                        améliorer la vie des 88 000 étudiant.e.s du territoire
+                        grâce à des projets construits "par et pour les
+                        étudiant.e.s".
                     </p>
                     <div className="flex w-full flex-col items-center pt-4">
                         <LinkButton
@@ -97,19 +98,19 @@ export default async function Home() {
             <div className="my-10 flex w-full flex-col">
                 <h2 className="mb-2 text-2xl font-semibold">Discord</h2>
                 <p className="mb-12 text-justify">
-                    Intéressé·e par la FAHB et son réseau ? Étudiant·e en
-                    Ille-et-Vilaine ou Côtes d'Armor ? La FAHB possède un
+                    Intéressé·e par la FARE et son réseau ? Étudiant·e en
+                    Ille-et-Vilaine ou Côtes-d'Armor ? La FARE possède un
                     serveur Discord, conçu par les étudiant·e·s à destination
                     des étudiant·e·s. C'est une plateforme d'échange, de partage
                     et de travail sur laquelle sont déjà présent·e·s les
-                    administrateur·rice·s, les élu·e·s de la FAHB mais aussi
-                    tous·tes les membres des associations étudiantes de
-                    Haute-Bretagne. Ce serveur est un réel outil pour vous et
-                    vous permet de profiter au mieux des services que nous vous
-                    proposons. Maintenant que c'est clair, il ne vous reste plus
-                    qu'à cliquer sur le lien d'accès, et si quelques zones de
-                    flou persistent, voici une vidéo de présentation du Discord
-                    de la FAHB qui devrait vous aider !
+                    administrateur·rice·s, les élu·e·s de la FARE mais aussi les
+                    membres d'association étudiante de Haute-Bretagne. Ce
+                    serveur est un réel outil pour vous et vous permet de
+                    profiter au mieux des services que nous vous proposons.
+                    Maintenant que c'est clair, il ne vous reste plus qu'à
+                    cliquer sur le lien d'accès, et si quelques zones de flou
+                    persistent, voici une vidéo de présentation du Discord de la
+                    FARE qui devrait vous aider !
                 </p>
                 <div className="flex flex-col items-center justify-center space-y-6 md:flex-row md:space-x-12">
                     <DiscordWidget />
@@ -123,7 +124,7 @@ export default async function Home() {
                             >
                                 Discord
                             </a>
-                            &nbsp;de la FAHB 👇
+                            &nbsp;de la FARE 👇
                         </p>
                         <div className="aspect-video h-full w-full rounded-md">
                             <YouTubeEmbed
