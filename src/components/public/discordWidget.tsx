@@ -2,7 +2,7 @@ export default async function DiscordWidget() {
     return (
         <div>
             <iframe
-                src="https://discord.com/widget?id=1051811140457472061&theme=dark&hide_avatars=true"
+                src="https://discord.com/widget?id=1405839659929436191&theme=dark"
                 width="350"
                 height="500"
                 sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
