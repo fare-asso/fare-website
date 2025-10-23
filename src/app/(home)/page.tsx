@@ -118,7 +118,7 @@ export default async function Home() {
                         <p className="mb-2 text-center text-lg font-semibold">
                             Vidéo de présentation du&nbsp;
                             <a
-                                href="https://discord.gg/DtfxbHaqua"
+                                href="https://discord.gg/4CmJ5Pa3"
                                 title="Lien vers Discord"
                                 className="text-blue-600 transition-all hover:text-blue-400"
                             >

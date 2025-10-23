@@ -149,7 +149,7 @@ const links: Link[] = [
 
 export default function Header() {
     return (
-        <div className="flex w-full flex-col-reverse items-center justify-between gap-3 px-8 py-4 md:flex-col">
+        <div className="flex w-full flex-col-reverse items-center justify-between gap-3 px-8 py-4 lg:flex-col">
             <HeaderLogo />
             <HeaderLinks links={links} />
         </div>

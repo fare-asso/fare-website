@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-import logoFAHB from "/public/FAHB_Logo__Nom.png";
+import logoFARE from "@public/logo_fare.png";
 
 // Create metadata for the page
 export const metadata = {
-    title: "À propos de la FAHB | FAHB",
+    title: "À propos de la FARE | FARE",
 };
 
 export default function APropos() {
@@ -15,36 +15,35 @@ export default function APropos() {
             </h1> */}
 
             {/* TODO : Need to crop the picture to fit the logo and improve the svg file */}
-            <Image
-                src={logoFAHB}
+            {/* <Image
+                src={logoFARE}
                 alt="Logo de la Fédération des Associations de Haute-Bretagne"
-                className="mb-12 w-full md:w-1/2"
-            />
+                className="mb-12 w-3/10 md:w-1/2"
+            /> */}
 
             <div className="mb-20 w-full max-w-4xl space-y-8">
                 <section>
                     <h2 className="mb-4 text-2xl font-semibold">
-                        Qu'est-ce que la FAHB ?
+                        Qu'est-ce que la FARE ?
                     </h2>
                     <p className="mb-4">
                         La{" "}
                         <strong>
-                            Fédération des Associations de Haute-Bretagne (FAHB)
+                            Fédération des Associations du Réseau Étudiant de
+                            Haute-Bretagne (FARE)
                         </strong>{" "}
                         est une association à but non lucratif de loi 1901.
                         C'est une organisation représentative des étudiant·e·s,
                         présente sur les départements d'Ille-et-Vilaine et des
-                        Côtes d'Armor.
-                    </p>
-                    <p className="mb-4">
-                        Depuis le 24 octobre 2018, notre fédération de
-                        territoire met toutes ses ressources et son savoir-faire
-                        au service de l'intérêt des étudiant·e·s. Notre
-                        organisation régionale humaniste et militante fonde son
-                        fonctionnement sur la démocratie participative. Elle est
-                        menée par des associations étudiantes et réunit les
-                        jeunes dans le respect mutuel de leurs convictions
-                        personnelles, philosophiques, morales ou religieuses.
+                        Côtes-d'Armor. Depuis le 11 octobre 2025, notre
+                        fédération de territoire met toutes ses ressources et
+                        son savoir-faire au service de l'intérêt des
+                        étudiant·e·s. Notre organisation régionale humaniste et
+                        militante fonde son fonctionnement sur la démocratie
+                        participative. Elle est menée par des associations
+                        étudiantes et réunit les jeunes dans le respect mutuel
+                        de leurs convictions personnelles, philosophiques,
+                        morales ou religieuses.
                     </p>
                 </section>
 
@@ -55,7 +54,7 @@ export default function APropos() {
                     <p className="mb-4">
                         Indépendante de tout parti politique, syndicat ou
                         confession, notre fédération regroupe plus d'une
-                        vingtaine d'associations à Rennes, Bruz, Fougères et
+                        quinzaine d'associations à Rennes, Bruz, Fougères et
                         Saint-Brieuc, et est présente dans les divers conseils
                         universitaires et au CROUS Bretagne.
                     </p>

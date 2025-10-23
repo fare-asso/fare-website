@@ -135,7 +135,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
     }, [menuIsOpen]);
 
     return (
-        <div className="w-full md:w-auto">
+        <div className="w-full lg:w-auto">
             {/* Navbar pour les écrans larges */}
             <nav className="relative hidden flex-row items-center rounded-full border-2 border-black lg:flex">
                 <div
@@ -147,7 +147,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
 
             {/* Bouton Burger pour les petits écrans */}
             <button
-                className="ml-auto block text-black md:ml-0 lg:hidden"
+                className="ml-auto block text-black lg:ml-0 lg:hidden"
                 onClick={() => setMenuIsOpen(true)}
             >
                 <MdOutlineMenu size={25} />
