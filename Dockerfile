@@ -16,6 +16,10 @@ WORKDIR /app
 #####################
 FROM base AS builder
 
+# Build-time arguments for database connection (needed for Next.js static generation)
+ARG SUPABASE_POSTGRES_PRISMA_URL
+ENV SUPABASE_POSTGRES_PRISMA_URL=$SUPABASE_POSTGRES_PRISMA_URL
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN npm install -g corepack@latest
