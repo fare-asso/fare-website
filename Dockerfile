@@ -45,6 +45,9 @@ ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 # Generate Prisma client
 RUN pnpm exec prisma generate --no-hints
 
+# Run database migrations
+RUN pnpm exec prisma migrate deploy
+
 # Build the application
 RUN pnpm run build
 
