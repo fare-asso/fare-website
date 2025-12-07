@@ -63,7 +63,7 @@ RUN addgroup --system --gid 1001 runner
 RUN adduser --system --uid 1001 runner
 
 # Copy public assets
-COPY --from=builder /app/public ./public
+COPY --from=builder --chown=runner:runner /app/public ./public
 
 # Set correct permissions for prerender cache
 RUN mkdir .next
@@ -75,8 +75,10 @@ COPY --from=builder --chown=runner:runner /app/.next/static ./.next/static
 
 # Copy Prisma files for runtime migrations
 COPY --from=builder --chown=runner:runner /app/prisma ./prisma
-COPY --from=builder --chown=runner:runner /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder --chown=runner:runner /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=runner:runner /app/node_modules/.pnpm/prisma* ./node_modules/.pnpm/
+COPY --from=builder --chown=runner:runner /app/node_modules/.pnpm/@prisma* ./node_modules/.pnpm/
+COPY --from=builder --chown=runner:runner /app/node_modules/prisma* ./node_modules/
+COPY --from=builder --chown=runner:runner /app/node_modules/@prisma* ./node_modules/
 
 # Copy entrypoint script
 COPY --chown=runner:runner docker-entrypoint.sh ./
