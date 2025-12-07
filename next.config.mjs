@@ -1,6 +1,7 @@
 // This file is used to configure Next.js settings and options.
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    output: "standalone",
     experimental: {
         serverActions: {
             bodySizeLimit: "5mb",
