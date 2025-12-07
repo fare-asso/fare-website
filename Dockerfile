@@ -3,7 +3,7 @@ LABEL maintainer="finxol <contact@finxol.io>"
 LABEL repository="https://github.com/fare-asso/fare-website"
 
 RUN apk update
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat curl
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV HUSKY=0
