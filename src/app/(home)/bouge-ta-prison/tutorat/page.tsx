@@ -3,7 +3,7 @@ import TutorApplicationForm from "./TutorApplicationForm";
 
 // Create metadata for the page
 export const metadata = {
-    title: "Devenir tuteur Bouge Ta Prison | FAHB",
+    title: "Devenir tuteur Bouge Ta Prison | FARE",
 };
 
 export default function Tutorat() {
@@ -15,7 +15,7 @@ export default function Tutorat() {
                 <section>
                     <h2>Présentation</h2>
                     <p className="mb-4">
-                        La FAHB propose du tutorat méthodologique et
+                        La FARE propose du tutorat méthodologique et
                         disciplinaire aux étudiants sous main de justice qui
                         souhaitent commencer ou reprendre des études
                         universitaires. Un binôme de tuteurs accompagne un

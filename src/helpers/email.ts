@@ -29,11 +29,11 @@ export async function sendEmail(
             to:
                 process.env.NODE_ENV == "production" ?
                     to
-                :   "outils-numeriques@fahb.eu",
+                    : "outils-numeriques@fare-asso.fr",
             subject:
                 process.env.NODE_ENV == "production" ?
                     subject
-                :   "TEST - " + subject,
+                    : "TEST - " + subject,
             html,
         });
         return { success: true };

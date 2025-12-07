@@ -22,7 +22,7 @@ export default async function UsersPage() {
             <CardHeader className="p-0">
                 <CardTitle>Utilisateurs</CardTitle>
                 <CardDescription>
-                    Espace de gestion des utilisateurs du site de la FAHB
+                    Espace de gestion des utilisateurs du site de la FARE
                 </CardDescription>
             </CardHeader>
             <CardContent className="h-1/2 flex-1 p-0">

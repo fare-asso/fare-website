@@ -82,7 +82,7 @@ export default async function submitTutorApplication(
 
     // Send email to the btp team
     const emailResponse = await sendEmail({
-        to: "intervention-carceral@fahb.eu",
+        to: "intervention-carceral@fare-asso.fr",
         subject: "Nouvelle candidature de tuteur Bouge Ta Prison",
         html: tutorApplicationEmailTemplate(parsedData.data),
     });

@@ -5,7 +5,7 @@ import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
 
 export const metadata: Metadata = {
-    title: "FAHB",
+    title: "FARE",
     description:
         "Site internet de la Fédération des Associations de Haute-Bretagne",
 };

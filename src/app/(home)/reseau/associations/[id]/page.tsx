@@ -32,7 +32,7 @@ export async function generateMetadata({
     }
 
     return {
-        title: `FAHB - ${associationMetadata.name}`,
+        title: `FARE - ${associationMetadata.name}`,
         description: associationMetadata.desc,
     };
 }

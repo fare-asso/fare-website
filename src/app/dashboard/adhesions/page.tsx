@@ -16,7 +16,7 @@ export default async function Adhesions() {
             <CardHeader className="p-0">
                 <CardTitle>Demandes d'adhésion</CardTitle>
                 <CardDescription>
-                    Espace de gestion des demandes d'adhésion à la FAHB
+                    Espace de gestion des demandes d'adhésion à la FARE
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto p-0">

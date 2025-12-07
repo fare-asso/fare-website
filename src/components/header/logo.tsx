@@ -9,7 +9,7 @@ export default function HeaderLogo() {
             <Link href="/" className="h-full w-max">
                 <Image
                     src={logo}
-                    alt="FAHB Logo"
+                    alt="FARE Logo"
                     className="h-full w-auto"
                     priority
                 />

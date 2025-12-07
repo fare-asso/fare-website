@@ -598,7 +598,7 @@ export async function processAdhesionForm(
         });
 
         const emailTransporterResponse = await sendEmail({
-            to: "secretariat@fahb.eu",
+            to: "secretariat@fare-asso.fr",
             subject: `Une nouvelle adhésion a été reçue - ${record.association}`,
             html: adhesionEmailTemplate(record.association),
         });

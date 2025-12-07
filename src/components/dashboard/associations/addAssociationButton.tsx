@@ -234,7 +234,7 @@ export default function AddAssociationButton() {
                             id="website"
                             name="website"
                             pattern="https://.*"
-                            placeholder="https://www.fahb.eu"
+                            placeholder="https://www.fare-asso.fr"
                         />
                     </div>
 
@@ -316,7 +316,7 @@ export default function AddAssociationButton() {
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    :   null}
+                        : null}
                 </form>
 
                 <DialogFooter>
@@ -327,7 +327,7 @@ export default function AddAssociationButton() {
                     >
                         {isLoading ?
                             <LoadingRing />
-                        :   null}{" "}
+                            : null}{" "}
                         Ajouter
                     </Button>
                 </DialogFooter>

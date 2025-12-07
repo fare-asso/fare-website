@@ -118,7 +118,7 @@ export default async function submitBagadAssoFormAction(
         });
 
         const emailTransporterResponse = await sendEmail({
-            to: "evenement@fahb.eu",
+            to: "evenement@fare-asso.fr",
             subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
             html: bagadAssoTicketEmailTemplate(
                 ticketRecord.id,
