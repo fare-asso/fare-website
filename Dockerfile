@@ -75,10 +75,6 @@ COPY --from=builder --chown=runner:runner /app/.next/static ./.next/static
 
 # Copy Prisma files for runtime migrations
 COPY --from=builder --chown=runner:runner /app/prisma ./prisma
-COPY --from=builder --chown=runner:runner /app/node_modules/.pnpm/prisma* ./node_modules/.pnpm/
-COPY --from=builder --chown=runner:runner /app/node_modules/.pnpm/@prisma* ./node_modules/.pnpm/
-COPY --from=builder --chown=runner:runner /app/node_modules/prisma* ./node_modules/
-COPY --from=builder --chown=runner:runner /app/node_modules/@prisma* ./node_modules/
 
 # Copy entrypoint script
 COPY --chown=runner:runner docker-entrypoint.sh ./
