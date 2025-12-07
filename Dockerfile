@@ -25,6 +25,11 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY schema.prisma ./
 
+# Copy migrations to the location Prisma expects (prisma/migrations)
+RUN mkdir -p prisma
+COPY migrations ./prisma/migrations
+RUN cp schema.prisma ./prisma/
+
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
@@ -35,7 +40,6 @@ COPY . .
 # Database connection
 ARG SUPABASE_POSTGRES_PRISMA_URL
 ENV SUPABASE_POSTGRES_PRISMA_URL=$SUPABASE_POSTGRES_PRISMA_URL
-ENV SUPABASE_POSTGRES_PRISMA_DIRECT_URL=$SUPABASE_POSTGRES_PRISMA_URL
 
 # Supabase client configuration (NEXT_PUBLIC_ vars are embedded at build time)
 ARG NEXT_PUBLIC_SUPABASE_URL
@@ -45,9 +49,6 @@ ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 # Generate Prisma client
 RUN pnpm exec prisma generate --no-hints
-
-# Run database migrations
-RUN pnpm exec prisma migrate deploy
 
 # Build the application
 RUN pnpm run build
@@ -72,6 +73,15 @@ RUN chown runner:runner .next
 COPY --from=builder --chown=runner:runner /app/.next/standalone ./
 COPY --from=builder --chown=runner:runner /app/.next/static ./.next/static
 
+# Copy Prisma files for runtime migrations
+COPY --from=builder --chown=runner:runner /app/prisma ./prisma
+COPY --from=builder --chown=runner:runner /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder --chown=runner:runner /app/node_modules/@prisma ./node_modules/@prisma
+
+# Copy entrypoint script
+COPY --chown=runner:runner docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+
 USER runner
 
 EXPOSE 3000
@@ -79,4 +89,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["./docker-entrypoint.sh"]
