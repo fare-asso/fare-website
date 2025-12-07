@@ -16,10 +16,6 @@ WORKDIR /app
 #####################
 FROM base AS builder
 
-# Build-time arguments for database connection (needed for Next.js static generation)
-ARG SUPABASE_POSTGRES_PRISMA_URL
-ENV SUPABASE_POSTGRES_PRISMA_URL=$SUPABASE_POSTGRES_PRISMA_URL
-
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN npm install -g corepack@latest
@@ -34,6 +30,17 @@ RUN pnpm install --frozen-lockfile
 
 # Copy the rest of the application
 COPY . .
+
+# Build-time arguments needed for Next.js static generation
+# Database connection
+ARG SUPABASE_POSTGRES_PRISMA_URL
+ENV SUPABASE_POSTGRES_PRISMA_URL=$SUPABASE_POSTGRES_PRISMA_URL
+
+# Supabase client configuration (NEXT_PUBLIC_ vars are embedded at build time)
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 # Generate Prisma client
 RUN pnpm exec prisma generate --no-hints
