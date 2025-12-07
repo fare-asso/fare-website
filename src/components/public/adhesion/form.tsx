@@ -180,7 +180,7 @@ export default function AdhesionForm() {
                         <input
                             id="sigle"
                             name="sigle"
-                            placeholder="Ex: FAHB"
+                            placeholder="Ex: FARE"
                             required
                         />
                     </div>
@@ -652,7 +652,7 @@ export default function AdhesionForm() {
                     <AlertTitle>Erreur</AlertTitle>
                     <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
-            :   null}
+                : null}
 
             {formState?.success ?
                 <Alert variant="default">
@@ -663,7 +663,7 @@ export default function AdhesionForm() {
                         {`Nous reviendrons vers vous par e-mail dans les plus brefs délais pour vous fournir une réponse concernant votre demande.`}
                     </AlertDescription>
                 </Alert>
-            :   null}
+                : null}
 
             <div className="flex w-full flex-col items-center">
                 <button
@@ -673,7 +673,7 @@ export default function AdhesionForm() {
                 >
                     {isLoading ?
                         <LoadingRing />
-                    :   null}{" "}
+                        : null}{" "}
                     Envoyer le formulaire d'adhésion
                 </button>
             </div>

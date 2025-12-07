@@ -108,7 +108,7 @@ export default function SendInvitationLinkButton({
                             type="email"
                             name="email"
                             required
-                            placeholder="jane.doe@fahb.eu"
+                            placeholder="jane.doe@fare-asso.fr"
                         />
                     </div>
 
@@ -119,7 +119,7 @@ export default function SendInvitationLinkButton({
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    :   null}
+                        : null}
                 </form>
 
                 <DialogFooter>
@@ -130,7 +130,7 @@ export default function SendInvitationLinkButton({
                     >
                         {isLoading ?
                             <LoadingRing />
-                        :   null}{" "}
+                            : null}{" "}
                         Inviter
                     </Button>
                 </DialogFooter>

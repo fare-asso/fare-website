@@ -11,7 +11,7 @@ export default function APropos() {
     return (
         <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
             {/* <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
-                Fédération des Associations de Haute-Bretagne (FAHB)
+                Fédération des Associations de Haute-Bretagne (FARE)
             </h1> */}
 
             {/* TODO : Need to crop the picture to fit the logo and improve the svg file */}

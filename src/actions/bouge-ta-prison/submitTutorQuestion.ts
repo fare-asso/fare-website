@@ -34,7 +34,7 @@ export default async function submitTutorQuestion(
     });
 
     const emailTransporterRes = await sendEmail({
-        to: "intervention-carceral@fahb.eu",
+        to: "intervention-carceral@fare-asso.fr",
         subject: "Nouvelle question tutorat Bouge Ta Prison",
         html: tutorQuestionEmailTemplate(data, BTPTutorQuestion.id),
     });

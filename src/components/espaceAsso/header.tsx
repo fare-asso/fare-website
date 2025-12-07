@@ -30,7 +30,7 @@ export default async function Header() {
 
     return (
         <div className="flex h-12 w-full flex-row items-center justify-between bg-black p-3 text-white">
-            <span className="text-xl font-semibold">Espace Asso FAHB</span>
+            <span className="text-xl font-semibold">Espace Asso FARE</span>
             <AssociationAccountDropdown
                 associationName={association.name}
                 logoUrl={logoUrl}

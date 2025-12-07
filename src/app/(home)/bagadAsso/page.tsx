@@ -23,7 +23,7 @@ export default async function BagadAsso() {
                     Présentation du projet
                 </h2>
                 <p className="mb-4">
-                    La FAHB et son réseau sont aujourd'hui des acteurs
+                    La FARE et son réseau sont aujourd'hui des acteurs
                     primordiaux pour la vie étudiante du territoire de Haute
                     Bretagne. Parmi la vingtaine d'associations du réseau,
                     plusieurs ont parmi leurs missions la réalisation
@@ -34,7 +34,7 @@ export default async function BagadAsso() {
                 <p className="mb-4">
                     Dans ce contexte, et afin d'accompagner et de permettre aux
                     associations de son réseau de se développer et de réaliser
-                    des projets à hauteur de leurs ambitions, la FAHB vous
+                    des projets à hauteur de leurs ambitions, la FARE vous
                     présente le Bagad'Asso.
                 </p>
                 <p className="mb-4 italic">
@@ -45,7 +45,7 @@ export default async function BagadAsso() {
                 </p>
                 <p className="mb-4">
                     Cette malle à disposition des associations du réseau de la
-                    FAHB a pour objectif de mettre à disposition de manière
+                    FARE a pour objectif de mettre à disposition de manière
                     gratuite du matériel d'événementiel et de prévention pour la
                     réalisation de vos évènements. Concrètement, ça veut dire
                     que lorsque vous souhaitez organiser votre WEC, gala, soirée

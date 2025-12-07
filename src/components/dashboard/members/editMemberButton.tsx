@@ -52,7 +52,7 @@ const memberSchema = z.object({
     picture:
         typeof window === "undefined" ?
             z.any()
-        :   z
+            : z
                 .instanceof(FileList)
                 .optional()
                 .transform((fl) => {
@@ -311,7 +311,7 @@ export default function EditMemberButton({
                         <Input
                             type="email"
                             {...register("email")}
-                            placeholder="john.doe@fahb.eu"
+                            placeholder="john.doe@fare-asso.fr"
                             required
                             defaultValue={member.email}
                         />
@@ -389,7 +389,7 @@ export default function EditMemberButton({
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
-                    :   null}
+                        : null}
                 </form>
 
                 <DialogFooter>
@@ -401,7 +401,7 @@ export default function EditMemberButton({
                     >
                         {isLoading ?
                             <LoadingRing />
-                        :   null}{" "}
+                            : null}{" "}
                         Modifier
                     </Button>
                 </DialogFooter>

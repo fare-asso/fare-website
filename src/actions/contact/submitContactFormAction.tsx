@@ -17,7 +17,7 @@ export default async function submitContactFormAction(
     }
 
     const emailTransporterRes = await sendEmail({
-        to: "contact@fahb.eu",
+        to: "contact@fare-asso.fr",
         subject: `${parsed.data.firstName} ${parsed.data.lastName} veut vous contacter`,
         html: contactEmailTemplate(parsed.data),
     });

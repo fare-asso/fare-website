@@ -6,8 +6,8 @@ import Header from "@/components/espaceAsso/header";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Espace Asso FAHB",
-    description: "Espace de gestion des associations de la FAHB",
+    title: "Espace Asso FARE",
+    description: "Espace de gestion des associations de la FARE",
 };
 
 export default function RootLayout({

@@ -245,7 +245,7 @@ export default function EditAssociationButton({
                             id="website"
                             name="website"
                             pattern="https://.*"
-                            placeholder="https://www.fahb.eu"
+                            placeholder="https://www.fare-asso.fr"
                             defaultValue={association.website ?? ""}
                         />
                     </div>
@@ -329,7 +329,7 @@ export default function EditAssociationButton({
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    :   null}
+                        : null}
                 </form>
 
                 <DialogFooter>
@@ -340,7 +340,7 @@ export default function EditAssociationButton({
                     >
                         {isLoading ?
                             <LoadingRing />
-                        :   null}{" "}
+                            : null}{" "}
                         Valider modifications
                     </Button>
                 </DialogFooter>

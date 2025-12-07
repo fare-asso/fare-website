@@ -1,10 +1,10 @@
-# FAHB Website
+# FARE Website
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## About
 
-This project is a website for the Fédération des Associations de Haute-Bretagne (FAHB). The FAHB is a non-profit organization that represents students in the Ille-et-Vilaine and Côtes d'Armor regions. The website provides information about the FAHB, its projects, and its member associations. It also includes features for managing memberships, events, and other activities.
+This project is a website for the Fédération des Associations de Haute-Bretagne (FARE). The FARE is a non-profit organization that represents students in the Ille-et-Vilaine and Côtes d'Armor regions. The website provides information about the FARE, its projects, and its member associations. It also includes features for managing memberships, events, and other activities.
 
 ## Getting Started
 

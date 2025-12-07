@@ -57,7 +57,7 @@ export default function BougeTaPrison() {
                     </div>
 
                     <p className="mb-4">
-                        La FAHB fait également partie du{" "}
+                        La FARE fait également partie du{" "}
                         <Link
                             href="https://collectifprisonrennes.fr/"
                             target="_blank"

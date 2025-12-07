@@ -27,13 +27,11 @@ import { FaRegCalendarAlt } from "react-icons/fa"; // Evènements
 import { LuNetwork } from "react-icons/lu"; // Associations
 
 import Image from "next/image";
-import LogoFAHB from "/public/logo.webp";
-import clsx from "clsx";
+import LogoFARE from "/public/logo_fare.png";
 import { usePathname } from "next/navigation";
 import CurrentUserClient from "./currentUserClient";
 import Link from "next/link";
 import { Permission } from "@prisma/client";
-import path from "path";
 
 export default function SideBarApp({
     permissions,
@@ -100,8 +98,8 @@ export default function SideBarApp({
             <SidebarHeader className="flex items-center justify-center py-4">
                 <Link href="/dashboard" className="flex items-center gap-2">
                     <Image
-                        src={LogoFAHB}
-                        alt="Logo de la FAHB"
+                        src={LogoFARE}
+                        alt="Logo de la FARE"
                         className="w-16 opacity-85"
                         priority={true}
                         placeholder="empty"

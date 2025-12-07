@@ -39,7 +39,7 @@ export const memberSchema = z.object({
     picture:
         typeof window === "undefined" ?
             z.any()
-        :   z
+            : z
                 .instanceof(FileList)
                 .refine((fl) => fl.length > 0, {
                     message: "Pas de fichier selectionné",
@@ -242,7 +242,7 @@ export default function AddMemberButton() {
                         <Input
                             type="email"
                             {...register("email")}
-                            placeholder="john.doe@fahb.eu"
+                            placeholder="john.doe@fare-asso.fr"
                             required
                         />
                         {errors.email && (
@@ -310,7 +310,7 @@ export default function AddMemberButton() {
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
-                    :   null}
+                        : null}
                 </form>
 
                 <DialogFooter>
@@ -321,7 +321,7 @@ export default function AddMemberButton() {
                     >
                         {isLoading ?
                             <LoadingRing />
-                        :   null}{" "}
+                            : null}{" "}
                         Ajouter
                     </Button>
                 </DialogFooter>

@@ -23,8 +23,8 @@ const EluCard = ({ elu }: { elu: Elu }) => {
     return (
         <Card className="w-full">
             <CardContent className="space-y-4 p-4">
-                {/* <img 
-          src="/api/placeholder/200/200" 
+                {/* <img
+          src="/api/placeholder/200/200"
           alt={`Photo de ${elu.firstName} ${elu.lastName}`}
           className="w-full rounded-lg"
         /> */}
@@ -46,7 +46,7 @@ export default function Elues() {
     return (
         <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
             <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
-                Nos élu·e·s étudiant·e·s de la FAHB
+                Nos élu·e·s étudiant·e·s de la FARE
             </h1>
 
             {/* Headers pictures */}
@@ -58,10 +58,10 @@ export default function Elues() {
             <div className="mb-20 w-full max-w-4xl space-y-12">
                 <div className="prose mb-20 max-w-none rounded-lg bg-black p-6 text-white">
                     <p>
-                        La FAHB a parmi ses missions principales de représenter
+                        La FARE a parmi ses missions principales de représenter
                         l'ensemble des étudiant.e.s de Haute-Bretagne. Pour ce
                         faire, notre fédération se mobilise au quotidien par des
-                        élu.e.s, étudiant.e.s engagé.e.s au sein de la FAHB, qui
+                        élu.e.s, étudiant.e.s engagé.e.s au sein de la FARE, qui
                         ont pour rôle de siéger dans différents conseils.
                     </p>
                 </div>
@@ -86,7 +86,7 @@ export default function Elues() {
                             Nos élu.e.s “Bouge Ton CROUS” au CROUS Bretagne
                         </h2>
                         <p className="py-3 text-sm font-medium">
-                            Contact : elus.crous@fahb.eu
+                            Contact : elus.crous@fare-asso.fr
                         </p>
                     </div>
 
@@ -174,7 +174,7 @@ export default function Elues() {
                             Rennes
                         </h2>
                         <p className="py-3 text-sm font-medium">
-                            Contact : btc.univrennes@fahb.eu
+                            Contact : btc.univrennes@fare-asso.fr
                         </p>
                     </div>
 
@@ -451,7 +451,7 @@ export default function Elues() {
                             Nos élu.e.s au CA de l'EHESP Rennes
                         </h2>
                         <p className="py-3 text-sm font-medium">
-                            Contact : btc.univrennes@fahb.eu
+                            Contact : btc.univrennes@fare-asso.fr
                         </p>
                     </div>
 
@@ -513,7 +513,7 @@ export default function Elues() {
                             Rennes 2
                         </h2>
                         <p className="py-3 text-sm font-medium">
-                            Contact : btc.univrennes2@fahb.eu
+                            Contact : btc.univrennes2@fare-asso.fr
                         </p>
                     </div>
 

@@ -72,7 +72,7 @@ export default function AGORAe() {
                             href="/a-propos"
                             className="text-blue-600 hover:underline"
                         >
-                            FAHB
+                            FARE
                         </Link>{" "}
                         (Fédération des Associations de Haute-Bretagne). Les
                         AGORAé sont des espaces d'échanges et de solidarité qui
@@ -146,18 +146,18 @@ export default function AGORAe() {
                         Si vous êtes en difficulté pour compléter cette
                         démarche, vous pouvez nous contacter à{" "}
                         <a
-                            href="mailto:agorae@fahb.eu"
+                            href="mailto:agorae@fare-asso.fr"
                             target="blank"
                             className="text-blue-600 hover:underline"
                         >
-                            agorae@fahb.eu
+                            agorae@fare-asso.fr
                         </a>{" "}
                         ou venir nous rencontrer lors des permanences de
                         l'épicerie.
                     </p>
 
                     {/* <p>
-                        L'AGORAé est accessible via un dossier de demande d'admission, disponible <Link href="/path-to-pdf" className="text-blue-600 hover:underline">ici</Link> ou à l'adresse mail : <a href="mailto:agorae@fahb.eu" className="text-blue-600 hover:underline">agorae@fahb.eu</a>.
+                        L'AGORAé est accessible via un dossier de demande d'admission, disponible <Link href="/path-to-pdf" className="text-blue-600 hover:underline">ici</Link> ou à l'adresse mail : <a href="mailto:agorae@fare-asso.fr" className="text-blue-600 hover:underline">agorae@fare-asso.fr</a>.
                     </p> */}
                 </section>
 
@@ -203,10 +203,10 @@ export default function AGORAe() {
                         place dans les horaires indiquées, merci de nous
                         contacter à{" "}
                         <a
-                            href="mailto:agorae@fahb.eu"
+                            href="mailto:agorae@fare-asso.fr"
                             className="text-blue-600 hover:underline"
                         >
-                            agorae@fahb.eu
+                            agorae@fare-asso.fr
                         </a>{" "}
                         ou sur le compte Instagram{" "}
                         <a
