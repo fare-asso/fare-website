@@ -189,7 +189,7 @@ export default function BagadAssoForm({
                     <AlertTitle>Erreur</AlertTitle>
                     <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
-            :   null}
+                : null}
 
             {formState?.success ?
                 <Alert
@@ -202,7 +202,7 @@ export default function BagadAssoForm({
                         }
                     </AlertDescription>
                 </Alert>
-            :   null}
+                : null}
 
             <button
                 type="submit"
@@ -212,7 +212,7 @@ export default function BagadAssoForm({
                 {" "}
                 {isLoading ?
                     <LoadingRing />
-                :   null}{" "}
+                    : null}{" "}
                 Valider la demande de matériel
             </button>
         </form>
