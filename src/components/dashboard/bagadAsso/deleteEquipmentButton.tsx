@@ -24,16 +24,17 @@ export default function DeleteEquipmentButton({
 }) {
     const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        number
     >(deleteEquipmentAction, undefined)
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
+            // Dialog closes automatically via AlertDialog
         }
     }, [formState])
 
-    const handleDelete = async (
+    const handleDelete = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         event.preventDefault()

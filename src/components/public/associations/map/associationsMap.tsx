@@ -117,7 +117,9 @@ export default function AssociationMap({
 
                 if (locationData.string) {
                     return null
-                } else if (locationData.json) {
+                }
+
+                if (locationData.json) {
                     return (
                         <Marker
                             key={association.id}
@@ -158,6 +160,8 @@ export default function AssociationMap({
                         </Marker>
                     )
                 }
+
+                return null
             })}
         </MapContainer>
     )

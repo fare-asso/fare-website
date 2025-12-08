@@ -113,7 +113,7 @@ async function replaceImagesWithBase64(
 export default function EditArticleButton({ article }: { article: Article }) {
     const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(editArticleAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
@@ -136,11 +136,11 @@ export default function EditArticleButton({ article }: { article: Article }) {
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
-            handleOpenChange(false)
+            void handleOpenChange(false)
         }
     }, [formState, handleOpenChange])
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         if (!content) return
@@ -148,9 +148,9 @@ export default function EditArticleButton({ article }: { article: Article }) {
         const formData = new FormData(event.currentTarget)
         const { updatedContent, images } = extractAndReplaceImages(content)
 
-        images.forEach((image) => {
+        for (const image of images) {
             formData.append(`images`, image.file)
-        })
+        }
         formData.append("content", JSON.stringify(updatedContent))
 
         startTransition(() => {

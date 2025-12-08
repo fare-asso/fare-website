@@ -5,7 +5,7 @@ import { FaUserSlash } from "react-icons/fa"
 import { Button } from "@/components/ui/button"
 
 export default function DeleteRepresentativeButton({
-    association
+    association: _association
 }: {
     association: Association
 }) {

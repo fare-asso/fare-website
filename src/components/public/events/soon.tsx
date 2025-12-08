@@ -21,7 +21,7 @@ export default async function SoonEvents() {
     })
 
     if (events.length === 0) {
-        return <></>
+        return null
     }
 
     const supabase = await createClient()

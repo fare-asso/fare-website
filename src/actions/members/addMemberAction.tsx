@@ -66,9 +66,9 @@ export default async function addMemberAction(
     }
 
     // Fetch picture info
-    const { data, error: pictureError } = await supabase.storage
+    const { error: pictureError } = await supabase.storage
         .from("member-pictures")
-        .info(parsed.data?.picturePath!)
+        .info(parsed.data.picturePath)
 
     if (pictureError) {
         return {

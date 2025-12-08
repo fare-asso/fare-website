@@ -28,32 +28,32 @@ export function zodFieldValuesToFormData(
     const { excludeFields = [], dateFormat = "iso" } = options
     const formData = new FormData()
 
-    Object.entries(data).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(data)) {
         // Ignorer les champs exclus
         if (excludeFields.includes(key)) {
-            return
+            continue
         }
 
         if (value === null || value === undefined) {
-            return
+            continue
         }
 
         // Gestion des tableaux
         if (Array.isArray(value)) {
-            value.forEach((item, index) => {
+            for (const [index, item] of value.entries()) {
                 if (item !== null && item !== undefined) {
                     formData.append(
                         `${key}[${index}]`,
                         formatValue(item, dateFormat)
                     )
                 }
-            })
-            return
+            }
+            continue
         }
 
         // Gestion des valeurs simples
         formData.append(key, formatValue(value, dateFormat))
-    })
+    }
 
     return formData
 }
@@ -92,18 +92,16 @@ function formatValue(
  */
 export function formDataToString(formData: FormData): string {
     const entries = Array.from(formData.entries())
-    const formattedEntries = entries.map(([key, value]: [string, any]) => {
-        // Gestion des fichiers
-        if (value instanceof File) {
-            return `${key}: File(name: ${value.name}, type: ${value.type}, size: ${value.size} bytes)`
+    const formattedEntries = entries.map(
+        ([key, value]: [string, FormDataEntryValue]) => {
+            // Gestion des fichiers (File extends Blob, so this handles both)
+            if (value instanceof File) {
+                return `${key}: File(name: ${value.name}, type: ${value.type}, size: ${value.size} bytes)`
+            }
+            // Gestion des valeurs normales (strings)
+            return `${key}: ${value}`
         }
-        // Gestion des Blobs
-        if (value instanceof Blob) {
-            return `${key}: Blob(type: ${value.type}, size: ${value.size} bytes)`
-        }
-        // Gestion des valeurs normales
-        return `${key}: ${value}`
-    })
+    )
 
     return formattedEntries.join("\n")
 }

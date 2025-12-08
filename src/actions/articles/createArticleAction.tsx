@@ -33,9 +33,9 @@ export default async function createArticleAction(
 
     // Images
     const images = formData.getAll("images") as File[]
-    images.forEach((image) => {
+    for (const image of images) {
         console.log(image)
-    })
+    }
 
     // upload images to storage
     const responses = await Promise.all(
@@ -48,25 +48,27 @@ export default async function createArticleAction(
     )
 
     // check for errors
-    responses.forEach((response) => {
+    for (const response of responses) {
         if (response.error) {
             return {
                 error: "L'upload des images a échoué. Veuillez réessayer"
             }
         }
-    })
+    }
 
     const contentDelta: JSONContent = JSON.parse(content)
 
     const { userId, error: userIdError } = await getCurrentUserId()
 
-    if (userIdError) {
+    if (userIdError || !userId) {
         // Delete uploaded images
         await Promise.all(
             responses.map(async (response) => {
-                await supabase.storage
-                    .from("article-pictures")
-                    .remove([response.data?.path!])
+                if (response.data?.path) {
+                    await supabase.storage
+                        .from("article-pictures")
+                        .remove([response.data.path])
+                }
             })
         )
 
@@ -80,8 +82,10 @@ export default async function createArticleAction(
         data: {
             title: title,
             content: contentDelta,
-            imagesPath: responses.map((response) => response.data?.path!),
-            authorId: userId!
+            imagesPath: responses
+                .map((response) => response.data?.path)
+                .filter((path): path is string => path !== undefined),
+            authorId: userId
         }
     })
 

@@ -4,7 +4,7 @@ import clsx from "clsx"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { MouseEvent, RefObject } from "react"
-import type { Link as L } from "./headerLinks"
+import type { NavLink } from "./headerLinks"
 
 export default function HeaderLink({
     title,
@@ -14,7 +14,7 @@ export default function HeaderLink({
 }: {
     title: string
     href: string
-    subLinks?: L[]
+    subLinks?: NavLink[]
     runnerRef: RefObject<HTMLDivElement>
 }) {
     const pathname = usePathname()
@@ -28,7 +28,7 @@ export default function HeaderLink({
             runnerRef.current.style.width = `${width + 2}px`
             runnerRef.current.style.left =
                 left -
-                target.parentElement?.getBoundingClientRect().left -
+                (target.parentElement?.getBoundingClientRect().left ?? 0) -
                 2 +
                 "px"
             runnerRef.current.style.opacity = "1"
@@ -46,6 +46,8 @@ export default function HeaderLink({
     }
 
     return (
+        // biome-ignore lint/a11y/noStaticElementInteractions: hover effects for navigation dropdown
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: hover effects for navigation dropdown
         <div
             className="relative z-20 m-0 transition-all hover:[&>a]:text-white hover:[&>div]:scale-100 hover:[&>div]:opacity-100"
             onMouseEnter={hoverHandler}

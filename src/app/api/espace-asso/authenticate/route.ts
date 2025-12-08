@@ -15,7 +15,7 @@ export async function GET(request: Request) {
         return Response.redirect(new URL("/", request.url))
     }
 
-    const { data, error } = await supabase.auth.verifyOtp({
+    const { error } = await supabase.auth.verifyOtp({
         token_hash: tokenHash,
         type: type as EmailOtpType
     })

@@ -46,7 +46,7 @@ export default function EditEventButtonClient({
 }) {
     const [formState, formAction] = useFormState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(editEventAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
@@ -81,7 +81,7 @@ export default function EditEventButtonClient({
             }
         }
 
-        fetchImageUrl()
+        void fetchImageUrl()
     }, [eventInfo.id])
 
     const handleOpenChange = useCallback((open: boolean) => {

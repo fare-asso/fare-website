@@ -3,7 +3,7 @@
 import clsx from "clsx"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { type RefObject, useEffect, useRef, useState } from "react"
+import { type RefObject, useCallback, useEffect, useRef, useState } from "react"
 import {
     MdClose,
     MdExpandLess,
@@ -12,14 +12,14 @@ import {
 } from "react-icons/md"
 import HeaderLink from "./headerLink"
 
-export interface Link {
+export interface NavLink {
     title: string
     href: string
     hidden?: boolean
-    subLinks?: Link[]
+    subLinks?: NavLink[]
 }
 
-export default function HeaderLinks({ links }: { links: Link[] }) {
+export default function HeaderLinks({ links }: { links: NavLink[] }) {
     const pathname = usePathname()
     const runner = useRef<HTMLDivElement>(null)
     const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false)
@@ -36,7 +36,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
     }
 
     function renderMobileLinks(
-        links: Link[],
+        links: NavLink[],
         pathname: string,
         level: number
     ): React.ReactElement | React.ReactElement[] {
@@ -73,6 +73,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                             </Link>
                             {hasSubLinks && (
                                 <button
+                                    type="button"
                                     onClick={() => toggleSubMenu(link.title)}
                                     className="ml-2"
                                 >
@@ -85,10 +86,10 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                             )}
                         </div>
 
-                        {hasSubLinks && isOpen && (
+                        {hasSubLinks && isOpen && link.subLinks && (
                             <div key={`sublink-${link.title}`} className="">
                                 {renderMobileLinks(
-                                    link.subLinks!,
+                                    link.subLinks,
                                     pathname,
                                     level + 1
                                 )}
@@ -100,7 +101,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
     }
 
     function renderDesktopLinks(
-        links: Link[],
+        links: NavLink[],
         _pathname: string
     ): React.ReactElement | React.ReactElement[] {
         return links
@@ -116,14 +117,14 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
             ))
     }
 
-    const handleOutsideClick = (event: MouseEvent) => {
+    const handleOutsideClick = useCallback((event: MouseEvent) => {
         if (
             menuRef.current &&
             !menuRef.current.contains(event.target as Node)
         ) {
             setMenuIsOpen(false)
         }
-    }
+    }, [])
 
     useEffect(() => {
         if (menuIsOpen) {
@@ -150,6 +151,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
 
             {/* Bouton Burger pour les petits écrans */}
             <button
+                type="button"
                 className="ml-auto block text-black lg:ml-0 lg:hidden"
                 onClick={() => setMenuIsOpen(true)}
             >
@@ -167,6 +169,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
             >
                 <div className="flex w-full flex-row items-center justify-end p-4">
                     <button
+                        type="button"
                         id="closeButton"
                         className="hover:font-bold"
                         onClick={() => setMenuIsOpen(false)}

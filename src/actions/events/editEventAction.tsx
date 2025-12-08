@@ -135,14 +135,12 @@ export default async function editEventAction(
                 // Upload Success
                 data.image = response.data.path
             }
-        } else {
+        } else if (previousPath != null && typeof previousPath === "string") {
             // keep old picture
-            if (previousPath != null && typeof previousPath === "string") {
-                data.image = previousPath.toString()
-            } else {
-                return {
-                    error: "L'image n'est pas valide ou la taille de l'image excède 10 mo"
-                }
+            data.image = previousPath.toString()
+        } else {
+            return {
+                error: "L'image n'est pas valide ou la taille de l'image excède 10 mo"
             }
         }
     } else if (previousPath != null && typeof previousPath === "string") {
@@ -181,8 +179,12 @@ export default async function editEventAction(
             })
 
             data.categoryId = foundCategory.id
-        } catch (error: any) {
-            if (error.code === "P2025") {
+        } catch (error: unknown) {
+            if (
+                error instanceof Error &&
+                "code" in error &&
+                error.code === "P2025"
+            ) {
                 return {
                     error: `La catégorie ${categoryStr} n'existe pas`
                 }
@@ -283,19 +285,25 @@ export default async function editEventAction(
     }
 
     // create event record in the DB
+    if (!data.name || !data.desc || !data.categoryId || !data.location) {
+        return {
+            error: "Des champs obligatoires sont manquants"
+        }
+    }
+
     try {
         const _record = await prisma.event.update({
             where: {
                 id: data.id
             },
             data: {
-                name: data.name!,
-                desc: data.desc!,
-                categoryId: data.categoryId!,
+                name: data.name,
+                desc: data.desc,
+                categoryId: data.categoryId,
                 image: data.image,
                 startTime: data.startTime,
                 endTime: data.endTime,
-                location: data.location!,
+                location: data.location,
                 creatorId: res.userId,
                 visibility: data.visibility
             }
@@ -306,12 +314,10 @@ export default async function editEventAction(
         return {
             success: true
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.log(error)
         return {
             error: "La modification de l'évènement à échoué, veuillez réessayer"
         }
     }
-
-    console.log(data)
 }

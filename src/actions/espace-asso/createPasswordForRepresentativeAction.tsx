@@ -43,7 +43,7 @@ export default async function createPasswordForRepresentativeAction(
     }
 
     // set password
-    const { data, error } = await supabase.auth.updateUser({ password })
+    const { error } = await supabase.auth.updateUser({ password })
 
     if (error) {
         return {

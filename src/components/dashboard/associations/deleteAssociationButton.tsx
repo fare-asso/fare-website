@@ -25,7 +25,7 @@ export default function DeleteAssociationButton({
 }) {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        number
     >(deleteAssociationAction, undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -40,7 +40,7 @@ export default function DeleteAssociationButton({
         setIsLoading(false)
     }, [formState])
 
-    const handleDelete = async (
+    const handleDelete = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         event.preventDefault()

@@ -26,7 +26,7 @@ import LoadingRing from "../loadingRing"
 export default function CreateEventButton() {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(createEventAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
     const [_startDate, setStartDate] = useState<Date>()
@@ -50,7 +50,7 @@ export default function CreateEventButton() {
         setIsLoading(false)
     }, [formState, handleOpenChange])
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)

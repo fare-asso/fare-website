@@ -79,6 +79,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return (
         <style
             dangerouslySetInnerHTML={{
+                // biome-ignore lint/style/useNamingConvention: __html is required by React's dangerouslySetInnerHTML
                 __html: Object.entries(THEMES)
                     .map(
                         ([theme, prefix]) => `
@@ -134,7 +135,7 @@ const ChartTooltipContent = React.forwardRef<
         const { config } = useChart()
 
         const tooltipLabel = React.useMemo(() => {
-            if (hideLabel || payload?.length === 0) {
+            if (hideLabel || !payload || payload.length === 0) {
                 return null
             }
 
@@ -149,7 +150,7 @@ const ChartTooltipContent = React.forwardRef<
             if (labelFormatter) {
                 return (
                     <div className={cn("font-medium", labelClassName)}>
-                        {labelFormatter(value, payload)}
+                        {labelFormatter(value, payload ?? [])}
                     </div>
                 )
             }
@@ -171,7 +172,7 @@ const ChartTooltipContent = React.forwardRef<
             labelKey
         ])
 
-        if (!active || payload?.length === 0) {
+        if (!active || !payload || payload.length === 0) {
             return null
         }
 
@@ -310,7 +311,7 @@ const ChartLegendContent = React.forwardRef<
     ) => {
         const { config } = useChart()
 
-        if (payload?.length === 0) {
+        if (!payload || payload.length === 0) {
             return null
         }
 

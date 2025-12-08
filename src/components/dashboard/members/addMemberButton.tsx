@@ -124,7 +124,7 @@ export default function AddMemberButton() {
         })
 
         // Add the previously uploaded picture path to the formData
-        formData.append("picturePath", uploadResponse.path!)
+        formData.append("picturePath", uploadResponse.path ?? "")
 
         console.log(formDataToString(formData))
 

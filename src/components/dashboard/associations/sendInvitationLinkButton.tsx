@@ -26,7 +26,7 @@ export default function SendInvitationLinkButton({
 }) {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(inviteRepresentativeAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -48,7 +48,7 @@ export default function SendInvitationLinkButton({
         setIsLoading(false)
     }, [formState, handleOpenChange])
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)

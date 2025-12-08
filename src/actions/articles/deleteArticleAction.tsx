@@ -33,7 +33,7 @@ export default async function deleteArticleAction(
 
     /* Remove pictures from storage if there is some */
     if (article.imagesPath.length > 0) {
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
             .from("article-pictures")
             .remove(article.imagesPath)
 

@@ -31,7 +31,7 @@ export default async function deleteCDPAction({ id }: { id: number }) {
     }
 
     // remove file from storage
-    const { error: err, data } = await supabase.storage
+    const { error: err } = await supabase.storage
         .from("communique-de-presse")
         .remove([deletedCdpRecord.filePath])
 

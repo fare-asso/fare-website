@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { GoArrowLeft, GoArrowRight } from "react-icons/go"
 // Import all partner logos
 import LPI from "/public/partenaires/lapetiteimprimerie.png"
@@ -30,18 +30,19 @@ export default function PartnersCarousel() {
         }
     }
 
-    const scrollRight = () => {
+    const scrollRight = useCallback(() => {
         if (carouselRef.current) {
-            const newIndex =
-                currentIndex < partners.length - 1 ? currentIndex + 1 : 0
-            setCurrentIndex(newIndex)
-
-            carouselRef.current.scrollTo({
-                left: newIndex * carouselRef.current.clientWidth,
-                behavior: "smooth"
+            setCurrentIndex((prevIndex) => {
+                const newIndex =
+                    prevIndex < partners.length - 1 ? prevIndex + 1 : 0
+                carouselRef.current?.scrollTo({
+                    left: newIndex * (carouselRef.current?.clientWidth ?? 0),
+                    behavior: "smooth"
+                })
+                return newIndex
             })
         }
-    }
+    }, [partners.length])
 
     // Auto-scroll functionality
     useEffect(() => {
@@ -57,6 +58,7 @@ export default function PartnersCarousel() {
             {/* Navigation Arrows */}
             <div className="-translate-y-1/2 pointer-events-none absolute top-1/2 z-20 flex w-full justify-between">
                 <button
+                    type="button"
                     onClick={scrollLeft}
                     title="Bouton partenaires gauche"
                     className="pointer-events-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-black bg-white/70 shadow-md transition-all hover:bg-white/90"
@@ -65,6 +67,7 @@ export default function PartnersCarousel() {
                 </button>
 
                 <button
+                    type="button"
                     onClick={scrollRight}
                     title="Bouton partenaires droite"
                     className="pointer-events-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-black bg-white/70 shadow-md transition-all hover:bg-white/90"
@@ -108,6 +111,7 @@ export default function PartnersCarousel() {
             <div className="mt-4 flex justify-center space-x-2">
                 {partners.map((_, index) => (
                     <button
+                        type="button"
                         title={`Position carousel ${index}`}
                         key={index}
                         onClick={() => {

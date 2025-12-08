@@ -29,7 +29,7 @@ export default async function CurrentEvents() {
     })
 
     if (events.length === 0) {
-        return <></>
+        return null
     }
 
     return (

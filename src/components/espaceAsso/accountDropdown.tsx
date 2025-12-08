@@ -21,14 +21,15 @@ export default function AssociationAccountDropdown({
     return (
         <div className="relative mr-2 flex flex-row items-center space-x-2">
             <span>{associationName}</span>
-            <div
+            <button
+                type="button"
                 className="relative"
                 onMouseEnter={() => setIsDropdownOpen(true)}
                 onMouseLeave={() => setIsDropdownOpen(false)}
+                onClick={toggleDropdown}
             >
                 <Image
                     src={logoUrl}
-                    onClick={toggleDropdown}
                     width={35}
                     height={35}
                     alt={`Logo de ${associationName}`}
@@ -45,7 +46,7 @@ export default function AssociationAccountDropdown({
                 >
                     <SignOutButton />
                 </div>
-            </div>
+            </button>
         </div>
     )
 }

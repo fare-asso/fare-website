@@ -18,7 +18,7 @@ export default function SendApprovalButton({
 
     const handleSendApproval = async () => {
         setIsLoading(true)
-        const { success, error } = await sendApprovalEmail(application)
+        await sendApprovalEmail(application)
         router.push("/dashboard/bouge-ta-prison?tab=candidatures")
     }
 

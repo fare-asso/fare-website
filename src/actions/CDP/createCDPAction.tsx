@@ -56,7 +56,7 @@ export default async function createCDPAction(
         }
     }
 
-    const fileSize = data.size! // in bytes
+    const fileSize = data.size ?? 0 // in bytes
     const maxFileSize = 25 // in mb
 
     // Check file size

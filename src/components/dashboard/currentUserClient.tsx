@@ -20,7 +20,7 @@ export default function CurrentUserClient() {
                 setEmail(data.user.email || null)
             }
         }
-        fetchUser()
+        void fetchUser()
     }, [supabase])
 
     return (

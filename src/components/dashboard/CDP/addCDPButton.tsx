@@ -38,7 +38,7 @@ export default function AddNewCDPButton() {
 
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(createCDPAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -97,7 +97,12 @@ export default function AddNewCDPButton() {
         }
 
         formData.delete("CDPfile") // Delete the file from the form data so it doesn't get sent to the API
-        formData.set("CDPfilePath", uploadResponse.path!)
+        if (!uploadResponse.path) {
+            setIsLoading(false)
+            setError("Chemin du fichier manquant après l'upload")
+            return
+        }
+        formData.set("CDPfilePath", uploadResponse.path)
 
         startTransition(() => {
             formAction(formData)

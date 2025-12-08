@@ -33,7 +33,7 @@ import LoadingRing from "../loadingRing"
 export default function AddEquipmentButton() {
     const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(addEquipmentAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
@@ -75,7 +75,7 @@ export default function AddEquipmentButton() {
     }, [formState, handleOpenChange])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)

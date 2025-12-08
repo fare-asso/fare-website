@@ -27,9 +27,12 @@ interface BureauMember {
     adresse?: string
 }
 
-function validateBureauFields(bureau: BureauMember[], errors: any[]) {
+function validateBureauFields(
+    bureau: BureauMember[],
+    errors: ValidationError[]
+) {
     // Parcourir chaque membre du bureau
-    bureau.forEach((member, index) => {
+    for (const [index, member] of bureau.entries()) {
         // Définir les champs obligatoires
         const requiredFields: (keyof BureauMember)[] = [
             "poste",
@@ -43,14 +46,14 @@ function validateBureauFields(bureau: BureauMember[], errors: any[]) {
         ]
 
         // Vérifier les champs obligatoires
-        requiredFields.forEach((field) => {
+        for (const field of requiredFields) {
             if (!member[field]) {
                 errors.push({
                     field: `bureau.${index}.${field}`,
                     message: `Le champ ${field} est requis pour le membre du bureau ${index + 1}`
                 })
             }
-        })
+        }
 
         // Validation spécifique pour l'email
         if (member.email && !validateEmail(member.email)) {
@@ -67,7 +70,7 @@ function validateBureauFields(bureau: BureauMember[], errors: any[]) {
                 message: `Le numéro de téléphone du membre du bureau ${index + 1} n'est pas valide`
             })
         }
-    })
+    }
 
     return errors
 }
@@ -102,8 +105,10 @@ export async function processAdhesionForm(
     // Fonction de validation
     const validateField = (
         name: string,
+        // biome-ignore lint/suspicious/noExplicitAny: form values can be of various types
         value: any,
         isRequired = true,
+        // biome-ignore lint/suspicious/noExplicitAny: validator functions need to accept various types
         validator?: (value: any) => boolean
     ) => {
         if (
@@ -262,35 +267,41 @@ export async function processAdhesionForm(
     // Récupérer les données du bureau
     const bureauEntries = Array.from(formData.entries())
         .filter(([key]) => key.startsWith("bureau"))
-        .reduce((acc: { [key: string]: any }, [key, value]) => {
-            // Debug: Voir la clé et la valeur à chaque étape
-            // console.log(`Key: ${key}, Value: ${value}`);
+        .reduce(
+            (
+                acc: { [key: string]: Record<string, FormDataEntryValue> },
+                [key, value]
+            ) => {
+                // Debug: Voir la clé et la valeur à chaque étape
+                // console.log(`Key: ${key}, Value: ${value}`);
 
-            // Extraire l'index et la propriété du nom du champ
-            const matches = key.match(/bureau\.(\d+)\.(\w+)/)
+                // Extraire l'index et la propriété du nom du champ
+                const matches = key.match(/bureau\.(\d+)\.(\w+)/)
 
-            // console.log("Matches: " + matches)
+                // console.log("Matches: " + matches)
 
-            if (matches) {
-                const [, index, prop] = matches
+                if (matches) {
+                    const [, index, prop] = matches
 
-                // Initialiser un objet pour l'index donné si nécessaire
-                if (!acc[index]) {
-                    acc[index] = {}
+                    // Initialiser un objet pour l'index donné si nécessaire
+                    if (!acc[index]) {
+                        acc[index] = {}
+                    }
+
+                    // Assigner la propriété à l'objet
+                    acc[index][prop] = value
+
+                    // Debug: Afficher l'accumulateur à chaque étape
+                    // console.log(`Accumulateur après ajout:`, acc);
+                } else {
+                    // Debug: Si le format ne correspond pas, afficher un message d'erreur
+                    console.warn(`Clé non correspondante: ${key}`)
                 }
 
-                // Assigner la propriété à l'objet
-                acc[index][prop] = value
-
-                // Debug: Afficher l'accumulateur à chaque étape
-                // console.log(`Accumulateur après ajout:`, acc);
-            } else {
-                // Debug: Si le format ne correspond pas, afficher un message d'erreur
-                console.warn(`Clé non correspondante: ${key}`)
-            }
-
-            return acc
-        }, {})
+                return acc
+            },
+            {}
+        )
 
     // Convertir l'objet en tableau
     const bureau: BureauMember[] = Object.values(bureauEntries)
@@ -318,7 +329,7 @@ export async function processAdhesionForm(
         const pngImage = await pdfDoc.embedPng(pngImageBytes)
         const pngDims = pngImage.scale(0.5)
 
-        const { width, height } = page.getSize()
+        const { height } = page.getSize()
         page.drawImage(pngImage, {
             x: 0,
             y: height - pngDims.height,
@@ -471,7 +482,7 @@ export async function processAdhesionForm(
         color: rgb(0, 0, 0)
     })
     yPosition -= 36
-    bureau.forEach((member: BureauMember) => {
+    for (const member of bureau) {
         addField(
             memberPage,
             `${member.poste}`,
@@ -481,11 +492,11 @@ export async function processAdhesionForm(
         addField(
             memberPage,
             "Années d'études",
-            `${member.annee!} (${member.filiere})`
+            `${member.annee ?? ""} (${member.filiere})`
         )
-        addField(memberPage, "Adresse", member.adresse!)
+        addField(memberPage, "Adresse", member.adresse ?? "")
         yPosition -= 20
-    })
+    }
 
     // // Ajout des élus
     // page.drawText('Élus:', { x: 50, y: yPosition, size: 12, font, color: rgb(0, 0, 0) });
@@ -506,7 +517,7 @@ export async function processAdhesionForm(
     const suffix = sanitizeString(`${sigle}-${dateAdhesion}`)
 
     // Envoyer le PDF à Supabase Storage
-    const { data: pdfData, error: pdfError } = await supabase.storage
+    const { error: pdfError } = await supabase.storage
         .from("adhesion")
         .upload(`${folderName}/adhesion-${suffix}.pdf`, pdfBytes, {
             contentType: "application/pdf"
@@ -560,16 +571,17 @@ export async function processAdhesionForm(
         lettreEngagementUrl
     ]
 
-    optionnalUploads.forEach((upload) => {
-        if (upload === undefined)
+    for (const upload of optionnalUploads) {
+        if (upload === undefined) {
             return {
                 error: "Echec de l'upload d'un ou plusieurs fichiers optionnels."
             }
-    })
+        }
+    }
 
     const requiredUploads = [logoUrl, statutsUrl, recepisseUrl, extraitPVUrl]
 
-    requiredUploads.forEach((upload) => {
+    for (const upload of requiredUploads) {
         if (upload == null) {
             return {
                 error: "Attention un ou plusieurs fichiers sont manquants."
@@ -579,7 +591,7 @@ export async function processAdhesionForm(
                 error: "Echec de l'upload d'un ou plusieurs fichiers obligatoires."
             }
         }
-    })
+    }
 
     // Enregistrer les informations dans la base de données
     try {

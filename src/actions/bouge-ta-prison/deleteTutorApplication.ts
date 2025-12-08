@@ -30,10 +30,9 @@ export default async function deleteTutorApplication(
     const cvPath = application.cvPath
     const mlPath = application.mlPath
 
-    const { data: fileDeletionData, error: fileDeletionError } =
-        await supabase.storage
-            .from("btp-tutor-application")
-            .remove([cvPath, mlPath])
+    const { error: fileDeletionError } = await supabase.storage
+        .from("btp-tutor-application")
+        .remove([cvPath, mlPath])
 
     if (fileDeletionError) {
         return { error: "Echec de la suppression des fichiers" }

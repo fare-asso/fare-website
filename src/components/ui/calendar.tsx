@@ -80,7 +80,7 @@ function Calendar({
         }, [yearRange])
     )
 
-    const { onNextClick, onPrevClick, startMonth, endMonth } = props
+    const { onPrevClick, startMonth, endMonth } = props
 
     const columnsDisplayed = navView === "years" ? 1 : numberOfMonths
 
@@ -492,13 +492,13 @@ function YearGrid({
                     const isBefore =
                         differenceInCalendarDays(
                             new Date(displayYears.from + i, 11, 31),
-                            startMonth!
+                            startMonth ?? new Date(0)
                         ) < 0
 
                     const isAfter =
                         differenceInCalendarDays(
                             new Date(displayYears.from + i, 0, 0),
-                            endMonth!
+                            endMonth ?? new Date(9999, 11, 31)
                         ) > 0
 
                     const isDisabled = isBefore || isAfter

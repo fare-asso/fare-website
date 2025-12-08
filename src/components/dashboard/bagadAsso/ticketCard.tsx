@@ -84,6 +84,7 @@ export default function BagadAssoTicketCard({
                 </span>
             </div>
             <button
+                type="button"
                 title={`Supprimer le ticket n°${ticket}`}
                 onClick={onDelete}
                 className="mt-2 flex flex-row items-center justify-center rounded-md bg-red-500 px-2 py-2 text-white transition-colors duration-300 hover:bg-red-600 md:mt-0"

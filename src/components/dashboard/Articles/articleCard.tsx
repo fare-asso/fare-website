@@ -27,7 +27,7 @@ export default function ArticleCard({ article }: { article: Article }) {
     const [isSwitchingVisibility, setIsSwitchingVisibility] =
         useState<boolean>(false)
 
-    const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
         event.stopPropagation()
 

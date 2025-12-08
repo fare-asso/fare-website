@@ -20,7 +20,7 @@ export default function EditorBubbleMenu({
 }: {
     editor: Editor | null
 }) {
-    if (!editor) return <></>
+    if (!editor) return null
 
     return (
         <BubbleMenu editor={editor} options={{ placement: "bottom-start" }}>

@@ -9,7 +9,7 @@ import LoginButton from "./loginButton"
 export default function LoginForm() {
     const [error, formAction] = useActionState<
         { emailError?: string; passwordError?: string } | undefined,
-        any
+        FormData
     >(loginAction, { emailError: "", passwordError: "" })
 
     return (

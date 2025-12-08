@@ -15,7 +15,7 @@ export default async function CreatePasswordPage() {
 
     return (
         <div className="flex h-full w-full flex-col items-center justify-center p-0 sm:p-1 md:p-4 lg:p-8">
-            <CreatePasswordForm email={data.user.email!} />
+            <CreatePasswordForm email={data.user.email ?? ""} />
         </div>
     )
 }

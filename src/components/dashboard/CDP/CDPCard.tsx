@@ -57,6 +57,7 @@ export default function CdpCard({
                     {/* Hover buttons */}
                     <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-0 hover:opacity-100">
                         <button
+                            type="button"
                             id="downloadIcon"
                             onClick={(event) => {
                                 event.preventDefault()
@@ -68,6 +69,7 @@ export default function CdpCard({
                             <MdOutlineFileDownload size={20} />
                         </button>
                         <button
+                            type="button"
                             id="deleteIcon"
                             onClick={handleDelete}
                             className="rounded-md bg-black/10 p-1 hover:bg-black/20"

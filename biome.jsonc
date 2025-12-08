@@ -31,7 +31,8 @@
         "rules": {
             "recommended": true,
             "a11y": {
-                "noNoninteractiveElementInteractions": "error"
+                "noNoninteractiveElementInteractions": "error",
+                "noStaticElementInteractions": "warn"
             },
             "correctness": {
                 "noUndeclaredVariables": "error",
@@ -105,6 +106,7 @@
                     "level": "error",
                     "options": {
                         "strictCase": false,
+                        "requireAscii": false,
                         "conventions": [
                             {
                                 "selector": {
@@ -155,7 +157,8 @@
                 "noHeadImportInDocument": "error",
                 "useGoogleFontDisplay": "warn",
                 "useIterableCallbackReturn": "on",
-                "noTsIgnore": "on"
+                "noTsIgnore": "on",
+                "noDocumentCookie": "off"
             }
         }
     },

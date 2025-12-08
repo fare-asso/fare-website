@@ -1,4 +1,4 @@
-import type { BagadAssoEquipment, BagadAssoTicket } from "@prisma/client"
+import type { BagadAssoTicket } from "@prisma/client"
 import prisma from "./db"
 
 interface Equipement {
@@ -6,19 +6,11 @@ interface Equipement {
     quantity: number
 }
 
-interface DetailedEquipment
-    extends Equipement,
-        Pick<BagadAssoEquipment, "deposit" | "name" | "imagePath"> {}
-
-type TicketWithDetailedEquipments = Omit<BagadAssoTicket, "equipments"> & {
-    equipments: DetailedEquipment[]
-}
-
 export async function computeTotalDeposit(
     ticket: BagadAssoTicket
 ): Promise<number> {
-    const equipments: Equipement[] = await JSON.parse(
-        ticket.equipments?.toString()
+    const equipments: Equipement[] = JSON.parse(
+        ticket.equipments?.toString() ?? "[]"
     )
 
     const equipmentIds: number[] = equipments.map((e) => e.id)
@@ -54,8 +46,8 @@ export async function computeTotalDeposit(
 export async function joinTicketAndEquipment(
     ticket: BagadAssoTicket
 ): Promise<BagadAssoTicket> {
-    const equipments: Equipement[] = await JSON.parse(
-        ticket.equipments?.toString()
+    const equipments: Equipement[] = JSON.parse(
+        ticket.equipments?.toString() ?? "[]"
     )
     const equipmentIds: number[] = equipments.map((e) => e.id)
 

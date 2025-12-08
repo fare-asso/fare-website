@@ -117,8 +117,12 @@ export default async function createEventAction(
             })
 
             data.categoryId = foundCategory.id
-        } catch (error: any) {
-            if (error.code === "P2025") {
+        } catch (error: unknown) {
+            if (
+                error instanceof Error &&
+                "code" in error &&
+                error.code === "P2025"
+            ) {
                 return {
                     error: `La catégorie ${categoryStr} n'existe pas`
                 }
@@ -248,9 +252,16 @@ export default async function createEventAction(
     // fetch current user id
     const res = await getCurrentUserId()
 
-    if (res.error) {
+    if (res.error || !res.userId) {
         return {
-            error: "res.error"
+            error: "Echec de la récupération de l'utilisateur"
+        }
+    }
+
+    // Validate required fields before database insert
+    if (!data.name || !data.desc || !data.categoryId || !data.location) {
+        return {
+            error: "Des champs obligatoires sont manquants"
         }
     }
 
@@ -258,14 +269,14 @@ export default async function createEventAction(
     try {
         const _record = await prisma.event.create({
             data: {
-                name: data.name!,
-                desc: data.desc!,
-                categoryId: data.categoryId!,
+                name: data.name,
+                desc: data.desc,
+                categoryId: data.categoryId,
                 image: data.image,
                 startTime: data.startTime,
                 endTime: data.endTime,
-                location: data.location!,
-                creatorId: res.userId!,
+                location: data.location,
+                creatorId: res.userId,
                 visibility: data.visibility
             }
         })
@@ -275,7 +286,7 @@ export default async function createEventAction(
         return {
             success: true
         }
-    } catch (_error: any) {
+    } catch (_error: unknown) {
         const res = await supabase.storage
             .from("EventPictures")
             .remove([data.image])

@@ -90,11 +90,11 @@ export default function AdhesionForm() {
             return
         }
 
-        boardMembers.forEach((member) => {
+        for (const member of boardMembers) {
             if (member.id === id && member.isAdmin) {
                 setAdminCount((prev) => prev - 1)
             }
-        })
+        }
 
         const newBoardMembers = boardMembers.filter(
             (member) => member.id !== id
@@ -549,6 +549,7 @@ export default function AdhesionForm() {
                             <span>Administrateur.rice {adminCount}/2</span>
 
                             <button
+                                type="button"
                                 className="ml-auto"
                                 onClick={(event) =>
                                     deleteBoardMember(member.id, event)

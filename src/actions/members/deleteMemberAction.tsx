@@ -24,7 +24,7 @@ export default async function deleteMemberAction({ id }: { id: number }) {
     if (res != null) {
         // successfully deleted
 
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
             .from("member-pictures")
             .remove([res.picturePath])
 

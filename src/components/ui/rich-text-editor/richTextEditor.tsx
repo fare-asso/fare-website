@@ -7,7 +7,12 @@ import ListKeymap from "@tiptap/extension-list-keymap"
 import TextAlign from "@tiptap/extension-text-align"
 import { TextStyle } from "@tiptap/extension-text-style"
 import Underline from "@tiptap/extension-underline"
-import { EditorContent, type JSONContent, useEditor } from "@tiptap/react"
+import {
+    type Editor,
+    EditorContent,
+    type JSONContent,
+    useEditor
+} from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 // import FileHandler from "@tiptap-pro/extension-file-handler";
 
@@ -27,7 +32,7 @@ export default function RichTextEditor({
 }) {
     const editorRef = useRef<HTMLDivElement>(null)
 
-    const _processAndInsertImage = async (editor: any, file: File) => {
+    const _processAndInsertImage = async (editor: Editor, file: File) => {
         try {
             // Compression de l'image
             const compressedBlob = await compressImage(

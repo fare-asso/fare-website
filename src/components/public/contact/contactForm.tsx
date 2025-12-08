@@ -29,9 +29,14 @@ export default function ContactForm() {
 
         const res = await submitContactFormAction(data)
 
-        res.errors?.forEach(({ message, field }) => {
-            form.setError(field as keyof Contact, { type: "manual", message })
-        })
+        if (res.errors) {
+            for (const { message, field } of res.errors) {
+                form.setError(field as keyof Contact, {
+                    type: "manual",
+                    message
+                })
+            }
+        }
 
         if (res.success) {
             setIsLoading(false)

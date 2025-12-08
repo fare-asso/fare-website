@@ -79,7 +79,7 @@ export default async function inviteRepresentativeAction(
                 success: true
             }
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error(error)
         return { error: "Echec de l'invitation du représentant" }
     }

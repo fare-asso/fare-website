@@ -20,7 +20,7 @@ import { Label } from "../ui/label"
 export default function CreatePasswordForm({ email }: { email: string }) {
     const [formState, formAction] = useFormState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(createPasswordForRepresentativeAction, undefined)
     const [_dialogIsOpen, _setDialogIsOpen] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -30,7 +30,7 @@ export default function CreatePasswordForm({ email }: { email: string }) {
         setIsLoading(false)
     }, [])
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)

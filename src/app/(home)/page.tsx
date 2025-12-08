@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: "Accueil | FARE"
 }
 
-export default async function Home() {
+export default function Home() {
     return (
         <div className="flex w-full flex-col items-center md:w-[90%]">
             {/* Welcome picture */}
@@ -87,9 +87,9 @@ export default async function Home() {
           Les évènements à venir
         </h2>
         <div className="w-full flex flex-row space-x-2">
-          
+
         </div>
-        
+
       </div> */}
 
             {/* Discord */}

@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 export default function BugReportForm() {
     const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(bugReportAction, undefined)
     const [_captchaValue, setCaptchaValue] = useState<string | null>(null)
     const [charactersLength, setCharactersLength] = useState<number>(0)
@@ -25,7 +25,7 @@ export default function BugReportForm() {
     }
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)

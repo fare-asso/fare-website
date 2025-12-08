@@ -9,7 +9,7 @@ import {
     CardTitle
 } from "@/components/ui/card"
 
-export default async function Adhesions() {
+export default function Adhesions() {
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">

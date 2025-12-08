@@ -58,9 +58,9 @@ export default async function editArticleAction(
 
     // Images
     const images = formData.getAll("images") as File[]
-    images.forEach((image) => {
+    for (const image of images) {
         console.log(image)
-    })
+    }
 
     // upload images to storage
     const responses = await Promise.all(
@@ -73,13 +73,13 @@ export default async function editArticleAction(
     )
 
     // check for errors
-    responses.forEach((response) => {
+    for (const response of responses) {
         if (response.error) {
             return {
                 error: "L'upload des images a échoué. Veuillez réessayer"
             }
         }
-    })
+    }
 
     const contentDelta: JSONContent = JSON.parse(content)
 
@@ -91,7 +91,9 @@ export default async function editArticleAction(
         data: {
             title: title,
             content: contentDelta,
-            imagesPath: responses.map((response) => response.data?.path!)
+            imagesPath: responses
+                .map((response) => response.data?.path)
+                .filter((path): path is string => path !== undefined)
         }
     })
 

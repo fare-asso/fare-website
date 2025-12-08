@@ -19,7 +19,7 @@ export default async function MoreArticles({
     })
 
     if (articles.length === 0) {
-        return <></>
+        return null
     }
 
     return (

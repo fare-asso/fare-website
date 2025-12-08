@@ -51,12 +51,12 @@ export default function QuestionForm() {
         setIsLoading(true)
         const res = await submitTutorQuestion(data)
 
-        if (!res.success) {
-            res.errors?.forEach((error) => {
+        if (!res.success && res.errors) {
+            for (const error of res.errors) {
                 form.setError(Object.keys(error)[0] as keyof BTPTutorQuestion, {
                     message: Object.values(error)[0]
                 })
-            })
+            }
         }
         setSuccess(res.success)
         form.reset()

@@ -28,8 +28,8 @@ export default async function deleteBagadAssoTicketAction(
         revalidatePath("/dashboard/bagadAsso")
 
         return { success: true }
-    } catch (error: any) {
-        console.error(error.message)
+    } catch (error: unknown) {
+        console.error(error instanceof Error ? error.message : error)
         return { error: "Echec de la suppression du ticket" }
     }
 }

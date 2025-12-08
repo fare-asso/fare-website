@@ -51,7 +51,7 @@ export default async function deleteAssociationAction(
 
     /* Remove pictures from storage if there is some */
     if (association.logoPath.length > 0) {
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
             .from("association-pictures")
             .remove([association.logoPath])
 

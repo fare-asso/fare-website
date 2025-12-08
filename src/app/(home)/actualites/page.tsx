@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     description: "Page regroupant les actualités lié à la FARE"
 }
 
-export default async function ActualitePage() {
+export default function ActualitePage() {
     return (
         <div className="flex w-full flex-col items-center justify-start">
             <h1 className="py-12 font-semibold text-3xl md:py-32">

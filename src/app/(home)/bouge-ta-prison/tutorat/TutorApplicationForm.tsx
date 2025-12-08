@@ -54,21 +54,21 @@ export default function TutorApplicationForm() {
 
         const formData = new FormData()
 
-        Object.entries(data).forEach(([key, value]) => {
+        for (const [key, value] of Object.entries(data)) {
             formData.append(key, value)
-        })
+        }
 
         const res = await submitTutorApplication(formData)
 
-        if (!res.success) {
-            res.errors?.forEach((error) => {
+        if (!res.success && res.errors) {
+            for (const error of res.errors) {
                 form.setError(
                     Object.keys(error)[0] as keyof BTPTutorApplication,
                     {
                         message: Object.values(error)[0]
                     }
                 )
-            })
+            }
         }
         setSuccess(res.success)
         form.reset()
@@ -170,7 +170,7 @@ export default function TutorApplicationForm() {
                         <FormField
                             name="studyYear"
                             control={form.control}
-                            render={({ field }) => (
+                            render={({ field: _field }) => (
                                 <FormItem>
                                     <FormLabel>Année d'étude</FormLabel>
                                     <FormControl>

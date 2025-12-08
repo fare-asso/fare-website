@@ -221,14 +221,17 @@ export default function AGORAe() {
                 </section>
 
                 <section>
-                    <h2></h2>
+                    <h2>Liens utiles</h2>
 
                     <ul>
                         <li>
                             <Link
                                 href="https://soliguide.fr/fr/fiche/agorae-saint-brieuc-37414"
                                 title="Lien vers soliguide"
-                            ></Link>
+                                className="text-blue-600 hover:underline"
+                            >
+                                Soliguide - AGORAé Saint-Brieuc
+                            </Link>
                         </li>
                     </ul>
                 </section>

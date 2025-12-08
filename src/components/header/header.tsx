@@ -1,7 +1,7 @@
-import HeaderLinks, { type Link } from "./headerLinks"
+import HeaderLinks, { type NavLink } from "./headerLinks"
 import HeaderLogo from "./logo"
 
-const links: Link[] = [
+const links: NavLink[] = [
     {
         title: "A Propos",
         href: "/a-propos",

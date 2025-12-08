@@ -1,7 +1,7 @@
 import type { Member } from "@prisma/client"
 import MemberCard from "./memberCard"
 
-export default async function MembersList({ members }: { members: Member[] }) {
+export default function MembersList({ members }: { members: Member[] }) {
     const positionOrder: { [key: string]: number } = {
         Président: 1,
         "Porte-Parole": 2,

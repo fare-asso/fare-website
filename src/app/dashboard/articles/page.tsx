@@ -10,7 +10,7 @@ import {
     CardTitle
 } from "@/components/ui/card"
 
-export default async function Articles() {
+export default function Articles() {
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">

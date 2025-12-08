@@ -22,7 +22,7 @@ export default function ApplicationCard({
 
         setIsDeleting(true)
         // Delete the application
-        const { success, error } = await deleteTutorApplication(application.id)
+        await deleteTutorApplication(application.id)
         setIsDeleting(false)
     }
 
@@ -36,14 +36,8 @@ export default function ApplicationCard({
                     >
                         {`${application.firstName} ${application.lastName}`
                             .length > 20
-                            ? `${(
-                                  application.firstName +
-                                      " " +
-                                      application.lastName
-                              ).slice(0, 20)}...`
-                            : application.firstName +
-                              " " +
-                              application.lastName}
+                            ? `${`${application.firstName} ${application.lastName}`.slice(0, 20)}...`
+                            : `${application.firstName} ${application.lastName}`}
                     </Link>
                 </span>
 

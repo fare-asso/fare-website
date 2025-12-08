@@ -7,7 +7,6 @@ import { type MouseEvent, useState } from "react"
 import { FaFileArchive } from "react-icons/fa"
 import { MdOutlineFileDownload } from "react-icons/md"
 import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
-import { useToast } from "@/components/ui/use-toast"
 import LoadingRing from "../loadingRing"
 
 function _downloadFile(url: string) {
@@ -21,11 +20,9 @@ function _downloadFile(url: string) {
 export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    const { toast } = useToast()
-
     const [hidden, setIsHidden] = useState<boolean>(false)
 
-    const _handleDelete = async (event: MouseEvent<HTMLButtonElement>) => {
+    const _handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
         event.stopPropagation()
 
@@ -89,6 +86,7 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
                 {/* Hover buttons */}
                 <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-100 md:opacity-0 md:hover:opacity-100">
                     <button
+                        type="button"
                         id="downloadIcon"
                         onClick={handleDownload}
                         disabled={isLoading}

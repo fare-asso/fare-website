@@ -20,9 +20,8 @@ export default function CategorySelect({
 }: {
     defaultValue: string
 }) {
-    const [categoryItems, setCategoryItems] = useState<React.ReactElement>(
-        <></>
-    )
+    const [categoryItems, setCategoryItems] =
+        useState<React.ReactElement | null>(null)
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -43,7 +42,7 @@ export default function CategorySelect({
             }
         }
 
-        fetchCategories()
+        void fetchCategories()
     }, [])
 
     // const categoriesItems = categories.map((category) => <SelectItem key={category.id} value={category.name}>{category.name}</SelectItem>)

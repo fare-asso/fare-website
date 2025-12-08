@@ -35,7 +35,7 @@ import LoadingRing from "../loadingRing"
 export default function AddAssociationButton() {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(addAssociationAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -57,7 +57,7 @@ export default function AddAssociationButton() {
         setIsLoading(false)
     }, [formState, handleOpenChange])
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)

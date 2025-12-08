@@ -52,7 +52,11 @@ export default function ColorPicker({ editor }: { editor: Editor }) {
 
     return (
         <div ref={containerRef} className="relative inline-block">
-            <button className="rounded p-2" onClick={onClickOnColorPicker}>
+            <button
+                type="button"
+                className="rounded p-2"
+                onClick={onClickOnColorPicker}
+            >
                 <div
                     className="z-10 h-5 w-5 rounded-full opacity-100 ring-1 ring-white ring-inset hover:ring-offset-1"
                     style={{

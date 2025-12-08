@@ -27,8 +27,9 @@ export default async function submitTutorApplication(
     }
 
     // Generate a random folder name for the storage
+    const firstInitial = parsedData.data.firstName.toLowerCase().at(0) ?? ""
     const sanitizedName =
-        sanitizeString(parsedData.data.firstName.toLowerCase().at(0)!) +
+        sanitizeString(firstInitial) +
         sanitizeString(parsedData.data.lastName.toLowerCase())
 
     const folderName = `${crypto.randomUUID()}-${sanitizedName}`

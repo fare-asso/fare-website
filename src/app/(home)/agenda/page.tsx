@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     description: "Page regroupant les événements lié à la FARE"
 }
 
-export default async function Reseau() {
+export default function Reseau() {
     return (
         <div className="flex w-full flex-col items-center justify-start">
             <h1 className="py-44 font-semibold text-3xl">

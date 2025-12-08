@@ -21,7 +21,7 @@ export default function QuestionCard({
 
         setIsDeleting(true)
         // Delete the question
-        const { success, error } = await deleteTutorQuestion(question.id)
+        await deleteTutorQuestion(question.id)
         setIsDeleting(false)
     }
 
@@ -35,9 +35,7 @@ export default function QuestionCard({
                     >
                         {`${question.firstName} ${question.lastName}`.length >
                         20
-                            ? `${(
-                                  question.firstName + " " + question.lastName
-                              ).slice(0, 20)}...`
+                            ? `${`${question.firstName} ${question.lastName}`.slice(0, 20)}...`
                             : `${question.firstName} ${question.lastName}`}
                     </Link>
                 </span>

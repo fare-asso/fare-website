@@ -23,7 +23,7 @@ export default async function EventArchive() {
     })
 
     if (events.length === 0) {
-        return <></>
+        return null
     }
 
     return (

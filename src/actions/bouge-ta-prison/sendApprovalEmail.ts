@@ -14,7 +14,7 @@ export default async function sendApprovalEmail(
 }> {
     console.log("Sending approval email to", application.email)
     // Send email
-    const { success, error } = await sendEmail({
+    const { success } = await sendEmail({
         to: application.email,
         subject: "Bouge Ta Prison - Informations sur votre candidature",
         html: tutorApplicationApprovalEmailTemplate(application)

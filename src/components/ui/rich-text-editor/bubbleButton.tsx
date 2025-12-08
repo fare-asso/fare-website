@@ -43,6 +43,7 @@ export default function BubbleButton({
             : editor.isActive(nodeType)
     return (
         <button
+            type="button"
             className={clsx(
                 "flex aspect-square flex-row items-center justify-center rounded-lg p-2 hover:bg-white/30",
                 isActive && "bg-white/20"

@@ -72,7 +72,7 @@ function extractAndReplaceImages(content: JSONContent): {
 export default function CreateArticleButton() {
     const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(createArticleAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
@@ -92,15 +92,15 @@ export default function CreateArticleButton() {
         }
     }, [formState, handleOpenChange])
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)
         const { updatedContent, images } = extractAndReplaceImages(content)
 
-        images.forEach((image) => {
+        for (const image of images) {
             formData.append(`images`, image.file)
-        })
+        }
         formData.append("content", JSON.stringify(updatedContent))
 
         startTransition(() => {

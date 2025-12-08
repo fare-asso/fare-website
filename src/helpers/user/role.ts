@@ -11,8 +11,7 @@ export default async function getCurrentUserRole(): Promise<{
 
     // fetch current user
     const {
-        data: { user },
-        error
+        data: { user }
     } = await supabase.auth.getUser()
 
     if (user) {

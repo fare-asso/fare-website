@@ -33,7 +33,7 @@ export default async function deleteEquipmentAction(
 
     /* Remove pictures from storage if there is some */
     if (equipment.imagePath) {
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
             .from("equipment-pictures")
             .remove([equipment.imagePath])
 

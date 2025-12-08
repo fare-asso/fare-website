@@ -84,7 +84,7 @@ const maxUploadSizeInMb = 10
 
 export default function EditMemberButton({
     member,
-    pictureUrl
+    pictureUrl: _pictureUrl
 }: {
     member: Member
     pictureUrl: string
@@ -95,7 +95,7 @@ export default function EditMemberButton({
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors },
         reset
     } = useForm<TMemberSchema>({
         resolver: zodResolver(memberSchema)
@@ -149,7 +149,7 @@ export default function EditMemberButton({
             }
 
             // Set the new picture path
-            newPicturePath = uploadResponse.path!
+            newPicturePath = uploadResponse.path ?? ""
         }
 
         // Build the formData with data values
@@ -160,7 +160,7 @@ export default function EditMemberButton({
         // Add the picture to the formData
         formData.append(
             "picturePath",
-            data.picture ? newPicturePath! : member.picturePath
+            data.picture ? (newPicturePath ?? "") : member.picturePath
         )
 
         console.log(formDataToString(formData))

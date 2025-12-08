@@ -61,6 +61,7 @@ export default function TextAlignDropdown({ editor }: { editor: Editor }) {
     return (
         <div ref={dropdownRef} className="relative inline-block">
             <button
+                type="button"
                 onClick={(event) => {
                     event.preventDefault()
                     setIsOpen(!isOpen)
@@ -77,6 +78,7 @@ export default function TextAlignDropdown({ editor }: { editor: Editor }) {
                 <div className="absolute top-full left-0 z-10 mt-1 rounded-b-lg bg-black/90 text-white backdrop-blur-lg">
                     {alignmentOptions.map((option) => (
                         <button
+                            type="button"
                             key={option.value}
                             onClick={() => handleAlignmentChange(option.value)}
                             title={option.label}

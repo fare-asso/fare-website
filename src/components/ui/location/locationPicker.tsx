@@ -22,7 +22,7 @@ export default function LocationPicker({
 
     // Refs for better focus management
     const inputRef = useRef<HTMLInputElement>(null)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const containerRef = useRef<HTMLFieldSetElement>(null)
     const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     const fetchRecommendations = useCallback(async (searchQuery: string) => {
@@ -71,7 +71,7 @@ export default function LocationPicker({
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            fetchRecommendations(query)
+            void fetchRecommendations(query)
         }, 300) // Debounce API calls by 300ms
 
         return () => clearTimeout(timeoutId)
@@ -176,8 +176,9 @@ export default function LocationPicker({
     }, [])
 
     return (
-        <div
-            className="relative"
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: fieldset needs focus/blur for input group behavior
+        <fieldset
+            className="relative m-0 border-0 p-0"
             ref={containerRef}
             onFocus={handleContainerFocus}
             onBlur={handleContainerBlur}
@@ -236,9 +237,15 @@ export default function LocationPicker({
                                 onClick={() =>
                                     handleRecommendationClick(location)
                                 }
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                        handleRecommendationClick(location)
+                                    }
+                                }}
                                 onMouseDown={(e) => e.preventDefault()} // Prevent blur when clicking
                                 onMouseEnter={() => setSelectedIndex(index)}
                                 role="option"
+                                tabIndex={0}
                                 aria-selected={selectedIndex === index}
                             >
                                 {location}
@@ -246,6 +253,6 @@ export default function LocationPicker({
                         ))}
                 </div>
             )}
-        </div>
+        </fieldset>
     )
 }

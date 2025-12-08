@@ -1,4 +1,4 @@
-export default async function DiscordWidget() {
+export default function DiscordWidget() {
     return (
         <div>
             <iframe

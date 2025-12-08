@@ -133,7 +133,9 @@ export default async function editAssociationAction(
                 error: "La modification de l'association dans la base de données a échoué... Veuillez contacter un administrateur."
             }
         }
-    } catch (error: any) {
-        return { error: error.message }
+    } catch (error: unknown) {
+        const errorMessage =
+            error instanceof Error ? error.message : "Unknown error"
+        return { error: errorMessage }
     }
 }

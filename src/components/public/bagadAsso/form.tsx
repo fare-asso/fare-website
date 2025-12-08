@@ -17,7 +17,7 @@ export default function BagadAssoForm({
 }) {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
+        FormData
     >(submitBagadAssoFormAction, undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [_captchaValue, setCaptchaValue] = useState<string | null>(null)
@@ -28,7 +28,7 @@ export default function BagadAssoForm({
     }, [])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)
@@ -170,7 +170,7 @@ export default function BagadAssoForm({
                 >
                     J'accepte les{" "}
                     <a
-                        href="#"
+                        href="/mentions-legales"
                         className="text-blue-600 hover:underline dark:text-blue-500"
                     >
                         termes et conditions

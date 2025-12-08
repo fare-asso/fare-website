@@ -38,8 +38,10 @@ export async function sendEmail(
             html
         })
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error sendEmail: ", error)
-        return { success: false, error: error.message }
+        const errorMessage =
+            error instanceof Error ? error.message : "Unknown error"
+        return { success: false, error: errorMessage }
     }
 }
