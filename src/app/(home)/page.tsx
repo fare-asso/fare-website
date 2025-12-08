@@ -27,7 +27,7 @@ export default async function Home() {
                 />
             </div>
 
-            <Suspense fallback={"loading..."}>
+            <Suspense fallback="loading...">
                 <KeyNumbers />
             </Suspense>
 
@@ -76,7 +76,7 @@ export default async function Home() {
             {/* Le réseau */}
             <div className="my-10 flex w-full flex-col">
                 <h2 className="mb-2 font-semibold text-2xl">Notre réseau</h2>
-                <Suspense fallback={"Loading..."}>
+                <Suspense fallback="Loading...">
                     <AssoMap />
                 </Suspense>
             </div>

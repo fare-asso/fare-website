@@ -38,7 +38,7 @@ export default function BubbleButton({
     level
 }: BubbleButtonProps) {
     const isActive =
-        nodeType == "heading"
+        nodeType === "heading"
             ? editor.isActive(nodeType, { level })
             : editor.isActive(nodeType)
     return (

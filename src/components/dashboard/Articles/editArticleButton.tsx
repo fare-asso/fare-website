@@ -130,7 +130,7 @@ export default function EditArticleButton({ article }: { article: Article }) {
                 setContent(updatedContent)
             }
         },
-        [setDialogIsOpen]
+        [article.content]
     )
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès

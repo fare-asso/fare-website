@@ -1,10 +1,5 @@
 import Link from "next/link"
-import {
-    FaArrowLeft,
-    FaBluesky,
-    FaFacebook,
-    FaInstagram
-} from "react-icons/fa6"
+import { FaArrowLeft, FaFacebook, FaInstagram } from "react-icons/fa6"
 import { MdOutlineEmail } from "react-icons/md"
 import ContactForm from "@/components/public/contact/contactForm"
 

@@ -1,7 +1,6 @@
 "use client"
 
 import type { BagadAssoTicket } from "@prisma/client"
-import { Card } from "@/components/ui/card"
 import { useToast } from "@/components/ui/use-toast"
 import BagadAssoTicketCard from "./ticketCard"
 

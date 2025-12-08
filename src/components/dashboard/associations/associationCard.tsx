@@ -31,7 +31,7 @@ export default function AssociationCard({
                     src={logoUrl}
                     width={500}
                     height={500}
-                    alt={"Logo de l'association " + association.name}
+                    alt={`Logo de l'association ${association.name}`}
                     className="mb-1 aspect-square rounded-md object-cover shadow-xs"
                 />
             </div>

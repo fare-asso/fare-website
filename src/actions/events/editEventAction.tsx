@@ -1,6 +1,6 @@
 "use server"
 
-import { randomUUID } from "crypto"
+import { randomUUID } from "node:crypto"
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
@@ -21,13 +21,13 @@ interface Event {
 }
 
 export default async function editEventAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -63,10 +63,10 @@ export default async function editEventAction(
     /* Data validation */
 
     //id
-    if (id != null && typeof id == "string") {
+    if (id != null && typeof id === "string") {
         const idStr: string = id.toString()
         const idNumber: number = Number(idStr)
-        if (isNaN(idNumber)) {
+        if (Number.isNaN(idNumber)) {
             return {
                 error: "L'identifiant n'est pas un nombre..."
             }
@@ -80,7 +80,7 @@ export default async function editEventAction(
     }
 
     // name
-    if (name != null && typeof name == "string") {
+    if (name != null && typeof name === "string") {
         const nameStr: string = name.toString()
         if (nameStr.length < 3) {
             return {
@@ -93,7 +93,7 @@ export default async function editEventAction(
         }
     }
 
-    if (description != null && typeof description == "string") {
+    if (description != null && typeof description === "string") {
         const descriptionStr: string = description.toString()
         if (descriptionStr.length < 10) {
             return {
@@ -109,13 +109,13 @@ export default async function editEventAction(
     if (picture != null && picture instanceof File) {
         // if there is a new file
         const pictureFile: File = picture
-        if (pictureFile.size != 0 && pictureFile.size / (1024 * 1024) <= 10) {
+        if (pictureFile.size > 0 && pictureFile.size / (1024 * 1024) <= 10) {
             // valid picture file and size < 10mb
             // TODO : Some Logic to remove previous file from S3 and reupload another one
 
             // Remove Old Path if its possible
-            if (previousPath != null && typeof previousPath == "string") {
-                const res = await supabase.storage
+            if (previousPath != null && typeof previousPath === "string") {
+                const _res = await supabase.storage
                     .from("EventPictures")
                     .remove([previousPath.toString()])
             }
@@ -123,7 +123,7 @@ export default async function editEventAction(
             // Upload new picture
             const response = await supabase.storage
                 .from("EventPictures")
-                .upload(data.name + ":" + randomUUID(), pictureFile)
+                .upload(`${data.name}:${randomUUID()}`, pictureFile)
 
             if (response.error) {
                 // Upload Failed
@@ -137,7 +137,7 @@ export default async function editEventAction(
             }
         } else {
             // keep old picture
-            if (previousPath != null && typeof previousPath == "string") {
+            if (previousPath != null && typeof previousPath === "string") {
                 data.image = previousPath.toString()
             } else {
                 return {
@@ -145,7 +145,7 @@ export default async function editEventAction(
                 }
             }
         }
-    } else if (previousPath != null && typeof previousPath == "string") {
+    } else if (previousPath != null && typeof previousPath === "string") {
         data.image = previousPath.toString()
     } else {
         return {
@@ -153,7 +153,7 @@ export default async function editEventAction(
         }
     }
 
-    if (location != null && typeof location == "string") {
+    if (location != null && typeof location === "string") {
         if (location.length > 0) {
             // non null string
             data.location = location.toString()
@@ -168,7 +168,7 @@ export default async function editEventAction(
         }
     }
 
-    if (category != null && typeof category == "string") {
+    if (category != null && typeof category === "string") {
         const categoryStr: string = category.toString()
 
         // check if the category exists
@@ -202,14 +202,17 @@ export default async function editEventAction(
     // Event Start Time
     if (
         startDate != null &&
-        typeof startDate == "string" &&
+        typeof startDate === "string" &&
         startHour != null &&
         startMinute != null
     ) {
         const startDateStr: string = startDate.toString()
         const startHourStr: string = startHour.toString()
         const startMinuteStr: string = startMinute.toString()
-        if (isNaN(Number(startHourStr)) || isNaN(Number(startMinuteStr))) {
+        if (
+            Number.isNaN(Number(startHourStr)) ||
+            Number.isNaN(Number(startMinuteStr))
+        ) {
             return {
                 error: "L'heure ou les minutes de départ ne sont pas sous le bon format"
             }
@@ -227,14 +230,17 @@ export default async function editEventAction(
     // Event End Time
     if (
         endDate != null &&
-        typeof endDate == "string" &&
+        typeof endDate === "string" &&
         endHour != null &&
         endMinute != null
     ) {
         const endDateStr: string = endDate.toString()
         const endHourStr: string = endHour.toString()
         const endMinuteStr: string = endMinute.toString()
-        if (isNaN(Number(endHourStr)) || isNaN(Number(endMinuteStr))) {
+        if (
+            Number.isNaN(Number(endHourStr)) ||
+            Number.isNaN(Number(endMinuteStr))
+        ) {
             return {
                 error: "L'heure ou les minutes de fin ne sont pas sous le bon format"
             }
@@ -249,7 +255,7 @@ export default async function editEventAction(
         }
     }
 
-    if (visibility != null && typeof visibility == "string") {
+    if (visibility != null && typeof visibility === "string") {
         const visibilityStr: string = visibility.toString()
         switch (visibilityStr) {
             case "on":
@@ -278,7 +284,7 @@ export default async function editEventAction(
 
     // create event record in the DB
     try {
-        const record = await prisma.event.update({
+        const _record = await prisma.event.update({
             where: {
                 id: data.id
             },

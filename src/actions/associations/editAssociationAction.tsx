@@ -6,13 +6,13 @@ import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function editAssociationAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN" && role != "ASSO_OWNER")
+    if (role !== "ADMIN" && role !== "ASSO_OWNER")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -54,7 +54,7 @@ export default async function editAssociationAction(
 
     // Fields Validation
     if (
-        isNaN(id) ||
+        Number.isNaN(id) ||
         !name ||
         !major ||
         !description ||
@@ -74,7 +74,7 @@ export default async function editAssociationAction(
     const file: File = logoPicture
 
     // size validation
-    if (file.size == 0 || file.size / (1024 * 1024) > maxFileSize) {
+    if (file.size === 0 || file.size / (1024 * 1024) > maxFileSize) {
         return {
             error: `La taille de chaque photo doit être inférieure à ${maxFileSize} Mo.`
         }

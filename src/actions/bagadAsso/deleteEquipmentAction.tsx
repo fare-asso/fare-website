@@ -6,13 +6,13 @@ import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function deleteEquipmentAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     equipmentId: number
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -47,7 +47,7 @@ export default async function deleteEquipmentAction(
 
     // delete record
     try {
-        const deletedRecord = await prisma.bagadAssoEquipment.delete({
+        const _deletedRecord = await prisma.bagadAssoEquipment.delete({
             where: {
                 id: equipmentId
             }

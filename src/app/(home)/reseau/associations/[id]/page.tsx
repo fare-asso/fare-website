@@ -11,7 +11,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
     const { id } = await params
 
-    if (isNaN(Number(id)))
+    if (Number.isNaN(Number(id)))
         return {
             title: "Association",
             description: "Page d'association"
@@ -46,7 +46,7 @@ export default async function Page({
     const { id } = await params
 
     // check if the parameter is correct
-    if (isNaN(Number(id))) {
+    if (Number.isNaN(Number(id))) {
         return (
             <div>
                 <span>{"L'association recherchée n'existe pas"}</span>
@@ -87,7 +87,7 @@ export default async function Page({
                     }
                     width={400}
                     height={400}
-                    alt={associationRecord.name + " logo"}
+                    alt={`${associationRecord.name} logo`}
                     className="aspect-square h-60 w-60 rounded-lg border border-black object-cover"
                 />
             </div>

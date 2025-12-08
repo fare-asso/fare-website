@@ -1,19 +1,19 @@
 "use server"
 
-import { randomUUID } from "crypto"
+import { randomUUID } from "node:crypto"
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function addAssociationAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -56,7 +56,7 @@ export default async function addAssociationAction(
     const file: File = logoPicture
 
     // size validation
-    if (file.size == 0 || file.size / (1024 * 1024) > maxFileSize) {
+    if (file.size === 0 || file.size / (1024 * 1024) > maxFileSize) {
         return {
             error: `La taille de chaque photo doit être inférieure à ${maxFileSize} Mo.`
         }

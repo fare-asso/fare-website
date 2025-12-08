@@ -31,16 +31,13 @@ export default function SendInvitationLinkButton({
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    const handleOpenChange = useCallback(
-        (open: boolean) => {
-            setDialogIsOpen(open)
-            if (!open) {
-                setIsLoading(false)
-                // Réinitialiser le formulaire lorsque le dialogue est fermé
-            }
-        },
-        [setDialogIsOpen]
-    )
+    const handleOpenChange = useCallback((open: boolean) => {
+        setDialogIsOpen(open)
+        if (!open) {
+            setIsLoading(false)
+            // Réinitialiser le formulaire lorsque le dialogue est fermé
+        }
+    }, [])
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
@@ -77,8 +74,7 @@ export default function SendInvitationLinkButton({
                     <DialogDescription>
                         {`Un e-mail sera envoyé à l'adresse e-mail ci-dessous et créera un compte `}{" "}
                         <b>Représentant</b> {"pour l'association"}{" "}
-                        <b>{association.name}</b>
-                        {"."}
+                        <b>{association.name}</b>.
                     </DialogDescription>
                 </DialogHeader>
 

@@ -3,7 +3,7 @@ import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import AdhesionCard from "./adhesionCard"
 
 export default async function AdhesionList() {
-    const su = new StorageUtils()
+    const _su = new StorageUtils()
 
     // fetch all adhesion from DB
     const adhesions = await prisma.adhesion.findMany({

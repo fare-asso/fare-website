@@ -172,7 +172,7 @@ function Calendar({
             showOutsideDays={showOutsideDays}
             className={cn("p-3", className)}
             style={{
-                width: 248.8 * (columnsDisplayed ?? 1) + "px"
+                width: `${248.8 * (columnsDisplayed ?? 1)}px`
             }}
             classNames={{
                 months: _monthsClassName,
@@ -322,7 +322,15 @@ function Nav({
         }
         goToMonth(previousMonth)
         onPrevClick?.(previousMonth)
-    }, [previousMonth, goToMonth])
+    }, [
+        previousMonth,
+        goToMonth,
+        displayYears.from,
+        displayYears.to,
+        navView,
+        onPrevClick,
+        setDisplayYears
+    ])
 
     const handleNextClick = React.useCallback(() => {
         if (!nextMonth) return
@@ -342,7 +350,15 @@ function Nav({
         }
         goToMonth(nextMonth)
         onNextClick?.(nextMonth)
-    }, [goToMonth, nextMonth])
+    }, [
+        goToMonth,
+        nextMonth,
+        displayYears.from,
+        displayYears.to,
+        navView,
+        onNextClick,
+        setDisplayYears
+    ])
     return (
         <nav className={cn("flex items-center", className)}>
             <Button
@@ -407,7 +423,7 @@ function CaptionLabel({
         >
             {navView === "days"
                 ? children
-                : displayYears.from + " - " + displayYears.to}
+                : `${displayYears.from} - ${displayYears.to}`}
         </Button>
     )
 }

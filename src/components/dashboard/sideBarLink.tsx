@@ -18,9 +18,9 @@ export default function SideBarLink({
 }: SideBarLinkProps) {
     const path = usePathname()
 
-    const linkClassActive =
+    const _linkClassActive =
         "w-auto lg:w-full font-semibold opacity-100 text-left lg:text-center rounded-full lg:rounded-lg text-base outline outline-gray-200 outline-1 px-3 lg:px-4 py-1 lg:py-2"
-    const linkClassInactive =
+    const _linkClassInactive =
         "w-auto lg:w-full font-medium opacity-50 text-left lg:text-center rounded-full lg:rounded-lg hover:opacity-80 transition-all duration-75 text-base hover:outline outline-gray-600/50 outline-2 hover:bg-gray-100 px-3 lg:px-4 py-1 lg:py-2"
 
     return (

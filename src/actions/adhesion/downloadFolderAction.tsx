@@ -1,7 +1,6 @@
 "use server"
 
 import archiver from "archiver"
-import { Readable } from "stream"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
@@ -13,7 +12,7 @@ type ActionState = {
 }
 
 export async function downloadFolderAction(
-    prevState: ActionState | undefined,
+    _prevState: ActionState | undefined,
     folderPath: string
 ): Promise<ActionState> {
     const { role, error: roleError } = await getCurrentUserRole()

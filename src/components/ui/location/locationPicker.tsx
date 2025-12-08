@@ -45,7 +45,7 @@ export default function LocationPicker({
 
             const data: AutocompleteResponse = await response.json()
 
-            if (!data || data.status != "OK") {
+            if (!data || data.status !== "OK") {
                 console.error("Invalid response from API:", data)
                 setRecommendations([])
                 setShowRecommendations(false)

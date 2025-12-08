@@ -11,7 +11,7 @@ interface EmailPayload {
 const transporter = nodemailer.createTransport({
     service: process.env.SMTP_SERVICE || "Gmail",
     host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: Number.parseInt(process.env.SMTP_PORT || "465"),
+    port: Number.parseInt(process.env.SMTP_PORT || "465", 10),
     secure: process.env.SMTP_SECURE === "true",
     auth: {
         user: process.env.SMTP_USER,
@@ -25,16 +25,16 @@ export async function sendEmail(
     const { to, subject, html } = payload
 
     try {
-        const response = await transporter.sendMail({
+        const _response = await transporter.sendMail({
             from: process.env.SMTP_FROM_EMAIL,
             to:
-                process.env.NODE_ENV == "production"
+                process.env.NODE_ENV === "production"
                     ? to
                     : "outils-numeriques@fare-asso.fr",
             subject:
-                process.env.NODE_ENV == "production"
+                process.env.NODE_ENV === "production"
                     ? subject
-                    : "TEST - " + subject,
+                    : `TEST - ${subject}`,
             html
         })
         return { success: true }

@@ -2,7 +2,6 @@
 
 import { type ChangeEvent, useState } from "react"
 import { Input } from "../input"
-import { Label } from "../label"
 
 export default function CurrencyAmountInput({
     name,
@@ -20,7 +19,7 @@ export default function CurrencyAmountInput({
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
 
-        if (!isNaN(Number(e.target.value)) || e.target.value == ".") {
+        if (!Number.isNaN(Number(e.target.value)) || e.target.value === ".") {
             setAmount(e.target.value)
         }
     }

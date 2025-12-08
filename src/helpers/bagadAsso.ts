@@ -18,7 +18,7 @@ export async function computeTotalDeposit(
     ticket: BagadAssoTicket
 ): Promise<number> {
     const equipments: Equipement[] = await JSON.parse(
-        ticket.equipments!.toString()
+        ticket.equipments?.toString()
     )
 
     const equipmentIds: number[] = equipments.map((e) => e.id)
@@ -55,7 +55,7 @@ export async function joinTicketAndEquipment(
     ticket: BagadAssoTicket
 ): Promise<BagadAssoTicket> {
     const equipments: Equipement[] = await JSON.parse(
-        ticket.equipments!.toString()
+        ticket.equipments?.toString()
     )
     const equipmentIds: number[] = equipments.map((e) => e.id)
 

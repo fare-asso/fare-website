@@ -1,4 +1,3 @@
-import Link from "next/link"
 import CommuniquesCard from "@/components/public/presse/cdpCard"
 import prisma from "@/helpers/db"
 

@@ -14,7 +14,7 @@ export default async function deleteEventAction({
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -33,8 +33,8 @@ export default async function deleteEventAction({
     })
 
     // check imageUrl validity and remove it from the storage
-    if (imageUrl != null && typeof imageUrl == "string") {
-        if (imageUrl == "") {
+    if (imageUrl != null && typeof imageUrl === "string") {
+        if (imageUrl === "") {
             // no url
             console.log("No image to remove")
         } else {
@@ -51,7 +51,7 @@ export default async function deleteEventAction({
     }
 
     try {
-        const response = await prisma.event.delete({
+        const _response = await prisma.event.delete({
             where: {
                 id: eventId
             }

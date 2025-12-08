@@ -26,7 +26,7 @@ export default async function updateUserInfo(
     }
 
     try {
-        const updatedUser = await prisma.user.update({
+        const _updatedUser = await prisma.user.update({
             where: { id: userId },
             data: {
                 name: data.name,

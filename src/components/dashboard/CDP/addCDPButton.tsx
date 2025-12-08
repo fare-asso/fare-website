@@ -26,9 +26,7 @@ import { Label } from "@/components/ui/label"
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
@@ -47,17 +45,14 @@ export default function AddNewCDPButton() {
 
     const maxUploadSizeInMb = 25
 
-    const handleOpenChange = useCallback(
-        (open: boolean) => {
-            setDialogIsOpen(open)
-            if (!open) {
-                // Réinitialiser le formulaire lorsque le dialogue est fermé
-                setError(undefined)
-                setIsLoading(false)
-            }
-        },
-        [setDialogIsOpen]
-    )
+    const handleOpenChange = useCallback((open: boolean) => {
+        setDialogIsOpen(open)
+        if (!open) {
+            // Réinitialiser le formulaire lorsque le dialogue est fermé
+            setError(undefined)
+            setIsLoading(false)
+        }
+    }, [])
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {

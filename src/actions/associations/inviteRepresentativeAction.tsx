@@ -8,13 +8,13 @@ import { createAdminClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function inviteRepresentativeAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -47,7 +47,7 @@ export default async function inviteRepresentativeAction(
         if (error) {
             // failed to send invitation
 
-            if (error.code == "email_exists") {
+            if (error.code === "email_exists") {
                 return { error: "Cet utilisateur existe déjà" }
             } else {
                 console.error(error)
@@ -55,7 +55,7 @@ export default async function inviteRepresentativeAction(
             }
         } else {
             // invitation has been sent
-            const currentUser = await prisma.user.update({
+            const _currentUser = await prisma.user.update({
                 where: {
                     id: data.user.id
                 },
@@ -65,7 +65,7 @@ export default async function inviteRepresentativeAction(
             })
 
             // update asso representative
-            const updatedAsso = await prisma.association.update({
+            const _updatedAsso = await prisma.association.update({
                 where: {
                     id: Number(associationId)
                 },

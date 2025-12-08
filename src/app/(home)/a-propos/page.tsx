@@ -1,6 +1,3 @@
-import logoFARE from "@public/logo_fare.png"
-import Image from "next/image"
-
 // Create metadata for the page
 export const metadata = {
     title: "À propos de la FARE | FARE"

@@ -1,4 +1,3 @@
-import Link from "next/link"
 import CommuniquesCard from "@/components/public/presse/cdpCard"
 import DossierDePresseCard from "@/components/public/presse/ddpCard"
 import prisma from "@/helpers/db"
@@ -19,7 +18,7 @@ export default async function Presse() {
             <div className="flex w-3/4 flex-col items-center space-y-2">
                 {communiques.length > 0 ? (
                     communiques.map((cdp) =>
-                        cdp.type == "CDP" ? (
+                        cdp.type === "CDP" ? (
                             <CommuniquesCard key={cdp.id} communique={cdp} />
                         ) : (
                             <DossierDePresseCard key={cdp.id} dossier={cdp} />

@@ -1,11 +1,6 @@
 "use client"
 
-import {
-    Permission,
-    Role,
-    type User,
-    type UserPermission
-} from "@prisma/client"
+import type { User, UserPermission } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import Link from "next/link"

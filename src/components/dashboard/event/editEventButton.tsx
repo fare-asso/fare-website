@@ -1,14 +1,11 @@
 "use client"
 
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
 import Image from "next/image"
 import { type ChangeEvent, useCallback, useEffect, useState } from "react"
-import { useFormState, useFormStatus } from "react-dom"
+import { useFormState } from "react-dom"
 import editEventAction from "@/actions/events/editEventAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import {
     Dialog,
     DialogContent,
@@ -21,11 +18,6 @@ import {
 import { Input } from "@/components/ui/input"
 import DatePicker from "@/components/ui/input/datePicker"
 import { Label } from "@/components/ui/label"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger
-} from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import CategorySelect from "../../ui/category/categorySelect"
@@ -90,25 +82,22 @@ export default function EditEventButtonClient({
         }
 
         fetchImageUrl()
-    }, [dialogIsOpen, eventInfo.id])
+    }, [eventInfo.id])
 
-    const handleOpenChange = useCallback(
-        (open: boolean) => {
-            setDialogIsOpen(open)
-        },
-        [setDialogIsOpen]
-    )
+    const handleOpenChange = useCallback((open: boolean) => {
+        setDialogIsOpen(open)
+    }, [])
 
     const handleImageInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const files: FileList | null = event.target.files
 
-        if (files && files.length >= 1) {
+        if (files && files.length > 0) {
             const file: File = files[0]
             const fileReader = new FileReader()
 
             fileReader.onloadend = () => {
                 const resultUrl: string | ArrayBuffer | null = fileReader.result
-                if (typeof resultUrl == "string") {
+                if (typeof resultUrl === "string") {
                     setImageUrl(resultUrl)
                 }
             }

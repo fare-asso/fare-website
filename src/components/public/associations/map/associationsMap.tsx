@@ -1,6 +1,6 @@
 "use client"
 
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet"
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import type { Association } from "@prisma/client"
 import L from "leaflet"

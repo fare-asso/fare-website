@@ -30,7 +30,7 @@ export default function TabSwitcher({
 
     const setTab = useCallback(
         (tab: string) => {
-            router.push(pathname + "?" + createQueryString("tab", tab))
+            router.push(`${pathname}?${createQueryString("tab", tab)}`)
         },
         [createQueryString, pathname, router]
     )
@@ -41,12 +41,15 @@ export default function TabSwitcher({
             className="flex h-full w-full flex-col items-center gap-2"
         >
             <TabsList className="grid w-full grid-cols-2 md:w-1/2">
-                <TabsTrigger value="tickets" onClick={(e) => setTab("tickets")}>
+                <TabsTrigger
+                    value="tickets"
+                    onClick={(_e) => setTab("tickets")}
+                >
                     Tickets
                 </TabsTrigger>
                 <TabsTrigger
                     value="materiels"
-                    onClick={(e) => setTab("materiels")}
+                    onClick={(_e) => setTab("materiels")}
                 >
                     Matériels
                 </TabsTrigger>

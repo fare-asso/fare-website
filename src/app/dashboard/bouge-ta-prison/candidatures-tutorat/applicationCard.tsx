@@ -34,13 +34,13 @@ export default function ApplicationCard({
                         href={`/dashboard/bouge-ta-prison/candidatures-tutorat/${application.id}`}
                         className="w-full overflow-hidden text-ellipsis text-nowrap text-sm underline transition-all hover:opacity-75"
                     >
-                        {(application.firstName + " " + application.lastName)
+                        {`${application.firstName} ${application.lastName}`
                             .length > 20
-                            ? (
+                            ? `${(
                                   application.firstName +
-                                  " " +
-                                  application.lastName
-                              ).slice(0, 20) + "..."
+                                      " " +
+                                      application.lastName
+                              ).slice(0, 20)}...`
                             : application.firstName +
                               " " +
                               application.lastName}

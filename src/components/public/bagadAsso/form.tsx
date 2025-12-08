@@ -20,12 +20,12 @@ export default function BagadAssoForm({
         any
     >(submitBagadAssoFormAction, undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [captchaValue, setCaptchaValue] = useState<string | null>(null)
+    const [_captchaValue, setCaptchaValue] = useState<string | null>(null)
 
     // Arrêter le chargement lorsque l'action du formulaire indique un succès
     useEffect(() => {
         setIsLoading(false)
-    }, [formState])
+    }, [])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -88,7 +88,7 @@ export default function BagadAssoForm({
 
             {/* Mail du référent */}
             <label htmlFor="association-referent-email">
-                {"Email du référent.e.s"}
+                Email du référent.e.s
             </label>
             <input
                 type="email"
@@ -149,7 +149,7 @@ export default function BagadAssoForm({
             <NumberInput name="event-participants" min={0} placeholder="999" />
 
             {/* Matériels demandés */}
-            <label htmlFor="equipment-input">{"Matériels demandés"}</label>
+            <label htmlFor="equipment-input">Matériels demandés</label>
             <EquipmentSelection
                 name="equipment-input"
                 equipmentList={equipmentList}
@@ -197,9 +197,8 @@ export default function BagadAssoForm({
                     className="mt-4 border-green-600 text-green-600"
                 >
                     <AlertDescription>
-                        {
-                            "Votre soumission a été reçue. Nous vous remercions et vous contacterons sous peu."
-                        }
+                        Votre soumission a été reçue. Nous vous remercions et
+                        vous contacterons sous peu.
                     </AlertDescription>
                 </Alert>
             ) : null}

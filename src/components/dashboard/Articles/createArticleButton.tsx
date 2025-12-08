@@ -78,15 +78,12 @@ export default function CreateArticleButton() {
 
     const [content, setContent] = useState<JSONContent>({}) // Rich Text Editor content
 
-    const handleOpenChange = useCallback(
-        (open: boolean) => {
-            setDialogIsOpen(open)
-            if (!open) {
-                setContent({}) // Reset editor content
-            }
-        },
-        [setDialogIsOpen]
-    )
+    const handleOpenChange = useCallback((open: boolean) => {
+        setDialogIsOpen(open)
+        if (!open) {
+            setContent({}) // Reset editor content
+        }
+    }, [])
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
@@ -128,9 +125,8 @@ export default function CreateArticleButton() {
                 <DialogHeader>
                     <DialogTitle>Nouvel Article</DialogTitle>
                     <DialogDescription>
-                        {
-                            "Ceci est le formulaire de rédaction des articles de la Fédération"
-                        }
+                        Ceci est le formulaire de rédaction des articles de la
+                        Fédération
                     </DialogDescription>
                 </DialogHeader>
 

@@ -74,7 +74,7 @@ function validateBureauFields(bureau: BureauMember[], errors: any[]) {
 
 function validationErrorToString(errors: ValidationError[]) {
     return errors.reduce(
-        (acc, current) => acc + current.field + ": " + current.message + "\n",
+        (acc, current) => `${acc + current.field}: ${current.message}\n`,
         "Validation Error debug:\n"
     )
 }
@@ -90,7 +90,7 @@ function validatePhoneNumber(phone: string): boolean {
 }
 
 export async function processAdhesionForm(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     const supabase = await createClient()
@@ -176,23 +176,25 @@ export async function processAdhesionForm(
     validateField("dateAG", dateAG)
 
     const nombreEtudiantsRepresentes = Number.parseInt(
-        formData.get("nombreEtudiantsRepresentes") as string
+        formData.get("nombreEtudiantsRepresentes") as string,
+        10
     )
     validateField(
         "nombreEtudiantsRepresentes",
         nombreEtudiantsRepresentes,
         true,
-        (value) => !isNaN(value) && value > 0
+        (value) => !Number.isNaN(value) && value > 0
     )
 
     const nombreAdherents = Number.parseInt(
-        formData.get("nombreAdherents") as string
+        formData.get("nombreAdherents") as string,
+        10
     )
     validateField(
         "nombreAdherents",
         nombreAdherents,
         true,
-        (value) => !isNaN(value) && value > 0
+        (value) => !Number.isNaN(value) && value > 0
     )
 
     const engagementCotisation = formData.get("engagementCotisation") === "on"
@@ -559,7 +561,7 @@ export async function processAdhesionForm(
     ]
 
     optionnalUploads.forEach((upload) => {
-        if (upload == undefined)
+        if (upload === undefined)
             return {
                 error: "Echec de l'upload d'un ou plusieurs fichiers optionnels."
             }
@@ -572,7 +574,7 @@ export async function processAdhesionForm(
             return {
                 error: "Attention un ou plusieurs fichiers sont manquants."
             }
-        } else if (upload == undefined) {
+        } else if (upload === undefined) {
             return {
                 error: "Echec de l'upload d'un ou plusieurs fichiers obligatoires."
             }

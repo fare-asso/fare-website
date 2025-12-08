@@ -29,7 +29,7 @@ export default function CommuniquesCard({
                     {format(communique.createdAt, "dd/MM/yyyy")}
                 </span>
                 <span className="text-sm">
-                    {(communique.size / (1024 * 1024)).toFixed(2) + "Mo"}
+                    {`${(communique.size / (1024 * 1024)).toFixed(2)}Mo`}
                 </span>
             </div>
 

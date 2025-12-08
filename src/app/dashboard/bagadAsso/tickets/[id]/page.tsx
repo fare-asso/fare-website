@@ -14,7 +14,7 @@ export default async function Page({
 }) {
     const ticketId = Number((await params).id)
 
-    if (isNaN(ticketId)) {
+    if (Number.isNaN(ticketId)) {
         return <span>Le ticket n'existe pas 😔</span>
     }
 

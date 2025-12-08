@@ -18,7 +18,7 @@ export default async function MoreArticles({
         take: 2
     })
 
-    if (articles.length == 0) {
+    if (articles.length === 0) {
         return <></>
     }
 

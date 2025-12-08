@@ -33,14 +33,12 @@ export default function QuestionCard({
                         href={`/dashboard/bouge-ta-prison/questions/${question.id}`}
                         className="w-full overflow-hidden text-ellipsis text-nowrap underline transition-all hover:opacity-75"
                     >
-                        {(question.firstName + " " + question.lastName).length >
+                        {`${question.firstName} ${question.lastName}`.length >
                         20
-                            ? (
-                                  question.firstName +
-                                  " " +
-                                  question.lastName
-                              ).slice(0, 20) + "..."
-                            : question.firstName + " " + question.lastName}
+                            ? `${(
+                                  question.firstName + " " + question.lastName
+                              ).slice(0, 20)}...`
+                            : `${question.firstName} ${question.lastName}`}
                     </Link>
                 </span>
 

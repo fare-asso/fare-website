@@ -16,7 +16,7 @@ export default function LoginForm() {
         <form action={formAction} className="space-y-3">
             <Label htmlFor="email">Email</Label>
             <Input type="email" name="email" id="email" />
-            {error && error.emailError ? (
+            {error?.emailError ? (
                 <div className="font-medium text-destructive text-sm">
                     {error.emailError}
                 </div>
@@ -24,7 +24,7 @@ export default function LoginForm() {
 
             <Label htmlFor="password">Password</Label>
             <Input type="password" name="password" id="password" />
-            {error && error.passwordError ? (
+            {error?.passwordError ? (
                 <div className="font-medium text-destructive text-sm">
                     {error.passwordError}
                 </div>

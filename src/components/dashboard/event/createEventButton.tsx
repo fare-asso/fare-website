@@ -29,21 +29,18 @@ export default function CreateEventButton() {
         any
     >(createEventAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-    const [startDate, setStartDate] = useState<Date>()
-    const [endDate, setEndDate] = useState<Date>()
+    const [_startDate, setStartDate] = useState<Date>()
+    const [_endDate, setEndDate] = useState<Date>()
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    const handleOpenChange = useCallback(
-        (open: boolean) => {
-            setDialogIsOpen(open)
-            if (!open) {
-                // Réinitialiser le formulaire lorsque le dialogue est fermé
-                setStartDate(undefined)
-                setEndDate(undefined)
-            }
-        },
-        [setDialogIsOpen, setStartDate, setEndDate]
-    )
+    const handleOpenChange = useCallback((open: boolean) => {
+        setDialogIsOpen(open)
+        if (!open) {
+            // Réinitialiser le formulaire lorsque le dialogue est fermé
+            setStartDate(undefined)
+            setEndDate(undefined)
+        }
+    }, [])
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {

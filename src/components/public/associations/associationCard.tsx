@@ -1,7 +1,6 @@
 import type { Association } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
-import { MdLocationPin } from "react-icons/md"
 import { createClient } from "@/helpers/supabase/server"
 
 interface JsonLocation {
@@ -37,7 +36,7 @@ export default async function AssociationCard({
 }) {
     const supabase = await createClient()
 
-    const processedLocationData = processLocationData(association.location)
+    const _processedLocationData = processLocationData(association.location)
 
     return (
         <Link
@@ -52,7 +51,7 @@ export default async function AssociationCard({
                 }
                 width={400}
                 height={400}
-                alt={association.name + " logo"}
+                alt={`${association.name} logo`}
                 className="aspect-square w-full rounded-lg border border-black object-cover"
             />
             <div className="flex w-full flex-row">

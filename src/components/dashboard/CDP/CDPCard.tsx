@@ -1,9 +1,8 @@
 "use client"
 
 import type { CommuniqueDePresse } from "@prisma/client"
-import clsx from "clsx"
 import Link from "next/link"
-import { type MouseEvent, useState } from "react"
+import type { MouseEvent } from "react"
 import { FaRegFilePdf } from "react-icons/fa"
 import { FaRegFolderOpen } from "react-icons/fa6"
 import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
@@ -77,7 +76,7 @@ export default function CdpCard({
                         </button>
                     </div>
 
-                    {cdp.type == "CDP" ? (
+                    {cdp.type === "CDP" ? (
                         <FaRegFilePdf size={55} className="text-red-600" />
                     ) : (
                         <FaRegFolderOpen size={55} className="text-red-600" />

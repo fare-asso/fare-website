@@ -6,7 +6,6 @@ import {
     getCoreRowModel,
     useReactTable
 } from "@tanstack/react-table"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
     Table,
     TableBody,
@@ -54,7 +53,7 @@ export function DataTable<TData, TValue>({
                     ))}
                 </TableHeader>
                 <TableBody className="flex-1 overflow-y-auto">
-                    {table.getRowModel().rows?.length ? (
+                    {table.getRowModel().rows?.length > 0 ? (
                         table.getRowModel().rows.map((row) => (
                             <TableRow
                                 key={row.id}

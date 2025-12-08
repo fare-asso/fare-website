@@ -2,7 +2,7 @@
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { MdDelete, MdEdit, MdVisibility, MdVisibilityOff } from "react-icons/md"
+import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
 import { Button } from "@/components/ui/button"
 
 // import EditArticleButton from "./editArticleButton";
@@ -74,7 +74,7 @@ export default function ArticleCard({ article }: { article: Article }) {
 
             <div id="buttons" className="flex flex-row items-center">
                 <Button
-                    variant={"default"}
+                    variant="default"
                     className="mr-2 hidden px-3 md:block"
                     onClick={HandleVisibility}
                     disabled={isSwitchingVisibility}

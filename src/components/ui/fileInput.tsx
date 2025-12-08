@@ -1,7 +1,7 @@
 "use client"
 import { File, Upload } from "lucide-react"
 import type React from "react"
-import { ChangeEventHandler, forwardRef, useState } from "react"
+import { forwardRef, useState } from "react"
 
 interface FileInputProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "value"> {

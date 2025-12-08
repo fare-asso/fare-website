@@ -8,13 +8,13 @@ import getCurrentUserId from "@/helpers/user/id"
 import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function createArticleAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ): Promise<{ error?: string; success?: boolean }> {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -76,7 +76,7 @@ export default async function createArticleAction(
     }
 
     // insert article to database
-    const record = await prisma.article.create({
+    const _record = await prisma.article.create({
         data: {
             title: title,
             content: contentDelta,

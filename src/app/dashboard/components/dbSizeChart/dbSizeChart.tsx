@@ -2,7 +2,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
@@ -14,7 +13,7 @@ export default async function DbSizeChart() {
 
     const dbSize: number = (await supabase.rpc("total_database_size")).data
 
-    if (isNaN(dbSize)) {
+    if (Number.isNaN(dbSize)) {
         return (
             <Card>
                 <CardHeader>

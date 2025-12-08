@@ -60,15 +60,12 @@ export default function AddEquipmentButton() {
         }
     }
 
-    const handleOpenChange = useCallback(
-        (open: boolean) => {
-            setDialogIsOpen(open)
-            if (!open) {
-                // Réinitialiser le formulaire lorsque le dialogue est fermé
-            }
-        },
-        [setDialogIsOpen]
-    )
+    const handleOpenChange = useCallback((open: boolean) => {
+        setDialogIsOpen(open)
+        if (!open) {
+            // Réinitialiser le formulaire lorsque le dialogue est fermé
+        }
+    }, [])
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {

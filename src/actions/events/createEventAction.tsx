@@ -1,6 +1,6 @@
 "use server"
 
-import { randomUUID } from "crypto"
+import { randomUUID } from "node:crypto"
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { sanitizeString } from "@/helpers/string"
@@ -21,13 +21,13 @@ interface Event {
 }
 
 export default async function createEventAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -58,7 +58,7 @@ export default async function createEventAction(
     /* Data Validation */
 
     // check name validity
-    if (name != null && typeof name == "string") {
+    if (name != null && typeof name === "string") {
         const nameStr: string = name.toString()
         if (nameStr.length < 3) {
             return {
@@ -72,7 +72,7 @@ export default async function createEventAction(
     }
 
     // check description validity
-    if (description != null && typeof description == "string") {
+    if (description != null && typeof description === "string") {
         const descriptionStr: string = description.toString()
         if (descriptionStr.length < 10) {
             return {
@@ -86,7 +86,7 @@ export default async function createEventAction(
     }
 
     // check location validity
-    if (location != null && typeof location == "string") {
+    if (location != null && typeof location === "string") {
         if (location.length > 0) {
             // non null string
 
@@ -104,7 +104,7 @@ export default async function createEventAction(
     }
 
     // check category validity
-    if (category != null && typeof category == "string") {
+    if (category != null && typeof category === "string") {
         const categoryStr: string = category.toString()
 
         // check if the category exists
@@ -138,14 +138,17 @@ export default async function createEventAction(
     // Event Start Time
     if (
         startDate != null &&
-        typeof startDate == "string" &&
+        typeof startDate === "string" &&
         startHour != null &&
         startMinute != null
     ) {
         const startDateStr: string = startDate.toString()
         const startHourStr: string = startHour.toString()
         const startMinuteStr: string = startMinute.toString()
-        if (isNaN(Number(startHourStr)) || isNaN(Number(startMinuteStr))) {
+        if (
+            Number.isNaN(Number(startHourStr)) ||
+            Number.isNaN(Number(startMinuteStr))
+        ) {
             return {
                 error: "L'heure ou les minutes de départ ne sont pas sous le bon format"
             }
@@ -163,14 +166,17 @@ export default async function createEventAction(
     // Event End Time
     if (
         endDate != null &&
-        typeof endDate == "string" &&
+        typeof endDate === "string" &&
         endHour != null &&
         endMinute != null
     ) {
         const endDateStr: string = endDate.toString()
         const endHourStr: string = endHour.toString()
         const endMinuteStr: string = endMinute.toString()
-        if (isNaN(Number(endHourStr)) || isNaN(Number(endMinuteStr))) {
+        if (
+            Number.isNaN(Number(endHourStr)) ||
+            Number.isNaN(Number(endMinuteStr))
+        ) {
             return {
                 error: "L'heure ou les minutes de fin ne sont pas sous le bon format"
             }
@@ -186,7 +192,7 @@ export default async function createEventAction(
     }
 
     // check visibility validity
-    if (visibility != null && typeof visibility == "string") {
+    if (visibility != null && typeof visibility === "string") {
         const visibilityStr: string = visibility.toString()
         switch (visibilityStr) {
             case "on":
@@ -208,13 +214,13 @@ export default async function createEventAction(
     // check picture validity and size
     if (picture != null && picture instanceof File) {
         const pictureFile: File = picture
-        if (pictureFile.size != 0 && pictureFile.size / (1024 * 1024) <= 10) {
+        if (pictureFile.size > 0 && pictureFile.size / (1024 * 1024) <= 10) {
             // valid picture file and size < 10mb
             // Some Logic to upload file to S3 and get its path
             const res = await supabase.storage
                 .from("EventPictures")
                 .upload(
-                    sanitizeString(data.name) + ":" + randomUUID(),
+                    `${sanitizeString(data.name)}:${randomUUID()}`,
                     pictureFile
                 )
 
@@ -250,7 +256,7 @@ export default async function createEventAction(
 
     // create event record in the DB
     try {
-        const record = await prisma.event.create({
+        const _record = await prisma.event.create({
             data: {
                 name: data.name!,
                 desc: data.desc!,
@@ -269,7 +275,7 @@ export default async function createEventAction(
         return {
             success: true
         }
-    } catch (error: any) {
+    } catch (_error: any) {
         const res = await supabase.storage
             .from("EventPictures")
             .remove([data.image])

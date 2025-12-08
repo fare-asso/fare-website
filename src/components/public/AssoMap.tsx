@@ -7,7 +7,7 @@ export default async function AssoMap() {
 
     try {
         associations = await prisma.association.findMany()
-    } catch (e) {
+    } catch (_e) {
         console.error("Failed to fetch associations")
     }
 

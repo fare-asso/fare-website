@@ -1,6 +1,5 @@
 import Image from "next/image"
-import React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import logoEHESP from "/public/elues/ehesp/ehesp.png"
 import logoBougeTonCampus from "/public/elues/logo-Bouge-Ton-Campus.png"
 import logoBougeTonCrous from "/public/elues/logo-Bouge-Ton-Crous.png"

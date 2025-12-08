@@ -37,7 +37,7 @@ export default function CategorySelect({
                         {category.name}
                     </SelectItem>
                 ))
-                setCategoryItems(<>{items}</>)
+                setCategoryItems(items)
             } catch (error) {
                 console.error(error)
             }

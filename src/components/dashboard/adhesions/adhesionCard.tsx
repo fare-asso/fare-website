@@ -3,16 +3,14 @@
 import type { Adhesion } from "@prisma/client"
 import clsx from "clsx"
 import { format } from "date-fns"
-import Link from "next/link"
 import { type MouseEvent, useState } from "react"
-import { FaFileArchive, FaRegFileArchive } from "react-icons/fa"
-import { FaRegFolderOpen } from "react-icons/fa6"
-import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
+import { FaFileArchive } from "react-icons/fa"
+import { MdOutlineFileDownload } from "react-icons/md"
 import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
 import { useToast } from "@/components/ui/use-toast"
 import LoadingRing from "../loadingRing"
 
-function downloadFile(url: string) {
+function _downloadFile(url: string) {
     const a = document.createElement("a")
     a.href = url
     document.body.appendChild(a)
@@ -27,7 +25,7 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
 
     const [hidden, setIsHidden] = useState<boolean>(false)
 
-    const handleDelete = async (event: MouseEvent<HTMLButtonElement>) => {
+    const _handleDelete = async (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
         event.stopPropagation()
 

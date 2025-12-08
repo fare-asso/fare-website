@@ -1,4 +1,3 @@
-import { Event } from "@prisma/client"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 import EventCard from "./eventCard"
@@ -23,7 +22,7 @@ export default async function EventArchive() {
         }
     })
 
-    if (events.length == 0) {
+    if (events.length === 0) {
         return <></>
     }
 

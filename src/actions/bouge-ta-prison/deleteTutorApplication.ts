@@ -22,7 +22,7 @@ export default async function deleteTutorApplication(
         if (!application) {
             return { error: "Candidature non trouvée" }
         }
-    } catch (error) {
+    } catch (_error) {
         return { error: "Echec de la récupération de la candidature" }
     }
 
@@ -41,12 +41,12 @@ export default async function deleteTutorApplication(
 
     // Delete the application
     try {
-        const deletedApplication = await prisma.bTPTutorApplication.delete({
+        const _deletedApplication = await prisma.bTPTutorApplication.delete({
             where: {
                 id
             }
         })
-    } catch (error) {
+    } catch (_error) {
         return { error: "Echec de la suppression de la candidature" }
     }
 

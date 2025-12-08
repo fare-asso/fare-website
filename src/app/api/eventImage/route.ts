@@ -15,15 +15,15 @@ export async function GET(request: Request) {
 
     if (event == null) {
         return Response.json({
-            error: "Failed to fetch image for event (id: " + id + ")"
+            error: `Failed to fetch image for event (id: ${id})`
         })
     }
 
     const imagePath: string = event.image
 
-    if (imagePath == null || imagePath == "") {
+    if (imagePath == null || imagePath === "") {
         return Response.json({
-            error: "Failed to fetch image for event (id: " + id + ")"
+            error: `Failed to fetch image for event (id: ${id})`
         })
     }
 

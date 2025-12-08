@@ -1,6 +1,6 @@
 "use client"
 
-import { Category, type Event } from "@prisma/client"
+import type { Event } from "@prisma/client"
 import { format } from "date-fns"
 import Image from "next/image"
 import Link from "next/link"
@@ -94,7 +94,7 @@ export default function EventCard({
                     <span className="mt-1 overflow-hidden text-ellipsis text-nowrap text-sm">
                         {location.json
                             ? location.json.displayName.split(",")[0]
-                            : location.string!.split(",")[0]}
+                            : location.string?.split(",")[0]}
                     </span>
                 </div>
             </div>

@@ -4,7 +4,7 @@ import { verifyCaptcha } from "@/helpers/captcha"
 import prisma from "@/helpers/db"
 
 export default async function bugReportAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     // Retrieve CAPTCHA value
@@ -33,7 +33,7 @@ export default async function bugReportAction(
     }
 
     try {
-        const createdRecord = await prisma.bugReport.create({
+        const _createdRecord = await prisma.bugReport.create({
             data: {
                 email,
                 type: bugType,

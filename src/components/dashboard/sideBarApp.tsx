@@ -9,7 +9,6 @@ import {
     FaHandcuffs,
     FaPeopleGroup,
     FaRegNewspaper,
-    FaUser,
     FaUsers
 } from "react-icons/fa6" // Bouge Ta Prison
 // Link icons

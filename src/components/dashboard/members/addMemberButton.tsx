@@ -87,7 +87,7 @@ export default function AddMemberButton() {
                 setSuccess(false)
             }
         },
-        [setDialogIsOpen, reset]
+        [reset]
     )
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès

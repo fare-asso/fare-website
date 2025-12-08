@@ -2,7 +2,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
@@ -16,7 +15,7 @@ export default async function StorageChart() {
         await supabase.rpc("total_storage_used_all_buckets")
     ).data
 
-    if (isNaN(storageSize)) {
+    if (Number.isNaN(storageSize)) {
         return (
             <Card>
                 <CardHeader>

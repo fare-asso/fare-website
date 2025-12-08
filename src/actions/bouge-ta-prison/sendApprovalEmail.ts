@@ -26,7 +26,7 @@ export default async function sendApprovalEmail(
             error: " L'email n'a pas pu être envoyé. Veuillez réessayer plus tard."
         }
     }
-    const updatedApplication = await prisma.bTPTutorApplication.update({
+    const _updatedApplication = await prisma.bTPTutorApplication.update({
         where: {
             id: application.id
         },

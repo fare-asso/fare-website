@@ -1,6 +1,6 @@
 "use server"
 
-import { randomUUID } from "crypto"
+import { randomUUID } from "node:crypto"
 import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
@@ -8,13 +8,13 @@ import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function addEquipmentAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -36,15 +36,15 @@ export default async function addEquipmentAction(
     }
 
     // Name
-    if (!(name.length > 0))
+    if (name.length === 0)
         return { error: "La longueur du nom ne doit pas être vide" }
 
     // Quantity
-    if (isNaN(Number(quantity)))
+    if (Number.isNaN(Number(quantity)))
         return { error: "Champs 'quantité' non-valide." }
 
     // Guarantee
-    if (isNaN(Number(guarantee)))
+    if (Number.isNaN(Number(guarantee)))
         return { error: "Champs 'caution' non-valide." }
 
     // Image
@@ -83,7 +83,7 @@ export default async function addEquipmentAction(
 
     // create new record
     try {
-        const createdRecord = await prisma.bagadAssoEquipment.create({
+        const _createdRecord = await prisma.bagadAssoEquipment.create({
             data: {
                 name,
                 deposit: Number(guarantee),
@@ -95,7 +95,7 @@ export default async function addEquipmentAction(
         revalidatePath("/dashboard/bagadAsso")
         revalidatePath("/bagadAsso")
         return { success: true }
-    } catch (error) {
+    } catch (_error) {
         // Failed
         return {
             error: "Echec de l'ajout de l'équipement. Veuillez réessayer."

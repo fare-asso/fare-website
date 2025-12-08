@@ -2,7 +2,7 @@ import type { Member } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
 import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6"
-import { MdAlternateEmail, MdEmail } from "react-icons/md"
+import { MdAlternateEmail } from "react-icons/md"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 export default function MemberCard({ member }: { member: Member }) {

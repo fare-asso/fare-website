@@ -43,13 +43,13 @@ export default function NumberInput({
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newValue = Number(event.target.value)
-        if (!isNaN(newValue)) {
+        if (!Number.isNaN(newValue)) {
             updateNumber(newValue)
         }
     }
 
     return (
-        <div className={"relative flex max-w-[8rem] items-center" + className}>
+        <div className={`relative flex max-w-[8rem] items-center${className}`}>
             <button
                 type="button"
                 onClick={decrement}

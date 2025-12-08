@@ -1,4 +1,4 @@
-import { ChangeEvent, type ChangeEventHandler } from "react"
+import type { ChangeEventHandler } from "react"
 
 export default function AssociationMapSearchBar({
     value,

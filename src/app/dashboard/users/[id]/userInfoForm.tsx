@@ -46,7 +46,7 @@ export function UserInfoForm({ user }: { user: User }) {
     useEffect(() => {
         form.reset(userInfo)
         setInitialInfo(userInfo)
-    }, [userInfo])
+    }, [userInfo, form.reset])
 
     const currentValues = form.watch()
     const isChanged =

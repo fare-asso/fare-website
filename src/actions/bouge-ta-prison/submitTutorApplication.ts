@@ -6,10 +6,7 @@ import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
 import { tutorApplicationEmailTemplate } from "@/lib/htmlEmailTemplates"
-import {
-    BTPTutorApplication,
-    BTPTutorApplicationSchema
-} from "@/schemas/bougeTaPrison"
+import { BTPTutorApplicationSchema } from "@/schemas/bougeTaPrison"
 
 export default async function submitTutorApplication(
     formData: FormData
@@ -34,7 +31,7 @@ export default async function submitTutorApplication(
         sanitizeString(parsedData.data.firstName.toLowerCase().at(0)!) +
         sanitizeString(parsedData.data.lastName.toLowerCase())
 
-    const folderName = crypto.randomUUID() + "-" + sanitizedName
+    const folderName = `${crypto.randomUUID()}-${sanitizedName}`
 
     // Upload the CV and the motivation letter to the storage
     const supabase = await createClient()
@@ -81,7 +78,7 @@ export default async function submitTutorApplication(
     }
 
     // Send email to the btp team
-    const emailResponse = await sendEmail({
+    const _emailResponse = await sendEmail({
         to: "intervention-carceral@fare-asso.fr",
         subject: "Nouvelle candidature de tuteur Bouge Ta Prison",
         html: tutorApplicationEmailTemplate(parsedData.data)

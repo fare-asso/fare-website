@@ -34,7 +34,7 @@ function processLocationObject(value: string): string {
         } = JSON.parse(value)
         return json.displayName
     } catch {
-        if (typeof value == "string") {
+        if (typeof value === "string") {
             return value
         } else return "Non défini"
     }
@@ -102,7 +102,7 @@ export const columns: ColumnDef<Event>[] = [
         header: "Description",
         cell: ({ row }) => {
             const desc: string = row.getValue("desc")
-            return desc.slice(0, 15) + "..."
+            return `${desc.slice(0, 15)}...`
         }
     },
     {

@@ -2,7 +2,7 @@
 export function base64ToFile(base64: string, filename: string): File {
     // Split the base64 string to get the data and the MIME type
     const arr = base64.split(",")
-    const mime = arr[0].match(/:(.*?);/)![1]
+    const mime = arr[0].match(/:(.*?);/)?.[1]
     const bstr = atob(arr[1])
     let n = bstr.length
     const u8arr = new Uint8Array(n)

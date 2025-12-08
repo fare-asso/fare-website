@@ -50,7 +50,7 @@ export default function PartnersCarousel() {
         }, 5000) // Change slide every 5 seconds
 
         return () => clearInterval(autoScroll)
-    }, [currentIndex])
+    }, [scrollRight])
 
     return (
         <div className="relative mx-auto w-full max-w-4xl overflow-hidden">

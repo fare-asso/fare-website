@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useFormState } from "react-dom"
 import createPasswordForRepresentativeAction from "@/actions/espace-asso/createPasswordForRepresentativeAction"
 import LoadingRing from "../dashboard/loadingRing"
@@ -22,13 +22,13 @@ export default function CreatePasswordForm({ email }: { email: string }) {
         { error?: string; success?: boolean } | undefined,
         any
     >(createPasswordForRepresentativeAction, undefined)
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
+    const [_dialogIsOpen, _setDialogIsOpen] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         setIsLoading(false)
-    }, [formState])
+    }, [])
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()

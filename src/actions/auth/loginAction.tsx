@@ -11,7 +11,7 @@ interface Data {
 }
 
 export default async function loginAction(
-    currentState: { emailError?: string; passwordError?: string } | undefined,
+    _currentState: { emailError?: string; passwordError?: string } | undefined,
     formData: FormData
 ) {
     const supabase = await createClient()

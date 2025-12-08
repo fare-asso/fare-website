@@ -1,4 +1,3 @@
-import { Event } from "@prisma/client"
 import prisma from "@/helpers/db"
 
 import { createClient } from "@/helpers/supabase/server"
@@ -29,7 +28,7 @@ export default async function CurrentEvents() {
         }
     })
 
-    if (events.length == 0) {
+    if (events.length === 0) {
         return <></>
     }
 

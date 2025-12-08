@@ -18,7 +18,7 @@ export default async function TutorApplicationPage({
 }) {
     const id = (await params).id
 
-    if (isNaN(Number(id))) {
+    if (Number.isNaN(Number(id))) {
         return <span>Cette candidature n'existe pas 😔</span>
     }
 

@@ -3,7 +3,7 @@
 import clsx from "clsx"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { type MouseEvent, MouseEventHandler, type RefObject } from "react"
+import type { MouseEvent, RefObject } from "react"
 import type { Link as L } from "./headerLinks"
 
 export default function HeaderLink({
@@ -25,10 +25,10 @@ export default function HeaderLink({
             const link = target.children[0] as HTMLAnchorElement
             const { width, left }: { width: number; left: number } =
                 link.getBoundingClientRect()
-            runnerRef.current.style.width = width + 2 + "px"
+            runnerRef.current.style.width = `${width + 2}px`
             runnerRef.current.style.left =
                 left -
-                target.parentElement!.getBoundingClientRect().left -
+                target.parentElement?.getBoundingClientRect().left -
                 2 +
                 "px"
             runnerRef.current.style.opacity = "1"
@@ -37,7 +37,7 @@ export default function HeaderLink({
         }
     }
 
-    const unhoverHandler = (e: MouseEvent<HTMLDivElement>) => {
+    const unhoverHandler = (_e: MouseEvent<HTMLDivElement>) => {
         if (runnerRef.current) {
             runnerRef.current.style.opacity = "0"
         } else {

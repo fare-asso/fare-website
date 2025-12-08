@@ -51,7 +51,7 @@ export function UserPermissionsForm({
     useEffect(() => {
         form.reset({ permissions: userPermissions })
         setInitialPermissions(userPermissions)
-    }, [userPermissions])
+    }, [userPermissions, form.reset])
 
     const onSubmit = async (data: SchemaType) => {
         const res = await updateUserPermissions(userId, data.permissions)

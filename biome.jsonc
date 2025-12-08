@@ -143,7 +143,7 @@
                 "useThrowOnlyError": "on"
             },
             "suspicious": {
-                "noConsole": "error",
+                "noConsole": "off",
                 "noDuplicateTestHooks": "on",
                 "noEmptyBlockStatements": "on",
                 "noExportsInTest": "on",

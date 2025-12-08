@@ -1,7 +1,6 @@
 import type { BagadAssoEquipment } from "@prisma/client"
 import Image from "next/image"
-import { MdDelete, MdModeEditOutline, MdOutlineHideImage } from "react-icons/md"
-import { Button } from "@/components/ui/button"
+import { MdOutlineHideImage } from "react-icons/md"
 import { createClient } from "@/helpers/supabase/server"
 import DeleteEquipmentButton from "./deleteEquipmentButton"
 

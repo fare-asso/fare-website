@@ -1,6 +1,6 @@
 "use client"
 
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { startTransition, useActionState, useState } from "react"
 import bugReportAction from "@/actions/bug-report/bugReportAction"
 import Captcha from "@/components/captcha/recaptcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
@@ -11,7 +11,7 @@ export default function BugReportForm() {
         { error?: string; success?: boolean } | undefined,
         any
     >(bugReportAction, undefined)
-    const [captchaValue, setCaptchaValue] = useState<string | null>(null)
+    const [_captchaValue, setCaptchaValue] = useState<string | null>(null)
     const [charactersLength, setCharactersLength] = useState<number>(0)
 
     const maxCharactersLength: number = 500
@@ -139,7 +139,7 @@ export default function BugReportForm() {
                     <span
                         style={{
                             color:
-                                charactersLength == maxCharactersLength
+                                charactersLength === maxCharactersLength
                                     ? "red"
                                     : "black"
                         }}
@@ -168,9 +168,8 @@ export default function BugReportForm() {
                     className="mt-4 border-green-600 text-green-600"
                 >
                     <AlertDescription>
-                        {
-                            "Votre soumission a été reçue. Nous vous remercions et vous contacterons sous peu."
-                        }
+                        Votre soumission a été reçue. Nous vous remercions et
+                        vous contacterons sous peu.
                     </AlertDescription>
                 </Alert>
             ) : null}

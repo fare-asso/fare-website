@@ -1,9 +1,4 @@
-import {
-    Permission,
-    type Role,
-    type User,
-    UserPermission
-} from "@prisma/client"
+import type { Role, User } from "@prisma/client"
 import prisma from "@/helpers/db"
 import type { UserWithPermissions } from "./supabase/auth"
 

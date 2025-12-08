@@ -10,7 +10,7 @@ export default async function ActualitePage() {
     return (
         <div className="flex w-full flex-col items-center justify-start">
             <h1 className="py-12 font-semibold text-3xl md:py-32">
-                {"Actualités"}
+                Actualités
             </h1>
             <div className="flex h-full w-full flex-col items-center">
                 <ArticleList />

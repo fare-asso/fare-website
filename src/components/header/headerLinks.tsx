@@ -49,12 +49,12 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                 return (
                     <div
                         key={link.title}
-                        className={clsx("flex flex-col", level == 0 && "mb-4")}
+                        className={clsx("flex flex-col", level === 0 && "mb-4")}
                     >
                         <div
                             className={clsx(
                                 "flex items-center justify-start",
-                                level == 0 && "w-fit"
+                                level === 0 && "w-fit"
                             )}
                         >
                             <Link
@@ -101,7 +101,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
 
     function renderDesktopLinks(
         links: Link[],
-        pathname: string
+        _pathname: string
     ): React.ReactElement | React.ReactElement[] {
         return links
             .filter((link) => !link.hidden)
@@ -135,7 +135,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
         return () => {
             document.removeEventListener("mousedown", handleOutsideClick)
         }
-    }, [menuIsOpen])
+    }, [menuIsOpen, handleOutsideClick])
 
     return (
         <div className="w-full lg:w-auto">

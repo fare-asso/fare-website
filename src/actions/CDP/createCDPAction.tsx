@@ -21,13 +21,13 @@ function getPresseType(formData: FormData): PresseType | undefined {
 }
 
 export default async function createCDPAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -60,14 +60,14 @@ export default async function createCDPAction(
     const maxFileSize = 25 // in mb
 
     // Check file size
-    if (fileSize == 0 || fileSize / (1024 * 1024) > maxFileSize) {
+    if (fileSize === 0 || fileSize / (1024 * 1024) > maxFileSize) {
         return {
             error: `La taille du fichier doit être inférieure à ${maxFileSize}mo`
         }
     }
 
     // Check file format
-    if (data.contentType != "application/pdf") {
+    if (data.contentType !== "application/pdf") {
         return {
             error: "Le fichier doit être de format PDF"
         }
@@ -90,7 +90,7 @@ export default async function createCDPAction(
         revalidatePath("/dashboard/communiques-de-presse")
         revalidatePath("/presse")
         revalidatePath(
-            type == "CDP"
+            type === "CDP"
                 ? "/presse/communiques-de-presse"
                 : "/presse/dossiers-de-presse"
         )

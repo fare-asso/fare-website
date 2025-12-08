@@ -6,13 +6,13 @@ import { createAdminClient, createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function deleteAssociationAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -37,7 +37,7 @@ export default async function deleteAssociationAction(
     /* Remove representative */
     if (association.representativeId) {
         try {
-            const removedRepresentative =
+            const _removedRepresentative =
                 await supabaseAdmin.auth.admin.deleteUser(
                     association.representativeId
                 )
@@ -65,7 +65,7 @@ export default async function deleteAssociationAction(
 
     // delete record
     try {
-        const deletedRecord = await prisma.association.delete({
+        const _deletedRecord = await prisma.association.delete({
             where: {
                 id: id
             }

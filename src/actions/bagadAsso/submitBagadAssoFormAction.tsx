@@ -7,7 +7,7 @@ import { sendEmail } from "@/helpers/email"
 import { bagadAssoTicketEmailTemplate } from "@/lib/htmlEmailTemplates"
 
 export default async function submitBagadAssoFormAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     // Retrieve CAPTCHA value
@@ -75,7 +75,7 @@ export default async function submitBagadAssoFormAction(
         !eventType ||
         !eventDate ||
         !eventAddress ||
-        isNaN(eventParticipants) ||
+        Number.isNaN(eventParticipants) ||
         !equipmentInput ||
         !termsAndConditions
     ) {
@@ -91,7 +91,7 @@ export default async function submitBagadAssoFormAction(
 
     // Check if event_date is a valid date
     const eventDateObject = new Date(eventDate)
-    if (isNaN(eventDateObject.getTime())) {
+    if (Number.isNaN(eventDateObject.getTime())) {
         return { error: "La date de l'événement n'est pas valide." }
     }
 

@@ -7,13 +7,13 @@ import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function editArticleAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error } = await getCurrentUserRole()
     if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ADMIN")
+    if (role !== "ADMIN")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -27,7 +27,7 @@ export default async function editArticleAction(
     const articleId = Number(formData.get("id")?.toString())
 
     // Ensure articleId is a number
-    if (isNaN(articleId)) {
+    if (Number.isNaN(articleId)) {
         return { error: "L'id de l'article est eronné" }
     }
 
@@ -52,7 +52,7 @@ export default async function editArticleAction(
     }
 
     // Delete previous images from storage
-    const deleteResponses = await supabase.storage
+    const _deleteResponses = await supabase.storage
         .from("article-pictures")
         .remove(article?.imagesPath)
 
@@ -84,7 +84,7 @@ export default async function editArticleAction(
     const contentDelta: JSONContent = JSON.parse(content)
 
     // insert article to database
-    const record = await prisma.article.update({
+    const _record = await prisma.article.update({
         where: {
             id: articleId
         },

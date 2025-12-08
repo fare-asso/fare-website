@@ -5,13 +5,13 @@ import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function createPasswordForRepresentativeAction(
-    prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
     const { role, error: err } = await getCurrentUserRole()
     if (err) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role != "ASSO_OWNER")
+    if (role !== "ASSO_OWNER")
         return {
             error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
         }
@@ -36,7 +36,7 @@ export default async function createPasswordForRepresentativeAction(
     }
 
     // password and passwordConf are not identical
-    if (password != passwordConf) {
+    if (password !== passwordConf) {
         return {
             error: "Le mot de passe et la confirmation du mot de passe ne sont pas identiques"
         }

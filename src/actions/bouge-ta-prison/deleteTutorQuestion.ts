@@ -8,12 +8,12 @@ export default async function deleteTutorQuestion(
 ): Promise<{ success?: boolean; error?: string }> {
     // Delete the application
     try {
-        const deletedApplication = await prisma.bTPTutorQuestion.delete({
+        const _deletedApplication = await prisma.bTPTutorQuestion.delete({
             where: {
                 id
             }
         })
-    } catch (error) {
+    } catch (_error) {
         return { error: "Echec de la suppression de la question" }
     }
 

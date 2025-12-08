@@ -72,7 +72,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
         ([, config]) => config.theme || config.color
     )
 
-    if (!colorConfig.length) {
+    if (colorConfig.length === 0) {
         return null
     }
 
@@ -134,7 +134,7 @@ const ChartTooltipContent = React.forwardRef<
         const { config } = useChart()
 
         const tooltipLabel = React.useMemo(() => {
-            if (hideLabel || !payload?.length) {
+            if (hideLabel || payload?.length === 0) {
                 return null
             }
 
@@ -171,7 +171,7 @@ const ChartTooltipContent = React.forwardRef<
             labelKey
         ])
 
-        if (!active || !payload?.length) {
+        if (!active || payload?.length === 0) {
             return null
         }
 
@@ -310,7 +310,7 @@ const ChartLegendContent = React.forwardRef<
     ) => {
         const { config } = useChart()
 
-        if (!payload?.length) {
+        if (payload?.length === 0) {
             return null
         }
 
