@@ -1,8 +1,5 @@
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
 import { format } from "date-fns"
 import Link from "next/link"
-import SendApprovalButton from "./sendApprovalButton"
 import { FaCheckCircle, FaQuestionCircle } from "react-icons/fa"
 import {
     Tooltip,
@@ -10,6 +7,9 @@ import {
     TooltipProvider,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
+import SendApprovalButton from "./sendApprovalButton"
 
 export default async function TutorApplicationPage({
     params
@@ -52,7 +52,7 @@ export default async function TutorApplicationPage({
             >
                 &lsaquo; Retour aux candidatures
             </Link>
-            <h1 className="mt-4 text-2xl font-semibold">
+            <h1 className="mt-4 font-semibold text-2xl">
                 👤Candidature{" "}
                 <span className="font-mono opacity-80">
                     #{tutorApplication.id}
@@ -120,7 +120,7 @@ export default async function TutorApplicationPage({
 
                 {/* Right Part (Bottom mobile) */}
                 <div className="h-full w-full p-4">
-                    <h2 className="text-xl font-bold">
+                    <h2 className="font-bold text-xl">
                         📂Fichiers complémentaires:
                     </h2>
                     <ul className="ml-4 list-disc space-y-2">
@@ -158,7 +158,7 @@ export default async function TutorApplicationPage({
             </div>
 
             {/* Bottom Part */}
-            <div className="flex w-full flex-col items-center md:ml-8 md:mt-8 md:items-start">
+            <div className="flex w-full flex-col items-center md:mt-8 md:ml-8 md:items-start">
                 {!tutorApplication.approved && (
                     <SendApprovalButton application={tutorApplication} />
                 )}

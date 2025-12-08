@@ -1,12 +1,10 @@
 "use client"
 
-import { Category, Event } from "@prisma/client"
-import Image from "next/image"
-
+import { Category, type Event } from "@prisma/client"
 import { format } from "date-fns"
-
-import { MdLocationPin } from "react-icons/md"
+import Image from "next/image"
 import Link from "next/link"
+import { MdLocationPin } from "react-icons/md"
 
 interface JsonLocation {
     displayName: string
@@ -65,7 +63,7 @@ export default function EventCard({
             <div className="mr-4 flex w-2/3 flex-col items-start pl-2 md:w-1/4">
                 {/* Title */}
                 <span
-                    className={`text-xl font-semibold`}
+                    className={`font-semibold text-xl`}
                     style={{ color: fontColor }}
                 >
                     {event.name}

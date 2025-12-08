@@ -1,6 +1,10 @@
 "use client"
 
+import { useCallback, useEffect, useState } from "react"
+import { useFormState } from "react-dom"
 import createPasswordForRepresentativeAction from "@/actions/espace-asso/createPasswordForRepresentativeAction"
+import LoadingRing from "../dashboard/loadingRing"
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
 import { Button } from "../ui/button"
 import {
     Card,
@@ -12,10 +16,6 @@ import {
 } from "../ui/card"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
-import { useFormState } from "react-dom"
-import { useCallback, useEffect, useState } from "react"
-import LoadingRing from "../dashboard/loadingRing"
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
 
 export default function CreatePasswordForm({ email }: { email: string }) {
     const [formState, formAction] = useFormState<

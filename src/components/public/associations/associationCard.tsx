@@ -1,10 +1,8 @@
-import { createClient } from "@/helpers/supabase/server"
-import { Association } from "@prisma/client"
-
+import type { Association } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
-
 import { MdLocationPin } from "react-icons/md"
+import { createClient } from "@/helpers/supabase/server"
 
 interface JsonLocation {
     displayName: string
@@ -59,10 +57,10 @@ export default async function AssociationCard({
             />
             <div className="flex w-full flex-row">
                 <div className="mt-2 flex flex-col">
-                    <span className="text-xl font-semibold">
+                    <span className="font-semibold text-xl">
                         {association.name}
                     </span>
-                    <span className="rounded-full border border-black px-4 py-[2px] text-center text-xs font-semibold">
+                    <span className="rounded-full border border-black px-4 py-[2px] text-center font-semibold text-xs">
                         {association.major}
                     </span>
                 </div>

@@ -1,9 +1,13 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { Permission } from "@prisma/client"
+import { Info } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import updateUserPermissions from "@/actions/users/updateUserPermissions"
+import LoadingRing from "@/components/dashboard/loadingRing"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -11,16 +15,12 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
-import { Info } from "lucide-react"
-import updateUserPermissions from "@/actions/users/updateUserPermissions"
-import { Permission } from "@prisma/client"
-import LoadingRing from "@/components/dashboard/loadingRing"
 
 const schema = z.object({
     permissions: z.array(z.number())
 })
 
-type schemaType = z.infer<typeof schema>
+type SchemaType = z.infer<typeof schema>
 
 type Props = {
     userId: string
@@ -36,7 +36,7 @@ export function UserPermissionsForm({
     const [initialPermissions, setInitialPermissions] =
         useState(userPermissions)
 
-    const form = useForm<schemaType>({
+    const form = useForm<SchemaType>({
         resolver: zodResolver(schema),
         defaultValues: {
             permissions: userPermissions
@@ -53,7 +53,7 @@ export function UserPermissionsForm({
         setInitialPermissions(userPermissions)
     }, [userPermissions])
 
-    const onSubmit = async (data: schemaType) => {
+    const onSubmit = async (data: SchemaType) => {
         const res = await updateUserPermissions(userId, data.permissions)
         if (res.success) {
             form.reset({
@@ -78,7 +78,7 @@ export function UserPermissionsForm({
             {Object.entries(permissionCategories).map(
                 ([category, permissions]) => (
                     <div key={category} className="space-y-2">
-                        <h3 className="text-lg font-semibold">{category}</h3>
+                        <h3 className="font-semibold text-lg">{category}</h3>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {permissions.map((permission) => (
                                 <div
@@ -112,7 +112,7 @@ export function UserPermissionsForm({
                                     <div className="space-y-1">
                                         <label
                                             htmlFor={`perm-${permission.id}`}
-                                            className="text-sm font-medium"
+                                            className="font-medium text-sm"
                                         >
                                             {permission.title}
                                         </label>
@@ -120,7 +120,7 @@ export function UserPermissionsForm({
                                     {permission.description && (
                                         <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <Info className="text-muted-foreground h-4 w-4" />
+                                                <Info className="h-4 w-4 text-muted-foreground" />
                                             </TooltipTrigger>
                                             <TooltipContent>
                                                 <p className="w-52 text-xs">

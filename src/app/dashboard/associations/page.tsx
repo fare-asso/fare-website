@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import AddAssociationButton from "@/components/dashboard/associations/addAssociationButton"
 import AssociationList from "@/components/dashboard/associations/associationList"
 import {
@@ -8,8 +9,6 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-
-import { Suspense } from "react"
 
 export default async function Associations() {
     return (

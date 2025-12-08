@@ -1,7 +1,11 @@
-import { BTPTutorApplication, BTPTutorQuestion } from "@/schemas/bougeTaPrison"
-import { BTPTutorApplication as BTPTutorApplicationPrisma } from "@prisma/client"
-import { Contact } from "@/schemas/contact"
+import process from "node:process"
+import type { BTPTutorApplication as BTPTutorApplicationPrisma } from "@prisma/client"
 import { format } from "date-fns"
+import type {
+    BTPTutorApplication,
+    BTPTutorQuestion
+} from "@/schemas/bougeTaPrison"
+import type { Contact } from "@/schemas/contact"
 
 export const adhesionEmailTemplate = (associationName: string): string => `
             <p>Une nouvelle adhésion a été reçue pour l'association <strong>${associationName}</strong>.</p>

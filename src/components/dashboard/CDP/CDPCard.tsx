@@ -1,19 +1,14 @@
 "use client"
 
-import deleteCDPAction from "@/actions/CDP/deleteCDPAction"
+import type { CommuniqueDePresse } from "@prisma/client"
+import clsx from "clsx"
 import Link from "next/link"
-import { MouseEvent, useState } from "react"
-
+import { type MouseEvent, useState } from "react"
 import { FaRegFilePdf } from "react-icons/fa"
 import { FaRegFolderOpen } from "react-icons/fa6"
-
-import { MdDelete } from "react-icons/md"
-import { MdOutlineFileDownload } from "react-icons/md"
-
+import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
+import deleteCDPAction from "@/actions/CDP/deleteCDPAction"
 import { useToast } from "@/components/ui/use-toast"
-
-import clsx from "clsx"
-import { CommuniqueDePresse } from "@prisma/client"
 
 function downloadFile(url: string) {
     const a = document.createElement("a")
@@ -59,7 +54,7 @@ export default function CdpCard({
                 target="blank"
                 className="flex h-min w-full flex-col items-center"
             >
-                <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-xs outline-offset-2 outline-black/30 hover:outline hover:outline-2">
+                <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-xs outline-black/30 outline-offset-2 hover:outline hover:outline-2">
                     {/* Hover buttons */}
                     <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-0 hover:opacity-100">
                         <button
@@ -94,7 +89,7 @@ export default function CdpCard({
                 <Link
                     href={url}
                     target="blank"
-                    className="w-full overflow-hidden text-ellipsis text-nowrap text-center text-sm font-medium hover:underline"
+                    className="w-full overflow-hidden text-ellipsis text-nowrap text-center font-medium text-sm hover:underline"
                 >
                     {/* {cdp.name.length > 20 ?
                         cdp.name.slice(0, 20) + "..."

@@ -1,20 +1,25 @@
 "use client"
 import "./styles.css"
-import { useEditor, EditorContent, JSONContent, Editor } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
-import Underline from "@tiptap/extension-underline"
-import { TextStyle } from "@tiptap/extension-text-style"
 import Color from "@tiptap/extension-color"
-import TextAlign from "@tiptap/extension-text-align"
-import Link from "@tiptap/extension-link"
 import Image from "@tiptap/extension-image"
+import Link from "@tiptap/extension-link"
 import ListKeymap from "@tiptap/extension-list-keymap"
+import TextAlign from "@tiptap/extension-text-align"
+import { TextStyle } from "@tiptap/extension-text-style"
+import Underline from "@tiptap/extension-underline"
+import {
+    Editor,
+    EditorContent,
+    type JSONContent,
+    useEditor
+} from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
 // import FileHandler from "@tiptap-pro/extension-file-handler";
 
 import clsx from "clsx"
 import { useRef } from "react"
-import EditorBubbleMenu from "./bubbleMenu"
 import { compressImage } from "@/helpers/image"
+import EditorBubbleMenu from "./bubbleMenu"
 
 export default function RichTextEditor({
     className,
@@ -96,7 +101,7 @@ export default function RichTextEditor({
     return (
         <div
             className={clsx(
-                "m-w-full border-input h-full max-h-96 min-h-64 overflow-y-auto rounded-lg border p-4",
+                "m-w-full h-full max-h-96 min-h-64 overflow-y-auto rounded-lg border border-input p-4",
                 className
             )}
             ref={editorRef}

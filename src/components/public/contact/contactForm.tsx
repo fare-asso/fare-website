@@ -1,15 +1,15 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import Input from "./input"
 import clsx from "clsx"
-import TextArea from "./textarea"
-import { Contact, ContactSchema } from "@/schemas/contact"
 import { useState } from "react"
-import LoadingRing from "@/components/dashboard/loadingRing"
-import submitContactFormAction from "@/actions/contact/submitContactFormAction"
+import { useForm } from "react-hook-form"
 import { RiCheckFill } from "react-icons/ri"
+import submitContactFormAction from "@/actions/contact/submitContactFormAction"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { type Contact, ContactSchema } from "@/schemas/contact"
+import Input from "./input"
+import TextArea from "./textarea"
 
 export default function ContactForm() {
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -44,7 +44,7 @@ export default function ContactForm() {
         <div className="mt-12 flex w-full flex-col rounded-3xl bg-black p-4 md:w-[70%] md:flex-row md:p-8">
             {/* Text Section */}
             <div className="mb-6 flex w-full flex-col justify-center pr-0 md:mb-0 md:w-1/2 md:pr-8">
-                <h2 className="mb-4 text-2xl font-semibold text-white">
+                <h2 className="mb-4 font-semibold text-2xl text-white">
                     Vous avez une question ?
                 </h2>
                 <p className="text-gray-300">
@@ -98,7 +98,7 @@ export default function ContactForm() {
                     type="submit"
                     disabled={isLoading || success}
                     className={clsx(
-                        "flex w-full flex-row items-center justify-center rounded-full bg-white/20 py-3 text-lg text-gray-200 transition-colors duration-200 hover:bg-white/30",
+                        "flex w-full flex-row items-center justify-center rounded-full bg-white/20 py-3 text-gray-200 text-lg transition-colors duration-200 hover:bg-white/30",
                         getFirstError() &&
                             "cursor-not-allowed bg-red-500! hover:bg-red-500",
                         success &&

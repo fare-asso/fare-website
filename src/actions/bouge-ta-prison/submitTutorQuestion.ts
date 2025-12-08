@@ -1,13 +1,13 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { tutorQuestionEmailTemplate } from "@/lib/htmlEmailTemplates"
 import {
-    BTPTutorQuestion,
+    type BTPTutorQuestion,
     BTPTutorQuestionSchema
 } from "@/schemas/bougeTaPrison"
-import { revalidatePath } from "next/cache"
 
 export default async function submitTutorQuestion(
     data: BTPTutorQuestion

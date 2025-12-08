@@ -1,10 +1,10 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function CalculateurBeneficiaire() {
     const [recettes, setRecettes] = useState("")
@@ -14,7 +14,7 @@ export default function CalculateurBeneficiaire() {
     useEffect(() => {
         if (recettes && depenses) {
             const ravJournalier: number =
-                (parseFloat(recettes) - parseFloat(depenses)) / 30
+                (Number.parseFloat(recettes) - Number.parseFloat(depenses)) / 30
             setRav(ravJournalier)
         }
     }, [recettes, depenses])

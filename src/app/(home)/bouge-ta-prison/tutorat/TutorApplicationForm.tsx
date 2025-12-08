@@ -1,5 +1,8 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
 import submitTutorApplication from "@/actions/bouge-ta-prison/submitTutorApplication"
 import Captcha from "@/components/captcha/recaptcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
@@ -24,12 +27,9 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import {
-    BTPTutorApplication,
+    type BTPTutorApplication,
     BTPTutorApplicationSchema
 } from "@/schemas/bougeTaPrison"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
 
 export default function TutorApplicationForm() {
     const [isLoading, setIsLoading] = useState(false)

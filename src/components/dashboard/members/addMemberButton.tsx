@@ -1,34 +1,27 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useCallback, useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import addMemberAction from "@/actions/members/addMemberAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter
+    DialogTrigger
 } from "@/components/ui/dialog"
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
+import FileInput from "@/components/ui/fileInput"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
-import { useState } from "react"
-
-import { useEffect, useCallback } from "react"
-
-import addMemberAction from "@/actions/members/addMemberAction"
-import LoadingRing from "../loadingRing"
-import FileInput from "@/components/ui/fileInput"
-import { uploadFile } from "@/helpers/supabase/upload"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { formDataToString, zodFieldValuesToFormData } from "@/helpers/formData"
+import { uploadFile } from "@/helpers/supabase/upload"
+import LoadingRing from "../loadingRing"
 
 const maxUploadSizeInMb = 10
 

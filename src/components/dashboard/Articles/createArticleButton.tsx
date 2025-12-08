@@ -1,38 +1,31 @@
 "use client"
 
+import type { JSONContent } from "@tiptap/react"
+import {
+    startTransition,
+    useActionState,
+    useCallback,
+    useEffect,
+    useState
+} from "react"
+import { v4 as uuidv4 } from "uuid"
+import createArticleAction from "@/actions/articles/createArticleAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter
+    DialogTrigger
 } from "@/components/ui/dialog"
-
-import RichTextEditor from "@/components/ui/rich-text-editor/richTextEditor"
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
-import {
-    useActionState,
-    useState,
-    useEffect,
-    useCallback,
-    startTransition
-} from "react"
-
-import LoadingRing from "../loadingRing"
-
-import createArticleAction from "@/actions/articles/createArticleAction"
-import { JSONContent } from "@tiptap/react"
+import RichTextEditor from "@/components/ui/rich-text-editor/richTextEditor"
 import { base64ToFile } from "@/helpers/image"
-import { v4 as uuidv4 } from "uuid"
+import LoadingRing from "../loadingRing"
 
 /**
  * Extract and replace images in the JSON content with UUIDs
@@ -52,15 +45,17 @@ function extractAndReplaceImages(content: JSONContent): {
     const images: { file: File; filename: string }[] = []
 
     const traverseNodes = (node: JSONContent) => {
-        if (node.type === "image" && node.attrs?.src) {
-            if (node.attrs.src.startsWith("data:image")) {
-                const filename = uuidv4()
-                const file = base64ToFile(node.attrs.src, filename)
-                images.push({ file, filename })
+        if (
+            node.type === "image" &&
+            node.attrs?.src &&
+            node.attrs.src.startsWith("data:image")
+        ) {
+            const filename = uuidv4()
+            const file = base64ToFile(node.attrs.src, filename)
+            images.push({ file, filename })
 
-                // Remplacer l'image base64 par un UUID (qui sera le nom du fichier sur le serveur)
-                node.attrs.src = `/${filename}`
-            }
+            // Remplacer l'image base64 par un UUID (qui sera le nom du fichier sur le serveur)
+            node.attrs.src = `/${filename}`
         }
 
         if (node.content) {

@@ -1,12 +1,11 @@
 "use client"
 
+import type { Association } from "@prisma/client"
 import Image from "next/image"
-
-import { Association } from "@prisma/client"
+import DeleteAssociationButton from "./deleteAssociationButton"
+import DeleteRepresentativeButton from "./deleteRepresentativeButton"
 import EditAssociationButton from "./editAssociationButton"
 import SendInvitationLinkButton from "./sendInvitationLinkButton"
-import DeleteRepresentativeButton from "./deleteRepresentativeButton"
-import DeleteAssociationButton from "./deleteAssociationButton"
 
 export default function AssociationCard({
     association,
@@ -16,7 +15,7 @@ export default function AssociationCard({
     logoUrl: string
 }) {
     return (
-        <div className="bg-card text-card-foreground flex h-full w-full flex-col items-start rounded-lg border p-3 shadow-xs">
+        <div className="flex h-full w-full flex-col items-start rounded-lg border bg-card p-3 text-card-foreground shadow-xs">
             <div className="relative">
                 {/* Hover buttons */}
                 <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 lg:opacity-0 lg:hover:opacity-100">
@@ -37,7 +36,7 @@ export default function AssociationCard({
                 />
             </div>
 
-            <div className="text-card-foreground flex w-full flex-row space-x-1 overflow-hidden font-medium text-nowrap text-ellipsis">
+            <div className="flex w-full flex-row space-x-1 overflow-hidden text-ellipsis text-nowrap font-medium text-card-foreground">
                 {association.name}
             </div>
             <div className="text-foreground/70 text-sm">

@@ -1,9 +1,9 @@
 "use client"
 
+import type { BagadAssoTicket } from "@prisma/client"
 import { Card } from "@/components/ui/card"
-import { BagadAssoTicket } from "@prisma/client"
-import BagadAssoTicketCard from "./ticketCard"
 import { useToast } from "@/components/ui/use-toast"
+import BagadAssoTicketCard from "./ticketCard"
 
 export default function TicketList({
     tickets

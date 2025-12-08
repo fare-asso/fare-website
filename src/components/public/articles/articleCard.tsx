@@ -1,8 +1,8 @@
-import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml"
-import { Article } from "@prisma/client"
+import type { Article } from "@prisma/client"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
+import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml"
 
 export default function ArticleCard({ article }: { article: Article }) {
     return (
@@ -10,9 +10,9 @@ export default function ArticleCard({ article }: { article: Article }) {
             {/* Image */}
             <div className="h-full w-full rounded-md bg-black object-cover opacity-35 md:w-1/3 md:max-w-[50%] md:*:min-w-[33%]"></div>
 
-            <div className="ml-0 mt-2 flex flex-1 flex-col md:ml-4 md:mt-0">
+            <div className="mt-2 ml-0 flex flex-1 flex-col md:mt-0 md:ml-4">
                 {/* Title */}
-                <span className="text-lg font-bold">{article.title}</span>
+                <span className="font-bold text-lg">{article.title}</span>
 
                 {/* Date */}
                 <span className="text-sm opacity-80">

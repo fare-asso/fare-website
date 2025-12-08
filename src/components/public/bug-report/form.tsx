@@ -1,10 +1,10 @@
 "use client"
 
 import { startTransition, useActionState, useEffect, useState } from "react"
+import bugReportAction from "@/actions/bug-report/bugReportAction"
+import Captcha from "@/components/captcha/recaptcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import Captcha from "@/components/captcha/recaptcha"
-import bugReportAction from "@/actions/bug-report/bugReportAction"
 
 export default function BugReportForm() {
     const [formState, formAction, pending] = useActionState<
@@ -38,7 +38,7 @@ export default function BugReportForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className={`flex w-full flex-col items-start lg:w-[60%] [&>div]:mb-4 [&>div]:w-full [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black focus:[&_input]:border-yellow-400 focus:[&_input]:ring-yellow-400 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-700 dark:[&_input]:text-white dark:[&_input]:placeholder-gray-400 dark:focus:[&_input]:border-yellow-400 dark:focus:[&_input]:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_option]:font-sans [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black focus:[&_select]:border-yellow-400 focus:[&_select]:ring-yellow-400 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-700 dark:[&_select]:text-white dark:[&_select]:placeholder-gray-400 dark:focus:[&_select]:border-yellow-400 dark:focus:[&_select]:ring-yellow-400 [&_textarea]:block [&_textarea]:w-full [&_textarea]:rounded-lg [&_textarea]:border [&_textarea]:border-gray-300 [&_textarea]:p-2.5 [&_textarea]:text-base [&_textarea]:text-black focus:[&_textarea]:border-yellow-400 focus:[&_textarea]:ring-yellow-400 dark:[&_textarea]:border-gray-600 dark:[&_textarea]:bg-gray-700 dark:[&_textarea]:text-white dark:[&_textarea]:placeholder-gray-400 dark:focus:[&_textarea]:border-yellow-400 dark:focus:[&_textarea]:ring-yellow-400`}
+            className={`flex w-full flex-col items-start lg:w-[60%] [&>div]:mb-4 [&>div]:w-full [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black focus:[&_input]:border-yellow-400 focus:[&_input]:ring-yellow-400 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-700 dark:[&_input]:text-white dark:[&_input]:placeholder-gray-400 dark:focus:[&_input]:border-yellow-400 dark:focus:[&_input]:ring-yellow-400 [&_label]:mt-6 [&_label]:mb-1 [&_option]:font-sans [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black focus:[&_select]:border-yellow-400 focus:[&_select]:ring-yellow-400 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-700 dark:[&_select]:text-white dark:[&_select]:placeholder-gray-400 dark:focus:[&_select]:border-yellow-400 dark:focus:[&_select]:ring-yellow-400 [&_textarea]:block [&_textarea]:w-full [&_textarea]:rounded-lg [&_textarea]:border [&_textarea]:border-gray-300 [&_textarea]:p-2.5 [&_textarea]:text-base [&_textarea]:text-black focus:[&_textarea]:border-yellow-400 focus:[&_textarea]:ring-yellow-400 dark:[&_textarea]:border-gray-600 dark:[&_textarea]:bg-gray-700 dark:[&_textarea]:text-white dark:[&_textarea]:placeholder-gray-400 dark:focus:[&_textarea]:border-yellow-400 dark:focus:[&_textarea]:ring-yellow-400`}
         >
             {/* Email */}
             <div>
@@ -143,7 +143,7 @@ export default function BugReportForm() {
                                     ? "red"
                                     : "black"
                         }}
-                        className="absolute bottom-0 right-0 m-2 mr-4 select-none rounded-lg bg-white p-1 text-sm opacity-80"
+                        className="absolute right-0 bottom-0 m-2 mr-4 select-none rounded-lg bg-white p-1 text-sm opacity-80"
                     >
                         {`${charactersLength}/${maxCharactersLength}`}
                     </span>

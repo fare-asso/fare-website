@@ -1,5 +1,8 @@
 "use client"
 
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import { useState } from "react"
 import {
     Popover,
     PopoverContent,
@@ -7,11 +10,6 @@ import {
 } from "@/components/ui/popover"
 import { Button } from "../button"
 import { Calendar } from "../calendar"
-
-import { useState } from "react"
-
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
 
 export default function DatePicker({
     defaultValue,

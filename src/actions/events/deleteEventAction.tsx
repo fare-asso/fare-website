@@ -1,7 +1,7 @@
 "use server"
 
-import prisma from "@/helpers/db"
 import { revalidatePath } from "next/cache"
+import prisma from "@/helpers/db"
 
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"

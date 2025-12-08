@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import AdhesionList from "@/components/dashboard/adhesions/adhesionList"
 import {
     Card,
@@ -7,8 +8,6 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-
-import { Suspense } from "react"
 
 export default async function Adhesions() {
     return (

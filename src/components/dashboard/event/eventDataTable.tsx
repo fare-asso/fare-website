@@ -1,5 +1,5 @@
+import { columns, type Event } from "@/app/dashboard/events/columns"
 import { DataTable } from "@/app/dashboard/events/data-table"
-import { Event, columns } from "@/app/dashboard/events/columns"
 
 import prisma from "@/helpers/db"
 

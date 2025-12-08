@@ -1,10 +1,15 @@
 "use client"
 
-import { User, Permission, Role, UserPermission } from "@prisma/client"
-import { ColumnDef } from "@tanstack/react-table"
+import {
+    Permission,
+    Role,
+    type User,
+    type UserPermission
+} from "@prisma/client"
+import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
-import CopyButton from "./copyButton"
 import Link from "next/link"
+import CopyButton from "./copyButton"
 
 export const columns: ColumnDef<
     {

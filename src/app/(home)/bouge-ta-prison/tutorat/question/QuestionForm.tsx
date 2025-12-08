@@ -1,26 +1,24 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import submitTutorQuestion from "@/actions/bouge-ta-prison/submitTutorQuestion"
+import Captcha from "@/components/captcha/recaptcha"
+import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert } from "@/components/ui/alert"
-
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import {
     Form,
-    FormField,
+    FormControl,
     FormDescription,
+    FormField,
     FormItem,
     FormLabel,
-    FormMessage,
-    FormControl
+    FormMessage
 } from "@/components/ui/form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import {
-    BTPTutorQuestionSchema,
-    BTPTutorQuestion
-} from "@/schemas/bougeTaPrison"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import {
     Select,
     SelectContent,
@@ -28,10 +26,11 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
-import Captcha from "@/components/captcha/recaptcha"
-import LoadingRing from "@/components/dashboard/loadingRing"
 import { Textarea } from "@/components/ui/textarea"
-import submitTutorQuestion from "@/actions/bouge-ta-prison/submitTutorQuestion"
+import {
+    type BTPTutorQuestion,
+    BTPTutorQuestionSchema
+} from "@/schemas/bougeTaPrison"
 
 export default function QuestionForm() {
     const [isLoading, setIsLoading] = useState(false)

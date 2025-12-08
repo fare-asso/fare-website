@@ -6,9 +6,9 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import { DataTable } from "./data-table"
-import { columns } from "./columns"
 import prisma from "@/helpers/db"
+import { columns } from "./columns"
+import { DataTable } from "./data-table"
 
 export default async function UsersPage() {
     const users = await prisma.user.findMany({

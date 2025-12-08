@@ -1,20 +1,15 @@
 "use client"
 
+import clsx from "clsx"
 import Image from "next/image"
 
-import { Button } from "@/components/ui/button"
-
-import { MouseEvent, useState } from "react"
+import { type MouseEvent, useState } from "react"
 
 import { MdDelete } from "react-icons/md"
-
-import { useToast } from "@/components/ui/use-toast"
-
-import EditMemberButton from "./editMemberButton"
-
-import clsx from "clsx"
-
 import deleteMemberAction from "@/actions/members/deleteMemberAction"
+import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
+import EditMemberButton from "./editMemberButton"
 
 interface Member {
     id: number
@@ -61,7 +56,7 @@ export default function MemberCard({
     return (
         <div
             className={clsx(
-                "bg-card text-card-foreground flex h-full w-full flex-col rounded-lg border p-3 shadow-xs",
+                "flex h-full w-full flex-col rounded-lg border bg-card p-3 text-card-foreground shadow-xs",
                 hidden && "hidden"
             )}
         >
@@ -97,13 +92,13 @@ export default function MemberCard({
                     />
                 </div>
                 {/* First name + Last name */}
-                <p className="text-card-foreground w-full overflow-hidden font-medium text-nowrap text-ellipsis">
+                <p className="w-full overflow-hidden text-ellipsis text-nowrap font-medium text-card-foreground">
                     {member.firstName} {member.lastName}
                 </p>
             </div>
 
             {/* Position */}
-            <p className="text-foreground/70 overflow-hidden text-xs text-nowrap text-ellipsis">
+            <p className="overflow-hidden text-ellipsis text-nowrap text-foreground/70 text-xs">
                 {member.position}
             </p>
         </div>

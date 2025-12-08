@@ -1,4 +1,4 @@
-import { BagadAssoEquipment, BagadAssoTicket } from "@prisma/client"
+import type { BagadAssoEquipment, BagadAssoTicket } from "@prisma/client"
 import prisma from "./db"
 
 interface Equipement {

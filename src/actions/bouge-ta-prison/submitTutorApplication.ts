@@ -1,20 +1,20 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
 import { tutorApplicationEmailTemplate } from "@/lib/htmlEmailTemplates"
 import {
-    BTPTutorApplicationSchema,
-    BTPTutorApplication
+    BTPTutorApplication,
+    BTPTutorApplicationSchema
 } from "@/schemas/bougeTaPrison"
-import { revalidatePath } from "next/cache"
 
 export default async function submitTutorApplication(
     formData: FormData
 ): Promise<{ success: boolean; errors?: { [x: string]: string }[] }> {
-    let data: { [key: string]: FormDataEntryValue } = {}
+    const data: { [key: string]: FormDataEntryValue } = {}
 
     formData.forEach((value, key) => {
         data[key] = value

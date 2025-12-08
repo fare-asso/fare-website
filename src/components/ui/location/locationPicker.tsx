@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from "react"
-import { Input } from "@/components/ui/input"
-import { AutocompleteResponse } from "@/app/api/searchLocation/types"
 import { MapPin } from "lucide-react"
+import type React from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import type { AutocompleteResponse } from "@/app/api/searchLocation/types"
+import { Input } from "@/components/ui/input"
 
 interface LocationPickerProps {
     name: string
@@ -183,7 +184,7 @@ export default function LocationPicker({
         >
             <label
                 htmlFor={name}
-                className="block text-sm font-medium text-gray-700"
+                className="block font-medium text-gray-700 text-sm"
             >
                 {name}
             </label>
@@ -216,12 +217,12 @@ export default function LocationPicker({
                     role="listbox"
                 >
                     {isLoading && (
-                        <div className="px-3 py-2 text-sm text-gray-500">
+                        <div className="px-3 py-2 text-gray-500 text-sm">
                             Loading...
                         </div>
                     )}
                     {!isLoading && recommendations.length === 0 && (
-                        <div className="px-3 py-2 text-sm text-gray-500">
+                        <div className="px-3 py-2 text-gray-500 text-sm">
                             No locations found
                         </div>
                     )}

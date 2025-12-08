@@ -1,14 +1,14 @@
 "use client"
 
-import deleteTutorApplication from "@/actions/bouge-ta-prison/deleteTutorApplication"
-import LoadingRing from "@/components/dashboard/loadingRing"
-import { Button } from "@/components/ui/button"
-import { BTPTutorApplication } from "@prisma/client"
+import type { BTPTutorApplication } from "@prisma/client"
 import { format } from "date-fns"
 import Link from "next/link"
 import { useState } from "react"
 import { FaCheckCircle, FaQuestionCircle } from "react-icons/fa"
 import { MdDelete } from "react-icons/md"
+import deleteTutorApplication from "@/actions/bouge-ta-prison/deleteTutorApplication"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Button } from "@/components/ui/button"
 
 export default function ApplicationCard({
     application
@@ -29,10 +29,10 @@ export default function ApplicationCard({
     return (
         <div className="flex w-full flex-row items-center justify-between rounded-lg border p-2 shadow-xs md:p-4">
             <div className="flex flex-row items-center gap-2">
-                <span className="ml-1 text-base font-semibold capitalize">
+                <span className="ml-1 font-semibold text-base capitalize">
                     <Link
                         href={`/dashboard/bouge-ta-prison/candidatures-tutorat/${application.id}`}
-                        className="w-full overflow-hidden text-sm text-nowrap text-ellipsis underline transition-all hover:opacity-75"
+                        className="w-full overflow-hidden text-ellipsis text-nowrap text-sm underline transition-all hover:opacity-75"
                     >
                         {(application.firstName + " " + application.lastName)
                             .length > 20

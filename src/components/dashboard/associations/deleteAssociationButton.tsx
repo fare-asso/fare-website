@@ -1,6 +1,9 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import type { Association } from "@prisma/client"
+import { startTransition, useActionState, useEffect, useState } from "react"
+import { MdDelete } from "react-icons/md"
+import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -12,17 +15,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
-
+import { Button } from "@/components/ui/button"
 import LoadingRing from "../loadingRing"
-
-import { startTransition, useActionState, useState } from "react"
-
-import { useEffect } from "react"
-import { MdDelete } from "react-icons/md"
-
-import { Association } from "@prisma/client"
-
-import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
 
 export default function DeleteAssociationButton({
     association

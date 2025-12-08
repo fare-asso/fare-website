@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react"
+import type { BagadAssoEquipment } from "@prisma/client"
+import React, { useEffect, useState } from "react"
 import EquipmentCard from "./equipmentCard"
-import { BagadAssoEquipment } from "@prisma/client"
 
 export default function EquipmentSelection({
     equipmentList,
@@ -26,7 +26,7 @@ export default function EquipmentSelection({
         const total = Object.entries(selectedEquipment).reduce(
             (acc, [id, quantity]) => {
                 const equipment = equipmentList.find(
-                    (eq) => eq.id === parseInt(id)
+                    (eq) => eq.id === Number.parseInt(id)
                 )
                 return acc + (equipment ? equipment.deposit * quantity : 0)
             },
@@ -38,7 +38,7 @@ export default function EquipmentSelection({
     const selectedEquipmentJson = JSON.stringify(
         Object.entries(selectedEquipment)
             .map(([id, quantity]) => ({
-                id: parseInt(id),
+                id: Number.parseInt(id),
                 quantity
             }))
             .filter((item) => item.quantity > 0)

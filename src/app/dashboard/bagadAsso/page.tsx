@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import Equipments from "@/components/dashboard/bagadAsso/equipments"
 import Tickets from "@/components/dashboard/bagadAsso/tickets"
 import {
@@ -8,9 +9,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-
 import TabSwitcher from "./tabSwitcher"
-import { Suspense } from "react"
 
 export default function BagadAsso() {
     return (

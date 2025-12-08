@@ -3,7 +3,7 @@
 import clsx from "clsx"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { MouseEventHandler } from "react"
+import type { MouseEventHandler } from "react"
 
 interface SideBarLinkProps {
     href: string
@@ -27,7 +27,7 @@ export default function SideBarLink({
         <Link
             onClick={onClick}
             className={clsx(
-                "w-auto rounded-full px-3 py-1 text-left text-base font-medium opacity-50 outline-2 outline-gray-600/50 transition-all duration-75 hover:bg-gray-100 hover:opacity-80 hover:outline lg:w-full lg:rounded-lg lg:px-4 lg:py-2 lg:text-center",
+                "w-auto rounded-full px-3 py-1 text-left font-medium text-base opacity-50 outline-2 outline-gray-600/50 transition-all duration-75 hover:bg-gray-100 hover:opacity-80 hover:outline lg:w-full lg:rounded-lg lg:px-4 lg:py-2 lg:text-center",
                 path.startsWith(href) ?? "bg-red-500 opacity-100"
             )}
             // className={

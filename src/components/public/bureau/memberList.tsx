@@ -1,4 +1,4 @@
-import { Member } from "@prisma/client"
+import type { Member } from "@prisma/client"
 import MemberCard from "./memberCard"
 
 export default async function MembersList({ members }: { members: Member[] }) {
@@ -32,8 +32,12 @@ export default async function MembersList({ members }: { members: Member[] }) {
             const roleA = extractRole(a.position)
             const roleB = extractRole(b.position)
 
-            const orderA = roleA ? positionOrder[roleA] : Infinity // Infinity pour placer les indéfinis à la fin
-            const orderB = roleB ? positionOrder[roleB] : Infinity
+            const orderA = roleA
+                ? positionOrder[roleA]
+                : Number.POSITIVE_INFINITY // Infinity pour placer les indéfinis à la fin
+            const orderB = roleB
+                ? positionOrder[roleB]
+                : Number.POSITIVE_INFINITY
 
             return orderA - orderB
         })
@@ -41,7 +45,7 @@ export default async function MembersList({ members }: { members: Member[] }) {
 
     return (
         <div className="mb-32 w-[90%]">
-            <h2 className="mb-6 text-[1.75rem] font-semibold">
+            <h2 className="mb-6 font-semibold text-[1.75rem]">
                 Les membres du bureau
             </h2>
             <div className="grid h-full w-full grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">

@@ -1,20 +1,19 @@
 "use client"
 
-import * as React from "react"
-import * as LabelPrimitive from "@radix-ui/react-label"
+import type * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
+import * as React from "react"
 import {
     Controller,
-    FormProvider,
-    useFormContext,
-    useFormState,
     type ControllerProps,
     type FieldPath,
-    type FieldValues
+    type FieldValues,
+    FormProvider,
+    useFormContext,
+    useFormState
 } from "react-hook-form"
-
-import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
 
 const Form = FormProvider
 
@@ -113,9 +112,9 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
             data-slot="form-control"
             id={formItemId}
             aria-describedby={
-                !error
-                    ? `${formDescriptionId}`
-                    : `${formDescriptionId} ${formMessageId}`
+                error
+                    ? `${formDescriptionId} ${formMessageId}`
+                    : `${formDescriptionId}`
             }
             aria-invalid={!!error}
             {...props}

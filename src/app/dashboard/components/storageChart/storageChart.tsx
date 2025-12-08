@@ -1,4 +1,3 @@
-import { createClient } from "@/helpers/supabase/server"
 import {
     Card,
     CardContent,
@@ -7,6 +6,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+import { createClient } from "@/helpers/supabase/server"
 import { StorageChartClient } from "./storageChartClient"
 
 export default async function StorageChart() {

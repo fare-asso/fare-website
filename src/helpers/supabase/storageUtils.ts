@@ -1,3 +1,4 @@
+import process from "node:process"
 export class StorageUtils {
     private storageUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL!
 

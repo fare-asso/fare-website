@@ -1,7 +1,7 @@
 import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db"
-import { UserPermissionsForm } from "./userPermissionForm"
 import { UserInfoForm } from "./userInfoForm"
+import { UserPermissionsForm } from "./userPermissionForm"
 
 export default async function UserPage({
     params

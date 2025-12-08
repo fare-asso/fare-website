@@ -1,5 +1,5 @@
+import type { Association } from "@prisma/client"
 import prisma from "@/helpers/db"
-import { Association } from "@prisma/client"
 import AssociationMapCaller from "./associations/map/associationMapCaller"
 
 export default async function AssoMap() {

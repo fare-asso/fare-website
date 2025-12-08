@@ -1,31 +1,23 @@
 "use client"
 
+import type { Association } from "@prisma/client"
+import { useActionState, useCallback, useEffect, useState } from "react"
+import { TbMailPlus } from "react-icons/tb"
+import inviteRepresentativeAction from "@/actions/associations/inviteRepresentativeAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter
+    DialogTrigger
 } from "@/components/ui/dialog"
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
-import { useActionState, useState } from "react"
-
-import { useEffect, useCallback } from "react"
-
 import LoadingRing from "../loadingRing"
-
-import { Association } from "@prisma/client"
-import { TbMailPlus } from "react-icons/tb"
-import inviteRepresentativeAction from "@/actions/associations/inviteRepresentativeAction"
 
 export default function SendInvitationLinkButton({
     association

@@ -1,8 +1,8 @@
 "use server"
 
 import { sendEmail } from "@/helpers/email"
-import { Contact, ContactSchema } from "@/schemas/contact"
 import { contactEmailTemplate } from "@/lib/htmlEmailTemplates"
+import { type Contact, ContactSchema } from "@/schemas/contact"
 
 export default async function submitContactFormAction(
     data: Contact

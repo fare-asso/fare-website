@@ -1,6 +1,5 @@
-import { createClient } from "@/helpers/supabase/server"
-
 import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
 import AssociationCard from "./associationCard"
 
 export default async function AssociationList() {
@@ -16,7 +15,7 @@ export default async function AssociationList() {
 
     if (assos == null) {
         return (
-            <span className="text-xl text-red-800">
+            <span className="text-red-800 text-xl">
                 Echec du chargement des associations, veuillez réessayer
             </span>
         )
@@ -34,7 +33,7 @@ export default async function AssociationList() {
         ))
 
         return (
-            <div className="bg-card text-card-foreground h-full w-full overflow-y-auto rounded-lg border p-6 shadow-xs">
+            <div className="h-full w-full overflow-y-auto rounded-lg border bg-card p-6 text-card-foreground shadow-xs">
                 <div className="grid h-auto w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                     {assoCards}
                 </div>

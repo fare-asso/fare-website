@@ -24,7 +24,7 @@ export default async function MoreArticles({
 
     return (
         <div className="mt-12 w-full">
-            <span className="text-lg font-semibold">Autres articles:</span>
+            <span className="font-semibold text-lg">Autres articles:</span>
 
             <div className="mt-2 flex w-full flex-col items-center space-y-4">
                 {articles.map((article) => (

@@ -1,8 +1,8 @@
+import type { Metadata } from "next"
+import Image from "next/image"
+import Link from "next/link"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
-import Image from "next/image"
-import { Metadata } from "next"
-import Link from "next/link"
 
 export async function generateMetadata({
     params
@@ -73,7 +73,7 @@ export default async function Page({
             <Link href="/reseau" className="text-sm opacity-40 hover:underline">
                 &lt; Retour aux associations
             </Link>
-            <h1 className="mt-2 text-3xl font-bold">
+            <h1 className="mt-2 font-bold text-3xl">
                 {associationRecord.name}
             </h1>
             <div className="flex w-full flex-row">

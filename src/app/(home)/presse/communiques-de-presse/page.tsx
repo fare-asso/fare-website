@@ -1,6 +1,6 @@
+import Link from "next/link"
 import CommuniquesCard from "@/components/public/presse/cdpCard"
 import prisma from "@/helpers/db"
-import Link from "next/link"
 
 export default async function CommuniquesDePresse() {
     const communiques = await prisma.communiqueDePresse.findMany({
@@ -14,7 +14,7 @@ export default async function CommuniquesDePresse() {
 
     return (
         <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
+            <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
                 Communiqués de presse
             </h1>
 

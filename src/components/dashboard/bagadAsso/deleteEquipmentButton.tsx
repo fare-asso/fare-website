@@ -1,6 +1,8 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { startTransition, useActionState, useEffect } from "react"
+import { MdDelete } from "react-icons/md"
+import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -12,14 +14,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
-
+import { Button } from "@/components/ui/button"
 import LoadingRing from "../loadingRing"
-
-import { startTransition, useActionState } from "react"
-import { useEffect } from "react"
-import { MdDelete } from "react-icons/md"
-
-import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction"
 
 export default function DeleteEquipmentButton({
     equipmentId

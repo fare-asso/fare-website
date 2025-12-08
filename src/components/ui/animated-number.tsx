@@ -57,7 +57,7 @@ export function AnimatedNumber({
 }: AnimatedNumberProps & { ref: React.RefObject<HTMLSpanElement | null> }) {
     const spring = useSpring(value, { mass, stiffness, damping })
     const display: MotionValue<string> = useTransform(spring, (current) =>
-        format(current ? parseFloat(current.toFixed(precision)) : 0)
+        format(current ? Number.parseFloat(current.toFixed(precision)) : 0)
     )
 
     useEffect(() => {

@@ -1,12 +1,13 @@
 "use server"
 
+import process from "node:process"
+import { format } from "date-fns"
+import { revalidatePath } from "next/cache"
+import { PDFDocument, type PDFPage, rgb, StandardFonts } from "pdf-lib"
 import prisma from "@/helpers/db"
+import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
-import { format } from "date-fns"
-import { PDFDocument, PDFPage, rgb, StandardFonts } from "pdf-lib"
-import { revalidatePath } from "next/cache"
-import { sendEmail } from "@/helpers/email"
 import { adhesionEmailTemplate } from "@/lib/htmlEmailTemplates"
 
 interface ValidationError {
@@ -102,7 +103,7 @@ export async function processAdhesionForm(
     const validateField = (
         name: string,
         value: any,
-        isRequired: boolean = true,
+        isRequired = true,
         validator?: (value: any) => boolean
     ) => {
         if (
@@ -174,7 +175,7 @@ export async function processAdhesionForm(
     const dateAG = formData.get("dateAG") as string
     validateField("dateAG", dateAG)
 
-    const nombreEtudiantsRepresentes = parseInt(
+    const nombreEtudiantsRepresentes = Number.parseInt(
         formData.get("nombreEtudiantsRepresentes") as string
     )
     validateField(
@@ -184,7 +185,9 @@ export async function processAdhesionForm(
         (value) => !isNaN(value) && value > 0
     )
 
-    const nombreAdherents = parseInt(formData.get("nombreAdherents") as string)
+    const nombreAdherents = Number.parseInt(
+        formData.get("nombreAdherents") as string
+    )
     validateField(
         "nombreAdherents",
         nombreAdherents,
@@ -288,7 +291,7 @@ export async function processAdhesionForm(
         }, {})
 
     // Convertir l'objet en tableau
-    let bureau: BureauMember[] = Object.values(bureauEntries)
+    const bureau: BureauMember[] = Object.values(bureauEntries)
 
     validateBureauFields(bureau, errors)
 
@@ -398,7 +401,7 @@ export async function processAdhesionForm(
     // }
 
     // Ajout des champs au PDF
-    addSectionTitle(page, "- CARTE D\'IDENTITÉ DE L'ASSOCIATION -")
+    addSectionTitle(page, "- CARTE D'IDENTITÉ DE L'ASSOCIATION -")
 
     addField(page, "Nom complet de l'association", nomComplet)
     addField(page, "Sigle de l'association", sigle)

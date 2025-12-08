@@ -1,3 +1,5 @@
+import { Suspense } from "react"
+import ArticleList from "@/components/dashboard/Articles/articleList"
 import CreateArticleButton from "@/components/dashboard/Articles/createArticleButton"
 import {
     Card,
@@ -7,10 +9,6 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-
-import { Suspense } from "react"
-
-import ArticleList from "@/components/dashboard/Articles/articleList"
 
 export default async function Articles() {
     return (

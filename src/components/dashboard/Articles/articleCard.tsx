@@ -1,23 +1,19 @@
 "use client"
 
-import { fr } from "date-fns/locale"
 import { format } from "date-fns"
-
+import { fr } from "date-fns/locale"
+import { MdDelete, MdEdit, MdVisibility, MdVisibilityOff } from "react-icons/md"
 import { Button } from "@/components/ui/button"
-
-import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
-import { MdEdit } from "react-icons/md"
 
 // import EditArticleButton from "./editArticleButton";
 
-import deleteArticleAction from "@/actions/articles/deleteArticleAction"
-
-import { useToast } from "@/components/ui/use-toast"
-import { startTransition, useActionState, useEffect, useState } from "react"
-import LoadingRing from "../loadingRing"
+import type { Article } from "@prisma/client"
 import Link from "next/link"
-import { Article } from "@prisma/client"
+import { startTransition, useActionState, useEffect, useState } from "react"
+import deleteArticleAction from "@/actions/articles/deleteArticleAction"
 import switchVisibilityAction from "@/actions/articles/switchVisibilityAction"
+import { useToast } from "@/components/ui/use-toast"
+import LoadingRing from "../loadingRing"
 import EditArticleButton from "./editArticleButton"
 
 export default function ArticleCard({ article }: { article: Article }) {
@@ -64,15 +60,15 @@ export default function ArticleCard({ article }: { article: Article }) {
     }
 
     return (
-        <div className="bg-card text-card-foreground flex h-16 w-full flex-row items-center justify-between rounded-lg border px-4 py-4 shadow-xs">
+        <div className="flex h-16 w-full flex-row items-center justify-between rounded-lg border bg-card px-4 py-4 text-card-foreground shadow-xs">
             <Link
                 href={`/actualites/articles/${article.id}`}
                 title={article.title}
-                className="overflow-hidden text-xs text-ellipsis whitespace-nowrap md:text-sm"
+                className="overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm"
             >
                 {article.title}
             </Link>
-            <div className="text-card-foreground/70 hidden text-sm md:block">
+            <div className="hidden text-card-foreground/70 text-sm md:block">
                 {format(article.writtenOn, "PPP", { locale: fr })}
             </div>
 

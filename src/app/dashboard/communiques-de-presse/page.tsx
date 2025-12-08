@@ -1,5 +1,6 @@
-import CDPList from "@/components/dashboard/CDP/CDPList"
+import { Suspense } from "react"
 import AddNewCDPButton from "@/components/dashboard/CDP/addCDPButton"
+import CDPList from "@/components/dashboard/CDP/CDPList"
 import {
     Card,
     CardContent,
@@ -8,8 +9,6 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-
-import { Suspense } from "react"
 
 export default async function CommuDePresse() {
     return (

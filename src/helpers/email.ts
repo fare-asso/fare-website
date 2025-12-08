@@ -1,3 +1,4 @@
+import process from "node:process"
 import nodemailer from "nodemailer"
 
 interface EmailPayload {
@@ -10,7 +11,7 @@ interface EmailPayload {
 const transporter = nodemailer.createTransport({
     service: process.env.SMTP_SERVICE || "Gmail",
     host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.SMTP_PORT || "465"),
+    port: Number.parseInt(process.env.SMTP_PORT || "465"),
     secure: process.env.SMTP_SECURE === "true",
     auth: {
         user: process.env.SMTP_USER,

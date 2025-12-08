@@ -1,8 +1,8 @@
+import type { Metadata } from "next"
+import Link from "next/link"
 import AssociationList from "@/components/public/associations/associationList"
 import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller"
 import prisma from "@/helpers/db"
-import { Metadata } from "next"
-import Link from "next/link"
 
 export const metadata: Metadata = {
     title: "Réseau | FARE",
@@ -18,7 +18,7 @@ export default async function Reseau() {
 
     return (
         <div className="flex w-full flex-col items-center justify-start pb-20">
-            <h1 className="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
+            <h1 className="py-12 font-semibold text-[3rem] sm:py-24 md:py-32 lg:py-44">
                 Le Réseau Associatif
             </h1>
             <AssociationMapCaller associations={assos} />
@@ -26,7 +26,7 @@ export default async function Reseau() {
 
             {/* Nous rejoindre card */}
             <div className="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-1/2">
-                <h2 className="mb-2 text-lg font-semibold">
+                <h2 className="mb-2 font-semibold text-lg">
                     Votre association souhaite intégrer notre réseau ?{" "}
                 </h2>
                 <p>

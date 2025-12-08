@@ -1,8 +1,8 @@
-import { CommuniqueDePresse } from "@prisma/client"
+import type { CommuniqueDePresse } from "@prisma/client"
+import { format } from "date-fns"
 import Link from "next/link"
 import { FaRegFilePdf } from "react-icons/fa6"
 import { FiDownload } from "react-icons/fi"
-import { format } from "date-fns"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 export default function DossierDePresseCard({
@@ -13,7 +13,7 @@ export default function DossierDePresseCard({
     const su = new StorageUtils()
 
     return (
-        <div className="border-grey-300 flex w-full flex-col items-center space-x-2 rounded-md border p-2 md:flex-row">
+        <div className="flex w-full flex-col items-center space-x-2 rounded-md border border-grey-300 p-2 md:flex-row">
             <FaRegFilePdf size={50} className="m-4 text-red-600" />
             <div className="flex flex-col">
                 <Link
@@ -33,7 +33,7 @@ export default function DossierDePresseCard({
                 </span>
             </div>
 
-            <div className="ml-auto! mb-auto mt-auto hidden h-full items-center p-4 md:flex">
+            <div className="mt-auto mb-auto ml-auto! hidden h-full items-center p-4 md:flex">
                 <Link
                     href={su
                         .from("communique-de-presse")

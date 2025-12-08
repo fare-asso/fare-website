@@ -1,13 +1,13 @@
 "use client"
 
-import deleteTutorQuestion from "@/actions/bouge-ta-prison/deleteTutorQuestion"
-import LoadingRing from "@/components/dashboard/loadingRing"
-import { Button } from "@/components/ui/button"
-import { BTPTutorQuestion } from "@prisma/client"
+import type { BTPTutorQuestion } from "@prisma/client"
 import { format } from "date-fns"
 import Link from "next/link"
 import { useState } from "react"
 import { MdDelete } from "react-icons/md"
+import deleteTutorQuestion from "@/actions/bouge-ta-prison/deleteTutorQuestion"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Button } from "@/components/ui/button"
 
 export default function QuestionCard({
     question
@@ -28,7 +28,7 @@ export default function QuestionCard({
     return (
         <div className="flex w-full flex-row items-center justify-between rounded-lg border p-2 shadow-xs md:p-4">
             <div className="flex flex-row items-center gap-2">
-                <span className="ml-1 text-base font-semibold capitalize">
+                <span className="ml-1 font-semibold text-base capitalize">
                     <Link
                         href={`/dashboard/bouge-ta-prison/questions/${question.id}`}
                         className="w-full overflow-hidden text-ellipsis text-nowrap underline transition-all hover:opacity-75"

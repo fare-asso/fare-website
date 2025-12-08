@@ -1,16 +1,12 @@
+import Image from "next/image"
 import React from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-
-import logoCrous from "/public/Logo_Crous_vectorisé.png"
-
-import logoUR from "/public/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
-import logoUR2 from "/public/univ/Logo_univ-rennes2-2016.png"
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import logoEHESP from "/public/elues/ehesp/ehesp.png"
 import logoBougeTonCampus from "/public/elues/logo-Bouge-Ton-Campus.png"
 import logoBougeTonCrous from "/public/elues/logo-Bouge-Ton-Crous.png"
-import logoEHESP from "/public/elues/ehesp/ehesp.png"
-
-import Image from "next/image"
+import logoCrous from "/public/Logo_Crous_vectorisé.png"
+import logoUR2 from "/public/univ/Logo_univ-rennes2-2016.png"
+import logoUR from "/public/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
 
 type Elu = {
     firstName: string
@@ -32,9 +28,9 @@ const EluCard = ({ elu }: { elu: Elu }) => {
                     <h3 className="font-semibold">
                         {elu.firstName} {elu.lastName}
                     </h3>
-                    <p className="text-sm text-gray-600">{elu.position}</p>
+                    <p className="text-gray-600 text-sm">{elu.position}</p>
                     {elu.details && (
-                        <p className="text-sm text-gray-500">{elu.details}</p>
+                        <p className="text-gray-500 text-sm">{elu.details}</p>
                     )}
                 </div>
             </CardContent>
@@ -45,7 +41,7 @@ const EluCard = ({ elu }: { elu: Elu }) => {
 export default function Elues() {
     return (
         <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
+            <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
                 Nos élu·e·s étudiant·e·s de la FARE
             </h1>
 
@@ -82,10 +78,10 @@ export default function Elues() {
                             />
                         </div>
 
-                        <h2 className="mb-4 text-2xl font-semibold">
+                        <h2 className="mb-4 font-semibold text-2xl">
                             Nos élu.e.s “Bouge Ton CROUS” au CROUS Bretagne
                         </h2>
-                        <p className="py-3 text-sm font-medium">
+                        <p className="py-3 font-medium text-sm">
                             Contact : elus.crous@fare-asso.fr
                         </p>
                     </div>
@@ -169,18 +165,18 @@ export default function Elues() {
                             />
                         </div>
 
-                        <h2 className="mb-4 text-2xl font-semibold">
+                        <h2 className="mb-4 font-semibold text-2xl">
                             Nos élu.e.s “Bouge Ton Campus” de l'Université de
                             Rennes
                         </h2>
-                        <p className="py-3 text-sm font-medium">
+                        <p className="py-3 font-medium text-sm">
                             Contact : btc.univrennes@fare-asso.fr
                         </p>
                     </div>
 
                     {/* VPE */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Vice-Présidence Étudiante (VPE)
                         </h3>
                         <p>
@@ -227,7 +223,7 @@ export default function Elues() {
 
                     {/* CA */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Administration (CA)
                         </h3>
                         <p>
@@ -280,7 +276,7 @@ export default function Elues() {
 
                     {/* CFVE */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil de Formation & Vie Étudiante (CFVE)
                         </h3>
                         <p>
@@ -349,7 +345,7 @@ export default function Elues() {
 
                     {/* Conseil d'Unité de Formation & de Recherche (UFR) */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Unité de Formation & de Recherche (UFR)
                         </h3>
                         <p>
@@ -447,10 +443,10 @@ export default function Elues() {
                             />
                         </div>
 
-                        <h2 className="mb-4 text-2xl font-semibold">
+                        <h2 className="mb-4 font-semibold text-2xl">
                             Nos élu.e.s au CA de l'EHESP Rennes
                         </h2>
-                        <p className="py-3 text-sm font-medium">
+                        <p className="py-3 font-medium text-sm">
                             Contact : btc.univrennes@fare-asso.fr
                         </p>
                     </div>
@@ -508,18 +504,18 @@ export default function Elues() {
                                 className="h-auto w-32 md:h-44 md:w-auto"
                             />
                         </div>
-                        <h2 className="mb-4 text-2xl font-semibold">
+                        <h2 className="mb-4 font-semibold text-2xl">
                             Nos élu.e.s “Bouge Ton Campus” de l'Université de
                             Rennes 2
                         </h2>
-                        <p className="py-3 text-sm font-medium">
+                        <p className="py-3 font-medium text-sm">
                             Contact : btc.univrennes2@fare-asso.fr
                         </p>
                     </div>
 
                     {/* CA */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Administration (CA)
                         </h3>
                         <p>
@@ -560,7 +556,7 @@ export default function Elues() {
 
                     {/* CFVU */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil de Formation & Vie Universitaire (CFVU)
                         </h3>
                         <p>
@@ -623,7 +619,7 @@ export default function Elues() {
 
                     {/* Conseil d’Unité de Formation & de Recherche (UFR) */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Unité de Formation & de Recherche (UFR)
                         </h3>
                         <p>

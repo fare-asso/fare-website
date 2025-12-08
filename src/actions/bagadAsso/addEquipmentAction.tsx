@@ -1,13 +1,11 @@
 "use server"
 
-import { createClient } from "@/helpers/supabase/server"
-import getCurrentUserRole from "@/helpers/user/role"
-
-import prisma from "@/helpers/db"
-
+import { randomUUID } from "crypto"
 import { revalidatePath } from "next/cache"
 
-import { randomUUID } from "crypto"
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
+import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function addEquipmentAction(
     prevState: { error?: string; success?: boolean } | undefined,

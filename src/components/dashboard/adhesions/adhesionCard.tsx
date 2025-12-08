@@ -1,21 +1,16 @@
 "use client"
 
-import Link from "next/link"
-import { MouseEvent, useState } from "react"
-
-import { FaRegFolderOpen } from "react-icons/fa6"
-import { FaFileArchive, FaRegFileArchive } from "react-icons/fa"
-
-import { MdDelete } from "react-icons/md"
-import { MdOutlineFileDownload } from "react-icons/md"
-
-import { useToast } from "@/components/ui/use-toast"
-
+import type { Adhesion } from "@prisma/client"
 import clsx from "clsx"
-import { Adhesion } from "@prisma/client"
-import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
-import LoadingRing from "../loadingRing"
 import { format } from "date-fns"
+import Link from "next/link"
+import { type MouseEvent, useState } from "react"
+import { FaFileArchive, FaRegFileArchive } from "react-icons/fa"
+import { FaRegFolderOpen } from "react-icons/fa6"
+import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
+import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
+import { useToast } from "@/components/ui/use-toast"
+import LoadingRing from "../loadingRing"
 
 function downloadFile(url: string) {
     const a = document.createElement("a")
@@ -92,7 +87,7 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
 
     return (
         <div className={clsx("flex flex-col items-center", hidden && "hidden")}>
-            <div className="bg-card text-card-foreground relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border p-6 shadow-xs outline-offset-2 outline-black/30 hover:outline-2">
+            <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-xs outline-black/30 outline-offset-2 hover:outline-2">
                 {/* Hover buttons */}
                 <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-100 md:opacity-0 md:hover:opacity-100">
                     <button
@@ -115,7 +110,7 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
             </div>
 
             <div className="mt-2 flex flex-col items-center justify-start">
-                <span className="text-center text-sm font-medium">
+                <span className="text-center font-medium text-sm">
                     {adhesion.association}
                 </span>
                 {/* <Link href={"/"} target="blank" className="font-medium text-sm hover:underline text-center">

@@ -1,4 +1,4 @@
-import HeaderLinks, { Link } from "./headerLinks"
+import HeaderLinks, { type Link } from "./headerLinks"
 import HeaderLogo from "./logo"
 
 const links: Link[] = [

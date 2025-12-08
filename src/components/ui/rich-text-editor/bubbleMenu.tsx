@@ -1,5 +1,6 @@
-import { Editor } from "@tiptap/react"
+import type { Editor } from "@tiptap/react"
 import { BubbleMenu } from "@tiptap/react/menus"
+import { LucideHeading1, LucideHeading2 } from "lucide-react"
 import {
     MdFormatBold,
     MdFormatItalic,
@@ -10,10 +11,9 @@ import {
     MdImage,
     MdLink
 } from "react-icons/md"
-import BubbleButton from "./bubbleButton"
-import { LucideHeading1, LucideHeading2 } from "lucide-react"
-import ColorPicker from "./colorPicker"
 import TextAlignDropdown from "./alignmentDropdown"
+import BubbleButton from "./bubbleButton"
+import ColorPicker from "./colorPicker"
 
 export default function EditorBubbleMenu({
     editor
@@ -45,7 +45,7 @@ export default function EditorBubbleMenu({
                 />
 
                 {/* Spacer */}
-                <div className="w-1px h-6 bg-white/30"></div>
+                <div className="h-6 w-1px bg-white/30"></div>
 
                 {/* Bold button */}
                 <BubbleButton
@@ -85,7 +85,7 @@ export default function EditorBubbleMenu({
                 <ColorPicker editor={editor} />
 
                 {/* Spacer */}
-                <div className="w-1px h-6 bg-white/30"></div>
+                <div className="h-6 w-1px bg-white/30"></div>
 
                 {/* Link button */}
                 <BubbleButton
@@ -120,7 +120,7 @@ export default function EditorBubbleMenu({
                 />
 
                 {/* Spacer */}
-                <div className="w-1px h-6 bg-white/30"></div>
+                <div className="h-6 w-1px bg-white/30"></div>
 
                 {/* Align Dropdown menu */}
                 <TextAlignDropdown editor={editor} />

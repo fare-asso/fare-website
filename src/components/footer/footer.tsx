@@ -1,6 +1,6 @@
 import Link from "next/link"
-import SocialLinks from "./socialLinks"
 import { MdAdminPanelSettings, MdOutlineWarning } from "react-icons/md"
+import SocialLinks from "./socialLinks"
 
 export default function Footer() {
     return (

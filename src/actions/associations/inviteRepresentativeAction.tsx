@@ -1,12 +1,11 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 
-import { createAdminClient } from "@/helpers/supabase/server"
-
 import { validateEmail } from "@/helpers/string"
+import { createAdminClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
-import { revalidatePath } from "next/cache"
 
 export default async function inviteRepresentativeAction(
     prevState: { error?: string; success?: boolean } | undefined,

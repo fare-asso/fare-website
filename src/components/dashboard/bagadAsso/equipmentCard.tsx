@@ -1,11 +1,8 @@
+import type { BagadAssoEquipment } from "@prisma/client"
+import Image from "next/image"
+import { MdDelete, MdModeEditOutline, MdOutlineHideImage } from "react-icons/md"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/helpers/supabase/server"
-import { BagadAssoEquipment } from "@prisma/client"
-import Image from "next/image"
-
-import { MdOutlineHideImage } from "react-icons/md"
-import { MdDelete } from "react-icons/md"
-import { MdModeEditOutline } from "react-icons/md"
 import DeleteEquipmentButton from "./deleteEquipmentButton"
 
 export default async function EquipmentCard({
@@ -16,7 +13,7 @@ export default async function EquipmentCard({
     const supabase = await createClient()
 
     return (
-        <div className="bg-card text-card-foreground flex flex-col space-y-1 rounded-lg border p-4 shadow-xs">
+        <div className="flex flex-col space-y-1 rounded-lg border bg-card p-4 text-card-foreground shadow-xs">
             {/* Image */}
             <div className="flex aspect-square h-auto w-full flex-col items-center justify-center rounded-md bg-gray-100 object-contain">
                 {equipment.imagePath ? (
@@ -49,7 +46,7 @@ export default async function EquipmentCard({
             <span className="text-sm opacity-75">{`Caution: ${equipment.deposit}€`}</span>
 
             {/* Number */}
-            <span className="text-sm text-green-500">{`Quantité: ${equipment.quantity}`}</span>
+            <span className="text-green-500 text-sm">{`Quantité: ${equipment.quantity}`}</span>
 
             {/* Edit or delete */}
             <div className="flex w-full flex-row items-stretch space-x-2">

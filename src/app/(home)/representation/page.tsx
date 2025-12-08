@@ -1,13 +1,12 @@
-import Link from "next/link"
 import Image from "next/image"
-
-import logoFage from "/public/Logo_FAGE.png"
+import Link from "next/link"
 import gifElues from "/public/elues/elues.gif"
+import logoFage from "/public/Logo_FAGE.png"
 
 export default function Representation() {
     return (
         <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
+            <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
                 Représentation
             </h1>
 

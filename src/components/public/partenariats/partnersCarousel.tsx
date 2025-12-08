@@ -1,6 +1,6 @@
 "use client"
-import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
+import { useEffect, useRef, useState } from "react"
 import { GoArrowLeft, GoArrowRight } from "react-icons/go"
 // Import all partner logos
 import LPI from "/public/partenaires/lapetiteimprimerie.png"
@@ -55,7 +55,7 @@ export default function PartnersCarousel() {
     return (
         <div className="relative mx-auto w-full max-w-4xl overflow-hidden">
             {/* Navigation Arrows */}
-            <div className="pointer-events-none absolute top-1/2 z-20 flex w-full -translate-y-1/2 justify-between">
+            <div className="-translate-y-1/2 pointer-events-none absolute top-1/2 z-20 flex w-full justify-between">
                 <button
                     onClick={scrollLeft}
                     title="Bouton partenaires gauche"

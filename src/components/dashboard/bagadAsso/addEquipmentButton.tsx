@@ -1,39 +1,34 @@
 "use client"
 
+import Image from "next/image"
+import {
+    type ChangeEvent,
+    type MouseEvent,
+    startTransition,
+    useActionState,
+    useCallback,
+    useEffect,
+    useRef,
+    useState
+} from "react"
+import { MdDelete } from "react-icons/md"
+import addEquipmentAction from "@/actions/bagadAsso/addEquipmentAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter
+    DialogTrigger
 } from "@/components/ui/dialog"
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
-import {
-    ChangeEvent,
-    MouseEvent,
-    startTransition,
-    useActionState,
-    useRef,
-    useState
-} from "react"
-
-import { useEffect, useCallback } from "react"
-
-import addEquipmentAction from "@/actions/bagadAsso/addEquipmentAction"
-import NumberInput from "@/components/ui/input/numberInput"
-import { MdDelete } from "react-icons/md"
 import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput"
+import NumberInput from "@/components/ui/input/numberInput"
+import { Label } from "@/components/ui/label"
 import LoadingRing from "../loadingRing"
-import Image from "next/image"
 
 export default function AddEquipmentButton() {
     const [formState, formAction, pending] = useActionState<

@@ -1,7 +1,7 @@
 "use client"
 
-import { createClient } from "@/helpers/supabase/client"
 import { useEffect, useState } from "react"
+import { createClient } from "@/helpers/supabase/client"
 
 export default function CurrentUserClient() {
     const [email, setEmail] = useState<string | null>(null)
@@ -24,7 +24,7 @@ export default function CurrentUserClient() {
     }, [supabase])
 
     return (
-        <div className="hidden items-center text-sm text-black lg:flex lg:flex-col">
+        <div className="hidden items-center text-black text-sm lg:flex lg:flex-col">
             Connecté en tant que
             <div className="font-semibold">{email}</div>
         </div>

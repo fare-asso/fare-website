@@ -1,10 +1,10 @@
 "use client"
 
-import * as React from "react"
+import type * as React from "react"
 import { Label, Pie, PieChart } from "recharts"
 
 import {
-    ChartConfig,
+    type ChartConfig,
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent
@@ -71,7 +71,7 @@ export function StorageChartClient({
                                         <tspan
                                             x={viewBox.cx}
                                             y={viewBox.cy}
-                                            className="fill-foreground text-3xl font-bold"
+                                            className="fill-foreground font-bold text-3xl"
                                         >
                                             {used.toFixed(2)} Go
                                         </tspan>

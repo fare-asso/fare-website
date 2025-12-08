@@ -1,9 +1,9 @@
 "use server"
 
+import type { BTPTutorApplication } from "@prisma/client"
+import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
-import { BTPTutorApplication } from "@prisma/client"
-import { revalidatePath } from "next/cache"
 
 export default async function deleteTutorApplication(
     id: number

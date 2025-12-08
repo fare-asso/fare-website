@@ -1,14 +1,14 @@
 "use client"
 
+import type { BagadAssoEquipment } from "@prisma/client"
+import { useActionState, useEffect, useState } from "react"
+import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction"
+import Captcha from "@/components/captcha/recaptcha"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import DatePicker from "@/components/ui/input/datePicker"
 import NumberInput from "@/components/ui/input/numberInput"
 import EquipmentSelection from "./equipmentSelection"
-import { BagadAssoEquipment } from "@prisma/client"
-import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction"
-import { useActionState, useEffect, useState } from "react"
-import LoadingRing from "@/components/dashboard/loadingRing"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import Captcha from "@/components/captcha/recaptcha"
 
 export default function BagadAssoForm({
     equipmentList
@@ -41,7 +41,7 @@ export default function BagadAssoForm({
     return (
         <form
             onSubmit={handleSubmit}
-            className={`flex w-full flex-col items-start lg:w-[60%] [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black focus:[&_input]:border-yellow-400 focus:[&_input]:ring-yellow-400 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-700 dark:[&_input]:text-white dark:[&_input]:placeholder-gray-400 dark:focus:[&_input]:border-yellow-400 dark:focus:[&_input]:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_option]:font-sans [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black focus:[&_select]:border-yellow-400 focus:[&_select]:ring-yellow-400 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-700 dark:[&_select]:text-white dark:[&_select]:placeholder-gray-400 dark:focus:[&_select]:border-yellow-400 dark:focus:[&_select]:ring-yellow-400`}
+            className={`flex w-full flex-col items-start lg:w-[60%] [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black focus:[&_input]:border-yellow-400 focus:[&_input]:ring-yellow-400 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-700 dark:[&_input]:text-white dark:[&_input]:placeholder-gray-400 dark:focus:[&_input]:border-yellow-400 dark:focus:[&_input]:ring-yellow-400 [&_label]:mt-6 [&_label]:mb-1 [&_option]:font-sans [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black focus:[&_select]:border-yellow-400 focus:[&_select]:ring-yellow-400 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-700 dark:[&_select]:text-white dark:[&_select]:placeholder-gray-400 dark:focus:[&_select]:border-yellow-400 dark:focus:[&_select]:ring-yellow-400`}
         >
             {/* Association représentée */}
             <label htmlFor="association-name">Association représentée</label>
@@ -156,17 +156,17 @@ export default function BagadAssoForm({
             />
 
             {/* Termes et conditions */}
-            <div className="mb-8 mt-6 flex flex-row items-center">
+            <div className="mt-6 mb-8 flex flex-row items-center">
                 <input
                     id="terms-and-conditions"
                     name="terms-and-conditions"
                     type="checkbox"
-                    className="focus:ring-3 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                    className="h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
                     required
                 />
                 <label
                     htmlFor="terms-and-conditions"
-                    className="m-0! ml-2! text-nowrap text-sm font-medium text-gray-900 dark:text-gray-300"
+                    className="m-0! ml-2! text-nowrap font-medium text-gray-900 text-sm dark:text-gray-300"
                 >
                     J'accepte les{" "}
                     <a

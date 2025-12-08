@@ -1,11 +1,10 @@
 "use client"
 
+import { useActionState } from "react"
+import loginAction from "@/actions/auth/loginAction"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
-import loginAction from "@/actions/auth/loginAction"
-
 import LoginButton from "./loginButton"
-import { useActionState } from "react"
 
 export default function LoginForm() {
     const [error, formAction] = useActionState<
@@ -18,7 +17,7 @@ export default function LoginForm() {
             <Label htmlFor="email">Email</Label>
             <Input type="email" name="email" id="email" />
             {error && error.emailError ? (
-                <div className="text-sm font-medium text-destructive">
+                <div className="font-medium text-destructive text-sm">
                     {error.emailError}
                 </div>
             ) : null}
@@ -26,7 +25,7 @@ export default function LoginForm() {
             <Label htmlFor="password">Password</Label>
             <Input type="password" name="password" id="password" />
             {error && error.passwordError ? (
-                <div className="text-sm font-medium text-destructive">
+                <div className="font-medium text-destructive text-sm">
                     {error.passwordError}
                 </div>
             ) : null}

@@ -3,7 +3,7 @@ export type AutocompleteResponse = {
     results: Result[]
 }
 
-type Result = Address | POI
+type Result = Address | Poi
 
 type Address = {
     country: "StreetAddress"
@@ -18,7 +18,7 @@ type Address = {
     metropole: boolean
 }
 
-type POI = {
+type Poi = {
     country: "PositionOfInterest"
     city: string
     x: number

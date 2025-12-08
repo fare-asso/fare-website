@@ -1,5 +1,5 @@
+import type { Metadata } from "next"
 import ArticleList from "@/components/public/articles/articleList"
-import { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Actualités | FARE",
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default async function ActualitePage() {
     return (
         <div className="flex w-full flex-col items-center justify-start">
-            <h1 className="py-12 text-3xl font-semibold md:py-32">
+            <h1 className="py-12 font-semibold text-3xl md:py-32">
                 {"Actualités"}
             </h1>
             <div className="flex h-full w-full flex-col items-center">

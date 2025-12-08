@@ -1,8 +1,6 @@
+import type { Role } from "@prisma/client"
 import prisma from "../db"
-
 import { createClient } from "../supabase/server"
-
-import { Role } from "@prisma/client"
 
 export default async function getCurrentUserRole(): Promise<{
     role?: Role

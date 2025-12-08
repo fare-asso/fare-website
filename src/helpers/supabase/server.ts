@@ -1,4 +1,5 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr"
+import process from "node:process"
+import { type CookieOptions, createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
 export async function createClient() {

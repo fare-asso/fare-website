@@ -1,5 +1,20 @@
 "use client"
 
+import type { Permission } from "@prisma/client"
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
+import {
+    FaHandcuffs,
+    FaPeopleGroup,
+    FaRegNewspaper,
+    FaUser,
+    FaUsers
+} from "react-icons/fa6" // Bouge Ta Prison
+// Link icons
+import { LuNetwork, LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
+import LogoFARE from "/public/logo_fare.png"
 // UI components
 import {
     Sidebar,
@@ -13,25 +28,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem
 } from "../ui/sidebar"
-
-import SignOutButton from "./signOutButton"
-
-// Link icons
-import { LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
-import { FaHandcuffs, FaUser } from "react-icons/fa6" // Bouge Ta Prison
-import { FaPeopleGroup } from "react-icons/fa6" // Membres
-import { FaRegNewspaper } from "react-icons/fa6" // Presse
-import { FaUsers } from "react-icons/fa6" // Adhésions
-import { FaPen } from "react-icons/fa" // Articles
-import { FaRegCalendarAlt } from "react-icons/fa" // Evènements
-import { LuNetwork } from "react-icons/lu" // Associations
-
-import Image from "next/image"
-import LogoFARE from "/public/logo_fare.png"
-import { usePathname } from "next/navigation"
 import CurrentUserClient from "./currentUserClient"
-import Link from "next/link"
-import { Permission } from "@prisma/client"
+import SignOutButton from "./signOutButton"
 
 export default function SideBarApp({
     permissions

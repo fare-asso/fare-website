@@ -1,11 +1,10 @@
 "use server"
 
-import prisma from "@/helpers/db"
-
-import { createClient } from "@/helpers/supabase/server"
+import type { JSONContent } from "@tiptap/react"
 import { revalidatePath } from "next/cache"
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
-import { JSONContent } from "@tiptap/react"
 
 export default async function editArticleAction(
     prevState: { error?: string; success?: boolean } | undefined,

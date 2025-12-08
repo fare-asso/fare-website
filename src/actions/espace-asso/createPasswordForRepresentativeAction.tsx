@@ -1,8 +1,8 @@
 "use server"
 
+import { redirect } from "next/navigation"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
-import { redirect } from "next/navigation"
 
 export default async function createPasswordForRepresentativeAction(
     prevState: { error?: string; success?: boolean } | undefined,

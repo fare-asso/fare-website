@@ -1,9 +1,9 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
-import { revalidatePath } from "next/cache"
 
 export default async function editAssociationAction(
     prevState: { error?: string; success?: boolean } | undefined,
@@ -21,7 +21,7 @@ export default async function editAssociationAction(
     const supabase = await createClient()
 
     // retrieve form data fields
-    const id = Number(formData.get("id")?.toString() ?? NaN)
+    const id = Number(formData.get("id")?.toString() ?? Number.NaN)
     const name = formData.get("name")?.toString()
     const major = formData.get("major")?.toString()
     const description = formData.get("description")?.toString()

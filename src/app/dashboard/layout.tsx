@@ -1,14 +1,13 @@
 import type { Metadata } from "next"
 import "../globals.css"
 
-import { Toaster } from "@/components/ui/toaster"
-
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import SideBarApp from "@/components/dashboard/sideBarApp"
 import { redirect } from "next/navigation"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import CurrentRoute from "@/components/dashboard/currentRoute"
+import SideBarApp from "@/components/dashboard/sideBarApp"
 import { Separator } from "@/components/ui/separator"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { Toaster } from "@/components/ui/toaster"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
 export const metadata: Metadata = {
     title: "Dashboard",
@@ -39,7 +38,7 @@ export default async function RootLayout({
                 <SideBarApp permissions={permissions} />
 
                 {/* Contenu principal */}
-                <div className="bg-sidebar flex h-full w-full flex-col">
+                <div className="flex h-full w-full flex-col bg-sidebar">
                     {/* Barre du haut */}
                     <header className="fixed top-0 z-10 flex h-12 w-full flex-row items-center p-4">
                         <SidebarTrigger />

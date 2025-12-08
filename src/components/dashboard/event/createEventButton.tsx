@@ -1,35 +1,27 @@
 "use client"
 
+import { useActionState, useCallback, useEffect, useState } from "react"
+import createEventAction from "@/actions/events/createEventAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter
+    DialogTrigger
 } from "@/components/ui/dialog"
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
-import { Switch } from "@/components/ui/switch"
-
-import { Textarea } from "@/components/ui/textarea"
-
-import { useActionState, useState } from "react"
-
-import TimePicker from "../../ui/input/timePicker"
-import createEventAction from "@/actions/events/createEventAction"
-import LocationPicker from "../../ui/location/locationPicker"
-import CategorySelect from "../../ui/category/categorySelect"
-import { useEffect, useCallback } from "react"
-import LoadingRing from "../loadingRing"
 import DatePicker from "@/components/ui/input/datePicker"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+import CategorySelect from "../../ui/category/categorySelect"
+import TimePicker from "../../ui/input/timePicker"
+import LocationPicker from "../../ui/location/locationPicker"
+import LoadingRing from "../loadingRing"
 
 export default function CreateEventButton() {
     const [formState, formAction] = useActionState<

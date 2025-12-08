@@ -1,10 +1,7 @@
-import { NextRequest, NextResponse } from "next/server"
-
+import type { Role } from "@prisma/client"
+import { type NextRequest, NextResponse } from "next/server"
 import { updateSession } from "@/helpers/supabase/middleware"
-
 import { createClient } from "./helpers/supabase/server"
-
-import { Role } from "@prisma/client"
 
 const permissionProtectedRoutes: {
     pathIncludes: string

@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+import { useEffect, useState } from "react"
 import {
     Select,
     SelectContent,
@@ -7,8 +9,6 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
-
-import React, { useState, useEffect } from "react"
 
 interface Category {
     id: number

@@ -1,7 +1,7 @@
 "use client"
-import { Editor } from "@tiptap/react"
-import { useState, useRef, useEffect } from "react"
-import { BlockPicker, ColorChangeHandler } from "react-color"
+import type { Editor } from "@tiptap/react"
+import { useEffect, useRef, useState } from "react"
+import { BlockPicker, type ColorChangeHandler } from "react-color"
 
 export default function ColorPicker({ editor }: { editor: Editor }) {
     const [color, setColor] = useState<string>(
@@ -54,7 +54,7 @@ export default function ColorPicker({ editor }: { editor: Editor }) {
         <div ref={containerRef} className="relative inline-block">
             <button className="rounded p-2" onClick={onClickOnColorPicker}>
                 <div
-                    className="z-10 h-5 w-5 rounded-full opacity-100 ring-1 ring-inset ring-white hover:ring-offset-1"
+                    className="z-10 h-5 w-5 rounded-full opacity-100 ring-1 ring-white ring-inset hover:ring-offset-1"
                     style={{
                         backgroundColor: color
                     }}
@@ -62,7 +62,7 @@ export default function ColorPicker({ editor }: { editor: Editor }) {
             </button>
             {isPickerVisible && (
                 <div
-                    className="absolute left-0 top-full z-10 mt-1"
+                    className="absolute top-full left-0 z-10 mt-1"
                     style={{
                         transform: "translateX(-50%)",
                         left: "50%"

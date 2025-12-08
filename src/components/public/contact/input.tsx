@@ -1,12 +1,9 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-import { InputHTMLAttributes } from "react"
-
+import React, { type InputHTMLAttributes } from "react"
+import type { FieldError } from "react-hook-form"
 import { RiErrorWarningFill } from "react-icons/ri"
-
-import React from "react"
-import { FieldError } from "react-hook-form"
+import { cn } from "@/lib/utils"
 
 const Input = React.forwardRef<
     HTMLInputElement,

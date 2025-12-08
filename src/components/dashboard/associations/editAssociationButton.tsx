@@ -1,40 +1,38 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-
+import type { Association } from "@prisma/client"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogFooter
-} from "@/components/ui/dialog"
-
+    startTransition,
+    useActionState,
+    useCallback,
+    useEffect,
+    useState
+} from "react"
+import { MdEdit } from "react-icons/md"
+import editAssociationAction from "@/actions/associations/editAssociationAction"
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger
 } from "@/components/ui/accordion"
-
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
+import { Button } from "@/components/ui/button"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
-import { startTransition, useActionState, useState } from "react"
-import { useEffect, useCallback } from "react"
-
-import LoadingRing from "../loadingRing"
-import LocationPicker from "@/components/ui/location/locationPicker"
-
-import editAssociationAction from "@/actions/associations/editAssociationAction"
-import { Association } from "@prisma/client"
-import { MdEdit } from "react-icons/md"
-import { Textarea } from "@/components/ui/textarea"
 import DatePicker from "@/components/ui/input/datePicker"
+import { Label } from "@/components/ui/label"
+import LocationPicker from "@/components/ui/location/locationPicker"
+import { Textarea } from "@/components/ui/textarea"
+import LoadingRing from "../loadingRing"
 
 export default function EditAssociationButton({
     association
@@ -161,7 +159,7 @@ export default function EditAssociationButton({
                                     <div className="text-muted-foreground text-sm">
                                         Taille maximale : 15 Mo
                                     </div>
-                                    <div className="text-muted-foreground mb-1 text-sm">
+                                    <div className="mb-1 text-muted-foreground text-sm">
                                         Format recommandée: carré
                                     </div>
                                     <Input

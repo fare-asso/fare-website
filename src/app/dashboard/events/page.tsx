@@ -1,6 +1,6 @@
+import { Suspense } from "react"
 import CreateEventButton from "@/components/dashboard/event/createEventButton"
 import EventDataTable from "@/components/dashboard/event/eventDataTable"
-
 import {
     Card,
     CardContent,
@@ -9,8 +9,6 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-
-import { Suspense } from "react"
 
 export default async function EventsPage() {
     return (

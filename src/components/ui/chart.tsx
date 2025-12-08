@@ -185,7 +185,7 @@ const ChartTooltipContent = React.forwardRef<
                     className
                 )}
             >
-                {!nestLabel ? tooltipLabel : null}
+                {nestLabel ? null : tooltipLabel}
                 <div className="grid gap-1.5">
                     {payload
                         .filter((item) => item.type !== "none")
@@ -271,7 +271,7 @@ const ChartTooltipContent = React.forwardRef<
                                                     </span>
                                                 </div>
                                                 {item.value && (
-                                                    <span className="font-mono font-medium tabular-nums text-foreground">
+                                                    <span className="font-medium font-mono text-foreground tabular-nums">
                                                         {item.value.toLocaleString()}
                                                     </span>
                                                 )}

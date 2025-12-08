@@ -1,15 +1,13 @@
+import { YouTubeEmbed } from "@next/third-parties/google"
+import type { Metadata } from "next"
 import Image from "next/image"
-import { Metadata } from "next"
-import DiscordWidget from "@/components/public/discordWidget"
-
-import WelcomeImage from "../../../public/welcome.jpg"
-
-import LinkButton from "@/components/public/link"
-import PartnersCarousel from "@/components/public/partenariats/partnersCarousel"
 import { Suspense } from "react"
 import AssoMap from "@/components/public/AssoMap"
+import DiscordWidget from "@/components/public/discordWidget"
 import KeyNumbers from "@/components/public/keyNumbers"
-import { YouTubeEmbed } from "@next/third-parties/google"
+import LinkButton from "@/components/public/link"
+import PartnersCarousel from "@/components/public/partenariats/partnersCarousel"
+import WelcomeImage from "../../../public/welcome.jpg"
 
 export const metadata: Metadata = {
     title: "Accueil | FARE"
@@ -36,7 +34,7 @@ export default async function Home() {
             {/* Qui sommes-nous ? */}
             <div className="my-10 flex w-full flex-col items-center">
                 <div className="flex w-full flex-col items-start justify-between rounded-xl bg-black p-8 text-lg text-white md:w-[80%]">
-                    <h2 className="mb-2 text-2xl font-semibold">
+                    <h2 className="mb-2 font-semibold text-2xl">
                         Qui sommes-nous ?
                     </h2>
                     <p className="text-justify">
@@ -77,7 +75,7 @@ export default async function Home() {
 
             {/* Le réseau */}
             <div className="my-10 flex w-full flex-col">
-                <h2 className="mb-2 text-2xl font-semibold">Notre réseau</h2>
+                <h2 className="mb-2 font-semibold text-2xl">Notre réseau</h2>
                 <Suspense fallback={"Loading..."}>
                     <AssoMap />
                 </Suspense>
@@ -96,7 +94,7 @@ export default async function Home() {
 
             {/* Discord */}
             <div className="my-10 flex w-full flex-col">
-                <h2 className="mb-2 text-2xl font-semibold">Discord</h2>
+                <h2 className="mb-2 font-semibold text-2xl">Discord</h2>
                 <p className="mb-12 text-justify">
                     Intéressé·e par la FARE et son réseau ? Étudiant·e en
                     Ille-et-Vilaine ou Côtes-d'Armor ? La FARE possède un
@@ -115,7 +113,7 @@ export default async function Home() {
                 <div className="flex flex-col items-center justify-center space-y-6 md:flex-row md:space-x-12">
                     <DiscordWidget />
                     <div className="mt-4 flex w-full flex-col items-center md:w-1/2">
-                        <p className="mb-2 text-center text-lg font-semibold">
+                        <p className="mb-2 text-center font-semibold text-lg">
                             Vidéo de présentation du&nbsp;
                             <a
                                 href="https://discord.gg/4CmJ5Pa3"
@@ -138,7 +136,7 @@ export default async function Home() {
 
             {/* Nos partenaires */}
             <div className="my-10 flex w-full flex-col">
-                <h2 className="mb-2 text-2xl font-semibold">Nos partenaires</h2>
+                <h2 className="mb-2 font-semibold text-2xl">Nos partenaires</h2>
                 <PartnersCarousel />
             </div>
 

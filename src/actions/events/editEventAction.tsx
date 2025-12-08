@@ -1,10 +1,9 @@
 "use server"
 
-import prisma from "@/helpers/db"
-import { revalidatePath } from "next/cache"
-
-import { createClient } from "@/helpers/supabase/server"
 import { randomUUID } from "crypto"
+import { revalidatePath } from "next/cache"
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserId from "@/helpers/user/id"
 import getCurrentUserRole from "@/helpers/user/role"
 
@@ -146,13 +145,11 @@ export default async function editEventAction(
                 }
             }
         }
+    } else if (previousPath != null && typeof previousPath == "string") {
+        data.image = previousPath.toString()
     } else {
-        if (previousPath != null && typeof previousPath == "string") {
-            data.image = previousPath.toString()
-        } else {
-            return {
-                error: "L'image n'est pas valide ou n'est pas du bon format"
-            }
+        return {
+            error: "L'image n'est pas valide ou n'est pas du bon format"
         }
     }
 

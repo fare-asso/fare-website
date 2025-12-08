@@ -1,7 +1,6 @@
 import prisma from "@/helpers/db"
-
-import CdpCard from "./CDPCard"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
+import CdpCard from "./CDPCard"
 
 export default async function CDPList() {
     const su = new StorageUtils()
@@ -13,7 +12,7 @@ export default async function CDPList() {
 
     if (communiques == null) {
         return (
-            <span className="text-xl text-red-800">
+            <span className="text-red-800 text-xl">
                 Echec du chargement des CDP, veuillez réessayer
             </span>
         )
@@ -30,7 +29,7 @@ export default async function CDPList() {
         ))
 
         return (
-            <div className="bg-card text-card-foreground h-full w-full overflow-y-auto rounded-lg border p-6 shadow-xs">
+            <div className="h-full w-full overflow-y-auto rounded-lg border bg-card p-6 text-card-foreground shadow-xs">
                 <div className="grid h-auto w-full grid-cols-1 gap-4 overflow-y-auto p-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                     {cdpCards.length > 0 ? (
                         cdpCards

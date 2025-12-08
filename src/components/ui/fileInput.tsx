@@ -1,6 +1,7 @@
 "use client"
-import React, { ChangeEventHandler, useState, forwardRef } from "react"
 import { File, Upload } from "lucide-react"
+import type React from "react"
+import { ChangeEventHandler, forwardRef, useState } from "react"
 
 interface FileInputProps
     extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "value"> {
@@ -36,20 +37,20 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
                         className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-gray-50 hover:bg-gray-100"
                     >
                         {filename ? (
-                            <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <File className="mb-4 h-8 w-8 text-gray-500" />
-                                <p className="text-sm text-gray-500">
+                                <p className="text-gray-500 text-sm">
                                     {filename}
                                 </p>
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className="mb-4 h-8 w-8 text-gray-500" />
-                                <p className="text-sm text-gray-500">
+                                <p className="text-gray-500 text-sm">
                                     Cliquez ou glissez un fichier ici
                                 </p>
                                 {maxSize && (
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-gray-500 text-xs">
                                         (Taille maximale {maxSize}mo)
                                     </p>
                                 )}

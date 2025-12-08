@@ -1,6 +1,8 @@
 "use client"
 
+import Link from "next/link"
 import { usePathname } from "next/navigation"
+import React from "react"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -9,8 +11,6 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "../ui/breadcrumb"
-import Link from "next/link"
-import React from "react"
 
 export default function CurrentRoute() {
     const path = usePathname()

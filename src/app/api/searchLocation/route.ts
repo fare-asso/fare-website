@@ -1,4 +1,4 @@
-import { AutocompleteResponse } from "./types"
+import type { AutocompleteResponse } from "./types"
 
 /**
  * An API request which gives autocompletion for an address query.

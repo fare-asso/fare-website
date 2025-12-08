@@ -1,12 +1,11 @@
 import Image from "next/image"
 import Link from "next/link"
-
-import salle from "/public/AGORAe/salle.jpg"
+import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
 import food from "/public/AGORAe/food.jpg"
 import logoAgoraE from "/public/AGORAe/logo_AgoraE.png"
 import recettesParMois from "/public/AGORAe/recettes_par_mois.png"
+import salle from "/public/AGORAe/salle.jpg"
 import tableauRAV from "/public/AGORAe/tableau_rav.png"
-import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
 
 export default function AGORAe() {
     return (
@@ -21,7 +20,7 @@ export default function AGORAe() {
 
             <div className="mb-20 flex w-full max-w-4xl flex-col items-center space-y-12">
                 <section>
-                    <h2 className="mb-4 text-2xl font-semibold">
+                    <h2 className="mb-4 font-semibold text-2xl">
                         L'AGORAé, la lutte contre la pauvreté étudiante sur
                         Saint-Brieuc
                     </h2>
@@ -93,7 +92,7 @@ export default function AGORAe() {
                 </div>
 
                 <section>
-                    <h2 className="mb-4 text-2xl font-semibold">
+                    <h2 className="mb-4 font-semibold text-2xl">
                         Comment devenir bénéficiaire de l'AGORAé ?
                     </h2>
                     <p className="mb-4">
@@ -162,7 +161,7 @@ export default function AGORAe() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 text-2xl font-semibold">
+                    <h2 className="mb-4 font-semibold text-2xl">
                         Envie de participer au projet AGORAé ?
                     </h2>
                     <p className="mb-4">
@@ -185,7 +184,7 @@ export default function AGORAe() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 text-2xl font-semibold">
+                    <h2 className="mb-4 font-semibold text-2xl">
                         Quand venir à l'AGORAé ?
                     </h2>
                     <p>

@@ -14,7 +14,7 @@ export default function LinkButton({
             href={href}
             title={title}
             className={
-                "rounded-full px-4 py-1 text-center font-semibold transition-all hover:scale-105 " +
+                "rounded-full px-4 py-1 text-center font-semibold transition-all hover:scale-105" +
                 className
             }
         >

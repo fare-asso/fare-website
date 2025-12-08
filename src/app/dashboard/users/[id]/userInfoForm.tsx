@@ -1,15 +1,15 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { Role, User } from "@prisma/client"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import LoadingRing from "@/components/dashboard/loadingRing"
 import updateUserInfo from "@/actions/users/updateUserInfo"
-import { Role, User } from "@prisma/client"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
     Select,
     SelectContent,
@@ -78,7 +78,7 @@ export function UserInfoForm({ user }: { user: User }) {
                         placeholder={user.name ? "" : "NULL"}
                     />
                     {form.formState.errors.name && (
-                        <p className="text-sm text-red-500">
+                        <p className="text-red-500 text-sm">
                             {form.formState.errors.name.message}
                         </p>
                     )}
@@ -91,7 +91,7 @@ export function UserInfoForm({ user }: { user: User }) {
                         {...form.register("email")}
                     />
                     {form.formState.errors.email && (
-                        <p className="text-sm text-red-500">
+                        <p className="text-red-500 text-sm">
                             {form.formState.errors.email.message}
                         </p>
                     )}

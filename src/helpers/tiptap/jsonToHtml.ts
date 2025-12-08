@@ -1,14 +1,12 @@
-import { JSONContent } from "@tiptap/react"
-import { generateHTML } from "@tiptap/react"
-
-import StarterKit from "@tiptap/starter-kit"
-import Underline from "@tiptap/extension-underline"
-import { TextStyle } from "@tiptap/extension-text-style"
 import Color from "@tiptap/extension-color"
-import TextAlign from "@tiptap/extension-text-align"
-import Link from "@tiptap/extension-link"
 import Image from "@tiptap/extension-image"
+import Link from "@tiptap/extension-link"
 import ListKeymap from "@tiptap/extension-list-keymap"
+import TextAlign from "@tiptap/extension-text-align"
+import { TextStyle } from "@tiptap/extension-text-style"
+import Underline from "@tiptap/extension-underline"
+import { generateHTML, type JSONContent } from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
 import { StorageUtils } from "../supabase/storageUtils"
 
 export function extractFirstWords(take: number, content: JSONContent): string {

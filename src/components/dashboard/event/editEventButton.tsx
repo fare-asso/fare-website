@@ -1,46 +1,36 @@
 "use client"
 
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import Image from "next/image"
+import { type ChangeEvent, useCallback, useEffect, useState } from "react"
+import { useFormState, useFormStatus } from "react-dom"
+import editEventAction from "@/actions/events/editEventAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-
+import { Calendar } from "@/components/ui/calendar"
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter
+    DialogTrigger
 } from "@/components/ui/dialog"
-
+import { Input } from "@/components/ui/input"
+import DatePicker from "@/components/ui/input/datePicker"
+import { Label } from "@/components/ui/label"
 import {
     Popover,
     PopoverContent,
     PopoverTrigger
 } from "@/components/ui/popover"
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
 import { Switch } from "@/components/ui/switch"
-
 import { Textarea } from "@/components/ui/textarea"
-
-import { Calendar } from "@/components/ui/calendar"
-import { ChangeEvent, useState } from "react"
-
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
+import CategorySelect from "../../ui/category/categorySelect"
 import TimePicker from "../../ui/input/timePicker"
 import LocationPicker from "../../ui/location/locationPicker"
-import CategorySelect from "../../ui/category/categorySelect"
-import { useFormState, useFormStatus } from "react-dom"
-import { useEffect, useCallback } from "react"
-
-import editEventAction from "@/actions/events/editEventAction"
-import Image from "next/image"
-import DatePicker from "@/components/ui/input/datePicker"
 
 export interface EventInfo {
     id: number
@@ -90,12 +80,12 @@ export default function EditEventButtonClient({
 
             const json = await res.json()
 
-            if (!json.error) {
+            if (json.error) {
+                console.error(json.error)
+            } else {
                 const imageUrl: string = json.imageUrl
                 setImageUrl(imageUrl)
                 setPreviousPath(json.imagePath)
-            } else {
-                console.error(json.error)
             }
         }
 
@@ -188,7 +178,7 @@ export default function EditEventButtonClient({
                                 width={400}
                                 height={200}
                                 alt="Image de l'évènement"
-                                className="my-3 h-auto w-32 rounded-lg outline-2 outline-offset-2 outline-black"
+                                className="my-3 h-auto w-32 rounded-lg outline-2 outline-black outline-offset-2"
                             />
                         ) : null}
                         <Input

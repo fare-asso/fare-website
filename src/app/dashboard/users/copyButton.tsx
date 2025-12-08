@@ -1,13 +1,13 @@
 "use client"
 
+import { LucideCopy } from "lucide-react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
-import { LucideCopy } from "lucide-react"
-import { useState } from "react"
 
 export default function CopyButton({ value }: { value: string }) {
     const [clicked, setClicked] = useState(false)

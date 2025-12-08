@@ -1,8 +1,8 @@
 "use server"
 
-import { createClient } from "@/helpers/supabase/server"
-import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
+import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 
 interface Data {

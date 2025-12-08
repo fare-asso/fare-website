@@ -1,16 +1,15 @@
 "use client"
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Inter } from "next/font/google"
+import type { Association } from "@prisma/client"
 import L from "leaflet"
-import { Association } from "@prisma/client"
-import AssociationMapSearchBar from "./associationMapSearchBar"
-import { useState, useRef, ChangeEvent } from "react"
+import { Inter } from "next/font/google"
+import Image from "next/image"
+import { type ChangeEvent, useRef, useState } from "react"
 
 import { createClient } from "@/helpers/supabase/client"
-
-import Image from "next/image"
+import AssociationMapSearchBar from "./associationMapSearchBar"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -93,7 +92,7 @@ export default function AssociationMap({
             zoom={9}
             scrollWheelZoom={false}
             className={
-                "h-[400px] w-full rounded-xl border-[1.5px] border-black md:h-[600px] " +
+                "h-[400px] w-full rounded-xl border-[1.5px] border-black md:h-[600px]" +
                 inter.className
             }
             ref={mapRef}
@@ -104,7 +103,7 @@ export default function AssociationMap({
                     onChange={handleSearchChange}
                 />
                 {searchError && (
-                    <div className="border-1 mt-2 rounded-full bg-black/50 px-2 py-1 text-center text-white/90">
+                    <div className="mt-2 rounded-full border-1 bg-black/50 px-2 py-1 text-center text-white/90">
                         {searchError}
                     </div>
                 )}
@@ -147,7 +146,7 @@ export default function AssociationMap({
                                         className="aspect-square rounded-md object-cover"
                                     />
                                     <div className="ml-3">
-                                        <h2 className="text-base font-semibold">
+                                        <h2 className="font-semibold text-base">
                                             {association.name}
                                         </h2>
                                         <p className="text-xs opacity-80">

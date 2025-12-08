@@ -1,10 +1,10 @@
 "use server"
 
+import { randomUUID } from "crypto"
+import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
-import { randomUUID } from "crypto"
-import { revalidatePath } from "next/cache"
 
 export default async function addAssociationAction(
     prevState: { error?: string; success?: boolean } | undefined,

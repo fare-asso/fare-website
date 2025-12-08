@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import { MdLogout } from "react-icons/md"
 import SignOutAction from "@/actions/auth/signOutAction"
 import { Button } from "../ui/button"
-import { MdLogout } from "react-icons/md"
 
 export default function SignOutButton() {
     const [loading, setLoading] = useState(false)

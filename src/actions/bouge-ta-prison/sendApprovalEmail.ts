@@ -1,10 +1,10 @@
 "use server"
 
+import type { BTPTutorApplication } from "@prisma/client"
+import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { tutorApplicationApprovalEmailTemplate } from "@/lib/htmlEmailTemplates"
-import { BTPTutorApplication } from "@prisma/client"
-import { revalidatePath } from "next/cache"
 
 export default async function sendApprovalEmail(
     application: BTPTutorApplication

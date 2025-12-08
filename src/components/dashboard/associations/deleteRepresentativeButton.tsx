@@ -1,8 +1,8 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Association } from "@prisma/client"
+import type { Association } from "@prisma/client"
 import { FaUserSlash } from "react-icons/fa"
+import { Button } from "@/components/ui/button"
 
 export default function DeleteRepresentativeButton({
     association

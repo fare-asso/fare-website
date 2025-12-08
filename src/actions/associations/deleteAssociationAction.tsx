@@ -1,11 +1,9 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
-
 import { createAdminClient, createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
-
-import { revalidatePath } from "next/cache"
 
 export default async function deleteAssociationAction(
     prevState: { error?: string; success?: boolean } | undefined,

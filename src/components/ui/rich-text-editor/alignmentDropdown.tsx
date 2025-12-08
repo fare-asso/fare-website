@@ -1,12 +1,12 @@
 "use client"
-import { Editor } from "@tiptap/react"
-import { useState, useRef, useEffect } from "react"
+import type { Editor } from "@tiptap/react"
+import { useEffect, useRef, useState } from "react"
 import {
-    MdFormatAlignLeft,
+    MdArrowDropDown,
     MdFormatAlignCenter,
-    MdFormatAlignRight,
     MdFormatAlignJustify,
-    MdArrowDropDown
+    MdFormatAlignLeft,
+    MdFormatAlignRight
 } from "react-icons/md"
 
 const alignmentOptions = [
@@ -74,7 +74,7 @@ export default function TextAlignDropdown({ editor }: { editor: Editor }) {
             </button>
 
             {isOpen && (
-                <div className="absolute left-0 top-full z-10 mt-1 rounded-b-lg bg-black/90 text-white backdrop-blur-lg">
+                <div className="absolute top-full left-0 z-10 mt-1 rounded-b-lg bg-black/90 text-white backdrop-blur-lg">
                     {alignmentOptions.map((option) => (
                         <button
                             key={option.value}

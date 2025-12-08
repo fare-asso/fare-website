@@ -1,36 +1,28 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useCallback, useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { MdEdit } from "react-icons/md"
+import { z } from "zod"
+import editMemberAction from "@/actions/members/editMemberAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter
+    DialogTrigger
 } from "@/components/ui/dialog"
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
+import FileInput from "@/components/ui/fileInput"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
-import { useState } from "react"
-
-import { useEffect, useCallback } from "react"
-
-import { MdEdit } from "react-icons/md"
-
-import editMemberAction from "@/actions/members/editMemberAction"
-import LoadingRing from "../loadingRing"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { uploadFile } from "@/helpers/supabase/upload"
 import { formDataToString, zodFieldValuesToFormData } from "@/helpers/formData"
-import FileInput from "@/components/ui/fileInput"
+import { uploadFile } from "@/helpers/supabase/upload"
+import LoadingRing from "../loadingRing"
 
 type Member = {
     id: number
@@ -136,7 +128,7 @@ export default function EditMemberButton({
     const onSubmit = async (data: TMemberSchema) => {
         setIsLoading(true)
 
-        let newPicturePath: string | undefined = undefined
+        let newPicturePath: string | undefined
 
         // If a picture is provided, upload it and get the path
         if (data.picture) {

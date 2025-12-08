@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import {
     Card,
     CardContent,
@@ -6,10 +7,9 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import TabSwitcher from "./tabSwitcher"
-import QuestionList from "./questions/questionList"
 import ApplicationList from "./candidatures-tutorat/applicationList"
-import { Suspense } from "react"
+import QuestionList from "./questions/questionList"
+import TabSwitcher from "./tabSwitcher"
 
 export default function EspaceBougeTaPrison() {
     return (

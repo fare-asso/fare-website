@@ -1,16 +1,10 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { dateToString } from "@/helpers/date"
-import StatusPin from "@/components/ui/statusPin"
-
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger
-} from "@/components/ui/tooltip"
-
+import type { ColumnDef } from "@tanstack/react-table"
+import type { ReactElement } from "react"
+import { MdVisibility, MdVisibilityOff } from "react-icons/md"
+import deleteEventAction from "@/actions/events/deleteEventAction"
+import EditEventButtonClient from "@/components/dashboard/event/editEventButton"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -22,14 +16,15 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
-
-import { ReactElement } from "react"
 import { Button } from "@/components/ui/button"
-
-import { MdVisibility, MdVisibilityOff } from "react-icons/md"
-
-import deleteEventAction from "@/actions/events/deleteEventAction"
-import EditEventButtonClient from "@/components/dashboard/event/editEventButton"
+import StatusPin from "@/components/ui/statusPin"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
+} from "@/components/ui/tooltip"
+import { dateToString } from "@/helpers/date"
 
 function processLocationObject(value: string): string {
     try {

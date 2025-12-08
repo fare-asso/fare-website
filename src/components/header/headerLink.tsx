@@ -1,10 +1,10 @@
 "use client"
 
-import Link from "next/link"
-import { MouseEvent, MouseEventHandler, RefObject } from "react"
-import { usePathname } from "next/navigation"
-import { Link as L } from "./headerLinks"
 import clsx from "clsx"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { type MouseEvent, MouseEventHandler, type RefObject } from "react"
+import type { Link as L } from "./headerLinks"
 
 export default function HeaderLink({
     title,

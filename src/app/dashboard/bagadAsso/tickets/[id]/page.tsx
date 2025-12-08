@@ -1,11 +1,11 @@
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import Link from "next/link"
 import {
     computeTotalDeposit,
     joinTicketAndEquipment
 } from "@/helpers/bagadAsso"
 import prisma from "@/helpers/db"
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
-import Link from "next/link"
 
 export default async function Page({
     params
@@ -48,7 +48,7 @@ export default async function Page({
             >
                 &lsaquo; Retour aux tickets
             </Link>
-            <h1 className="mt-4 text-2xl font-semibold">
+            <h1 className="mt-4 font-semibold text-2xl">
                 🗒️Ticket{" "}
                 <span className="font-mono opacity-80">#{ticket.id}</span>
             </h1>
@@ -137,7 +137,7 @@ export default async function Page({
 
                 {/* Right Part (Bottom mobile) */}
                 <div className="h-full w-full p-4">
-                    <h2 className="text-xl font-bold">🪩Matériels demandés:</h2>
+                    <h2 className="font-bold text-xl">🪩Matériels demandés:</h2>
                     {/* Equipments List */}
                     <div className="flex flex-col px-2 py-1">
                         {allEquipments.map((equipment) => (
