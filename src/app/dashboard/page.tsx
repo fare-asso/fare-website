@@ -1,31 +1,31 @@
-import prisma from "@/helpers/db";
-import { createClient } from "@/helpers/supabase/server";
-import StorageChart from "@/app/dashboard/components/storageChart/storageChart";
-import DbSizeChart from "@/app/dashboard/components/dbSizeChart/dbSizeChart";
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
+import StorageChart from "@/app/dashboard/components/storageChart/storageChart"
+import DbSizeChart from "@/app/dashboard/components/dbSizeChart/dbSizeChart"
 
 export default async function Dashboard() {
-    const supabase = await createClient();
-    const { error, data } = await supabase.auth.getUser();
+    const supabase = await createClient()
+    const { error, data } = await supabase.auth.getUser()
 
     if (error || !data.user) {
         return (
             <div className="p-4">
                 Erreur lors de la récupération de l'utilisateur
             </div>
-        );
+        )
     }
 
     const user = await prisma.user.findFirst({
         where: { id: data.user.id },
-        select: { name: true },
-    });
+        select: { name: true }
+    })
 
     if (!user) {
         return (
             <div className="p-4">
                 Erreur lors de la récupération de l'utilisateur
             </div>
-        );
+        )
     }
 
     return (
@@ -36,5 +36,5 @@ export default async function Dashboard() {
                 <DbSizeChart />
             </div>
         </div>
-    );
+    )
 }

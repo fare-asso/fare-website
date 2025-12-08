@@ -1,5 +1,5 @@
-import AdhesionDescription from "@/components/public/adhesion/adhesionDescription";
-import AdhesionForm from "@/components/public/adhesion/form";
+import AdhesionDescription from "@/components/public/adhesion/adhesionDescription"
+import AdhesionForm from "@/components/public/adhesion/form"
 
 export default async function Adhesion() {
     return (
@@ -10,5 +10,5 @@ export default async function Adhesion() {
             <AdhesionDescription />
             <AdhesionForm />
         </div>
-    );
+    )
 }

@@ -1,45 +1,45 @@
-import { createClient } from "@/helpers/supabase/server";
-import { Association } from "@prisma/client";
+import { createClient } from "@/helpers/supabase/server"
+import { Association } from "@prisma/client"
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/image"
+import Link from "next/link"
 
-import { MdLocationPin } from "react-icons/md";
+import { MdLocationPin } from "react-icons/md"
 
 interface JsonLocation {
-    displayName: string;
-    coordinates: Coordinates;
+    displayName: string
+    coordinates: Coordinates
 }
 
 interface Coordinates {
-    lat: string;
-    lon: string;
+    lat: string
+    lon: string
 }
 
 function processLocationData(value: string): {
-    json?: JsonLocation;
-    string?: string;
+    json?: JsonLocation
+    string?: string
 } {
     try {
-        const json = JSON.parse(value);
+        const json = JSON.parse(value)
         return {
-            json: json,
-        };
+            json: json
+        }
     } catch {
         return {
-            string: value,
-        };
+            string: value
+        }
     }
 }
 
 export default async function AssociationCard({
-    association,
+    association
 }: {
-    association: Association;
+    association: Association
 }) {
-    const supabase = await createClient();
+    const supabase = await createClient()
 
-    const processedLocationData = processLocationData(association.location);
+    const processedLocationData = processLocationData(association.location)
 
     return (
         <Link
@@ -68,5 +68,5 @@ export default async function AssociationCard({
                 </div>
             </div>
         </Link>
-    );
+    )
 }

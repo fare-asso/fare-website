@@ -1,18 +1,18 @@
-import { createClient } from "@/helpers/supabase/server";
+import { createClient } from "@/helpers/supabase/server"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { DbSizeChartClient } from "./dbSizeChartClient";
+    CardTitle
+} from "@/components/ui/card"
+import { DbSizeChartClient } from "./dbSizeChartClient"
 
 export default async function DbSizeChart() {
-    const supabase = await createClient();
+    const supabase = await createClient()
 
-    const dbSize: number = (await supabase.rpc("total_database_size")).data;
+    const dbSize: number = (await supabase.rpc("total_database_size")).data
 
     if (isNaN(dbSize)) {
         return (
@@ -25,11 +25,11 @@ export default async function DbSizeChart() {
                     données
                 </CardContent>
             </Card>
-        );
+        )
     }
 
-    const dbSizeInMb = dbSize / 1024 / 1024 / 1024; // Convert to Mb
-    const maxDbSizeInGb = 0.5; // 0.5 Gb
+    const dbSizeInMb = dbSize / 1024 / 1024 / 1024 // Convert to Mb
+    const maxDbSizeInGb = 0.5 // 0.5 Gb
 
     return (
         <Card>
@@ -51,5 +51,5 @@ export default async function DbSizeChart() {
                 </div>
             </CardFooter> */}
         </Card>
-    );
+    )
 }

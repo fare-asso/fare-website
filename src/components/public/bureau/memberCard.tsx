@@ -1,15 +1,15 @@
-import { Member } from "@prisma/client";
-import Image from "next/image";
-import { StorageUtils } from "@/helpers/supabase/storageUtils";
-import Link from "next/link";
-import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6";
-import { MdAlternateEmail, MdEmail } from "react-icons/md";
+import { Member } from "@prisma/client"
+import Image from "next/image"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
+import Link from "next/link"
+import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6"
+import { MdAlternateEmail, MdEmail } from "react-icons/md"
 
 export default function MemberCard({ member }: { member: Member }) {
-    const su = new StorageUtils();
+    const su = new StorageUtils()
     const pictureUrl = su
         .from("member-pictures")
-        .getPublicUrl(member.picturePath);
+        .getPublicUrl(member.picturePath)
 
     return (
         <div className="flex flex-col items-center rounded-lg p-4">
@@ -33,22 +33,22 @@ export default function MemberCard({ member }: { member: Member }) {
             </div>
 
             <div className="mt-1 flex flex-row items-center justify-center space-x-2">
-                {member.facebookUrl ?
+                {member.facebookUrl ? (
                     <Link href={member.facebookUrl}>
                         <FaFacebook size={20} />
                     </Link>
-                :   null}
-                {member.instagramUrl ?
+                ) : null}
+                {member.instagramUrl ? (
                     <Link href={member.instagramUrl}>
                         <FaInstagram size={20} />
                     </Link>
-                :   null}
-                {member.twitterUrl ?
+                ) : null}
+                {member.twitterUrl ? (
                     <Link href={member.twitterUrl}>
                         <FaXTwitter size={20} />
                     </Link>
-                :   null}
+                ) : null}
             </div>
         </div>
-    );
+    )
 }

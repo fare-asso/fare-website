@@ -1,14 +1,14 @@
-import AdhesionList from "@/components/dashboard/adhesions/adhesionList";
+import AdhesionList from "@/components/dashboard/adhesions/adhesionList"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
+import { Suspense } from "react"
 
 export default async function Adhesions() {
     return (
@@ -26,5 +26,5 @@ export default async function Adhesions() {
             </CardContent>
             <CardFooter></CardFooter>
         </Card>
-    );
+    )
 }

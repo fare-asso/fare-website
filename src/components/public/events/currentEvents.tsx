@@ -1,57 +1,57 @@
-import { Event } from "@prisma/client";
-import EventCard from "./eventCard";
+import { Event } from "@prisma/client"
+import EventCard from "./eventCard"
 
-import { createClient } from "@/helpers/supabase/server";
-import prisma from "@/helpers/db";
+import { createClient } from "@/helpers/supabase/server"
+import prisma from "@/helpers/db"
 
 export default async function CurrentEvents() {
-    const supabase = await createClient();
+    const supabase = await createClient()
 
-    const now = new Date();
+    const now = new Date()
 
     const events = await prisma.event.findMany({
         where: {
             AND: {
                 startTime: {
-                    lte: now,
+                    lte: now
                 },
                 endTime: {
-                    gte: now,
-                },
-            },
+                    gte: now
+                }
+            }
         },
         include: {
             category: {
                 select: {
-                    name: true,
-                },
-            },
-        },
-    });
+                    name: true
+                }
+            }
+        }
+    })
 
     if (events.length == 0) {
-        return <></>;
+        return <></>
     }
 
     return (
         <div className="mb-8 flex w-full flex-col">
             <span className="mb-4 text-2xl font-semibold">En ce moment</span>
             <div className="flex h-auto w-full flex-col items-center">
-                {events.length > 0 ?
-                    events.map((event) => (
-                        <EventCard
-                            key={event.id}
-                            event={event}
-                            archive={false}
-                            imageUrl={
-                                supabase.storage
-                                    .from("EventPictures")
-                                    .getPublicUrl(event.image).data.publicUrl
-                            }
-                        />
-                    ))
-                :   null}
+                {events.length > 0
+                    ? events.map((event) => (
+                          <EventCard
+                              key={event.id}
+                              event={event}
+                              archive={false}
+                              imageUrl={
+                                  supabase.storage
+                                      .from("EventPictures")
+                                      .getPublicUrl(event.image).data.publicUrl
+                              }
+                          />
+                      ))
+                    : null}
             </div>
         </div>
-    );
+    )
 }

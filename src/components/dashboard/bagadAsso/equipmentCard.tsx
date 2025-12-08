@@ -1,25 +1,25 @@
-import { Button } from "@/components/ui/button";
-import { createClient } from "@/helpers/supabase/server";
-import { BagadAssoEquipment } from "@prisma/client";
-import Image from "next/image";
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/helpers/supabase/server"
+import { BagadAssoEquipment } from "@prisma/client"
+import Image from "next/image"
 
-import { MdOutlineHideImage } from "react-icons/md";
-import { MdDelete } from "react-icons/md";
-import { MdModeEditOutline } from "react-icons/md";
-import DeleteEquipmentButton from "./deleteEquipmentButton";
+import { MdOutlineHideImage } from "react-icons/md"
+import { MdDelete } from "react-icons/md"
+import { MdModeEditOutline } from "react-icons/md"
+import DeleteEquipmentButton from "./deleteEquipmentButton"
 
 export default async function EquipmentCard({
-    equipment,
+    equipment
 }: {
-    equipment: BagadAssoEquipment;
+    equipment: BagadAssoEquipment
 }) {
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     return (
         <div className="bg-card text-card-foreground flex flex-col space-y-1 rounded-lg border p-4 shadow-xs">
             {/* Image */}
             <div className="flex aspect-square h-auto w-full flex-col items-center justify-center rounded-md bg-gray-100 object-contain">
-                {equipment.imagePath ?
+                {equipment.imagePath ? (
                     <Image
                         width={300}
                         height={300}
@@ -32,13 +32,14 @@ export default async function EquipmentCard({
                                 .publicUrl
                         }
                     />
-                :   <>
+                ) : (
+                    <>
                         <MdOutlineHideImage size={40} />{" "}
                         <span className="mt-1 overflow-hidden text-center text-xs">
                             Pas d'image trouvée
                         </span>
                     </>
-                }
+                )}
             </div>
 
             {/* Equipment name */}
@@ -56,5 +57,5 @@ export default async function EquipmentCard({
                 <DeleteEquipmentButton equipmentId={equipment.id} />
             </div>
         </div>
-    );
+    )
 }

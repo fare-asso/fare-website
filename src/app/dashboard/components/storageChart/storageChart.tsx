@@ -1,20 +1,20 @@
-import { createClient } from "@/helpers/supabase/server";
+import { createClient } from "@/helpers/supabase/server"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { StorageChartClient } from "./storageChartClient";
+    CardTitle
+} from "@/components/ui/card"
+import { StorageChartClient } from "./storageChartClient"
 
 export default async function StorageChart() {
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     const storageSize: number = (
         await supabase.rpc("total_storage_used_all_buckets")
-    ).data;
+    ).data
 
     if (isNaN(storageSize)) {
         return (
@@ -26,11 +26,11 @@ export default async function StorageChart() {
                     Erreur lors de la récupération de l'espace de stockage
                 </CardContent>
             </Card>
-        );
+        )
     }
 
-    const storageUsedInGb = storageSize / 1024 / 1024 / 1024; // Convert to Gb
-    const maxStorageSizeInGb = 1; // 1 Go in Mb
+    const storageUsedInGb = storageSize / 1024 / 1024 / 1024 // Convert to Gb
+    const maxStorageSizeInGb = 1 // 1 Go in Mb
 
     return (
         <Card>
@@ -55,5 +55,5 @@ export default async function StorageChart() {
                 </div>
             </CardFooter> */}
         </Card>
-    );
+    )
 }

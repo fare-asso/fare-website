@@ -1,23 +1,23 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import SignOutAction from "@/actions/auth/signOutAction";
-import { Button } from "../ui/button";
-import { MdLogout } from "react-icons/md";
+import { useState } from "react"
+import SignOutAction from "@/actions/auth/signOutAction"
+import { Button } from "../ui/button"
+import { MdLogout } from "react-icons/md"
 
 export default function SignOutButton() {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false)
 
     const handleSignOut = async () => {
-        setLoading(true);
+        setLoading(true)
         try {
-            await SignOutAction();
+            await SignOutAction()
         } catch (error) {
-            console.error("Error during sign out:", error);
+            console.error("Error during sign out:", error)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     return (
         <Button
@@ -30,5 +30,5 @@ export default function SignOutButton() {
                 {loading ? "Déconnexion..." : "Se déconnecter"}
             </div>
         </Button>
-    );
+    )
 }

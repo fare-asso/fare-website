@@ -1,14 +1,14 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { Label, Pie, PieChart } from "recharts";
+import * as React from "react"
+import { Label, Pie, PieChart } from "recharts"
 
 import {
     ChartConfig,
     ChartContainer,
     ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
+    ChartTooltipContent
+} from "@/components/ui/chart"
 
 /**
  * Chart component for displaying database size in a pie chart format.
@@ -19,26 +19,26 @@ import {
  */
 export function DbSizeChartClient({
     size,
-    total,
+    total
 }: {
-    size: number;
-    total: number;
+    size: number
+    total: number
 }): React.ReactElement {
     const chartData = [
         { name: "Utilisé", value: size, fill: "#be8345" },
-        { name: "Libre", value: total - size, fill: "#f3f2e6" },
-    ];
+        { name: "Libre", value: total - size, fill: "#f3f2e6" }
+    ]
 
     const chartConfig = {
         used: {
             label: "Used",
-            color: "hsl(var(--chart-1))",
+            color: "hsl(var(--chart-1))"
         },
         free: {
             label: "Free",
-            color: "hsl(var(--chart-2))",
-        },
-    } satisfies ChartConfig;
+            color: "hsl(var(--chart-2))"
+        }
+    } satisfies ChartConfig
 
     return (
         <ChartContainer
@@ -83,12 +83,12 @@ export function DbSizeChartClient({
                                             utilisés
                                         </tspan>
                                     </text>
-                                );
+                                )
                             }
                         }}
                     />
                 </Pie>
             </PieChart>
         </ChartContainer>
-    );
+    )
 }

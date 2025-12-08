@@ -1,39 +1,39 @@
-"use client";
+"use client"
 
-import { startTransition, useActionState, useEffect, useState } from "react";
-import LoadingRing from "@/components/dashboard/loadingRing";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import Captcha from "@/components/captcha/recaptcha";
-import bugReportAction from "@/actions/bug-report/bugReportAction";
+import { startTransition, useActionState, useEffect, useState } from "react"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import Captcha from "@/components/captcha/recaptcha"
+import bugReportAction from "@/actions/bug-report/bugReportAction"
 
 export default function BugReportForm() {
     const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
-    >(bugReportAction, undefined);
-    const [captchaValue, setCaptchaValue] = useState<string | null>(null);
-    const [charactersLength, setCharactersLength] = useState<number>(0);
+    >(bugReportAction, undefined)
+    const [captchaValue, setCaptchaValue] = useState<string | null>(null)
+    const [charactersLength, setCharactersLength] = useState<number>(0)
 
-    const maxCharactersLength: number = 500;
+    const maxCharactersLength: number = 500
 
     // Gestion de la longueure de la description du bug
     const handleDescriptionChange = (
-        event: React.ChangeEvent<HTMLTextAreaElement>,
+        event: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
-        event.preventDefault();
-        setCharactersLength(event.target.textLength);
-    };
+        event.preventDefault()
+        setCharactersLength(event.target.textLength)
+    }
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+        event.preventDefault()
 
-        const formData = new FormData(event.currentTarget);
+        const formData = new FormData(event.currentTarget)
 
         startTransition(() => {
-            formAction(formData);
-        });
-    };
+            formAction(formData)
+        })
+    }
 
     return (
         <form
@@ -139,8 +139,9 @@ export default function BugReportForm() {
                     <span
                         style={{
                             color:
-                                charactersLength == maxCharactersLength ? "red"
-                                :   "black",
+                                charactersLength == maxCharactersLength
+                                    ? "red"
+                                    : "black"
                         }}
                         className="absolute bottom-0 right-0 m-2 mr-4 select-none rounded-lg bg-white p-1 text-sm opacity-80"
                     >
@@ -154,14 +155,14 @@ export default function BugReportForm() {
                 <Captcha onChange={setCaptchaValue} />
             </div>
 
-            {formState?.error ?
+            {formState?.error ? (
                 <Alert variant="destructive">
                     <AlertTitle>Erreur</AlertTitle>
                     <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
-            :   null}
+            ) : null}
 
-            {formState?.success ?
+            {formState?.success ? (
                 <Alert
                     variant="destructive"
                     className="mt-4 border-green-600 text-green-600"
@@ -172,7 +173,7 @@ export default function BugReportForm() {
                         }
                     </AlertDescription>
                 </Alert>
-            :   null}
+            ) : null}
 
             <button
                 type="submit"
@@ -180,11 +181,8 @@ export default function BugReportForm() {
                 disabled={pending}
             >
                 {" "}
-                {pending ?
-                    <LoadingRing />
-                :   null}{" "}
-                Envoyer le rapport de bug
+                {pending ? <LoadingRing /> : null} Envoyer le rapport de bug
             </button>
         </form>
-    );
+    )
 }

@@ -1,19 +1,19 @@
-"use client";
+"use client"
 
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { MdAdminPanelSettings } from "react-icons/md";
+import { MdAdminPanelSettings } from "react-icons/md"
 
-import LoginForm from "@/components/dashboard/loginForm";
-import Image from "next/image";
+import LoginForm from "@/components/dashboard/loginForm"
+import Image from "next/image"
 
-import FARELogo from "/public/logo_fare.png";
+import FARELogo from "/public/logo_fare.png"
 
 export default function LoginPage() {
     return (
@@ -36,5 +36,5 @@ export default function LoginPage() {
                 <LoginForm></LoginForm>
             </CardContent>
         </Card>
-    );
+    )
 }

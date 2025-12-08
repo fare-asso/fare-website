@@ -11,5 +11,5 @@ export default async function DiscordWidget() {
                 title="Widget Discord"
             />
         </div>
-    );
+    )
 }

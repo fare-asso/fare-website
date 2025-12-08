@@ -1,12 +1,12 @@
-import ContactForm from "@/components/public/contact/contactForm";
-import Link from "next/link";
+import ContactForm from "@/components/public/contact/contactForm"
+import Link from "next/link"
 import {
     FaArrowLeft,
     FaBluesky,
     FaFacebook,
-    FaInstagram,
-} from "react-icons/fa6";
-import { MdOutlineEmail } from "react-icons/md";
+    FaInstagram
+} from "react-icons/fa6"
+import { MdOutlineEmail } from "react-icons/md"
 
 export default function Contact() {
     return (
@@ -108,5 +108,5 @@ export default function Contact() {
 
             <ContactForm />
         </div>
-    );
+    )
 }

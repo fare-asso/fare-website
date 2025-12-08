@@ -11,5 +11,5 @@ export default function NotFoundPage() {
                 {"C'est moins que le loyer moyen d'un studio T1 à Rennes"}
             </span>
         </div>
-    );
+    )
 }

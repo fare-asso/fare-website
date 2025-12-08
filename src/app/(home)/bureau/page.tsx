@@ -1,18 +1,18 @@
-import MemberList from "@/components/public/bureau/memberList";
-import prisma from "@/helpers/db";
-import { Metadata } from "next";
+import MemberList from "@/components/public/bureau/memberList"
+import prisma from "@/helpers/db"
+import { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Le Bureau | FARE",
-    description: "Page des membres du bureau de la FARE",
-};
+    description: "Page des membres du bureau de la FARE"
+}
 
 export default async function Bureau() {
     const bureau = await prisma.member.findMany({
         orderBy: {
-            position: "desc",
-        },
-    });
+            position: "desc"
+        }
+    })
 
     return (
         <div className="flex w-full flex-col items-center justify-start">
@@ -21,5 +21,5 @@ export default async function Bureau() {
             </h1>
             <MemberList members={bureau} />
         </div>
-    );
+    )
 }

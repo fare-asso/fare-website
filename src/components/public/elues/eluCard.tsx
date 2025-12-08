@@ -1,18 +1,18 @@
-import Image, { StaticImageData } from "next/image";
-import Link from "next/link";
+import Image, { StaticImageData } from "next/image"
+import Link from "next/link"
 
 export type Elu = {
-    firstName: string;
-    lastName: string;
-    position: string;
-};
+    firstName: string
+    lastName: string
+    position: string
+}
 
 export default function EluCard({
     elu,
-    picture,
+    picture
 }: {
-    elu: Elu;
-    picture: StaticImageData;
+    elu: Elu
+    picture: StaticImageData
 }) {
     return (
         <div className="flex flex-col items-center rounded-lg p-4">
@@ -33,5 +33,5 @@ export default function EluCard({
                 { member.twitterUrl ? <Link href={member.twitterUrl}><FaXTwitter size={20}/></Link> : null}
             </div> */}
         </div>
-    );
+    )
 }

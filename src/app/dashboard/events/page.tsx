@@ -1,5 +1,5 @@
-import CreateEventButton from "@/components/dashboard/event/createEventButton";
-import EventDataTable from "@/components/dashboard/event/eventDataTable";
+import CreateEventButton from "@/components/dashboard/event/createEventButton"
+import EventDataTable from "@/components/dashboard/event/eventDataTable"
 
 import {
     Card,
@@ -7,10 +7,10 @@ import {
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
+import { Suspense } from "react"
 
 export default async function EventsPage() {
     return (
@@ -30,5 +30,5 @@ export default async function EventsPage() {
                 <CreateEventButton />
             </CardFooter>
         </Card>
-    );
+    )
 }

@@ -1,32 +1,32 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
     Tooltip,
     TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { LucideCopy } from "lucide-react";
-import { useState } from "react";
+    TooltipTrigger
+} from "@/components/ui/tooltip"
+import { LucideCopy } from "lucide-react"
+import { useState } from "react"
 
 export default function CopyButton({ value }: { value: string }) {
-    const [clicked, setClicked] = useState(false);
-    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+    const [clicked, setClicked] = useState(false)
+    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
 
     const handleClick = () => {
-        navigator.clipboard.writeText(value);
-        setClicked(true);
+        navigator.clipboard.writeText(value)
+        setClicked(true)
 
         if (timeoutId) {
-            clearTimeout(timeoutId);
+            clearTimeout(timeoutId)
         }
 
         const id = setTimeout(() => {
-            setClicked(false);
-        }, 1500);
+            setClicked(false)
+        }, 1500)
 
-        setTimeoutId(id);
-    };
+        setTimeoutId(id)
+    }
 
     return (
         <Tooltip>
@@ -41,5 +41,5 @@ export default function CopyButton({ value }: { value: string }) {
             </TooltipTrigger>
             <TooltipContent>Copier l'ID</TooltipContent>
         </Tooltip>
-    );
+    )
 }

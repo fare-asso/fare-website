@@ -10,5 +10,5 @@ export default function UnauthorizedPage() {
                 une erreur.
             </p>
         </div>
-    );
+    )
 }

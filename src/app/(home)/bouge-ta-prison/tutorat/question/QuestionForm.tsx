@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Alert } from "@/components/ui/alert";
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Alert } from "@/components/ui/alert"
 
 import {
     Form,
@@ -12,30 +12,30 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-    FormControl,
-} from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
+    FormControl
+} from "@/components/ui/form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
     BTPTutorQuestionSchema,
-    BTPTutorQuestion,
-} from "@/schemas/bougeTaPrison";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+    BTPTutorQuestion
+} from "@/schemas/bougeTaPrison"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import Captcha from "@/components/captcha/recaptcha";
-import LoadingRing from "@/components/dashboard/loadingRing";
-import { Textarea } from "@/components/ui/textarea";
-import submitTutorQuestion from "@/actions/bouge-ta-prison/submitTutorQuestion";
+    SelectValue
+} from "@/components/ui/select"
+import Captcha from "@/components/captcha/recaptcha"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Textarea } from "@/components/ui/textarea"
+import submitTutorQuestion from "@/actions/bouge-ta-prison/submitTutorQuestion"
 
 export default function QuestionForm() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [success, setSuccess] = useState<boolean | undefined>(undefined);
+    const [isLoading, setIsLoading] = useState(false)
+    const [success, setSuccess] = useState<boolean | undefined>(undefined)
 
     const form = useForm<BTPTutorQuestion>({
         resolver: zodResolver(BTPTutorQuestionSchema),
@@ -45,25 +45,25 @@ export default function QuestionForm() {
             email: "",
             major: "",
             studyYear: "L3",
-            message: "",
-        },
-    });
+            message: ""
+        }
+    })
 
     const onSubmit = async (data: BTPTutorQuestion) => {
-        setIsLoading(true);
-        const res = await submitTutorQuestion(data);
+        setIsLoading(true)
+        const res = await submitTutorQuestion(data)
 
         if (!res.success) {
             res.errors?.forEach((error) => {
                 form.setError(Object.keys(error)[0] as keyof BTPTutorQuestion, {
-                    message: Object.values(error)[0],
-                });
-            });
+                    message: Object.values(error)[0]
+                })
+            })
         }
-        setSuccess(res.success);
-        form.reset();
-        setIsLoading(false);
-    };
+        setSuccess(res.success)
+        form.reset()
+        setIsLoading(false)
+    }
 
     return (
         <Card>
@@ -233,15 +233,13 @@ export default function QuestionForm() {
                             variant="default"
                             disabled={isLoading}
                         >
-                            {isLoading ?
-                                <LoadingRing />
-                            :   null}
+                            {isLoading ? <LoadingRing /> : null}
                             Envoyer
                         </Button>
                     </form>
                 </Form>
 
-                {success === true ?
+                {success === true ? (
                     <Alert
                         variant="default"
                         className="mt-4 flex flex-row items-center border-green-500 bg-green-100 text-green-900"
@@ -251,8 +249,8 @@ export default function QuestionForm() {
                             intérêt!
                         </span>
                     </Alert>
-                :   null}
-                {success === false ?
+                ) : null}
+                {success === false ? (
                     <Alert
                         variant="destructive"
                         className="mt-4 flex flex-row items-center"
@@ -262,8 +260,8 @@ export default function QuestionForm() {
                             question. Veuillez réessayer.
                         </span>
                     </Alert>
-                :   null}
+                ) : null}
             </CardContent>
         </Card>
-    );
+    )
 }

@@ -1,22 +1,22 @@
-import prisma from "@/helpers/db";
-import { format } from "date-fns";
-import Link from "next/link";
+import prisma from "@/helpers/db"
+import { format } from "date-fns"
+import Link from "next/link"
 
 export default async function TutorApplicationPage({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }) {
-    const id = (await params).id;
+    const id = (await params).id
 
     const tutorQuestion = await prisma.bTPTutorQuestion.findUnique({
         where: {
-            id: Number(id),
-        },
-    });
+            id: Number(id)
+        }
+    })
 
     if (!tutorQuestion) {
-        return <span>Cette question n'existe pas ou plus... 😔</span>;
+        return <span>Cette question n'existe pas ou plus... 😔</span>
     }
 
     return (
@@ -82,5 +82,5 @@ export default async function TutorApplicationPage({
                 </div>
             </div>
         </div>
-    );
+    )
 }

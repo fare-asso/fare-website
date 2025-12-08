@@ -1,11 +1,11 @@
-import BagadAssoForm from "@/components/public/bagadAsso/form";
-import prisma from "@/helpers/db";
-import Image from "next/image";
+import BagadAssoForm from "@/components/public/bagadAsso/form"
+import prisma from "@/helpers/db"
+import Image from "next/image"
 
-import logoBagadAsso from "/public/logoBagadAsso.png";
+import logoBagadAsso from "/public/logoBagadAsso.png"
 
 export default async function BagadAsso() {
-    const equipmentList = await prisma.bagadAssoEquipment.findMany();
+    const equipmentList = await prisma.bagadAssoEquipment.findMany()
 
     return (
         <div className="flex w-full flex-col items-center justify-start">
@@ -102,5 +102,5 @@ export default async function BagadAsso() {
             {/* Formulaire de demande de matériel */}
             <BagadAssoForm equipmentList={equipmentList} />
         </div>
-    );
+    )
 }

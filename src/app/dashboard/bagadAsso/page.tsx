@@ -1,16 +1,16 @@
-import Equipments from "@/components/dashboard/bagadAsso/equipments";
-import Tickets from "@/components/dashboard/bagadAsso/tickets";
+import Equipments from "@/components/dashboard/bagadAsso/equipments"
+import Tickets from "@/components/dashboard/bagadAsso/tickets"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import TabSwitcher from "./tabSwitcher";
-import { Suspense } from "react";
+import TabSwitcher from "./tabSwitcher"
+import { Suspense } from "react"
 
 export default function BagadAsso() {
     return (
@@ -36,5 +36,5 @@ export default function BagadAsso() {
             </CardContent>
             <CardFooter className="p-0"></CardFooter>
         </Card>
-    );
+    )
 }

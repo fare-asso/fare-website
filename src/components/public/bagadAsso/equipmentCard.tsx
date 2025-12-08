@@ -1,23 +1,23 @@
-import NumberInput from "@/components/ui/input/numberInput";
-import { createClient } from "@/helpers/supabase/client";
-import { BagadAssoEquipment } from "@prisma/client";
-import Image from "next/image";
+import NumberInput from "@/components/ui/input/numberInput"
+import { createClient } from "@/helpers/supabase/client"
+import { BagadAssoEquipment } from "@prisma/client"
+import Image from "next/image"
 
 type EquipmentCardProps = {
-    equipment: BagadAssoEquipment;
-    onQuantityChange: (id: number, quantity: number) => void;
-};
+    equipment: BagadAssoEquipment
+    onQuantityChange: (id: number, quantity: number) => void
+}
 
 export default function EquipmentCard({
     equipment,
-    onQuantityChange,
+    onQuantityChange
 }: EquipmentCardProps) {
-    const supabase = createClient();
+    const supabase = createClient()
 
     return (
         <div className="border-grey-300 flex h-full flex-col rounded-lg border p-4">
             <div className="mb-4 w-full">
-                {equipment.imagePath ?
+                {equipment.imagePath ? (
                     <Image
                         width={300}
                         height={300}
@@ -30,10 +30,11 @@ export default function EquipmentCard({
                         alt={`${equipment.name} picture`}
                         className="aspect-square"
                     />
-                :   <div className="flex aspect-square h-min w-full items-center justify-center bg-gray-200">
+                ) : (
+                    <div className="flex aspect-square h-min w-full items-center justify-center bg-gray-200">
                         No Image
                     </div>
-                }
+                )}
             </div>
             <h2 className="mb-2 text-lg font-semibold">{equipment.name}</h2>
             <p className="mb-1 text-sm text-gray-600">{`Quantité disponible: ${equipment.quantity}`}</p>
@@ -48,5 +49,5 @@ export default function EquipmentCard({
                 />
             </div>
         </div>
-    );
+    )
 }

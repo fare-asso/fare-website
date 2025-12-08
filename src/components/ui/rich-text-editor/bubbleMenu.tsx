@@ -1,5 +1,5 @@
-import { Editor } from "@tiptap/react";
-import { BubbleMenu } from "@tiptap/react/menus";
+import { Editor } from "@tiptap/react"
+import { BubbleMenu } from "@tiptap/react/menus"
 import {
     MdFormatBold,
     MdFormatItalic,
@@ -8,19 +8,19 @@ import {
     MdFormatStrikethrough,
     MdFormatUnderlined,
     MdImage,
-    MdLink,
-} from "react-icons/md";
-import BubbleButton from "./bubbleButton";
-import { LucideHeading1, LucideHeading2 } from "lucide-react";
-import ColorPicker from "./colorPicker";
-import TextAlignDropdown from "./alignmentDropdown";
+    MdLink
+} from "react-icons/md"
+import BubbleButton from "./bubbleButton"
+import { LucideHeading1, LucideHeading2 } from "lucide-react"
+import ColorPicker from "./colorPicker"
+import TextAlignDropdown from "./alignmentDropdown"
 
 export default function EditorBubbleMenu({
-    editor,
+    editor
 }: {
-    editor: Editor | null;
+    editor: Editor | null
 }) {
-    if (!editor) return <></>;
+    if (!editor) return <></>
 
     return (
         <BubbleMenu editor={editor} options={{ placement: "bottom-start" }}>
@@ -30,11 +30,7 @@ export default function EditorBubbleMenu({
                     nodeType="heading"
                     level={1}
                     onClick={() => {
-                        editor
-                            .chain()
-                            .focus()
-                            .toggleHeading({ level: 1 })
-                            .run();
+                        editor.chain().focus().toggleHeading({ level: 1 }).run()
                     }}
                     icon={<LucideHeading1 size={20} />}
                 />
@@ -43,11 +39,7 @@ export default function EditorBubbleMenu({
                     nodeType="heading"
                     level={2}
                     onClick={() => {
-                        editor
-                            .chain()
-                            .focus()
-                            .toggleHeading({ level: 2 })
-                            .run();
+                        editor.chain().focus().toggleHeading({ level: 2 }).run()
                     }}
                     icon={<LucideHeading2 size={20} />}
                 />
@@ -101,15 +93,15 @@ export default function EditorBubbleMenu({
                     nodeType="link"
                     onClick={() => {
                         if (editor.isActive("link")) {
-                            editor.chain().focus().unsetLink().run();
+                            editor.chain().focus().unsetLink().run()
                         } else {
-                            const url = window.prompt("URL");
-                            if (!url) return;
+                            const url = window.prompt("URL")
+                            if (!url) return
                             editor
                                 .chain()
                                 .focus()
                                 .setLink({ href: url, target: "_blank" })
-                                .run();
+                                .run()
                         }
                     }}
                     icon={<MdLink size={20} />}
@@ -120,9 +112,9 @@ export default function EditorBubbleMenu({
                     editor={editor}
                     nodeType="image"
                     onClick={() => {
-                        const url = window.prompt("URL");
-                        if (!url) return;
-                        editor.chain().focus().setImage({ src: url }).run();
+                        const url = window.prompt("URL")
+                        if (!url) return
+                        editor.chain().focus().setImage({ src: url }).run()
                     }}
                     icon={<MdImage size={20} />}
                 />
@@ -154,5 +146,5 @@ export default function EditorBubbleMenu({
                 />
             </div>
         </BubbleMenu>
-    );
+    )
 }

@@ -1,23 +1,23 @@
-"use client";
+"use client"
 
-import { processAdhesionForm } from "@/actions/adhesion/processAdhesionFormAction";
-import LoadingRing from "@/components/dashboard/loadingRing";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import NumberInput from "@/components/ui/input/numberInput";
-import React, { useActionState, useEffect, useState } from "react";
-import { MdAdminPanelSettings, MdDelete } from "react-icons/md";
+import { processAdhesionForm } from "@/actions/adhesion/processAdhesionFormAction"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import NumberInput from "@/components/ui/input/numberInput"
+import React, { useActionState, useEffect, useState } from "react"
+import { MdAdminPanelSettings, MdDelete } from "react-icons/md"
 
 interface BoardMember {
-    id: string;
-    poste: string;
-    nom: string;
-    prenom: string;
-    filiere: string;
-    annee: string;
-    telephone: string;
-    email: string;
-    adresse: string;
-    isAdmin: boolean;
+    id: string
+    poste: string
+    nom: string
+    prenom: string
+    filiere: string
+    annee: string
+    telephone: string
+    email: string
+    adresse: string
+    isAdmin: boolean
 }
 
 // interface Elu {
@@ -34,17 +34,17 @@ interface BoardMember {
 // }
 
 interface FormState {
-    error?: string;
-    success?: boolean;
+    error?: string
+    success?: boolean
 }
 
 export default function AdhesionForm() {
     const [formState, formAction] = useActionState<FormState, FormData>(
         processAdhesionForm,
-        {},
-    );
+        {}
+    )
 
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [boardMembers, setBoardMembers] = useState<BoardMember[]>([
         {
@@ -57,9 +57,9 @@ export default function AdhesionForm() {
             telephone: "",
             email: "",
             adresse: "",
-            isAdmin: false,
-        },
-    ]);
+            isAdmin: false
+        }
+    ])
 
     const addBoardMember = () => {
         setBoardMembers([
@@ -74,50 +74,50 @@ export default function AdhesionForm() {
                 telephone: "",
                 email: "",
                 adresse: "",
-                isAdmin: false,
-            },
-        ]);
-    };
+                isAdmin: false
+            }
+        ])
+    }
 
     const deleteBoardMember = (id: string, event: React.MouseEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
+        event.preventDefault()
+        event.stopPropagation()
 
         // Empêcher la suppression si c'est le dernier membre
         if (boardMembers.length <= 1) {
-            alert("Vous devez avoir au moins un membre dans le bureau");
-            return;
+            alert("Vous devez avoir au moins un membre dans le bureau")
+            return
         }
 
         boardMembers.forEach((member) => {
             if (member.id === id && member.isAdmin) {
-                setAdminCount((prev) => prev - 1);
+                setAdminCount((prev) => prev - 1)
             }
-        });
+        })
 
         const newBoardMembers = boardMembers.filter(
-            (member) => member.id !== id,
-        );
+            (member) => member.id !== id
+        )
 
-        setBoardMembers(newBoardMembers);
-    };
+        setBoardMembers(newBoardMembers)
+    }
 
-    const [adminCount, setAdminCount] = useState(0);
+    const [adminCount, setAdminCount] = useState(0)
 
     // Gestion de l'indicateur de chargement
     useEffect(() => {
         if (formState?.success || formState?.error) {
-            setIsLoading(false);
+            setIsLoading(false)
         }
-    }, [formState]);
+    }, [formState])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        setIsLoading(true);
-        formAction(formData);
-    };
+        event.preventDefault()
+        const formData = new FormData(event.currentTarget)
+        setIsLoading(true)
+        formAction(formData)
+    }
 
     // const addElu = (type: keyof typeof elus) => {
     //   setElus({
@@ -526,22 +526,22 @@ export default function AdhesionForm() {
                                 className="mr-2 h-4! w-4!"
                                 checked={member.isAdmin}
                                 onChange={(e) => {
-                                    const newBoardMembers = [...boardMembers];
-                                    const isBecomingAdmin = e.target.checked;
+                                    const newBoardMembers = [...boardMembers]
+                                    const isBecomingAdmin = e.target.checked
 
                                     if (isBecomingAdmin && adminCount >= 2) {
                                         alert(
-                                            "Vous ne pouvez pas avoir plus de 2 administrateurs",
-                                        );
-                                        return;
+                                            "Vous ne pouvez pas avoir plus de 2 administrateurs"
+                                        )
+                                        return
                                     }
 
                                     newBoardMembers[index].isAdmin =
-                                        isBecomingAdmin;
-                                    setBoardMembers(newBoardMembers);
+                                        isBecomingAdmin
+                                    setBoardMembers(newBoardMembers)
                                     setAdminCount((prev) =>
-                                        isBecomingAdmin ? prev + 1 : prev - 1,
-                                    );
+                                        isBecomingAdmin ? prev + 1 : prev - 1
+                                    )
                                 }}
                             />
                             <MdAdminPanelSettings size={25} />
@@ -647,14 +647,14 @@ export default function AdhesionForm() {
         </section>
       ))} */}
 
-            {formState?.error ?
+            {formState?.error ? (
                 <Alert variant="destructive">
                     <AlertTitle>Erreur</AlertTitle>
                     <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
-                : null}
+            ) : null}
 
-            {formState?.success ?
+            {formState?.success ? (
                 <Alert variant="default">
                     <AlertTitle>
                         Votre demande d'adhésion à bien été soumise
@@ -663,7 +663,7 @@ export default function AdhesionForm() {
                         {`Nous reviendrons vers vous par e-mail dans les plus brefs délais pour vous fournir une réponse concernant votre demande.`}
                     </AlertDescription>
                 </Alert>
-                : null}
+            ) : null}
 
             <div className="flex w-full flex-col items-center">
                 <button
@@ -671,12 +671,10 @@ export default function AdhesionForm() {
                     className="flex flex-row items-center rounded-lg bg-black px-4 py-2 font-bold text-white transition-all disabled:opacity-75"
                     disabled={isLoading}
                 >
-                    {isLoading ?
-                        <LoadingRing />
-                        : null}{" "}
-                    Envoyer le formulaire d'adhésion
+                    {isLoading ? <LoadingRing /> : null} Envoyer le formulaire
+                    d'adhésion
                 </button>
             </div>
         </form>
-    );
+    )
 }

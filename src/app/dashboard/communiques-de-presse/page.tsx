@@ -1,15 +1,15 @@
-import CDPList from "@/components/dashboard/CDP/CDPList";
-import AddNewCDPButton from "@/components/dashboard/CDP/addCDPButton";
+import CDPList from "@/components/dashboard/CDP/CDPList"
+import AddNewCDPButton from "@/components/dashboard/CDP/addCDPButton"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
+import { Suspense } from "react"
 
 export default async function CommuDePresse() {
     return (
@@ -29,5 +29,5 @@ export default async function CommuDePresse() {
                 <AddNewCDPButton />
             </CardFooter>
         </Card>
-    );
+    )
 }

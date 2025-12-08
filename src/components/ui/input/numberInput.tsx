@@ -1,17 +1,17 @@
-"use client";
-import { clamp } from "@/helpers/math";
-import { ChangeEvent, useState } from "react";
+"use client"
+import { clamp } from "@/helpers/math"
+import { ChangeEvent, useState } from "react"
 
 type NumberInputProps = {
-    name: string;
-    min?: number;
-    max?: number;
-    step?: number;
-    defaultValue?: number;
-    placeholder?: string;
-    className?: string;
-    onChange?: (value: number) => void;
-};
+    name: string
+    min?: number
+    max?: number
+    step?: number
+    defaultValue?: number
+    placeholder?: string
+    className?: string
+    onChange?: (value: number) => void
+}
 
 export default function NumberInput({
     name,
@@ -21,32 +21,32 @@ export default function NumberInput({
     defaultValue = 0,
     placeholder = "0",
     className,
-    onChange,
+    onChange
 }: NumberInputProps) {
-    const [number, setNumber] = useState<number>(defaultValue);
+    const [number, setNumber] = useState<number>(defaultValue)
 
     const updateNumber = (newValue: number) => {
-        const clampedValue = clamp(newValue, min, max);
-        setNumber(clampedValue);
+        const clampedValue = clamp(newValue, min, max)
+        setNumber(clampedValue)
         if (onChange) {
-            onChange(clampedValue);
+            onChange(clampedValue)
         }
-    };
+    }
 
     const decrement = () => {
-        updateNumber(number - step);
-    };
+        updateNumber(number - step)
+    }
 
     const increment = () => {
-        updateNumber(number + step);
-    };
+        updateNumber(number + step)
+    }
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const newValue = Number(event.target.value);
+        const newValue = Number(event.target.value)
         if (!isNaN(newValue)) {
-            updateNumber(newValue);
+            updateNumber(newValue)
         }
-    };
+    }
 
     return (
         <div className={"relative flex max-w-[8rem] items-center " + className}>
@@ -107,5 +107,5 @@ export default function NumberInput({
                 </svg>
             </button>
         </div>
-    );
+    )
 }

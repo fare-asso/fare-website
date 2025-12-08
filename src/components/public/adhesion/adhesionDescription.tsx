@@ -167,5 +167,5 @@ export default function AdhesionDescription() {
                 associations néo-adhérentes.
             </p>
         </div>
-    );
+    )
 }

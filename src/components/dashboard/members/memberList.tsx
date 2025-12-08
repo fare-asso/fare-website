@@ -1,22 +1,22 @@
-import { createClient } from "@/helpers/supabase/server";
+import { createClient } from "@/helpers/supabase/server"
 
-import prisma from "@/helpers/db";
+import prisma from "@/helpers/db"
 
-import MemberCard from "./memberCard";
+import MemberCard from "./memberCard"
 
 export default async function MemberList() {
     // create supabase client
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // fetch all members from DB
-    const members = await prisma.member.findMany();
+    const members = await prisma.member.findMany()
 
     if (members == null) {
         return (
             <span className="text-xl text-red-800">
                 Echec du chargement des membres, veuillez réessayer
             </span>
-        );
+        )
     } else {
         const memberCards = members.map((member) => (
             <MemberCard
@@ -28,7 +28,7 @@ export default async function MemberList() {
                         .getPublicUrl(member.picturePath).data.publicUrl
                 }
             />
-        ));
+        ))
 
         return (
             <div className="bg-card text-card-foreground h-full w-full overflow-y-auto rounded-lg border p-6 shadow-xs">
@@ -36,6 +36,6 @@ export default async function MemberList() {
                     {memberCards}
                 </div>
             </div>
-        );
+        )
     }
 }

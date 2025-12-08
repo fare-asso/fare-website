@@ -1,8 +1,8 @@
-import Link from "next/link";
-import Image from "next/image";
+import Link from "next/link"
+import Image from "next/image"
 
-import logoFage from "/public/Logo_FAGE.png";
-import gifElues from "/public/elues/elues.gif";
+import logoFage from "/public/Logo_FAGE.png"
+import gifElues from "/public/elues/elues.gif"
 
 export default function Representation() {
     return (
@@ -39,5 +39,5 @@ export default function Representation() {
                 </Link>
             </div>
         </div>
-    );
+    )
 }

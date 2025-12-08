@@ -1,19 +1,19 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import prisma from "@/helpers/db";
-import EquipmentCard from "./equipmentCard";
-import AddEquipmentButton from "./addEquipmentButton";
+import prisma from "@/helpers/db"
+import EquipmentCard from "./equipmentCard"
+import AddEquipmentButton from "./addEquipmentButton"
 
 export default async function Equipments() {
-    const equipments = await prisma.bagadAssoEquipment.findMany();
+    const equipments = await prisma.bagadAssoEquipment.findMany()
 
     return (
         <Card className="flex h-full w-full flex-col p-4">
@@ -33,5 +33,5 @@ export default async function Equipments() {
                 <AddEquipmentButton />
             </CardFooter>
         </Card>
-    );
+    )
 }

@@ -1,11 +1,11 @@
-import Image from "next/image";
+import Image from "next/image"
 
-import logoFARE from "@public/logo_fare.png";
+import logoFARE from "@public/logo_fare.png"
 
 // Create metadata for the page
 export const metadata = {
-    title: "À propos de la FARE | FARE",
-};
+    title: "À propos de la FARE | FARE"
+}
 
 export default function APropos() {
     return (
@@ -97,5 +97,5 @@ export default function APropos() {
                 </section>
             </div>
         </div>
-    );
+    )
 }

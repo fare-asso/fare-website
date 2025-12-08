@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import { User, Permission, Role, UserPermission } from "@prisma/client";
-import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
-import CopyButton from "./copyButton";
-import Link from "next/link";
+import { User, Permission, Role, UserPermission } from "@prisma/client"
+import { ColumnDef } from "@tanstack/react-table"
+import { format } from "date-fns"
+import CopyButton from "./copyButton"
+import Link from "next/link"
 
 export const columns: ColumnDef<
     {
-        permissions: UserPermission[];
+        permissions: UserPermission[]
     } & User
 >[] = [
     {
         accessorKey: "id",
         cell: ({ row }) => <CopyButton value={row.getValue("id")} />,
-        header: "ID",
+        header: "ID"
     },
     {
         header: "Nom",
@@ -28,22 +28,22 @@ export const columns: ColumnDef<
                     <span className="opacity-60">NULL</span>
                 )}
             </Link>
-        ),
+        )
     },
     {
         header: "Email",
         accessorKey: "email",
         cell: ({ row }) => (
             <span className="font-semibold">{row.getValue("email")}</span>
-        ),
+        )
     },
     {
         accessorKey: "role",
-        header: "Rôle",
+        header: "Rôle"
     },
     {
         accessorKey: "createdAt",
         accessorFn: (row) => format(row.createdAt, "dd/MM/yyyy"),
-        header: "Date de création de compte",
-    },
-];
+        header: "Date de création de compte"
+    }
+]

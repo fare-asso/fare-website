@@ -1,13 +1,13 @@
-import Link from "next/link";
+import Link from "next/link"
 
 export default function LinkButton({
     href,
     title,
-    className,
+    className
 }: {
-    href: string;
-    title: string;
-    className?: string;
+    href: string
+    title: string
+    className?: string
 }) {
     return (
         <Link
@@ -20,5 +20,5 @@ export default function LinkButton({
         >
             {title}
         </Link>
-    );
+    )
 }

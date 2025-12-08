@@ -1,11 +1,11 @@
-import { ChangeEvent, ChangeEventHandler } from "react";
+import { ChangeEvent, ChangeEventHandler } from "react"
 
 export default function AssociationMapSearchBar({
     value,
-    onChange,
+    onChange
 }: {
-    value: string;
-    onChange: ChangeEventHandler<HTMLInputElement>;
+    value: string
+    onChange: ChangeEventHandler<HTMLInputElement>
 }) {
     return (
         <input
@@ -17,5 +17,5 @@ export default function AssociationMapSearchBar({
             value={value}
             onChange={onChange}
         />
-    );
+    )
 }

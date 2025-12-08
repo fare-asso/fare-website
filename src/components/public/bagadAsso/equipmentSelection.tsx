@@ -1,48 +1,48 @@
-import React, { useState, useEffect } from "react";
-import EquipmentCard from "./equipmentCard";
-import { BagadAssoEquipment } from "@prisma/client";
+import React, { useState, useEffect } from "react"
+import EquipmentCard from "./equipmentCard"
+import { BagadAssoEquipment } from "@prisma/client"
 
 export default function EquipmentSelection({
     equipmentList,
-    name,
+    name
 }: {
-    equipmentList: BagadAssoEquipment[];
-    name?: string;
+    equipmentList: BagadAssoEquipment[]
+    name?: string
 }) {
     const [selectedEquipment, setSelectedEquipment] = useState<{
-        [key: number]: number;
-    }>({});
-    const [totalGuarantee, setTotalGuarantee] = useState<number>(0);
+        [key: number]: number
+    }>({})
+    const [totalGuarantee, setTotalGuarantee] = useState<number>(0)
 
     const handleQuantityChange = (id: number, quantity: number) => {
         setSelectedEquipment((prev) => ({
             ...prev,
-            [id]: quantity,
-        }));
-    };
+            [id]: quantity
+        }))
+    }
 
     useEffect(() => {
         // Calculate the total guarantee whenever selected equipment changes
         const total = Object.entries(selectedEquipment).reduce(
             (acc, [id, quantity]) => {
                 const equipment = equipmentList.find(
-                    (eq) => eq.id === parseInt(id),
-                );
-                return acc + (equipment ? equipment.deposit * quantity : 0);
+                    (eq) => eq.id === parseInt(id)
+                )
+                return acc + (equipment ? equipment.deposit * quantity : 0)
             },
-            0,
-        );
-        setTotalGuarantee(total);
-    }, [selectedEquipment, equipmentList]);
+            0
+        )
+        setTotalGuarantee(total)
+    }, [selectedEquipment, equipmentList])
 
     const selectedEquipmentJson = JSON.stringify(
         Object.entries(selectedEquipment)
             .map(([id, quantity]) => ({
                 id: parseInt(id),
-                quantity,
+                quantity
             }))
-            .filter((item) => item.quantity > 0),
-    );
+            .filter((item) => item.quantity > 0)
+    )
 
     return (
         <div className="container mx-auto rounded-xl border border-gray-300 p-4">
@@ -65,9 +65,9 @@ export default function EquipmentSelection({
                 {" "}
                 {totalGuarantee.toLocaleString("fr-FR", {
                     style: "currency",
-                    currency: "EUR",
+                    currency: "EUR"
                 })}{" "}
             </span>
         </div>
-    );
+    )
 }

@@ -1,8 +1,8 @@
-import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml";
-import { Article } from "@prisma/client";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import Link from "next/link";
+import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml"
+import { Article } from "@prisma/client"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import Link from "next/link"
 
 export default function ArticleCard({ article }: { article: Article }) {
     return (
@@ -23,7 +23,7 @@ export default function ArticleCard({ article }: { article: Article }) {
                 <p className="mt-0 hidden text-sm md:mt-2 md:block">
                     {extractFirstWords(
                         10,
-                        JSON.parse(JSON.stringify(article.content)),
+                        JSON.parse(JSON.stringify(article.content))
                     )}
                 </p>
 
@@ -36,5 +36,5 @@ export default function ArticleCard({ article }: { article: Article }) {
                 </Link>
             </div>
         </div>
-    );
+    )
 }

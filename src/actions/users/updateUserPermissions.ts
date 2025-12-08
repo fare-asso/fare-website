@@ -1,24 +1,24 @@
-"use server";
+"use server"
 
-import prisma from "@/helpers/db";
-import { hasPermission, hasRole } from "@/helpers/permissions";
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth";
+import prisma from "@/helpers/db"
+import { hasPermission, hasRole } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
 export default async function updateUserPermissions(
     userId: string,
-    permissions: number[],
+    permissions: number[]
 ) {
-    const user = await getCurrentUserWithPermissions();
+    const user = await getCurrentUserWithPermissions()
     if (!user) {
-        throw new Error("Unauthorized: User not found");
+        throw new Error("Unauthorized: User not found")
     }
 
     if (!hasRole(user, "ADMIN")) {
-        throw new Error("Forbidden: Admin only");
+        throw new Error("Forbidden: Admin only")
     }
 
     if (!hasPermission(user, "edit:user-permissions")) {
-        throw new Error("Forbidden: Insufficient permissions");
+        throw new Error("Forbidden: Insufficient permissions")
     }
 
     // Commencer une transaction pour supprimer les anciennes permissions et ajouter les nouvelles
@@ -27,28 +27,28 @@ export default async function updateUserPermissions(
             // Supprimer les permissions existantes pour cet utilisateur
             await tx.userPermission.deleteMany({
                 where: {
-                    userId,
-                },
-            });
+                    userId
+                }
+            })
 
             // Ajouter les nouvelles permissions
             const newPermissions = permissions.map((permissionId) => ({
                 userId,
-                permissionId,
-            }));
+                permissionId
+            }))
 
             await tx.userPermission.createMany({
                 data: newPermissions,
-                skipDuplicates: true,
-            });
-        });
+                skipDuplicates: true
+            })
+        })
 
-        return { success: true };
+        return { success: true }
     } catch (error) {
-        console.error("Failed to update permissions:", error);
+        console.error("Failed to update permissions:", error)
         return {
             success: false,
-            error: "An error occurred while updating permissions.",
-        };
+            error: "An error occurred while updating permissions."
+        }
     }
 }

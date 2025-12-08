@@ -1,4 +1,4 @@
-import BugReportForm from "@/components/public/bug-report/form";
+import BugReportForm from "@/components/public/bug-report/form"
 
 export default function BugReport() {
     return (
@@ -10,5 +10,5 @@ export default function BugReport() {
             {/* Formulaire de rapport de bug */}
             <BugReportForm />
         </div>
-    );
+    )
 }

@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 
 import {
     Dialog,
@@ -9,13 +9,13 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogFooter,
-} from "@/components/ui/dialog";
+    DialogFooter
+} from "@/components/ui/dialog"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 import {
     ChangeEvent,
@@ -23,75 +23,75 @@ import {
     startTransition,
     useActionState,
     useRef,
-    useState,
-} from "react";
+    useState
+} from "react"
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react"
 
-import addEquipmentAction from "@/actions/bagadAsso/addEquipmentAction";
-import NumberInput from "@/components/ui/input/numberInput";
-import { MdDelete } from "react-icons/md";
-import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput";
-import LoadingRing from "../loadingRing";
-import Image from "next/image";
+import addEquipmentAction from "@/actions/bagadAsso/addEquipmentAction"
+import NumberInput from "@/components/ui/input/numberInput"
+import { MdDelete } from "react-icons/md"
+import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput"
+import LoadingRing from "../loadingRing"
+import Image from "next/image"
 
 export default function AddEquipmentButton() {
     const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
-    >(addEquipmentAction, undefined);
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
+    >(addEquipmentAction, undefined)
+    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
-    const [file, setFile] = useState<string | undefined>(undefined);
+    const [file, setFile] = useState<string | undefined>(undefined)
 
-    const inputFileRef = useRef<HTMLInputElement>(null);
+    const inputFileRef = useRef<HTMLInputElement>(null)
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
+        e.preventDefault()
 
         // if there is a file
         if (e.target.files && e.target.files.length > 0) {
-            const file = e.target.files[0];
-            setFile(URL.createObjectURL(file));
+            const file = e.target.files[0]
+            setFile(URL.createObjectURL(file))
         }
-    };
+    }
 
     const handleDeleteImage = (e: MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
+        e.preventDefault()
 
-        setFile(undefined);
+        setFile(undefined)
         if (inputFileRef.current) {
-            inputFileRef.current.value = "";
+            inputFileRef.current.value = ""
         }
-    };
+    }
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
-            setDialogIsOpen(open);
+            setDialogIsOpen(open)
             if (!open) {
                 // Réinitialiser le formulaire lorsque le dialogue est fermé
             }
         },
-        [setDialogIsOpen],
-    );
+        [setDialogIsOpen]
+    )
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
-            handleOpenChange(false);
+            handleOpenChange(false)
         }
-    }, [formState, handleOpenChange]);
+    }, [formState, handleOpenChange])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+        event.preventDefault()
 
-        const formData = new FormData(event.currentTarget);
+        const formData = new FormData(event.currentTarget)
 
         startTransition(() => {
-            formAction(formData);
-        });
-    };
+            formAction(formData)
+        })
+    }
 
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
@@ -173,14 +173,14 @@ export default function AddEquipmentButton() {
                         />
                     </div>
 
-                    {formState?.error ?
+                    {formState?.error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    :   null}
+                    ) : null}
                 </form>
 
                 <DialogFooter>
@@ -190,13 +190,10 @@ export default function AddEquipmentButton() {
                         className="mt-4"
                         disabled={pending}
                     >
-                        {pending ?
-                            <LoadingRing />
-                        :   null}{" "}
-                        Ajouter
+                        {pending ? <LoadingRing /> : null} Ajouter
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    );
+    )
 }

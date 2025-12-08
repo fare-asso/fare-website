@@ -1,12 +1,12 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/image"
+import Link from "next/link"
 
-import salle from "/public/AGORAe/salle.jpg";
-import food from "/public/AGORAe/food.jpg";
-import logoAgoraE from "/public/AGORAe/logo_AgoraE.png";
-import recettesParMois from "/public/AGORAe/recettes_par_mois.png";
-import tableauRAV from "/public/AGORAe/tableau_rav.png";
-import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire";
+import salle from "/public/AGORAe/salle.jpg"
+import food from "/public/AGORAe/food.jpg"
+import logoAgoraE from "/public/AGORAe/logo_AgoraE.png"
+import recettesParMois from "/public/AGORAe/recettes_par_mois.png"
+import tableauRAV from "/public/AGORAe/tableau_rav.png"
+import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
 
 export default function AGORAe() {
     return (
@@ -235,5 +235,5 @@ export default function AGORAe() {
                 </section>
             </div>
         </div>
-    );
+    )
 }

@@ -1,42 +1,42 @@
-"use server";
+"use server"
 
-import prisma from "@/helpers/db";
+import prisma from "@/helpers/db"
 
-import { createClient } from "@/helpers/supabase/server";
-import getCurrentUserId from "@/helpers/user/id";
-import { revalidatePath } from "next/cache";
-import getCurrentUserRole from "@/helpers/user/role";
-import { JSONContent } from "@tiptap/react";
+import { createClient } from "@/helpers/supabase/server"
+import getCurrentUserId from "@/helpers/user/id"
+import { revalidatePath } from "next/cache"
+import getCurrentUserRole from "@/helpers/user/role"
+import { JSONContent } from "@tiptap/react"
 
 export default async function createArticleAction(
     prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData,
+    formData: FormData
 ): Promise<{ error?: string; success?: boolean }> {
     /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole();
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" };
+    const { role, error } = await getCurrentUserRole()
+    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
     if (role != "ADMIN")
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
-        };
+            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+        }
 
     // create supabase client
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // retrieve form data fields
-    const title = formData.get("title")?.toString();
-    const content = formData.get("content")?.toString();
+    const title = formData.get("title")?.toString()
+    const content = formData.get("content")?.toString()
 
     // Fields Validation
     if (!title || !content) {
-        return { error: "Veuillez remplir tous les champs obligatoires." };
+        return { error: "Veuillez remplir tous les champs obligatoires." }
     }
 
     // Images
-    const images = formData.getAll("images") as File[];
+    const images = formData.getAll("images") as File[]
     images.forEach((image) => {
-        console.log(image);
-    });
+        console.log(image)
+    })
 
     // upload images to storage
     const responses = await Promise.all(
@@ -44,22 +44,22 @@ export default async function createArticleAction(
             async (file) =>
                 await supabase.storage
                     .from("article-pictures")
-                    .upload(file.name, file),
-        ),
-    );
+                    .upload(file.name, file)
+        )
+    )
 
     // check for errors
     responses.forEach((response) => {
         if (response.error) {
             return {
-                error: "L'upload des images a échoué. Veuillez réessayer",
-            };
+                error: "L'upload des images a échoué. Veuillez réessayer"
+            }
         }
-    });
+    })
 
-    const contentDelta: JSONContent = JSON.parse(content);
+    const contentDelta: JSONContent = JSON.parse(content)
 
-    const { userId, error: userIdError } = await getCurrentUserId();
+    const { userId, error: userIdError } = await getCurrentUserId()
 
     if (userIdError) {
         // Delete uploaded images
@@ -67,13 +67,13 @@ export default async function createArticleAction(
             responses.map(async (response) => {
                 await supabase.storage
                     .from("article-pictures")
-                    .remove([response.data?.path!]);
-            }),
-        );
+                    .remove([response.data?.path!])
+            })
+        )
 
         return {
-            error: "Echec de l'authentification de l'utilisateur",
-        };
+            error: "Echec de l'authentification de l'utilisateur"
+        }
     }
 
     // insert article to database
@@ -82,14 +82,14 @@ export default async function createArticleAction(
             title: title,
             content: contentDelta,
             imagesPath: responses.map((response) => response.data?.path!),
-            authorId: userId!,
-        },
-    });
+            authorId: userId!
+        }
+    })
 
-    revalidatePath("/actualites");
-    revalidatePath("/dashboard/articles");
+    revalidatePath("/actualites")
+    revalidatePath("/dashboard/articles")
 
-    return { success: true };
+    return { success: true }
     // if (contentDelta.ops && contentDelta.ops.length > 0) {
     //     // content is not null
 

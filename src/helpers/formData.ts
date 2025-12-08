@@ -6,8 +6,8 @@ type AllowedValue =
     | File
     | Blob
     | null
-    | undefined;
-type DataObject = Record<string, AllowedValue | AllowedValue[]>;
+    | undefined
+type DataObject = Record<string, AllowedValue | AllowedValue[]>
 
 /**
  * Converts a data object to FormData, with options to exclude certain fields and format dates.
@@ -21,21 +21,21 @@ type DataObject = Record<string, AllowedValue | AllowedValue[]>;
 export function zodFieldValuesToFormData(
     data: DataObject,
     options: {
-        excludeFields?: string[];
-        dateFormat?: "iso" | "timestamp";
-    } = {},
+        excludeFields?: string[]
+        dateFormat?: "iso" | "timestamp"
+    } = {}
 ): FormData {
-    const { excludeFields = [], dateFormat = "iso" } = options;
-    const formData = new FormData();
+    const { excludeFields = [], dateFormat = "iso" } = options
+    const formData = new FormData()
 
     Object.entries(data).forEach(([key, value]) => {
         // Ignorer les champs exclus
         if (excludeFields.includes(key)) {
-            return;
+            return
         }
 
         if (value === null || value === undefined) {
-            return;
+            return
         }
 
         // Gestion des tableaux
@@ -44,18 +44,18 @@ export function zodFieldValuesToFormData(
                 if (item !== null && item !== undefined) {
                     formData.append(
                         `${key}[${index}]`,
-                        formatValue(item, dateFormat),
-                    );
+                        formatValue(item, dateFormat)
+                    )
                 }
-            });
-            return;
+            })
+            return
         }
 
         // Gestion des valeurs simples
-        formData.append(key, formatValue(value, dateFormat));
-    });
+        formData.append(key, formatValue(value, dateFormat))
+    })
 
-    return formData;
+    return formData
 }
 
 /**
@@ -67,19 +67,19 @@ export function zodFieldValuesToFormData(
  */
 function formatValue(
     value: AllowedValue,
-    dateFormat: "iso" | "timestamp",
+    dateFormat: "iso" | "timestamp"
 ): string | File | Blob {
     if (value instanceof Date) {
-        return dateFormat === "iso" ?
-                value.toISOString()
-            :   value.getTime().toString();
+        return dateFormat === "iso"
+            ? value.toISOString()
+            : value.getTime().toString()
     }
 
     if (value instanceof File || value instanceof Blob) {
-        return value;
+        return value
     }
 
-    return String(value);
+    return String(value)
 }
 
 /**
@@ -91,19 +91,19 @@ function formatValue(
  * name, type, and size are included.
  */
 export function formDataToString(formData: FormData): string {
-    const entries = Array.from(formData.entries());
+    const entries = Array.from(formData.entries())
     const formattedEntries = entries.map(([key, value]: [string, any]) => {
         // Gestion des fichiers
         if (value instanceof File) {
-            return `${key}: File(name: ${value.name}, type: ${value.type}, size: ${value.size} bytes)`;
+            return `${key}: File(name: ${value.name}, type: ${value.type}, size: ${value.size} bytes)`
         }
         // Gestion des Blobs
         if (value instanceof Blob) {
-            return `${key}: Blob(type: ${value.type}, size: ${value.size} bytes)`;
+            return `${key}: Blob(type: ${value.type}, size: ${value.size} bytes)`
         }
         // Gestion des valeurs normales
-        return `${key}: ${value}`;
-    });
+        return `${key}: ${value}`
+    })
 
-    return formattedEntries.join("\n");
+    return formattedEntries.join("\n")
 }

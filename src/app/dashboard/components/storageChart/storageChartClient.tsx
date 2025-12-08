@@ -1,14 +1,14 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { Label, Pie, PieChart } from "recharts";
+import * as React from "react"
+import { Label, Pie, PieChart } from "recharts"
 
 import {
     ChartConfig,
     ChartContainer,
     ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
+    ChartTooltipContent
+} from "@/components/ui/chart"
 
 /**
  * Chart component for displaying storage usage in a pie chart format.
@@ -19,26 +19,26 @@ import {
  */
 export function StorageChartClient({
     used,
-    total,
+    total
 }: {
-    used: number;
-    total: number;
+    used: number
+    total: number
 }): React.ReactElement {
     const chartData = [
         { name: "Utilisé", value: used, fill: "#304bb7e5" },
-        { name: "Libre", value: total - used, fill: "#566cae26" },
-    ];
+        { name: "Libre", value: total - used, fill: "#566cae26" }
+    ]
 
     const chartConfig = {
         used: {
             label: "Used",
-            color: "hsl(var(--chart-1))",
+            color: "hsl(var(--chart-1))"
         },
         available: {
             label: "Available",
-            color: "hsl(var(--chart-2))",
-        },
-    } satisfies ChartConfig;
+            color: "hsl(var(--chart-2))"
+        }
+    } satisfies ChartConfig
 
     return (
         <ChartContainer
@@ -83,12 +83,12 @@ export function StorageChartClient({
                                             utilisés
                                         </tspan>
                                     </text>
-                                );
+                                )
                             }
                         }}
                     />
                 </Pie>
             </PieChart>
         </ChartContainer>
-    );
+    )
 }

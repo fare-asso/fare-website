@@ -1,9 +1,9 @@
-import { Metadata } from "next";
+import { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Nos partenaires | FARE",
-    description: "Page des partenariats de la FARE",
-};
+    description: "Page des partenariats de la FARE"
+}
 
 export default async function Partenariats() {
     return (
@@ -14,5 +14,5 @@ export default async function Partenariats() {
 
             <div className="flex flex-col"></div>
         </div>
-    );
+    )
 }

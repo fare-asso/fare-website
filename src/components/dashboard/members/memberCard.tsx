@@ -1,68 +1,68 @@
-"use client";
+"use client"
 
-import Image from "next/image";
+import Image from "next/image"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useState } from "react"
 
-import { MdDelete } from "react-icons/md";
+import { MdDelete } from "react-icons/md"
 
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast"
 
-import EditMemberButton from "./editMemberButton";
+import EditMemberButton from "./editMemberButton"
 
-import clsx from "clsx";
+import clsx from "clsx"
 
-import deleteMemberAction from "@/actions/members/deleteMemberAction";
+import deleteMemberAction from "@/actions/members/deleteMemberAction"
 
 interface Member {
-    id: number;
-    firstName: string;
-    lastName: string;
-    position: string;
-    picturePath: string;
-    email: string;
-    facebookUrl: string | null;
-    instagramUrl: string | null;
-    twitterUrl: string | null;
+    id: number
+    firstName: string
+    lastName: string
+    position: string
+    picturePath: string
+    email: string
+    facebookUrl: string | null
+    instagramUrl: string | null
+    twitterUrl: string | null
 }
 
 export default function MemberCard({
     member,
-    pictureUrl,
+    pictureUrl
 }: {
-    member: Member;
-    pictureUrl: string;
+    member: Member
+    pictureUrl: string
 }) {
-    const { toast } = useToast();
+    const { toast } = useToast()
 
-    const [hidden, setIsHidden] = useState<boolean>(false);
+    const [hidden, setIsHidden] = useState<boolean>(false)
 
     const handleDelete = async (event: MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
+        event.preventDefault()
+        event.stopPropagation()
 
-        setIsHidden(true);
-        const res = await deleteMemberAction({ id: member.id });
+        setIsHidden(true)
+        const res = await deleteMemberAction({ id: member.id })
         if (res.error) {
             toast({
                 title: "Erreur",
                 variant: "destructive",
-                description: res.error,
-            });
+                description: res.error
+            })
         } else {
             toast({
-                description: `Le membre ${member.firstName} ${member.lastName} a bien été supprimé`,
-            });
+                description: `Le membre ${member.firstName} ${member.lastName} a bien été supprimé`
+            })
         }
-    };
+    }
 
     return (
         <div
             className={clsx(
                 "bg-card text-card-foreground flex h-full w-full flex-col rounded-lg border p-3 shadow-xs",
-                hidden && "hidden",
+                hidden && "hidden"
             )}
         >
             <div className="flex flex-col justify-between">
@@ -107,5 +107,5 @@ export default function MemberCard({
                 {member.position}
             </p>
         </div>
-    );
+    )
 }

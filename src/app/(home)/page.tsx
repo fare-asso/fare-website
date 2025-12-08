@@ -1,19 +1,19 @@
-import Image from "next/image";
-import { Metadata } from "next";
-import DiscordWidget from "@/components/public/discordWidget";
+import Image from "next/image"
+import { Metadata } from "next"
+import DiscordWidget from "@/components/public/discordWidget"
 
-import WelcomeImage from "../../../public/welcome.jpg";
+import WelcomeImage from "../../../public/welcome.jpg"
 
-import LinkButton from "@/components/public/link";
-import PartnersCarousel from "@/components/public/partenariats/partnersCarousel";
-import { Suspense } from "react";
-import AssoMap from "@/components/public/AssoMap";
-import KeyNumbers from "@/components/public/keyNumbers";
-import { YouTubeEmbed } from "@next/third-parties/google";
+import LinkButton from "@/components/public/link"
+import PartnersCarousel from "@/components/public/partenariats/partnersCarousel"
+import { Suspense } from "react"
+import AssoMap from "@/components/public/AssoMap"
+import KeyNumbers from "@/components/public/keyNumbers"
+import { YouTubeEmbed } from "@next/third-parties/google"
 
 export const metadata: Metadata = {
-    title: "Accueil | FARE",
-};
+    title: "Accueil | FARE"
+}
 
 export default async function Home() {
     return (
@@ -144,5 +144,5 @@ export default async function Home() {
 
             {/* <iframe width="560" height="315" src="https://www.youtube.com/embed/_nu4cbdJ8do?si=_OAfgGASwAr1jEg5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> */}
         </div>
-    );
+    )
 }

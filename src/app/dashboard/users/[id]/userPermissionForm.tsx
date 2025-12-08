@@ -1,77 +1,77 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
     Tooltip,
     TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Info } from "lucide-react";
-import updateUserPermissions from "@/actions/users/updateUserPermissions";
-import { Permission } from "@prisma/client";
-import LoadingRing from "@/components/dashboard/loadingRing";
+    TooltipTrigger
+} from "@/components/ui/tooltip"
+import { Info } from "lucide-react"
+import updateUserPermissions from "@/actions/users/updateUserPermissions"
+import { Permission } from "@prisma/client"
+import LoadingRing from "@/components/dashboard/loadingRing"
 
 const schema = z.object({
-    permissions: z.array(z.number()),
-});
+    permissions: z.array(z.number())
+})
 
-type schemaType = z.infer<typeof schema>;
+type schemaType = z.infer<typeof schema>
 
 type Props = {
-    userId: string;
-    userPermissions: number[]; // array of permission ids
-    allPermissions: Permission[];
-};
+    userId: string
+    userPermissions: number[] // array of permission ids
+    allPermissions: Permission[]
+}
 
 export function UserPermissionsForm({
     userId,
     userPermissions,
-    allPermissions,
+    allPermissions
 }: Props) {
     const [initialPermissions, setInitialPermissions] =
-        useState(userPermissions);
+        useState(userPermissions)
 
     const form = useForm<schemaType>({
         resolver: zodResolver(schema),
         defaultValues: {
-            permissions: userPermissions,
-        },
-    });
+            permissions: userPermissions
+        }
+    })
 
-    const currentPermissions = form.watch("permissions");
+    const currentPermissions = form.watch("permissions")
     const isChanged =
         JSON.stringify(currentPermissions.sort()) !==
-        JSON.stringify([...initialPermissions].sort());
+        JSON.stringify([...initialPermissions].sort())
 
     useEffect(() => {
-        form.reset({ permissions: userPermissions });
-        setInitialPermissions(userPermissions);
-    }, [userPermissions]);
+        form.reset({ permissions: userPermissions })
+        setInitialPermissions(userPermissions)
+    }, [userPermissions])
 
     const onSubmit = async (data: schemaType) => {
-        const res = await updateUserPermissions(userId, data.permissions);
+        const res = await updateUserPermissions(userId, data.permissions)
         if (res.success) {
             form.reset({
-                permissions: data.permissions,
-            });
-            setInitialPermissions(data.permissions);
+                permissions: data.permissions
+            })
+            setInitialPermissions(data.permissions)
         }
-    };
+    }
 
     const permissionCategories = allPermissions.reduce(
         (acc, permission) => {
-            const category = permission.category || "Autres";
-            if (!acc[category]) acc[category] = [];
-            acc[category].push(permission);
-            return acc;
+            const category = permission.category || "Autres"
+            if (!acc[category]) acc[category] = []
+            acc[category].push(permission)
+            return acc
         },
-        {} as Record<string, typeof allPermissions>,
-    );
+        {} as Record<string, typeof allPermissions>
+    )
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -92,21 +92,20 @@ export function UserPermissionsForm({
                                             .includes(permission.id)}
                                         onCheckedChange={(checked) => {
                                             const perms =
-                                                form.getValues("permissions");
+                                                form.getValues("permissions")
                                             if (checked) {
                                                 form.setValue("permissions", [
                                                     ...perms,
-                                                    permission.id,
-                                                ]);
+                                                    permission.id
+                                                ])
                                             } else {
                                                 form.setValue(
                                                     "permissions",
                                                     perms.filter(
                                                         (id) =>
-                                                            id !==
-                                                            permission.id,
-                                                    ),
-                                                );
+                                                            id !== permission.id
+                                                    )
+                                                )
                                             }
                                         }}
                                     />
@@ -138,7 +137,7 @@ export function UserPermissionsForm({
                             ))}
                         </div>
                     </div>
-                ),
+                )
             )}
 
             <Button
@@ -148,5 +147,5 @@ export function UserPermissionsForm({
                 {form.formState.isSubmitting && <LoadingRing />}Enregistrer
             </Button>
         </form>
-    );
+    )
 }

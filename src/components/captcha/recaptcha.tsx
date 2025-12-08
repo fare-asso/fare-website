@@ -1,16 +1,16 @@
-import React, { useRef } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
+import React, { useRef } from "react"
+import ReCAPTCHA from "react-google-recaptcha"
 
 interface CaptchaProps {
-    onChange: (token: string | null) => void;
+    onChange: (token: string | null) => void
 }
 
 export default function Captcha({ onChange }: CaptchaProps) {
-    const captchaRef = useRef<ReCAPTCHA>(null);
+    const captchaRef = useRef<ReCAPTCHA>(null)
 
     const handleCaptchaChange = (value: string | null) => {
-        onChange(value);
-    };
+        onChange(value)
+    }
 
     return (
         <ReCAPTCHA
@@ -18,5 +18,5 @@ export default function Captcha({ onChange }: CaptchaProps) {
             sitekey="6LfNcTYqAAAAAG8PGcr1GDz1PwCYvtLUKtcbXZMM"
             onChange={handleCaptchaChange}
         />
-    );
+    )
 }

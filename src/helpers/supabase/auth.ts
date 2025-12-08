@@ -1,20 +1,20 @@
-import { Permission, User, UserPermission } from "@prisma/client";
-import prisma from "../db";
-import { createClient } from "./server";
+import { Permission, User, UserPermission } from "@prisma/client"
+import prisma from "../db"
+import { createClient } from "./server"
 
 export type UserWithPermissions = User & {
     permissions: (UserPermission & {
-        permission: Permission;
-    })[];
-};
+        permission: Permission
+    })[]
+}
 
 export async function getCurrentUserWithPermissions(): Promise<UserWithPermissions | null> {
-    const supabase = await createClient();
+    const supabase = await createClient()
     const {
-        data: { user },
-    } = await supabase.auth.getUser();
+        data: { user }
+    } = await supabase.auth.getUser()
 
-    if (!user) return null;
+    if (!user) return null
 
     // Match avec public.User
     const dbUser = await prisma.user.findUnique({
@@ -22,11 +22,11 @@ export async function getCurrentUserWithPermissions(): Promise<UserWithPermissio
         include: {
             permissions: {
                 include: {
-                    permission: true,
-                },
-            },
-        },
-    });
+                    permission: true
+                }
+            }
+        }
+    })
 
-    return dbUser;
+    return dbUser
 }

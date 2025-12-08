@@ -1,44 +1,44 @@
 import {
     computeTotalDeposit,
-    joinTicketAndEquipment,
-} from "@/helpers/bagadAsso";
-import prisma from "@/helpers/db";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import Link from "next/link";
+    joinTicketAndEquipment
+} from "@/helpers/bagadAsso"
+import prisma from "@/helpers/db"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import Link from "next/link"
 
 export default async function Page({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }) {
-    const ticketId = Number((await params).id);
+    const ticketId = Number((await params).id)
 
     if (isNaN(ticketId)) {
-        return <span>Le ticket n'existe pas 😔</span>;
+        return <span>Le ticket n'existe pas 😔</span>
     }
 
     const ticket = await prisma.bagadAssoTicket.findUnique({
         where: {
-            id: ticketId,
-        },
-    });
+            id: ticketId
+        }
+    })
 
     if (!ticket) {
-        return <span>Le ticket n'existe pas 😔</span>;
+        return <span>Le ticket n'existe pas 😔</span>
     }
 
-    const totalDeposit = await computeTotalDeposit(ticket);
+    const totalDeposit = await computeTotalDeposit(ticket)
 
     const allEquipments: {
-        id: number;
-        quantity: number;
-        deposit: number;
-        name: string;
-        imagePath: string | undefined;
+        id: number
+        quantity: number
+        deposit: number
+        name: string
+        imagePath: string | undefined
     }[] = JSON.parse(
-        JSON.stringify((await joinTicketAndEquipment(ticket)).equipments),
-    );
+        JSON.stringify((await joinTicketAndEquipment(ticket)).equipments)
+    )
 
     return (
         <div className="h-full w-full p-4">
@@ -111,7 +111,7 @@ export default async function Page({
                     <span>
                         Date de l'évènement: 📅
                         {format(ticket.eventDate, "dd MMMM yyyy", {
-                            locale: fr,
+                            locale: fr
                         })}
                     </span>
                     <span>
@@ -151,5 +151,5 @@ export default async function Page({
                 </div>
             </div>
         </div>
-    );
+    )
 }

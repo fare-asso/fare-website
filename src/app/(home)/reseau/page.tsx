@@ -1,20 +1,20 @@
-import AssociationList from "@/components/public/associations/associationList";
-import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller";
-import prisma from "@/helpers/db";
-import { Metadata } from "next";
-import Link from "next/link";
+import AssociationList from "@/components/public/associations/associationList"
+import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller"
+import prisma from "@/helpers/db"
+import { Metadata } from "next"
+import Link from "next/link"
 
 export const metadata: Metadata = {
     title: "Réseau | FARE",
-    description: "Page des associations du réseau FARE",
-};
+    description: "Page des associations du réseau FARE"
+}
 
 export default async function Reseau() {
     const assos = await prisma.association.findMany({
         orderBy: {
-            name: "asc",
-        },
-    });
+            name: "asc"
+        }
+    })
 
     return (
         <div className="flex w-full flex-col items-center justify-start pb-20">
@@ -44,5 +44,5 @@ export default async function Reseau() {
                 </Link>
             </div>
         </div>
-    );
+    )
 }

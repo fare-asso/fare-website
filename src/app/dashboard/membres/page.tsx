@@ -1,5 +1,5 @@
-import AddMemberButton from "@/components/dashboard/members/addMemberButton";
-import MemberList from "@/components/dashboard/members/memberList";
+import AddMemberButton from "@/components/dashboard/members/addMemberButton"
+import MemberList from "@/components/dashboard/members/memberList"
 
 import {
     Card,
@@ -7,10 +7,10 @@ import {
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
+import { Suspense } from "react"
 
 export default async function Membres() {
     return (
@@ -30,5 +30,5 @@ export default async function Membres() {
                 <AddMemberButton />
             </CardFooter>
         </Card>
-    );
+    )
 }

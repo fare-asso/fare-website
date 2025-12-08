@@ -1,10 +1,10 @@
-import { Association } from "@prisma/client";
-import AssociationCard from "./associationCard";
+import { Association } from "@prisma/client"
+import AssociationCard from "./associationCard"
 
 export default function AssociationList({
-    associations,
+    associations
 }: {
-    associations: Association[];
+    associations: Association[]
 }) {
     return (
         <div className="mb-20 w-[90%]">
@@ -17,5 +17,5 @@ export default function AssociationList({
                 ))}
             </div>
         </div>
-    );
+    )
 }

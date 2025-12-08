@@ -1,16 +1,16 @@
-import { CommuniqueDePresse } from "@prisma/client";
-import Link from "next/link";
-import { FaRegFilePdf } from "react-icons/fa6";
-import { FiDownload } from "react-icons/fi";
-import { format } from "date-fns";
-import { StorageUtils } from "@/helpers/supabase/storageUtils";
+import { CommuniqueDePresse } from "@prisma/client"
+import Link from "next/link"
+import { FaRegFilePdf } from "react-icons/fa6"
+import { FiDownload } from "react-icons/fi"
+import { format } from "date-fns"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 export default function CommuniquesCard({
-    communique,
+    communique
 }: {
-    communique: CommuniqueDePresse;
+    communique: CommuniqueDePresse
 }) {
-    const su = new StorageUtils();
+    const su = new StorageUtils()
 
     return (
         <div className="border-grey-300 flex w-full flex-col items-center space-x-2 rounded-md border p-2 md:flex-row">
@@ -46,5 +46,5 @@ export default function CommuniquesCard({
                 </Link>
             </div>
         </div>
-    );
+    )
 }

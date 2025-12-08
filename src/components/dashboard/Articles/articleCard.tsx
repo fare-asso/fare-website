@@ -1,66 +1,66 @@
-"use client";
+"use client"
 
-import { fr } from "date-fns/locale";
-import { format } from "date-fns";
+import { fr } from "date-fns/locale"
+import { format } from "date-fns"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 
-import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
+import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
+import { MdEdit } from "react-icons/md"
 
 // import EditArticleButton from "./editArticleButton";
 
-import deleteArticleAction from "@/actions/articles/deleteArticleAction";
+import deleteArticleAction from "@/actions/articles/deleteArticleAction"
 
-import { useToast } from "@/components/ui/use-toast";
-import { startTransition, useActionState, useEffect, useState } from "react";
-import LoadingRing from "../loadingRing";
-import Link from "next/link";
-import { Article } from "@prisma/client";
-import switchVisibilityAction from "@/actions/articles/switchVisibilityAction";
-import EditArticleButton from "./editArticleButton";
+import { useToast } from "@/components/ui/use-toast"
+import { startTransition, useActionState, useEffect, useState } from "react"
+import LoadingRing from "../loadingRing"
+import Link from "next/link"
+import { Article } from "@prisma/client"
+import switchVisibilityAction from "@/actions/articles/switchVisibilityAction"
+import EditArticleButton from "./editArticleButton"
 
 export default function ArticleCard({ article }: { article: Article }) {
-    const { toast } = useToast();
+    const { toast } = useToast()
 
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         number
-    >(deleteArticleAction, undefined);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    >(deleteArticleAction, undefined)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isSwitchingVisibility, setIsSwitchingVisibility] =
-        useState<boolean>(false);
+        useState<boolean>(false)
 
     const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
+        event.preventDefault()
+        event.stopPropagation()
 
-        setIsLoading(true);
+        setIsLoading(true)
 
         startTransition(() => {
-            formAction(article.id);
-        });
-    };
+            formAction(article.id)
+        })
+    }
 
     useEffect(() => {
         if (formState?.success) {
             toast({
-                description: `L'article ${article.title} a bien été supprimé`,
-            });
+                description: `L'article ${article.title} a bien été supprimé`
+            })
         } else if (formState?.error) {
             toast({
                 title: "Erreur",
                 variant: "destructive",
-                description: formState?.error,
-            });
+                description: formState?.error
+            })
         }
-        setIsLoading(false);
-    }, [formState, article.title, toast]);
+        setIsLoading(false)
+    }, [formState, article.title, toast])
 
     async function HandleVisibility() {
-        setIsSwitchingVisibility(true);
-        await switchVisibilityAction(article.id);
-        setIsSwitchingVisibility(false);
+        setIsSwitchingVisibility(true)
+        await switchVisibilityAction(article.id)
+        setIsSwitchingVisibility(false)
     }
 
     return (
@@ -83,11 +83,13 @@ export default function ArticleCard({ article }: { article: Article }) {
                     onClick={HandleVisibility}
                     disabled={isSwitchingVisibility}
                 >
-                    {isSwitchingVisibility ?
+                    {isSwitchingVisibility ? (
                         <LoadingRing className="mr-0!" />
-                    : article.published ?
+                    ) : article.published ? (
                         <MdVisibility size={17} title="publié" />
-                    :   <MdVisibilityOff size={17} title="draft" />}
+                    ) : (
+                        <MdVisibilityOff size={17} title="draft" />
+                    )}
                 </Button>
 
                 <EditArticleButton article={article} />
@@ -98,12 +100,10 @@ export default function ArticleCard({ article }: { article: Article }) {
                     onClick={handleDelete}
                     disabled={isLoading}
                 >
-                    {isLoading ?
-                        <LoadingRing />
-                    :   <MdDelete size={20} />}
+                    {isLoading ? <LoadingRing /> : <MdDelete size={20} />}
                     <div className="hidden sm:flex">Supprimer</div>
                 </Button>
             </div>
         </div>
-    );
+    )
 }

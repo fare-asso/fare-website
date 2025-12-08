@@ -1,12 +1,12 @@
-import EventArchive from "@/components/public/events/archive";
-import CurrentEvents from "@/components/public/events/currentEvents";
-import SoonEvents from "@/components/public/events/soon";
-import { Metadata } from "next";
+import EventArchive from "@/components/public/events/archive"
+import CurrentEvents from "@/components/public/events/currentEvents"
+import SoonEvents from "@/components/public/events/soon"
+import { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Agenda | FARE",
-    description: "Page regroupant les événements lié à la FARE",
-};
+    description: "Page regroupant les événements lié à la FARE"
+}
 
 export default async function Reseau() {
     return (
@@ -20,5 +20,5 @@ export default async function Reseau() {
                 <EventArchive />
             </div>
         </div>
-    );
+    )
 }

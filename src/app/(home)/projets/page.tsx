@@ -1,9 +1,9 @@
-import Link from "next/link";
-import Image from "next/image";
+import Link from "next/link"
+import Image from "next/image"
 
-import logoAgoraE from "/public/AGORAe/logo_AgoraE.png";
-import logoBTP from "/public/BTP/LOGO_BTP_2024.webp";
-import logoBA from "/public/logoBagadAsso.png";
+import logoAgoraE from "/public/AGORAe/logo_AgoraE.png"
+import logoBTP from "/public/BTP/LOGO_BTP_2024.webp"
+import logoBA from "/public/logoBagadAsso.png"
 
 export default async function Projets() {
     return (
@@ -50,5 +50,5 @@ export default async function Projets() {
                 </Link>
             </div>
         </div>
-    );
+    )
 }

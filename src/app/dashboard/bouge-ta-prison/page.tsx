@@ -4,12 +4,12 @@ import {
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import TabSwitcher from "./tabSwitcher";
-import QuestionList from "./questions/questionList";
-import ApplicationList from "./candidatures-tutorat/applicationList";
-import { Suspense } from "react";
+    CardTitle
+} from "@/components/ui/card"
+import TabSwitcher from "./tabSwitcher"
+import QuestionList from "./questions/questionList"
+import ApplicationList from "./candidatures-tutorat/applicationList"
+import { Suspense } from "react"
 
 export default function EspaceBougeTaPrison() {
     return (
@@ -35,5 +35,5 @@ export default function EspaceBougeTaPrison() {
             </CardContent>
             <CardFooter className="p-0"></CardFooter>
         </Card>
-    );
+    )
 }

@@ -1,25 +1,25 @@
-import { createClient } from "@/helpers/supabase/server";
+import { createClient } from "@/helpers/supabase/server"
 
-import prisma from "@/helpers/db";
-import AssociationCard from "./associationCard";
+import prisma from "@/helpers/db"
+import AssociationCard from "./associationCard"
 
 export default async function AssociationList() {
     // create supabase client
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // fetch all members from DB
     const assos = await prisma.association.findMany({
         orderBy: {
-            name: "asc",
-        },
-    });
+            name: "asc"
+        }
+    })
 
     if (assos == null) {
         return (
             <span className="text-xl text-red-800">
                 Echec du chargement des associations, veuillez réessayer
             </span>
-        );
+        )
     } else {
         const assoCards = assos.map((asso) => (
             <AssociationCard
@@ -31,7 +31,7 @@ export default async function AssociationList() {
                         .getPublicUrl(asso.logoPath).data.publicUrl
                 }
             />
-        ));
+        ))
 
         return (
             <div className="bg-card text-card-foreground h-full w-full overflow-y-auto rounded-lg border p-6 shadow-xs">
@@ -39,6 +39,6 @@ export default async function AssociationList() {
                     {assoCards}
                 </div>
             </div>
-        );
+        )
     }
 }

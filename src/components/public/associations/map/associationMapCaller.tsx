@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import { Association } from "@prisma/client";
-import dynamic from "next/dynamic";
+import { Association } from "@prisma/client"
+import dynamic from "next/dynamic"
 
 const LazyMap = dynamic(
     () => import("@/components/public/associations/map/associationsMap"),
     {
         ssr: false,
-        loading: () => <p>Loading...</p>,
-    },
-);
+        loading: () => <p>Loading...</p>
+    }
+)
 
 export default function AssociationMapCaller({
-    associations,
+    associations
 }: {
-    associations: Association[];
+    associations: Association[]
 }) {
-    return <LazyMap associations={associations} />;
+    return <LazyMap associations={associations} />
 }

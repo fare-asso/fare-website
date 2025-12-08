@@ -1,32 +1,32 @@
-"use client";
+"use client"
 
 import {
     Popover,
     PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "../button";
-import { Calendar } from "../calendar";
+    PopoverTrigger
+} from "@/components/ui/popover"
+import { Button } from "../button"
+import { Calendar } from "../calendar"
 
-import { useState } from "react";
+import { useState } from "react"
 
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
 
 export default function DatePicker({
     defaultValue,
     name,
     fromYear,
-    toYear,
+    toYear
 }: {
-    defaultValue?: Date;
-    name?: string;
-    fromYear?: number;
-    toYear?: number;
+    defaultValue?: Date
+    name?: string
+    fromYear?: number
+    toYear?: number
 }) {
     const [date, setDate] = useState<Date | undefined>(
-        defaultValue ?? undefined,
-    );
+        defaultValue ?? undefined
+    )
 
     return (
         <div>
@@ -50,9 +50,11 @@ export default function DatePicker({
                             <rect width="18" height="18" x="3" y="4" rx="2" />
                             <path d="M3 10h18" />
                         </svg>
-                        {date ?
+                        {date ? (
                             format(date, "PPP", { locale: fr })
-                        :   <span>Sélectionne une date</span>}
+                        ) : (
+                            <span>Sélectionne une date</span>
+                        )}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full">
@@ -74,5 +76,5 @@ export default function DatePicker({
                 value={date ? date.toString() : ""}
             />
         </div>
-    );
+    )
 }

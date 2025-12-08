@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 
 import {
     Dialog,
@@ -9,74 +9,74 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogFooter,
-} from "@/components/ui/dialog";
+    DialogFooter
+} from "@/components/ui/dialog"
 
 import {
     Popover,
     PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+    PopoverTrigger
+} from "@/components/ui/popover"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/components/ui/switch"
 
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui/textarea"
 
-import { Calendar } from "@/components/ui/calendar";
-import { ChangeEvent, useState } from "react";
+import { Calendar } from "@/components/ui/calendar"
+import { ChangeEvent, useState } from "react"
 
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import TimePicker from "../../ui/input/timePicker";
-import LocationPicker from "../../ui/location/locationPicker";
-import CategorySelect from "../../ui/category/categorySelect";
-import { useFormState, useFormStatus } from "react-dom";
-import { useEffect, useCallback } from "react";
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import TimePicker from "../../ui/input/timePicker"
+import LocationPicker from "../../ui/location/locationPicker"
+import CategorySelect from "../../ui/category/categorySelect"
+import { useFormState, useFormStatus } from "react-dom"
+import { useEffect, useCallback } from "react"
 
-import editEventAction from "@/actions/events/editEventAction";
-import Image from "next/image";
-import DatePicker from "@/components/ui/input/datePicker";
+import editEventAction from "@/actions/events/editEventAction"
+import Image from "next/image"
+import DatePicker from "@/components/ui/input/datePicker"
 
 export interface EventInfo {
-    id: number;
-    name: string;
-    desc: string;
-    image: string;
-    startTime: Date;
-    endTime: Date;
-    location: string;
-    visibility: boolean;
+    id: number
+    name: string
+    desc: string
+    image: string
+    startTime: Date
+    endTime: Date
+    location: string
+    visibility: boolean
     category: {
-        id: number;
-        name: string;
-    };
+        id: number
+        name: string
+    }
 }
 
 export default function EditEventButtonClient({
-    eventInfo,
+    eventInfo
 }: {
-    eventInfo: EventInfo;
+    eventInfo: EventInfo
 }) {
     const [formState, formAction] = useFormState<
         { error?: string; success?: boolean } | undefined,
         any
-    >(editEventAction, undefined);
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
+    >(editEventAction, undefined)
+    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
     const [switchState, setSwitchState] = useState<boolean>(
-        eventInfo.visibility,
-    );
+        eventInfo.visibility
+    )
 
-    const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+    const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
 
     const [previousPath, setPreviousPath] = useState<string | undefined>(
-        undefined,
-    );
+        undefined
+    )
 
     // fetch image url
     useEffect(() => {
@@ -84,55 +84,54 @@ export default function EditEventButtonClient({
             const res = await fetch(`/api/eventImage?id=${eventInfo.id}`, {
                 method: "GET",
                 headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+                    "Content-Type": "application/json"
+                }
+            })
 
-            const json = await res.json();
+            const json = await res.json()
 
             if (!json.error) {
-                const imageUrl: string = json.imageUrl;
-                setImageUrl(imageUrl);
-                setPreviousPath(json.imagePath);
+                const imageUrl: string = json.imageUrl
+                setImageUrl(imageUrl)
+                setPreviousPath(json.imagePath)
             } else {
-                console.error(json.error);
+                console.error(json.error)
             }
-        };
+        }
 
-        fetchImageUrl();
-    }, [dialogIsOpen, eventInfo.id]);
+        fetchImageUrl()
+    }, [dialogIsOpen, eventInfo.id])
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
-            setDialogIsOpen(open);
+            setDialogIsOpen(open)
         },
-        [setDialogIsOpen],
-    );
+        [setDialogIsOpen]
+    )
 
     const handleImageInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const files: FileList | null = event.target.files;
+        const files: FileList | null = event.target.files
 
         if (files && files.length >= 1) {
-            const file: File = files[0];
-            const fileReader = new FileReader();
+            const file: File = files[0]
+            const fileReader = new FileReader()
 
             fileReader.onloadend = () => {
-                const resultUrl: string | ArrayBuffer | null =
-                    fileReader.result;
+                const resultUrl: string | ArrayBuffer | null = fileReader.result
                 if (typeof resultUrl == "string") {
-                    setImageUrl(resultUrl);
+                    setImageUrl(resultUrl)
                 }
-            };
-            fileReader.readAsDataURL(file);
+            }
+            fileReader.readAsDataURL(file)
         }
-    };
+    }
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
-            handleOpenChange(false);
+            handleOpenChange(false)
         }
-    }, [formState, handleOpenChange]);
+    }, [formState, handleOpenChange])
 
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
@@ -183,7 +182,7 @@ export default function EditEventButtonClient({
 
                     <div>
                         <Label htmlFor="picture">Image</Label>
-                        {imageUrl ?
+                        {imageUrl ? (
                             <Image
                                 src={imageUrl}
                                 width={400}
@@ -191,7 +190,7 @@ export default function EditEventButtonClient({
                                 alt="Image de l'évènement"
                                 className="my-3 h-auto w-32 rounded-lg outline-2 outline-offset-2 outline-black"
                             />
-                        :   null}
+                        ) : null}
                         <Input
                             type="file"
                             id="picture"
@@ -199,13 +198,13 @@ export default function EditEventButtonClient({
                             onChange={handleImageInputChange}
                             accept="image/*"
                         />
-                        {previousPath ?
+                        {previousPath ? (
                             <input
                                 type="hidden"
                                 name="previousPath"
                                 value={previousPath}
                             />
-                        :   null}
+                        ) : null}
                     </div>
 
                     {/* Start Date */}
@@ -225,7 +224,7 @@ export default function EditEventButtonClient({
                             <TimePicker
                                 defaultValue={{
                                     hours: eventInfo.startTime.getHours(),
-                                    minutes: eventInfo.startTime.getMinutes(),
+                                    minutes: eventInfo.startTime.getMinutes()
                                 }}
                                 hoursInputName="startHour"
                                 minutesInputName="startMinute"
@@ -250,7 +249,7 @@ export default function EditEventButtonClient({
                             <TimePicker
                                 defaultValue={{
                                     hours: eventInfo.endTime.getHours(),
-                                    minutes: eventInfo.endTime.getMinutes(),
+                                    minutes: eventInfo.endTime.getMinutes()
                                 }}
                                 hoursInputName="endHour"
                                 minutesInputName="endMinute"
@@ -286,14 +285,14 @@ export default function EditEventButtonClient({
                         </div>
                     </div>
 
-                    {formState?.error ?
+                    {formState?.error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>
                                 {formState.error}
                             </AlertDescription>
                         </Alert>
-                    :   null}
+                    ) : null}
                 </form>
 
                 <DialogFooter>
@@ -307,5 +306,5 @@ export default function EditEventButtonClient({
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    );
+    )
 }

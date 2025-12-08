@@ -1,53 +1,53 @@
-"use client";
+"use client"
 
-import { Category, Event } from "@prisma/client";
-import Image from "next/image";
+import { Category, Event } from "@prisma/client"
+import Image from "next/image"
 
-import { format } from "date-fns";
+import { format } from "date-fns"
 
-import { MdLocationPin } from "react-icons/md";
-import Link from "next/link";
+import { MdLocationPin } from "react-icons/md"
+import Link from "next/link"
 
 interface JsonLocation {
-    displayName: string;
-    coordinates: Coordinates;
+    displayName: string
+    coordinates: Coordinates
 }
 
 interface Coordinates {
-    lat: string;
-    lon: string;
+    lat: string
+    lon: string
 }
 
 function processLocationData(value: string): {
-    json?: JsonLocation;
-    string?: string;
+    json?: JsonLocation
+    string?: string
 } {
     try {
-        const json = JSON.parse(value);
+        const json = JSON.parse(value)
         return {
-            json: json,
-        };
+            json: json
+        }
     } catch {
         return {
-            string: value,
-        };
+            string: value
+        }
     }
 }
 
 export default function EventCard({
     event,
     archive,
-    imageUrl,
+    imageUrl
 }: {
-    event: Event & { category: { name: string } };
-    archive: boolean;
-    imageUrl: string;
+    event: Event & { category: { name: string } }
+    archive: boolean
+    imageUrl: string
 }) {
-    const fontColor: string = archive ? "#2B2B2B" : "#FFDAA5";
-    const backgroundColor: string = archive ? "#C5C5C5" : "#E0832E";
+    const fontColor: string = archive ? "#2B2B2B" : "#FFDAA5"
+    const backgroundColor: string = archive ? "#C5C5C5" : "#E0832E"
 
     const location: { json?: JsonLocation; string?: string } =
-        processLocationData(event.location);
+        processLocationData(event.location)
 
     return (
         <div
@@ -75,7 +75,7 @@ export default function EventCard({
                     className={`rounded-full px-4 text-center text-sm`}
                     style={{
                         backgroundColor: fontColor,
-                        color: backgroundColor,
+                        color: backgroundColor
                     }}
                 >
                     {event.category.name}
@@ -94,9 +94,9 @@ export default function EventCard({
                 >
                     <MdLocationPin size={20} className="min-h-4 min-w-4" />
                     <span className="mt-1 overflow-hidden text-ellipsis text-nowrap text-sm">
-                        {location.json ?
-                            location.json.displayName.split(",")[0]
-                        :   location.string!.split(",")[0]}
+                        {location.json
+                            ? location.json.displayName.split(",")[0]
+                            : location.string!.split(",")[0]}
                     </span>
                 </div>
             </div>
@@ -107,7 +107,7 @@ export default function EventCard({
                     className="line-clamp-3 h-1/2 flex-1 text-ellipsis"
                     style={{
                         color: archive ? fontColor : "white",
-                        opacity: archive ? 0.9 : 1,
+                        opacity: archive ? 0.9 : 1
                     }}
                 >
                     {event.desc}
@@ -119,16 +119,16 @@ export default function EventCard({
                         className="text mt-1 rounded-full px-4 py-1 text-center font-semibold outline transition-all hover:outline-2"
                         style={{
                             backgroundColor: fontColor,
-                            color: backgroundColor,
+                            color: backgroundColor
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.backgroundColor =
-                                backgroundColor;
-                            e.currentTarget.style.color = fontColor;
+                                backgroundColor
+                            e.currentTarget.style.color = fontColor
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = fontColor;
-                            e.currentTarget.style.color = backgroundColor;
+                            e.currentTarget.style.backgroundColor = fontColor
+                            e.currentTarget.style.color = backgroundColor
                         }}
                     >
                         En savoir +
@@ -136,5 +136,5 @@ export default function EventCard({
                 </div>
             </div>
         </div>
-    );
+    )
 }

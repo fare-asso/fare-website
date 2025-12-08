@@ -1,19 +1,19 @@
-import { AutocompleteResponse } from "./types";
+import { AutocompleteResponse } from "./types"
 
 /**
  * An API request which gives autocompletion for an address query.
  */
 export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get("query");
+    const { searchParams } = new URL(request.url)
+    const query = searchParams.get("query")
 
     if (!query) {
         return new Response(
             JSON.stringify({ error: "Erreur: Requête nulle" }),
             {
-                status: 400,
-            },
-        );
+                status: 400
+            }
+        )
     }
 
     // Validate the query length
@@ -22,9 +22,9 @@ export async function GET(request: Request) {
         return new Response(
             JSON.stringify({ error: "Erreur: Requête trop courte" }),
             {
-                status: 400,
-            },
-        );
+                status: 400
+            }
+        )
     }
 
     try {
@@ -34,27 +34,26 @@ export async function GET(request: Request) {
             {
                 method: "GET",
                 headers: {
-                    "Content-Type": "application/json",
-                },
-            },
-        );
+                    "Content-Type": "application/json"
+                }
+            }
+        )
 
         if (!autocompleteResponse.ok) {
-            throw new Error("Failed to fetch data from Nominatim API");
+            throw new Error("Failed to fetch data from Nominatim API")
         }
 
-        const jsonData: AutocompleteResponse =
-            await autocompleteResponse.json();
+        const jsonData: AutocompleteResponse = await autocompleteResponse.json()
 
         // Return the results
-        return Response.json(jsonData);
+        return Response.json(jsonData)
     } catch (error) {
-        console.error("Error fetching location data:", error);
+        console.error("Error fetching location data:", error)
         return new Response(
             JSON.stringify({ error: "Internal Server Error" }),
             {
-                status: 500,
-            },
-        );
+                status: 500
+            }
+        )
     }
 }

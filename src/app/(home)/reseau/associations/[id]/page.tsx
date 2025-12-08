@@ -1,49 +1,49 @@
-import prisma from "@/helpers/db";
-import { createClient } from "@/helpers/supabase/server";
-import Image from "next/image";
-import { Metadata } from "next";
-import Link from "next/link";
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
+import Image from "next/image"
+import { Metadata } from "next"
+import Link from "next/link"
 
 export async function generateMetadata({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }): Promise<Metadata> {
-    const { id } = await params;
+    const { id } = await params
 
     if (isNaN(Number(id)))
         return {
             title: "Association",
-            description: "Page d'association",
-        };
+            description: "Page d'association"
+        }
 
     const associationMetadata = await prisma.association.findUnique({
         where: {
-            id: Number(id),
-        },
-    });
+            id: Number(id)
+        }
+    })
 
     if (!associationMetadata) {
         return {
             title: "Association Inconnue",
             description:
-                "Nous n'avons pas pu trouver l'association que vous recherchez...",
-        };
+                "Nous n'avons pas pu trouver l'association que vous recherchez..."
+        }
     }
 
     return {
         title: `FARE - ${associationMetadata.name}`,
-        description: associationMetadata.desc,
-    };
+        description: associationMetadata.desc
+    }
 }
 
 export default async function Page({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }) {
-    const supabase = await createClient();
-    const { id } = await params;
+    const supabase = await createClient()
+    const { id } = await params
 
     // check if the parameter is correct
     if (isNaN(Number(id))) {
@@ -51,21 +51,21 @@ export default async function Page({
             <div>
                 <span>{"L'association recherchée n'existe pas"}</span>
             </div>
-        );
+        )
     }
 
     const associationRecord = await prisma.association.findUnique({
         where: {
-            id: Number(id),
-        },
-    });
+            id: Number(id)
+        }
+    })
 
     if (!associationRecord) {
         return (
             <div>
                 <span>{"L'association recherchée n'existe pas ou plus"}</span>
             </div>
-        );
+        )
     }
 
     return (
@@ -92,5 +92,5 @@ export default async function Page({
                 />
             </div>
         </div>
-    );
+    )
 }

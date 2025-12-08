@@ -1,42 +1,42 @@
-"use client";
+"use client"
 
-import DatePicker from "@/components/ui/input/datePicker";
-import NumberInput from "@/components/ui/input/numberInput";
-import EquipmentSelection from "./equipmentSelection";
-import { BagadAssoEquipment } from "@prisma/client";
-import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction";
-import { useActionState, useEffect, useState } from "react";
-import LoadingRing from "@/components/dashboard/loadingRing";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import Captcha from "@/components/captcha/recaptcha";
+import DatePicker from "@/components/ui/input/datePicker"
+import NumberInput from "@/components/ui/input/numberInput"
+import EquipmentSelection from "./equipmentSelection"
+import { BagadAssoEquipment } from "@prisma/client"
+import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction"
+import { useActionState, useEffect, useState } from "react"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import Captcha from "@/components/captcha/recaptcha"
 
 export default function BagadAssoForm({
-    equipmentList,
+    equipmentList
 }: {
-    equipmentList: BagadAssoEquipment[];
+    equipmentList: BagadAssoEquipment[]
 }) {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         any
-    >(submitBagadAssoFormAction, undefined);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [captchaValue, setCaptchaValue] = useState<string | null>(null);
+    >(submitBagadAssoFormAction, undefined)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [captchaValue, setCaptchaValue] = useState<string | null>(null)
 
     // Arrêter le chargement lorsque l'action du formulaire indique un succès
     useEffect(() => {
-        setIsLoading(false);
-    }, [formState]);
+        setIsLoading(false)
+    }, [formState])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+        event.preventDefault()
 
-        const formData = new FormData(event.currentTarget);
+        const formData = new FormData(event.currentTarget)
 
-        setIsLoading(true);
+        setIsLoading(true)
 
-        formAction(formData);
-    };
+        formAction(formData)
+    }
 
     return (
         <form
@@ -184,14 +184,14 @@ export default function BagadAssoForm({
                 <Captcha onChange={setCaptchaValue} />
             </div>
 
-            {formState?.error ?
+            {formState?.error ? (
                 <Alert variant="destructive">
                     <AlertTitle>Erreur</AlertTitle>
                     <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
-                : null}
+            ) : null}
 
-            {formState?.success ?
+            {formState?.success ? (
                 <Alert
                     variant="destructive"
                     className="mt-4 border-green-600 text-green-600"
@@ -202,7 +202,7 @@ export default function BagadAssoForm({
                         }
                     </AlertDescription>
                 </Alert>
-                : null}
+            ) : null}
 
             <button
                 type="submit"
@@ -210,11 +210,9 @@ export default function BagadAssoForm({
                 disabled={isLoading}
             >
                 {" "}
-                {isLoading ?
-                    <LoadingRing />
-                    : null}{" "}
-                Valider la demande de matériel
+                {isLoading ? <LoadingRing /> : null} Valider la demande de
+                matériel
             </button>
         </form>
-    );
+    )
 }

@@ -1,16 +1,16 @@
-import CreateArticleButton from "@/components/dashboard/Articles/createArticleButton";
+import CreateArticleButton from "@/components/dashboard/Articles/createArticleButton"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
+import { Suspense } from "react"
 
-import ArticleList from "@/components/dashboard/Articles/articleList";
+import ArticleList from "@/components/dashboard/Articles/articleList"
 
 export default async function Articles() {
     return (
@@ -30,5 +30,5 @@ export default async function Articles() {
                 <CreateArticleButton />
             </CardFooter>
         </Card>
-    );
+    )
 }

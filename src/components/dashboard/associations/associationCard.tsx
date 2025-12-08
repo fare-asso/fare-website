@@ -1,19 +1,19 @@
-"use client";
+"use client"
 
-import Image from "next/image";
+import Image from "next/image"
 
-import { Association } from "@prisma/client";
-import EditAssociationButton from "./editAssociationButton";
-import SendInvitationLinkButton from "./sendInvitationLinkButton";
-import DeleteRepresentativeButton from "./deleteRepresentativeButton";
-import DeleteAssociationButton from "./deleteAssociationButton";
+import { Association } from "@prisma/client"
+import EditAssociationButton from "./editAssociationButton"
+import SendInvitationLinkButton from "./sendInvitationLinkButton"
+import DeleteRepresentativeButton from "./deleteRepresentativeButton"
+import DeleteAssociationButton from "./deleteAssociationButton"
 
 export default function AssociationCard({
     association,
-    logoUrl,
+    logoUrl
 }: {
-    association: Association;
-    logoUrl: string;
+    association: Association
+    logoUrl: string
 }) {
     return (
         <div className="bg-card text-card-foreground flex h-full w-full flex-col items-start rounded-lg border p-3 shadow-xs">
@@ -22,9 +22,11 @@ export default function AssociationCard({
                 <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 lg:opacity-0 lg:hover:opacity-100">
                     <DeleteAssociationButton association={association} />
                     <EditAssociationButton association={association} />
-                    {association.representativeId ?
+                    {association.representativeId ? (
                         <DeleteRepresentativeButton association={association} />
-                    :   <SendInvitationLinkButton association={association} />}
+                    ) : (
+                        <SendInvitationLinkButton association={association} />
+                    )}
                 </div>
                 <Image
                     src={logoUrl}
@@ -42,5 +44,5 @@ export default function AssociationCard({
                 {association.major}
             </div>
         </div>
-    );
+    )
 }

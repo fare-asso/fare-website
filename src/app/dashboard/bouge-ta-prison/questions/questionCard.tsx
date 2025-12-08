@@ -1,29 +1,29 @@
-"use client";
+"use client"
 
-import deleteTutorQuestion from "@/actions/bouge-ta-prison/deleteTutorQuestion";
-import LoadingRing from "@/components/dashboard/loadingRing";
-import { Button } from "@/components/ui/button";
-import { BTPTutorQuestion } from "@prisma/client";
-import { format } from "date-fns";
-import Link from "next/link";
-import { useState } from "react";
-import { MdDelete } from "react-icons/md";
+import deleteTutorQuestion from "@/actions/bouge-ta-prison/deleteTutorQuestion"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Button } from "@/components/ui/button"
+import { BTPTutorQuestion } from "@prisma/client"
+import { format } from "date-fns"
+import Link from "next/link"
+import { useState } from "react"
+import { MdDelete } from "react-icons/md"
 
 export default function QuestionCard({
-    question,
+    question
 }: {
-    question: BTPTutorQuestion;
+    question: BTPTutorQuestion
 }) {
-    const [isDeleting, setIsDeleting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false)
 
     const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
+        event.preventDefault()
 
-        setIsDeleting(true);
+        setIsDeleting(true)
         // Delete the question
-        const { success, error } = await deleteTutorQuestion(question.id);
-        setIsDeleting(false);
-    };
+        const { success, error } = await deleteTutorQuestion(question.id)
+        setIsDeleting(false)
+    }
 
     return (
         <div className="flex w-full flex-row items-center justify-between rounded-lg border p-2 shadow-xs md:p-4">
@@ -33,16 +33,14 @@ export default function QuestionCard({
                         href={`/dashboard/bouge-ta-prison/questions/${question.id}`}
                         className="w-full overflow-hidden text-ellipsis text-nowrap underline transition-all hover:opacity-75"
                     >
-                        {(
-                            (question.firstName + " " + question.lastName)
-                                .length > 20
-                        ) ?
-                            (
-                                question.firstName +
-                                " " +
-                                question.lastName
-                            ).slice(0, 20) + "..."
-                        :   question.firstName + " " + question.lastName}
+                        {(question.firstName + " " + question.lastName).length >
+                        20
+                            ? (
+                                  question.firstName +
+                                  " " +
+                                  question.lastName
+                              ).slice(0, 20) + "..."
+                            : question.firstName + " " + question.lastName}
                     </Link>
                 </span>
 
@@ -58,16 +56,20 @@ export default function QuestionCard({
                     onClick={handleDelete}
                     disabled={isDeleting}
                 >
-                    {isDeleting ?
+                    {isDeleting ? (
                         <span className="mr-1 hidden md:block">
                             Suppression
                         </span>
-                    :   <span className="mr-1 hidden md:block">Supprimer</span>}
-                    {isDeleting ?
+                    ) : (
+                        <span className="mr-1 hidden md:block">Supprimer</span>
+                    )}
+                    {isDeleting ? (
                         <LoadingRing className="mr-0!" />
-                    :   <MdDelete size={20} />}
+                    ) : (
+                        <MdDelete size={20} />
+                    )}
                 </Button>
             </div>
         </div>
-    );
+    )
 }

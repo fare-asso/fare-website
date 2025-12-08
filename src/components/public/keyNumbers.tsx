@@ -1,14 +1,14 @@
-import type { Association } from "@prisma/client";
-import prisma from "@/helpers/db";
-import { AutoAnimatedNumber } from "../ui/animated-number";
+import type { Association } from "@prisma/client"
+import prisma from "@/helpers/db"
+import { AutoAnimatedNumber } from "../ui/animated-number"
 
 export default async function KeyNumbers() {
-    let associations: Association[] | undefined;
+    let associations: Association[] | undefined
 
     try {
-        associations = await prisma.association.findMany();
+        associations = await prisma.association.findMany()
     } catch (e) {
-        console.error("Failed to fetch associations");
+        console.error("Failed to fetch associations")
     }
 
     return (
@@ -42,5 +42,5 @@ export default async function KeyNumbers() {
                 </span>
             </div>
         </div>
-    );
+    )
 }

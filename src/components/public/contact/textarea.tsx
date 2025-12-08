@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
-import { cn } from "@/lib/utils";
-import { InputHTMLAttributes } from "react";
+import { cn } from "@/lib/utils"
+import { InputHTMLAttributes } from "react"
 
-import { RiErrorWarningFill } from "react-icons/ri";
+import { RiErrorWarningFill } from "react-icons/ri"
 
-import React from "react";
-import { FieldError } from "react-hook-form";
+import React from "react"
+import { FieldError } from "react-hook-form"
 
 const TextArea = React.forwardRef<
     HTMLTextAreaElement,
     InputHTMLAttributes<HTMLTextAreaElement> & {
-        className?: string;
-        error?: FieldError;
+        className?: string
+        error?: FieldError
     }
 >(({ className, error, ...props }, ref) => {
     return (
@@ -30,8 +30,8 @@ const TextArea = React.forwardRef<
                 </div>
             )}
         </div>
-    );
-});
+    )
+})
 
-TextArea.displayName = "TextArea";
-export default TextArea;
+TextArea.displayName = "TextArea"
+export default TextArea

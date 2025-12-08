@@ -1,81 +1,81 @@
-import prisma from "@/helpers/db";
-import Link from "next/link";
-import { Metadata } from "next";
+import prisma from "@/helpers/db"
+import Link from "next/link"
+import { Metadata } from "next"
 
-import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml";
+import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml"
 
-import { format } from "date-fns";
-import MoreArticles from "@/components/public/articles/moreArticles";
-import { JSONContent } from "@tiptap/react";
-import ContentHTML from "@/components/ui/rich-text-editor/contentHTML";
+import { format } from "date-fns"
+import MoreArticles from "@/components/public/articles/moreArticles"
+import { JSONContent } from "@tiptap/react"
+import ContentHTML from "@/components/ui/rich-text-editor/contentHTML"
 
 export async function generateMetadata({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }): Promise<Metadata> {
-    const { id } = await params;
+    const { id } = await params
 
     if (isNaN(Number(id)))
         return {
             title: "Article",
-            description: "Un article",
-        };
+            description: "Un article"
+        }
 
     const articleMetadata = await prisma.article.findUnique({
         where: {
-            id: Number(id),
-        },
-    });
+            id: Number(id)
+        }
+    })
 
     if (!articleMetadata) {
         return {
             title: "Article non trouvé",
-            description: "Erreur...",
-        };
+            description: "Erreur..."
+        }
     }
 
     return {
         title: `${articleMetadata.title}`,
         description: extractFirstWords(
             10,
-            JSON.parse(JSON.stringify(articleMetadata.content)),
-        ),
-    };
+            JSON.parse(JSON.stringify(articleMetadata.content))
+        )
+    }
 }
 
 export default async function Page({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }) {
-    const { id } = await params;
+    const { id } = await params
     // check if the parameter is correct
     if (isNaN(Number(id))) {
         return (
             <div>
                 <span>{"L'article recherché n'existe pas"}</span>
             </div>
-        );
+        )
     }
 
     const articleRecord = await prisma.article.findUnique({
         where: {
-            id: Number(id),
-        },
-    });
+            id: Number(id)
+        }
+    })
 
     if (!articleRecord) {
         return (
             <div>
                 <span>{"L'article recherché n'existe pas ou plus"}</span>
             </div>
-        );
+        )
     }
 
     const articleContent: JSONContent = JSON.parse(
-        JSON.stringify(articleRecord.content),
-    );
+        JSON.stringify(articleRecord.content)
+    )
 
     return (
         <div className="flex w-[90%] flex-col items-start pt-14">
@@ -104,5 +104,5 @@ export default async function Page({
                 </div>
             </div>
         </div>
-    );
+    )
 }

@@ -1,44 +1,44 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import Input from "./input";
-import clsx from "clsx";
-import TextArea from "./textarea";
-import { Contact, ContactSchema } from "@/schemas/contact";
-import { useState } from "react";
-import LoadingRing from "@/components/dashboard/loadingRing";
-import submitContactFormAction from "@/actions/contact/submitContactFormAction";
-import { RiCheckFill } from "react-icons/ri";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import Input from "./input"
+import clsx from "clsx"
+import TextArea from "./textarea"
+import { Contact, ContactSchema } from "@/schemas/contact"
+import { useState } from "react"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import submitContactFormAction from "@/actions/contact/submitContactFormAction"
+import { RiCheckFill } from "react-icons/ri"
 
 export default function ContactForm() {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [success, setSuccess] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [success, setSuccess] = useState<boolean>(false)
 
     const form = useForm<Contact>({
-        resolver: zodResolver(ContactSchema),
-    });
+        resolver: zodResolver(ContactSchema)
+    })
 
     const getFirstError = () => {
-        const firstError = Object.entries(form.formState.errors)[0];
-        return firstError ? firstError[1].message : null;
-    };
+        const firstError = Object.entries(form.formState.errors)[0]
+        return firstError ? firstError[1].message : null
+    }
 
     const onSubmit = async (data: Contact) => {
-        setIsLoading(true);
+        setIsLoading(true)
 
-        const res = await submitContactFormAction(data);
+        const res = await submitContactFormAction(data)
 
         res.errors?.forEach(({ message, field }) => {
-            form.setError(field as keyof Contact, { type: "manual", message });
-        });
+            form.setError(field as keyof Contact, { type: "manual", message })
+        })
 
         if (res.success) {
-            setIsLoading(false);
-            setSuccess(true);
-            form.reset();
+            setIsLoading(false)
+            setSuccess(true)
+            form.reset()
         }
-    };
+    }
 
     return (
         <div className="mt-12 flex w-full flex-col rounded-3xl bg-black p-4 md:w-[70%] md:flex-row md:p-8">
@@ -103,19 +103,22 @@ export default function ContactForm() {
                             "cursor-not-allowed bg-red-500! hover:bg-red-500",
                         success &&
                             "cursor-default bg-green-500! hover:bg-green-500",
-                        isLoading && "cursor-wait",
+                        isLoading && "cursor-wait"
                     )}
                 >
                     {getFirstError() ??
-                        (isLoading ? <LoadingRing className="size-[28px]!" />
-                        : success ?
+                        (isLoading ? (
+                            <LoadingRing className="size-[28px]!" />
+                        ) : success ? (
                             <div className="flex flex-row items-center justify-center">
                                 <RiCheckFill size={25} className="mr-1" />{" "}
                                 Demande envoyée
                             </div>
-                        :   "Envoyer")}
+                        ) : (
+                            "Envoyer"
+                        ))}
                 </button>
             </form>
         </div>
-    );
+    )
 }

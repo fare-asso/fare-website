@@ -1,33 +1,33 @@
-"use client";
-import { Editor } from "@tiptap/react";
-import { useState, useRef, useEffect } from "react";
-import { BlockPicker, ColorChangeHandler } from "react-color";
+"use client"
+import { Editor } from "@tiptap/react"
+import { useState, useRef, useEffect } from "react"
+import { BlockPicker, ColorChangeHandler } from "react-color"
 
 export default function ColorPicker({ editor }: { editor: Editor }) {
     const [color, setColor] = useState<string>(
-        editor.getAttributes("textStyle").color ?? "#000000",
-    );
-    const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false);
-    const containerRef = useRef<HTMLDivElement>(null);
+        editor.getAttributes("textStyle").color ?? "#000000"
+    )
+    const [isPickerVisible, setIsPickerVisible] = useState<boolean>(false)
+    const containerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        setColor(editor.getAttributes("textStyle").color ?? "#000000");
-    }, [editor.getAttributes("textStyle").color]);
+        setColor(editor.getAttributes("textStyle").color ?? "#000000")
+    }, [editor.getAttributes("textStyle").color])
 
     const handleColorChange: ColorChangeHandler = (event) => {
-        setColor(event.hex);
-        editor.chain().focus().setColor(event.hex).run();
-        toggleColorPicker();
-    };
+        setColor(event.hex)
+        editor.chain().focus().setColor(event.hex).run()
+        toggleColorPicker()
+    }
 
     const toggleColorPicker = () => {
-        setIsPickerVisible(!isPickerVisible);
-    };
+        setIsPickerVisible(!isPickerVisible)
+    }
 
     const onClickOnColorPicker = (event: React.MouseEvent) => {
-        event.preventDefault();
-        toggleColorPicker();
-    };
+        event.preventDefault()
+        toggleColorPicker()
+    }
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -35,20 +35,20 @@ export default function ColorPicker({ editor }: { editor: Editor }) {
                 containerRef.current &&
                 !containerRef.current.contains(event.target as Node)
             ) {
-                setIsPickerVisible(false);
+                setIsPickerVisible(false)
             }
-        };
+        }
 
         // Add event listener when picker is visible
         if (isPickerVisible) {
-            document.addEventListener("mousedown", handleClickOutside);
+            document.addEventListener("mousedown", handleClickOutside)
         }
 
         // Cleanup the event listener
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isPickerVisible]);
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [isPickerVisible])
 
     return (
         <div ref={containerRef} className="relative inline-block">
@@ -56,7 +56,7 @@ export default function ColorPicker({ editor }: { editor: Editor }) {
                 <div
                     className="z-10 h-5 w-5 rounded-full opacity-100 ring-1 ring-inset ring-white hover:ring-offset-1"
                     style={{
-                        backgroundColor: color,
+                        backgroundColor: color
                     }}
                 ></div>
             </button>
@@ -65,7 +65,7 @@ export default function ColorPicker({ editor }: { editor: Editor }) {
                     className="absolute left-0 top-full z-10 mt-1"
                     style={{
                         transform: "translateX(-50%)",
-                        left: "50%",
+                        left: "50%"
                     }}
                 >
                     <BlockPicker
@@ -83,11 +83,11 @@ export default function ColorPicker({ editor }: { editor: Editor }) {
                             "#ff8a65",
                             "#000000",
                             "#555555",
-                            "#697689",
+                            "#697689"
                         ]}
                     />
                 </div>
             )}
         </div>
-    );
+    )
 }

@@ -1,10 +1,10 @@
-import Link from "next/link";
-import TutorApplicationForm from "./TutorApplicationForm";
+import Link from "next/link"
+import TutorApplicationForm from "./TutorApplicationForm"
 
 // Create metadata for the page
 export const metadata = {
-    title: "Devenir tuteur Bouge Ta Prison | FARE",
-};
+    title: "Devenir tuteur Bouge Ta Prison | FARE"
+}
 
 export default function Tutorat() {
     return (
@@ -104,5 +104,5 @@ export default function Tutorat() {
                 </section>
             </div>
         </div>
-    );
+    )
 }

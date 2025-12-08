@@ -1,36 +1,36 @@
-import type { Metadata } from "next";
-import "../globals.css";
+import type { Metadata } from "next"
+import "../globals.css"
 
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster"
 
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import SideBarApp from "@/components/dashboard/sideBarApp";
-import { redirect } from "next/navigation";
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth";
-import CurrentRoute from "@/components/dashboard/currentRoute";
-import { Separator } from "@/components/ui/separator";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import SideBarApp from "@/components/dashboard/sideBarApp"
+import { redirect } from "next/navigation"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import CurrentRoute from "@/components/dashboard/currentRoute"
+import { Separator } from "@/components/ui/separator"
 
 export const metadata: Metadata = {
     title: "Dashboard",
-    description: "",
-};
+    description: ""
+}
 
 export default async function RootLayout({
-    children,
+    children
 }: Readonly<{
-    children: React.ReactNode;
+    children: React.ReactNode
 }>) {
     // Check user permissions
-    const user = await getCurrentUserWithPermissions();
+    const user = await getCurrentUserWithPermissions()
 
     if (!user) {
-        redirect("/login");
+        redirect("/login")
     }
 
     // Check if user has access to dashboard
     const permissions = user.permissions.map(
-        (permission) => permission.permission,
-    );
+        (permission) => permission.permission
+    )
 
     return (
         <SidebarProvider>
@@ -59,5 +59,5 @@ export default async function RootLayout({
 
             <Toaster />
         </SidebarProvider>
-    );
+    )
 }

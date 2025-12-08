@@ -1,50 +1,50 @@
-"use client";
+"use client"
 
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+    SelectValue
+} from "@/components/ui/select"
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 
 interface Category {
-    id: number;
-    name: string;
+    id: number
+    name: string
 }
 
 export default function CategorySelect({
-    defaultValue,
+    defaultValue
 }: {
-    defaultValue: string;
+    defaultValue: string
 }) {
     const [categoryItems, setCategoryItems] = useState<React.ReactElement>(
-        <></>,
-    );
+        <></>
+    )
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch("/api/categories");
+                const response = await fetch("/api/categories")
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`)
                 }
-                const data = await response.json();
+                const data = await response.json()
                 const items = data.categories.map((category: Category) => (
                     <SelectItem key={category.id} value={category.name}>
                         {category.name}
                     </SelectItem>
-                ));
-                setCategoryItems(<>{items}</>);
+                ))
+                setCategoryItems(<>{items}</>)
             } catch (error) {
-                console.error(error);
+                console.error(error)
             }
-        };
+        }
 
-        fetchCategories();
-    }, []);
+        fetchCategories()
+    }, [])
 
     // const categoriesItems = categories.map((category) => <SelectItem key={category.id} value={category.name}>{category.name}</SelectItem>)
 
@@ -55,5 +55,5 @@ export default function CategorySelect({
             </SelectTrigger>
             <SelectContent>{categoryItems}</SelectContent>
         </Select>
-    );
+    )
 }
