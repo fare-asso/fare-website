@@ -4,11 +4,11 @@ export async function verifyCaptcha(captchaValue: string) {
         {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-            },
-        },
-    );
+                "Content-Type": "application/json"
+            }
+        }
+    )
 
-    const data = await response.json();
-    return data.success;
+    const data = await response.json()
+    return data.success
 }

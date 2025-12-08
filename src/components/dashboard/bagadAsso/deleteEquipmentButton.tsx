@@ -1,6 +1,8 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { startTransition, useActionState, useEffect } from "react"
+import { MdDelete } from "react-icons/md"
+import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -10,42 +12,37 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-import LoadingRing from "../loadingRing";
-
-import { startTransition, useActionState } from "react";
-import { useEffect } from "react";
-import { MdDelete } from "react-icons/md";
-
-import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction";
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import LoadingRing from "../loadingRing"
 
 export default function DeleteEquipmentButton({
-    equipmentId,
+    equipmentId
 }: {
-    equipmentId: number;
+    equipmentId: number
 }) {
     const [formState, formAction, pending] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
-    >(deleteEquipmentAction, undefined);
+        number
+    >(deleteEquipmentAction, undefined)
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
+            // Dialog closes automatically via AlertDialog
         }
-    }, [formState]);
+    }, [formState])
 
-    const handleDelete = async (
-        event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    const handleDelete = (
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
-        event.preventDefault();
+        event.preventDefault()
 
         startTransition(() => {
-            formAction(equipmentId);
-        });
-    };
+            formAction(equipmentId)
+        })
+    }
 
     return (
         <AlertDialog>
@@ -67,13 +64,10 @@ export default function DeleteEquipmentButton({
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete}>
-                        {pending ?
-                            <LoadingRing />
-                        :   null}{" "}
-                        Supprimer
+                        {pending ? <LoadingRing /> : null} Supprimer
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-    );
+    )
 }

@@ -1,23 +1,23 @@
-"use client";
+"use client"
 
+import Image from "next/image"
+
+import { MdAdminPanelSettings } from "react-icons/md"
+
+import LoginForm from "@/components/dashboard/loginForm"
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { MdAdminPanelSettings } from "react-icons/md";
-
-import LoginForm from "@/components/dashboard/loginForm";
-import Image from "next/image";
-
-import FARELogo from "/public/logo_fare.png";
+import FARELogo from "/public/logo_fare.png"
 
 export default function LoginPage() {
     return (
-        <Card className="mx-auto mt-20 max-w-sm min-w-1/3">
+        <Card className="mx-auto mt-20 min-w-1/3 max-w-sm">
             <CardHeader className="flex flex-col items-start">
                 <Image
                     src={FARELogo}
@@ -36,5 +36,5 @@ export default function LoginPage() {
                 <LoginForm></LoginForm>
             </CardContent>
         </Card>
-    );
+    )
 }

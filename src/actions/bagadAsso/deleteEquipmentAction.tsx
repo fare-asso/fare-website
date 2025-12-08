@@ -1,65 +1,63 @@
-"use server";
+"use server"
 
-import prisma from "@/helpers/db";
-
-import { createClient } from "@/helpers/supabase/server";
-import getCurrentUserRole from "@/helpers/user/role";
-
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from "next/cache"
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
+import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function deleteEquipmentAction(
-    prevState: { error?: string; success?: boolean } | undefined,
-    equipmentId: number,
+    _prevState: { error?: string; success?: boolean } | undefined,
+    equipmentId: number
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole();
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" };
-    if (role != "ADMIN")
+    const { role, error } = await getCurrentUserRole()
+    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
+    if (role !== "ADMIN")
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
-        };
+            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+        }
 
     // create supabase client
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // fetch association to delete
     const equipment = await prisma.bagadAssoEquipment.findUnique({
         where: {
-            id: equipmentId,
-        },
-    });
+            id: equipmentId
+        }
+    })
 
     if (equipment == null) {
-        return { error: "Echec de la suppression de l'équipement" };
+        return { error: "Echec de la suppression de l'équipement" }
     }
 
     /* Remove pictures from storage if there is some */
     if (equipment.imagePath) {
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
             .from("equipment-pictures")
-            .remove([equipment.imagePath]);
+            .remove([equipment.imagePath])
 
         if (error) {
-            console.log(error.message);
+            console.log(error.message)
             return {
-                error: "Echec de la suppression des images dans la base de données",
-            };
+                error: "Echec de la suppression des images dans la base de données"
+            }
         }
     }
 
     // delete record
     try {
-        const deletedRecord = await prisma.bagadAssoEquipment.delete({
+        const _deletedRecord = await prisma.bagadAssoEquipment.delete({
             where: {
-                id: equipmentId,
-            },
-        });
-        revalidatePath("/dashboard/bagadAsso");
-        revalidatePath("/bagadAsso");
-        return { success: true };
+                id: equipmentId
+            }
+        })
+        revalidatePath("/dashboard/bagadAsso")
+        revalidatePath("/bagadAsso")
+        return { success: true }
     } catch (_) {
         return {
-            error: "Echec de la suppression de l'équipement",
-        };
+            error: "Echec de la suppression de l'équipement"
+        }
     }
 }

@@ -1,44 +1,44 @@
-"use client";
+"use client"
 
-import createPasswordForRepresentativeAction from "@/actions/espace-asso/createPasswordForRepresentativeAction";
-import { Button } from "../ui/button";
+import { useEffect, useState } from "react"
+import { useFormState } from "react-dom"
+import createPasswordForRepresentativeAction from "@/actions/espace-asso/createPasswordForRepresentativeAction"
+import LoadingRing from "../dashboard/loadingRing"
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
+import { Button } from "../ui/button"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { useFormState } from "react-dom";
-import { useCallback, useEffect, useState } from "react";
-import LoadingRing from "../dashboard/loadingRing";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+    CardTitle
+} from "../ui/card"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
 
 export default function CreatePasswordForm({ email }: { email: string }) {
     const [formState, formAction] = useFormState<
         { error?: string; success?: boolean } | undefined,
-        any
-    >(createPasswordForRepresentativeAction, undefined);
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+        FormData
+    >(createPasswordForRepresentativeAction, undefined)
+    const [_dialogIsOpen, _setDialogIsOpen] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
-        setIsLoading(false);
-    }, [formState]);
+        setIsLoading(false)
+    }, [])
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
 
-        const formData = new FormData(event.currentTarget);
+        const formData = new FormData(event.currentTarget)
 
-        setIsLoading(true);
+        setIsLoading(true)
 
-        formAction(formData);
-    };
+        formAction(formData)
+    }
 
     return (
         <div className="w-full md:w-[50%] lg:w-[30%]">
@@ -79,25 +79,22 @@ export default function CreatePasswordForm({ email }: { email: string }) {
                             />
                         </div>
 
-                        {formState?.error ?
+                        {formState?.error ? (
                             <Alert variant="destructive">
                                 <AlertTitle>Erreur</AlertTitle>
                                 <AlertDescription>
                                     {formState.error}
                                 </AlertDescription>
                             </Alert>
-                        :   null}
+                        ) : null}
                     </form>
                 </CardContent>
                 <CardFooter>
                     <Button type="submit" form="createPasswordForm">
-                        {isLoading ?
-                            <LoadingRing />
-                        :   null}{" "}
-                        Valider
+                        {isLoading ? <LoadingRing /> : null} Valider
                     </Button>
                 </CardFooter>
             </Card>
         </div>
-    );
+    )
 }

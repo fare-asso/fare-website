@@ -1,48 +1,40 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useCallback, useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { MdEdit } from "react-icons/md"
+import { z } from "zod"
+import editMemberAction from "@/actions/members/editMemberAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter,
-} from "@/components/ui/dialog";
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { useState } from "react";
-
-import { useEffect, useCallback } from "react";
-
-import { MdEdit } from "react-icons/md";
-
-import editMemberAction from "@/actions/members/editMemberAction";
-import LoadingRing from "../loadingRing";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { uploadFile } from "@/helpers/supabase/upload";
-import { formDataToString, zodFieldValuesToFormData } from "@/helpers/formData";
-import FileInput from "@/components/ui/fileInput";
+    DialogTrigger
+} from "@/components/ui/dialog"
+import FileInput from "@/components/ui/fileInput"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { formDataToString, zodFieldValuesToFormData } from "@/helpers/formData"
+import { uploadFile } from "@/helpers/supabase/upload"
+import LoadingRing from "../loadingRing"
 
 type Member = {
-    id: number;
-    firstName: string;
-    lastName: string;
-    position: string;
-    picturePath: string;
-    email: string;
-    facebookUrl: string | null;
-    instagramUrl: string | null;
-    twitterUrl: string | null;
-};
+    id: number
+    firstName: string
+    lastName: string
+    position: string
+    picturePath: string
+    email: string
+    facebookUrl: string | null
+    instagramUrl: string | null
+    twitterUrl: string | null
+}
 
 const memberSchema = z.object({
     id: z.string().min(0, "L'id est obligatoire"),
@@ -50,24 +42,24 @@ const memberSchema = z.object({
     firstName: z.string().min(1, "Le prénom est obligatoire"),
     position: z.string().min(1, "Le poste est obligatoire"),
     picture:
-        typeof window === "undefined" ?
-            z.any()
+        typeof window === "undefined"
+            ? z.any()
             : z
-                .instanceof(FileList)
-                .optional()
-                .transform((fl) => {
-                    if (!fl || fl.length === 0) return undefined;
-                    return fl[0];
-                })
-                .refine(
-                    (file) => !file || file.type.split("/")[0] === "image",
-                    "Le format de l'image n'est pas valide",
-                )
-                .refine(
-                    (file) =>
-                        !file || file.size <= 1024 * 1024 * maxUploadSizeInMb,
-                    "La taille de l'image est trop grande",
-                ),
+                  .instanceof(FileList)
+                  .optional()
+                  .transform((fl) => {
+                      if (!fl || fl.length === 0) return undefined
+                      return fl[0]
+                  })
+                  .refine(
+                      (file) => !file || file.type.split("/")[0] === "image",
+                      "Le format de l'image n'est pas valide"
+                  )
+                  .refine(
+                      (file) =>
+                          !file || file.size <= 1024 * 1024 * maxUploadSizeInMb,
+                      "La taille de l'image est trop grande"
+                  ),
     email: z.string().email("L'email doit être valide"),
     facebook: z
         .string()
@@ -83,60 +75,60 @@ const memberSchema = z.object({
         .string()
         .url("L'URL Twitter doit être valide")
         .optional()
-        .or(z.literal("")),
-});
+        .or(z.literal(""))
+})
 
-type TMemberSchema = z.infer<typeof memberSchema>;
+type TMemberSchema = z.infer<typeof memberSchema>
 
-const maxUploadSizeInMb = 10;
+const maxUploadSizeInMb = 10
 
 export default function EditMemberButton({
     member,
-    pictureUrl,
+    pictureUrl: _pictureUrl
 }: {
-    member: Member;
-    pictureUrl: string;
+    member: Member
+    pictureUrl: string
 }) {
-    const [error, setError] = useState<string | undefined>(undefined);
-    const [success, setSuccess] = useState<boolean>(false);
+    const [error, setError] = useState<string | undefined>(undefined)
+    const [success, setSuccess] = useState<boolean>(false)
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
-        reset,
+        formState: { errors },
+        reset
     } = useForm<TMemberSchema>({
-        resolver: zodResolver(memberSchema),
-    });
+        resolver: zodResolver(memberSchema)
+    })
 
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
-            setDialogIsOpen(open);
+            setDialogIsOpen(open)
             if (!open) {
                 // Réinitialiser le formulaire lorsque le dialogue est fermé
-                reset();
-                setIsLoading(false);
+                reset()
+                setIsLoading(false)
             }
         },
-        [setDialogIsOpen, reset],
-    );
+        [reset]
+    )
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (success) {
-            handleOpenChange(false);
+            handleOpenChange(false)
         }
-        setIsLoading(false);
-    }, [success, handleOpenChange]);
+        setIsLoading(false)
+    }, [success, handleOpenChange])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const onSubmit = async (data: TMemberSchema) => {
-        setIsLoading(true);
+        setIsLoading(true)
 
-        let newPicturePath: string | undefined = undefined;
+        let newPicturePath: string | undefined
 
         // If a picture is provided, upload it and get the path
         if (data.picture) {
@@ -147,47 +139,47 @@ export default function EditMemberButton({
                 data.picture,
                 undefined,
                 maxUploadSizeInMb,
-                ["png", "jpeg", "jpg", "webp", "gif"],
-            );
+                ["png", "jpeg", "jpg", "webp", "gif"]
+            )
 
             if (uploadResponse.error) {
-                setError(uploadResponse.error);
-                setIsLoading(false);
-                return;
+                setError(uploadResponse.error)
+                setIsLoading(false)
+                return
             }
 
             // Set the new picture path
-            newPicturePath = uploadResponse.path!;
+            newPicturePath = uploadResponse.path ?? ""
         }
 
         // Build the formData with data values
         const formData = zodFieldValuesToFormData(data, {
-            excludeFields: ["picture"],
-        });
+            excludeFields: ["picture"]
+        })
 
         // Add the picture to the formData
         formData.append(
             "picturePath",
-            data.picture ? newPicturePath! : member.picturePath,
-        );
+            data.picture ? (newPicturePath ?? "") : member.picturePath
+        )
 
-        console.log(formDataToString(formData));
+        console.log(formDataToString(formData))
 
         // Send formData to server action without the file
-        const response = await editMemberAction(formData, member.id);
+        const response = await editMemberAction(formData, member.id)
 
         if (response.error) {
-            setIsLoading(false);
-            setError(response.error);
-            return;
+            setIsLoading(false)
+            setError(response.error)
+            return
         }
 
         if (response.success) {
-            setIsLoading(true);
-            setSuccess(true);
-            return;
+            setIsLoading(true)
+            setSuccess(true)
+            return
         }
-    };
+    }
 
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
@@ -384,12 +376,12 @@ export default function EditMemberButton({
                         )}
                     </div>
 
-                    {error ?
+                    {error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
-                        : null}
+                    ) : null}
                 </form>
 
                 <DialogFooter>
@@ -399,13 +391,10 @@ export default function EditMemberButton({
                         form="editMemberForm"
                         disabled={isLoading}
                     >
-                        {isLoading ?
-                            <LoadingRing />
-                            : null}{" "}
-                        Modifier
+                        {isLoading ? <LoadingRing /> : null} Modifier
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    );
+    )
 }

@@ -1,19 +1,19 @@
-import type { Metadata } from "next";
-import "../globals.css";
+import type { Metadata } from "next"
+import "../globals.css"
 
-import Footer from "@/components/footer/footer";
-import Header from "@/components/header/header";
+import Footer from "@/components/footer/footer"
+import Header from "@/components/header/header"
 
 export const metadata: Metadata = {
     title: "FARE",
     description:
-        "Site internet de la Fédération des Associations de Haute-Bretagne",
-};
+        "Site internet de la Fédération des Associations de Haute-Bretagne"
+}
 
 export default function RootLayout({
-    children,
+    children
 }: Readonly<{
-    children: React.ReactNode;
+    children: React.ReactNode
 }>) {
     return (
         <main className="flex min-h-screen flex-col items-center">
@@ -36,5 +36,5 @@ export default function RootLayout({
         //         </main>
         //     </body>
         // </html>
-    );
+    )
 }

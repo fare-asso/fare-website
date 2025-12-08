@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
-import { useFormStatus } from "react-dom";
-import { Button } from "../ui/button";
+import { useFormStatus } from "react-dom"
+import { Button } from "../ui/button"
 
 export default function LoginButton() {
-    const { pending } = useFormStatus();
+    const { pending } = useFormStatus()
 
     const loadingRing = (
         <svg
@@ -18,14 +18,16 @@ export default function LoginButton() {
             strokeLinecap="round"
             strokeLinejoin="round"
             className="mr-2 h-4 w-4 animate-spin"
+            aria-label="Chargement en cours"
         >
+            <title>Chargement en cours</title>
             <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
         </svg>
-    );
+    )
 
     return (
         <Button type="submit" disabled={pending}>
             {pending ? loadingRing : null} Connexion
         </Button>
-    );
+    )
 }

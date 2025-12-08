@@ -1,27 +1,27 @@
-import { createClient } from "../supabase/server";
+import { createClient } from "../supabase/server"
 
 export default async function getCurrentUserId(): Promise<{
-    userId?: string;
-    error?: string;
+    userId?: string
+    error?: string
 }> {
     // create supabase client
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // fetch current user
     const {
         data: { user },
-        error,
-    } = await supabase.auth.getUser();
+        error
+    } = await supabase.auth.getUser()
 
     if (user) {
         return {
-            userId: user.id,
-        };
+            userId: user.id
+        }
     } else {
         // User Session is not valid
-        console.log(error?.message);
+        console.log(error?.message)
         return {
-            error: "L'utilisateur n'est pas authentifié",
-        };
+            error: "L'utilisateur n'est pas authentifié"
+        }
     }
 }

@@ -1,121 +1,117 @@
-"use server";
+"use server"
 
-import prisma from "@/helpers/db";
-
-import { revalidatePath } from "next/cache";
-
-import { verifyCaptcha } from "@/helpers/captcha";
-import { sendEmail } from "@/helpers/email";
-import { bagadAssoTicketEmailTemplate } from "@/lib/htmlEmailTemplates";
+import { revalidatePath } from "next/cache"
+import { verifyCaptcha } from "@/helpers/captcha"
+import prisma from "@/helpers/db"
+import { sendEmail } from "@/helpers/email"
+import { bagadAssoTicketEmailTemplate } from "@/lib/htmlEmailTemplates"
 
 export default async function submitBagadAssoFormAction(
-    prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData,
+    _prevState: { error?: string; success?: boolean } | undefined,
+    formData: FormData
 ) {
     // Retrieve CAPTCHA value
-    const captchaValue = formData.get("g-recaptcha-response")?.toString();
+    const captchaValue = formData.get("g-recaptcha-response")?.toString()
 
     // Verify CAPTCHA
     if (!captchaValue) {
-        return { error: "Veuillez compléter le CAPTCHA." };
+        return { error: "Veuillez compléter le CAPTCHA." }
     }
 
-    const isCaptchaValid = await verifyCaptcha(captchaValue);
+    const isCaptchaValid = await verifyCaptcha(captchaValue)
     if (!isCaptchaValid) {
         return {
-            error: "La vérification CAPTCHA a échoué. Veuillez réessayer.",
-        };
+            error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
+        }
     }
 
     // retrieve form data fields
-    const association_name = formData.get("association-name")?.toString();
-    const association_email = formData.get("association-email")?.toString();
-    const association_referent_name = formData
+    const associationName = formData.get("association-name")?.toString()
+    const associationEmail = formData.get("association-email")?.toString()
+    const associationReferentName = formData
         .get("association-referent-name")
-        ?.toString();
-    const association_referent_first_name = formData
+        ?.toString()
+    const associationReferentFirstName = formData
         .get("association-referent-first-name")
-        ?.toString();
-    const association_referent_email = formData
+        ?.toString()
+    const associationReferentEmail = formData
         .get("association-referent-email")
-        ?.toString();
-    const association_referent_phone = formData
+        ?.toString()
+    const associationReferentPhone = formData
         .get("association-referent-phone")
-        ?.toString();
-    const event_name = formData.get("event-name")?.toString();
-    const event_type = formData.get("event-type")?.toString();
-    const event_date = formData.get("event-date")?.toString();
-    const event_address = formData.get("event-address")?.toString();
-    const event_participants = Number(formData.get("event-participants"));
-    const equipment_input = formData.get("equipment-input")?.toString();
-    const terms_and_conditions = formData
-        .get("terms-and-conditions")
-        ?.toString();
+        ?.toString()
+    const eventName = formData.get("event-name")?.toString()
+    const eventType = formData.get("event-type")?.toString()
+    const eventDate = formData.get("event-date")?.toString()
+    const eventAddress = formData.get("event-address")?.toString()
+    const eventParticipants = Number(formData.get("event-participants"))
+    const equipmentInput = formData.get("equipment-input")?.toString()
+    const termsAndConditions = formData.get("terms-and-conditions")?.toString()
 
     // Debug logs
-    console.log("Association Name:", association_name);
-    console.log("Association Email:", association_email);
-    console.log("Referent Name:", association_referent_name);
-    console.log("Referent First Name:", association_referent_first_name);
-    console.log("Referent Email:", association_referent_email);
-    console.log("Referent Phone:", association_referent_phone);
-    console.log("Event Name:", event_name);
-    console.log("Event Type:", event_type);
-    console.log("Event Date:", event_date);
-    console.log("Event Address:", event_address);
-    console.log("Event Participants:", event_participants);
-    console.log("Equipment Input:", equipment_input);
-    console.log("Terms and Conditions:", terms_and_conditions);
+    console.log("Association Name:", associationName)
+    console.log("Association Email:", associationEmail)
+    console.log("Referent Name:", associationReferentName)
+    console.log("Referent First Name:", associationReferentFirstName)
+    console.log("Referent Email:", associationReferentEmail)
+    console.log("Referent Phone:", associationReferentPhone)
+    console.log("Event Name:", eventName)
+    console.log("Event Type:", eventType)
+    console.log("Event Date:", eventDate)
+    console.log("Event Address:", eventAddress)
+    console.log("Event Participants:", eventParticipants)
+    console.log("Equipment Input:", equipmentInput)
+    console.log("Terms and Conditions:", termsAndConditions)
 
     // data validation
     if (
-        !association_name ||
-        !association_email ||
-        !association_referent_name ||
-        !association_referent_first_name ||
-        !association_referent_email ||
-        !association_referent_phone ||
-        !event_name ||
-        !event_type ||
-        !event_date ||
-        !event_address ||
-        isNaN(event_participants) ||
-        !equipment_input ||
-        !terms_and_conditions
+        !associationName ||
+        !associationEmail ||
+        !associationReferentName ||
+        !associationReferentFirstName ||
+        !associationReferentEmail ||
+        !associationReferentPhone ||
+        !eventName ||
+        !eventType ||
+        !eventDate ||
+        !eventAddress ||
+        Number.isNaN(eventParticipants) ||
+        !equipmentInput ||
+        !termsAndConditions
     ) {
         return {
-            error: "Un ou plusieurs champs ne sont pas remplis.",
-        };
+            error: "Un ou plusieurs champs ne sont pas remplis."
+        }
     }
 
     // terms and conditions
-    if (terms_and_conditions !== "on") {
-        return { error: "Veuillez accepter les termes et conditions" };
+    if (termsAndConditions !== "on") {
+        return { error: "Veuillez accepter les termes et conditions" }
     }
 
     // Check if event_date is a valid date
-    const eventDateObject = new Date(event_date);
-    if (isNaN(eventDateObject.getTime())) {
-        return { error: "La date de l'événement n'est pas valide." };
+    const eventDateObject = new Date(eventDate)
+    if (Number.isNaN(eventDateObject.getTime())) {
+        return { error: "La date de l'événement n'est pas valide." }
     }
 
     try {
         const ticketRecord = await prisma.bagadAssoTicket.create({
             data: {
-                assocation: association_name,
-                associationEmail: association_email,
-                firstName: association_referent_first_name,
-                lastName: association_name,
-                phoneNumber: association_referent_phone,
-                representativeEmail: association_referent_email,
-                eventName: event_name,
-                eventType: event_type,
+                assocation: associationName,
+                associationEmail: associationEmail,
+                firstName: associationReferentFirstName,
+                lastName: associationName,
+                phoneNumber: associationReferentPhone,
+                representativeEmail: associationReferentEmail,
+                eventName: eventName,
+                eventType: eventType,
                 eventDate: eventDateObject,
-                eventAddr: event_address,
-                estimatedParticipants: event_participants,
-                equipments: equipment_input,
-            },
-        });
+                eventAddr: eventAddress,
+                estimatedParticipants: eventParticipants,
+                equipments: equipmentInput
+            }
+        })
 
         const emailTransporterResponse = await sendEmail({
             to: "evenement@fare-asso.fr",
@@ -124,19 +120,19 @@ export default async function submitBagadAssoFormAction(
                 ticketRecord.id,
                 ticketRecord.assocation,
                 ticketRecord.eventDate,
-                ticketRecord.eventName,
-            ),
-        });
+                ticketRecord.eventName
+            )
+        })
 
         if (emailTransporterResponse.error) {
-            console.log("[ERROR] Failed to send email notification email");
+            console.log("[ERROR] Failed to send email notification email")
         }
 
-        revalidatePath("/dashboard/bagadAsso");
-        return { success: true };
+        revalidatePath("/dashboard/bagadAsso")
+        return { success: true }
     } catch {
         return {
-            error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer.",
-        };
+            error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
+        }
     }
 }

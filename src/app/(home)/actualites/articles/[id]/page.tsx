@@ -1,81 +1,79 @@
-import prisma from "@/helpers/db";
-import Link from "next/link";
-import { Metadata } from "next";
-
-import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml";
-
-import { format } from "date-fns";
-import MoreArticles from "@/components/public/articles/moreArticles";
-import { JSONContent } from "@tiptap/react";
-import ContentHTML from "@/components/ui/rich-text-editor/contentHTML";
+import type { JSONContent } from "@tiptap/react"
+import { format } from "date-fns"
+import type { Metadata } from "next"
+import Link from "next/link"
+import MoreArticles from "@/components/public/articles/moreArticles"
+import ContentHTML from "@/components/ui/rich-text-editor/contentHTML"
+import prisma from "@/helpers/db"
+import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml"
 
 export async function generateMetadata({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }): Promise<Metadata> {
-    const { id } = await params;
+    const { id } = await params
 
-    if (isNaN(Number(id)))
+    if (Number.isNaN(Number(id)))
         return {
             title: "Article",
-            description: "Un article",
-        };
+            description: "Un article"
+        }
 
     const articleMetadata = await prisma.article.findUnique({
         where: {
-            id: Number(id),
-        },
-    });
+            id: Number(id)
+        }
+    })
 
     if (!articleMetadata) {
         return {
             title: "Article non trouvé",
-            description: "Erreur...",
-        };
+            description: "Erreur..."
+        }
     }
 
     return {
         title: `${articleMetadata.title}`,
         description: extractFirstWords(
             10,
-            JSON.parse(JSON.stringify(articleMetadata.content)),
-        ),
-    };
+            JSON.parse(JSON.stringify(articleMetadata.content))
+        )
+    }
 }
 
 export default async function Page({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }) {
-    const { id } = await params;
+    const { id } = await params
     // check if the parameter is correct
-    if (isNaN(Number(id))) {
+    if (Number.isNaN(Number(id))) {
         return (
             <div>
                 <span>{"L'article recherché n'existe pas"}</span>
             </div>
-        );
+        )
     }
 
     const articleRecord = await prisma.article.findUnique({
         where: {
-            id: Number(id),
-        },
-    });
+            id: Number(id)
+        }
+    })
 
     if (!articleRecord) {
         return (
             <div>
                 <span>{"L'article recherché n'existe pas ou plus"}</span>
             </div>
-        );
+        )
     }
 
     const articleContent: JSONContent = JSON.parse(
-        JSON.stringify(articleRecord.content),
-    );
+        JSON.stringify(articleRecord.content)
+    )
 
     return (
         <div className="flex w-[90%] flex-col items-start pt-14">
@@ -87,13 +85,13 @@ export default async function Page({
             </Link>
 
             {/* Title */}
-            <h1 className="mt-2 text-3xl font-bold">{articleRecord.title}</h1>
+            <h1 className="mt-2 font-bold text-3xl">{articleRecord.title}</h1>
 
             {/* Date */}
-            <span className="text-sm text-black opacity-75">{`Publié le ${format(articleRecord.writtenOn, "dd/MM/yyyy")} à ${format(articleRecord.writtenOn, "HH'h'mm")}`}</span>
+            <span className="text-black text-sm opacity-75">{`Publié le ${format(articleRecord.writtenOn, "dd/MM/yyyy")} à ${format(articleRecord.writtenOn, "HH'h'mm")}`}</span>
 
             {/* Content */}
-            <div className="mt-8 flex w-full flex-col **:transition-all [&_a]:tracking-wide [&_a]:text-yellow-500 [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-yellow-300 [&_a]:hover:underline-offset-4 [&_img]:mx-auto [&_img]:my-4 [&_img]:w-full [&_img]:max-w-[500px] [&_img]:rounded-sm [&_ol]:list-decimal [&_ul]:list-disc">
+            <div className="mt-8 flex w-full flex-col **:transition-all [&_a]:text-yellow-500 [&_a]:tracking-wide [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-yellow-300 [&_a]:hover:underline-offset-4 [&_img]:mx-auto [&_img]:my-4 [&_img]:w-full [&_img]:max-w-[500px] [&_img]:rounded-sm [&_ol]:list-decimal [&_ul]:list-disc">
                 {/* Parse article content to HTML */}
                 <ContentHTML content={articleContent} />
             </div>
@@ -104,5 +102,5 @@ export default async function Page({
                 </div>
             </div>
         </div>
-    );
+    )
 }

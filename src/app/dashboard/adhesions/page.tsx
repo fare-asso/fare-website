@@ -1,16 +1,15 @@
-import AdhesionList from "@/components/dashboard/adhesions/adhesionList";
+import { Suspense } from "react"
+import AdhesionList from "@/components/dashboard/adhesions/adhesionList"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
-
-export default async function Adhesions() {
+export default function Adhesions() {
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">
@@ -26,5 +25,5 @@ export default async function Adhesions() {
             </CardContent>
             <CardFooter></CardFooter>
         </Card>
-    );
+    )
 }

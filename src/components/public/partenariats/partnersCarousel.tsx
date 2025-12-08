@@ -1,62 +1,64 @@
-"use client";
-import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
-import { GoArrowLeft, GoArrowRight } from "react-icons/go";
+"use client"
+import Image from "next/image"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { GoArrowLeft, GoArrowRight } from "react-icons/go"
 // Import all partner logos
-import LPI from "/public/partenaires/lapetiteimprimerie.png";
-import margueriteEtCie from "/public/partenaires/marguerite_et_cie.png";
+import LPI from "/public/partenaires/lapetiteimprimerie.png"
+import margueriteEtCie from "/public/partenaires/marguerite_et_cie.png"
 
 export default function PartnersCarousel() {
     // Array of partner logos
     const partners = [
         { id: 1, logo: LPI, name: "La Petite Imprimerie" },
-        { id: 2, logo: margueriteEtCie, name: "Marguerite & Cie" },
+        { id: 2, logo: margueriteEtCie, name: "Marguerite & Cie" }
         // You can add more partners here
-    ];
+    ]
 
-    const carouselRef = useRef<HTMLDivElement>(null);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const carouselRef = useRef<HTMLDivElement>(null)
+    const [currentIndex, setCurrentIndex] = useState(0)
 
     const scrollLeft = () => {
         if (carouselRef.current) {
             const newIndex =
-                currentIndex > 0 ? currentIndex - 1 : partners.length - 1;
-            setCurrentIndex(newIndex);
+                currentIndex > 0 ? currentIndex - 1 : partners.length - 1
+            setCurrentIndex(newIndex)
 
             carouselRef.current.scrollTo({
                 left: newIndex * carouselRef.current.clientWidth,
-                behavior: "smooth",
-            });
+                behavior: "smooth"
+            })
         }
-    };
+    }
 
-    const scrollRight = () => {
+    const scrollRight = useCallback(() => {
         if (carouselRef.current) {
-            const newIndex =
-                currentIndex < partners.length - 1 ? currentIndex + 1 : 0;
-            setCurrentIndex(newIndex);
-
-            carouselRef.current.scrollTo({
-                left: newIndex * carouselRef.current.clientWidth,
-                behavior: "smooth",
-            });
+            setCurrentIndex((prevIndex) => {
+                const newIndex =
+                    prevIndex < partners.length - 1 ? prevIndex + 1 : 0
+                carouselRef.current?.scrollTo({
+                    left: newIndex * (carouselRef.current?.clientWidth ?? 0),
+                    behavior: "smooth"
+                })
+                return newIndex
+            })
         }
-    };
+    }, [partners.length])
 
     // Auto-scroll functionality
     useEffect(() => {
         const autoScroll = setInterval(() => {
-            scrollRight();
-        }, 5000); // Change slide every 5 seconds
+            scrollRight()
+        }, 5000) // Change slide every 5 seconds
 
-        return () => clearInterval(autoScroll);
-    }, [currentIndex]);
+        return () => clearInterval(autoScroll)
+    }, [scrollRight])
 
     return (
         <div className="relative mx-auto w-full max-w-4xl overflow-hidden">
             {/* Navigation Arrows */}
-            <div className="pointer-events-none absolute top-1/2 z-20 flex w-full -translate-y-1/2 justify-between">
+            <div className="-translate-y-1/2 pointer-events-none absolute top-1/2 z-20 flex w-full justify-between">
                 <button
+                    type="button"
                     onClick={scrollLeft}
                     title="Bouton partenaires gauche"
                     className="pointer-events-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-black bg-white/70 shadow-md transition-all hover:bg-white/90"
@@ -65,6 +67,7 @@ export default function PartnersCarousel() {
                 </button>
 
                 <button
+                    type="button"
                     onClick={scrollRight}
                     title="Bouton partenaires droite"
                     className="pointer-events-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-black bg-white/70 shadow-md transition-all hover:bg-white/90"
@@ -83,7 +86,7 @@ export default function PartnersCarousel() {
                 className="no-scrollbar flex space-x-8 overflow-x-hidden scroll-smooth"
                 style={{
                     scrollSnapType: "x mandatory",
-                    WebkitOverflowScrolling: "touch",
+                    WebkitOverflowScrolling: "touch"
                 }}
             >
                 {partners.map((partner) => (
@@ -108,26 +111,27 @@ export default function PartnersCarousel() {
             <div className="mt-4 flex justify-center space-x-2">
                 {partners.map((_, index) => (
                     <button
+                        type="button"
                         title={`Position carousel ${index}`}
                         key={index}
                         onClick={() => {
-                            setCurrentIndex(index);
+                            setCurrentIndex(index)
                             if (carouselRef.current) {
                                 carouselRef.current.scrollTo({
                                     left:
                                         index * carouselRef.current.clientWidth,
-                                    behavior: "smooth",
-                                });
+                                    behavior: "smooth"
+                                })
                             }
                         }}
                         className={`h-2 w-2 rounded-full transition-all ${
-                            currentIndex === index ? "bg-black" : (
-                                "bg-gray-300 hover:bg-gray-400"
-                            )
+                            currentIndex === index
+                                ? "bg-black"
+                                : "bg-gray-300 hover:bg-gray-400"
                         }`}
                     />
                 ))}
             </div>
         </div>
-    );
+    )
 }

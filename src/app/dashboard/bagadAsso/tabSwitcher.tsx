@@ -1,39 +1,39 @@
-"use client";
+"use client"
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import React, { useCallback } from "react"
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function TabSwitcher({
-    children,
+    children
 }: {
-    children: React.ReactNode;
+    children: React.ReactNode
 }) {
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-    const router = useRouter();
+    const searchParams = useSearchParams()
+    const pathname = usePathname()
+    const router = useRouter()
 
-    const defaultTab = searchParams.get("tab") ?? "tickets";
+    const defaultTab = searchParams.get("tab") ?? "tickets"
 
     // Get a new searchParams string by merging the current
     // searchParams with a provided key/value pair
     const createQueryString = useCallback(
         (name: string, value: string) => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.set(name, value);
+            const params = new URLSearchParams(searchParams.toString())
+            params.set(name, value)
 
-            return params.toString();
+            return params.toString()
         },
-        [searchParams],
-    );
+        [searchParams]
+    )
 
     const setTab = useCallback(
         (tab: string) => {
-            router.push(pathname + "?" + createQueryString("tab", tab));
+            router.push(`${pathname}?${createQueryString("tab", tab)}`)
         },
-        [createQueryString, pathname, router],
-    );
+        [createQueryString, pathname, router]
+    )
 
     return (
         <Tabs
@@ -41,12 +41,15 @@ export default function TabSwitcher({
             className="flex h-full w-full flex-col items-center gap-2"
         >
             <TabsList className="grid w-full grid-cols-2 md:w-1/2">
-                <TabsTrigger value="tickets" onClick={(e) => setTab("tickets")}>
+                <TabsTrigger
+                    value="tickets"
+                    onClick={(_e) => setTab("tickets")}
+                >
                     Tickets
                 </TabsTrigger>
                 <TabsTrigger
                     value="materiels"
-                    onClick={(e) => setTab("materiels")}
+                    onClick={(_e) => setTab("materiels")}
                 >
                     Matériels
                 </TabsTrigger>
@@ -58,5 +61,5 @@ export default function TabSwitcher({
                 {React.Children.toArray(children)[1]}
             </TabsContent>
         </Tabs>
-    );
+    )
 }

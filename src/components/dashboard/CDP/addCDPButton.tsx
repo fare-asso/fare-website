@@ -1,90 +1,84 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-
+import {
+    startTransition,
+    useActionState,
+    useCallback,
+    useEffect,
+    useState
+} from "react"
+import createCDPAction from "@/actions/CDP/createCDPAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter,
-} from "@/components/ui/dialog";
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { startTransition, useActionState, useState } from "react";
-
-import { useEffect, useCallback } from "react";
-
-import createCDPAction from "@/actions/CDP/createCDPAction";
+    DialogTrigger
+} from "@/components/ui/dialog"
+import FileInput from "@/components/ui/fileInput"
+import { Input } from "@/components/ui/input"
+import DatePicker from "@/components/ui/input/datePicker"
+import { Label } from "@/components/ui/label"
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import DatePicker from "@/components/ui/input/datePicker";
-import LoadingRing from "../loadingRing";
-import { uploadFile } from "@/helpers/supabase/upload";
-import FileInput from "@/components/ui/fileInput";
+    SelectValue
+} from "@/components/ui/select"
+import { uploadFile } from "@/helpers/supabase/upload"
+import LoadingRing from "../loadingRing"
 
 export default function AddNewCDPButton() {
-    const [error, setError] = useState<string | undefined>(undefined);
+    const [error, setError] = useState<string | undefined>(undefined)
 
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
-    >(createCDPAction, undefined);
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+        FormData
+    >(createCDPAction, undefined)
+    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    const maxUploadSizeInMb = 25;
+    const maxUploadSizeInMb = 25
 
-    const handleOpenChange = useCallback(
-        (open: boolean) => {
-            setDialogIsOpen(open);
-            if (!open) {
-                // Réinitialiser le formulaire lorsque le dialogue est fermé
-                setError(undefined);
-                setIsLoading(false);
-            }
-        },
-        [setDialogIsOpen],
-    );
+    const handleOpenChange = useCallback((open: boolean) => {
+        setDialogIsOpen(open)
+        if (!open) {
+            // Réinitialiser le formulaire lorsque le dialogue est fermé
+            setError(undefined)
+            setIsLoading(false)
+        }
+    }, [])
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
-            handleOpenChange(false);
-            setError(undefined);
+            handleOpenChange(false)
+            setError(undefined)
         } else if (formState?.error) {
-            setError(formState?.error);
+            setError(formState?.error)
         }
 
-        setIsLoading(false);
-    }, [formState, handleOpenChange]);
+        setIsLoading(false)
+    }, [formState, handleOpenChange])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+        event.preventDefault()
 
-        setIsLoading(true);
+        setIsLoading(true)
 
-        const formData = new FormData(event.currentTarget);
+        const formData = new FormData(event.currentTarget)
 
-        const file = formData.get("CDPfile") as File;
+        const file = formData.get("CDPfile") as File
 
         if (file.type !== "application/pdf") {
-            setError("Le fichier doit être en format PDF");
-            return;
+            setError("Le fichier doit être en format PDF")
+            return
         }
 
         const uploadResponse = await uploadFile(
@@ -93,22 +87,27 @@ export default function AddNewCDPButton() {
             file,
             formData.get("name") as string,
             maxUploadSizeInMb,
-            ["pdf"],
-        );
+            ["pdf"]
+        )
 
         if (uploadResponse.error) {
-            setIsLoading(false);
-            setError(uploadResponse.error);
-            return;
+            setIsLoading(false)
+            setError(uploadResponse.error)
+            return
         }
 
-        formData.delete("CDPfile"); // Delete the file from the form data so it doesn't get sent to the API
-        formData.set("CDPfilePath", uploadResponse.path!);
+        formData.delete("CDPfile") // Delete the file from the form data so it doesn't get sent to the API
+        if (!uploadResponse.path) {
+            setIsLoading(false)
+            setError("Chemin du fichier manquant après l'upload")
+            return
+        }
+        formData.set("CDPfilePath", uploadResponse.path)
 
         startTransition(() => {
-            formAction(formData);
-        });
-    };
+            formAction(formData)
+        })
+    }
 
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
@@ -175,12 +174,12 @@ export default function AddNewCDPButton() {
                         <DatePicker name="date" />
                     </div>
 
-                    {error ?
+                    {error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
-                    :   null}
+                    ) : null}
                 </form>
 
                 <DialogFooter>
@@ -189,13 +188,11 @@ export default function AddNewCDPButton() {
                         form="createCDPForm"
                         disabled={isLoading}
                     >
-                        {isLoading ?
-                            <LoadingRing />
-                        :   null}
+                        {isLoading ? <LoadingRing /> : null}
                         Ajouter
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    );
+    )
 }

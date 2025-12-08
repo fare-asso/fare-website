@@ -1,93 +1,91 @@
-"use client";
+"use client"
 
-import { fr } from "date-fns/locale";
-import { format } from "date-fns";
-
-import { Button } from "@/components/ui/button";
-
-import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
+import { Button } from "@/components/ui/button"
 
 // import EditArticleButton from "./editArticleButton";
 
-import deleteArticleAction from "@/actions/articles/deleteArticleAction";
-
-import { useToast } from "@/components/ui/use-toast";
-import { startTransition, useActionState, useEffect, useState } from "react";
-import LoadingRing from "../loadingRing";
-import Link from "next/link";
-import { Article } from "@prisma/client";
-import switchVisibilityAction from "@/actions/articles/switchVisibilityAction";
-import EditArticleButton from "./editArticleButton";
+import type { Article } from "@prisma/client"
+import Link from "next/link"
+import { startTransition, useActionState, useEffect, useState } from "react"
+import deleteArticleAction from "@/actions/articles/deleteArticleAction"
+import switchVisibilityAction from "@/actions/articles/switchVisibilityAction"
+import { useToast } from "@/components/ui/use-toast"
+import LoadingRing from "../loadingRing"
+import EditArticleButton from "./editArticleButton"
 
 export default function ArticleCard({ article }: { article: Article }) {
-    const { toast } = useToast();
+    const { toast } = useToast()
 
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         number
-    >(deleteArticleAction, undefined);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    >(deleteArticleAction, undefined)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isSwitchingVisibility, setIsSwitchingVisibility] =
-        useState<boolean>(false);
+        useState<boolean>(false)
 
-    const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
+    const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault()
+        event.stopPropagation()
 
-        setIsLoading(true);
+        setIsLoading(true)
 
         startTransition(() => {
-            formAction(article.id);
-        });
-    };
+            formAction(article.id)
+        })
+    }
 
     useEffect(() => {
         if (formState?.success) {
             toast({
-                description: `L'article ${article.title} a bien été supprimé`,
-            });
+                description: `L'article ${article.title} a bien été supprimé`
+            })
         } else if (formState?.error) {
             toast({
                 title: "Erreur",
                 variant: "destructive",
-                description: formState?.error,
-            });
+                description: formState?.error
+            })
         }
-        setIsLoading(false);
-    }, [formState, article.title, toast]);
+        setIsLoading(false)
+    }, [formState, article.title, toast])
 
     async function HandleVisibility() {
-        setIsSwitchingVisibility(true);
-        await switchVisibilityAction(article.id);
-        setIsSwitchingVisibility(false);
+        setIsSwitchingVisibility(true)
+        await switchVisibilityAction(article.id)
+        setIsSwitchingVisibility(false)
     }
 
     return (
-        <div className="bg-card text-card-foreground flex h-16 w-full flex-row items-center justify-between rounded-lg border px-4 py-4 shadow-xs">
+        <div className="flex h-16 w-full flex-row items-center justify-between rounded-lg border bg-card px-4 py-4 text-card-foreground shadow-xs">
             <Link
                 href={`/actualites/articles/${article.id}`}
                 title={article.title}
-                className="overflow-hidden text-xs text-ellipsis whitespace-nowrap md:text-sm"
+                className="overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm"
             >
                 {article.title}
             </Link>
-            <div className="text-card-foreground/70 hidden text-sm md:block">
+            <div className="hidden text-card-foreground/70 text-sm md:block">
                 {format(article.writtenOn, "PPP", { locale: fr })}
             </div>
 
             <div id="buttons" className="flex flex-row items-center">
                 <Button
-                    variant={"default"}
+                    variant="default"
                     className="mr-2 hidden px-3 md:block"
                     onClick={HandleVisibility}
                     disabled={isSwitchingVisibility}
                 >
-                    {isSwitchingVisibility ?
+                    {isSwitchingVisibility ? (
                         <LoadingRing className="mr-0!" />
-                    : article.published ?
+                    ) : article.published ? (
                         <MdVisibility size={17} title="publié" />
-                    :   <MdVisibilityOff size={17} title="draft" />}
+                    ) : (
+                        <MdVisibilityOff size={17} title="draft" />
+                    )}
                 </Button>
 
                 <EditArticleButton article={article} />
@@ -98,12 +96,10 @@ export default function ArticleCard({ article }: { article: Article }) {
                     onClick={handleDelete}
                     disabled={isLoading}
                 >
-                    {isLoading ?
-                        <LoadingRing />
-                    :   <MdDelete size={20} />}
+                    {isLoading ? <LoadingRing /> : <MdDelete size={20} />}
                     <div className="hidden sm:flex">Supprimer</div>
                 </Button>
             </div>
         </div>
-    );
+    )
 }
