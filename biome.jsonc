@@ -1,0 +1,185 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
+    "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+    "files": {
+        "ignoreUnknown": false,
+        "includes": [
+            "**",
+            "!**/pnpm-lock.yaml",
+            "!**/migrations/**/*",
+            "!**/node_modules/**/*",
+            "!**/dist",
+            "!**/out"
+        ]
+    },
+    "formatter": {
+        "enabled": true,
+        "formatWithErrors": false,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineEnding": "lf",
+        "lineWidth": 80,
+        "attributePosition": "auto",
+        "bracketSpacing": true,
+        "useEditorconfig": true
+    },
+    "linter": {
+        "enabled": true,
+        "domains": {
+            "next": "all"
+        },
+        "rules": {
+            "recommended": true,
+            "a11y": {
+                "noNoninteractiveElementInteractions": "error"
+            },
+            "correctness": {
+                "noUndeclaredVariables": "error",
+                "noUndeclaredDependencies": "error",
+                "useJsxKeyInIterable": "error",
+                "noChildrenProp": "off",
+                "noProcessGlobal": "on",
+                "noGlobalDirnameFilename": "on"
+            },
+            "complexity": {
+                "noExcessiveCognitiveComplexity": {
+                    "level": "on",
+                    "options": {
+                        "maxAllowedComplexity": 20
+                    }
+                },
+                "noForEach": "on",
+                "noUselessStringConcat": "on"
+            },
+            "nursery": {
+                "noFloatingPromises": "on",
+                // Disabled noImportCycles - This rule significantly impacts performance (2s -> 4s)
+                // It builds a complete dependency graph which is expensive
+                "noImportCycles": "off",
+                "useSortedClasses": {
+                    "level": "on",
+                    "fix": "safe",
+                    "options": {
+                        "functions": ["cn", "twMerge", "cva"]
+                    }
+                }
+            },
+            "performance": {
+                "noBarrelFile": "on",
+                "noImgElement": "warn",
+                "noUnwantedPolyfillio": "warn",
+                "useGoogleFontPreconnect": "warn",
+                "noAwaitInLoops": "warn"
+            },
+            "style": {
+                "noCommonJs": "error",
+                "noEnum": "error",
+                "noInferrableTypes": "on",
+                "noNamespace": "on",
+                "noNegationElse": "on",
+                "noProcessEnv": "error",
+                "noYodaExpression": "off",
+                "useAsConstAssertion": "on",
+                "useAtIndex": "on",
+                "useCollapsedElseIf": "on",
+                "useCollapsedIf": "on",
+                "useConsistentArrayType": "on",
+                "useConsistentCurlyBraces": "on",
+                "useConst": "on",
+                "useDefaultParameterLast": "on",
+                "useExplicitLengthCheck": "on",
+                "useExportType": "on",
+                "useImportType": "on",
+                "useFilenamingConvention": {
+                    "level": "error",
+                    "options": {
+                        "strictCase": false,
+                        "filenameCases": [
+                            "PascalCase",
+                            "camelCase",
+                            "kebab-case"
+                        ]
+                    }
+                },
+                "useNamingConvention": {
+                    "level": "error",
+                    "options": {
+                        "strictCase": false,
+                        "conventions": [
+                            {
+                                "selector": {
+                                    "kind": "typeMember"
+                                },
+
+                                "formats": [
+                                    "PascalCase",
+                                    "camelCase",
+                                    "CONSTANT_CASE"
+                                ]
+                            },
+                            {
+                                "selector": {
+                                    "kind": "objectLiteralProperty"
+                                },
+
+                                "formats": [
+                                    "PascalCase",
+                                    "camelCase",
+                                    "snake_case",
+                                    "CONSTANT_CASE"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "useFragmentSyntax": "on",
+                "noHeadElement": "warn",
+                "useNodejsImportProtocol": "error",
+                "useNumberNamespace": "on",
+                "useShorthandAssign": "on",
+                "useShorthandFunctionType": "on",
+                "useSingleVarDeclarator": "on",
+                "useThrowNewError": "on",
+                "useThrowOnlyError": "on"
+            },
+            "suspicious": {
+                "noConsole": "error",
+                "noDuplicateTestHooks": "on",
+                "noEmptyBlockStatements": "on",
+                "noExportsInTest": "on",
+                "noImplicitAnyLet": "on",
+                "noVar": "on",
+                "useAwait": "on",
+                "useGuardForIn": "on",
+                "noDocumentImportInPage": "error",
+                "noHeadImportInDocument": "error",
+                "useGoogleFontDisplay": "warn",
+                "useIterableCallbackReturn": "on",
+                "noTsIgnore": "on"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "jsxQuoteStyle": "double",
+            "quoteProperties": "asNeeded",
+            "trailingCommas": "none",
+            "semicolons": "asNeeded",
+            "arrowParentheses": "always",
+            "bracketSameLine": false,
+            "quoteStyle": "double",
+            "attributePosition": "auto",
+            "bracketSpacing": true
+        },
+        "globals": []
+    },
+    "css": {
+        "parser": {
+            "tailwindDirectives": true
+        }
+    },
+    "assist": {
+        "enabled": true,
+        "actions": { "source": { "organizeImports": "on" } }
+    }
+}
