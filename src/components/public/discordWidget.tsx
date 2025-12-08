@@ -1,4 +1,4 @@
-export default async function DiscordWidget() {
+export default function DiscordWidget() {
     return (
         <div>
             <iframe
@@ -11,5 +11,5 @@ export default async function DiscordWidget() {
                 title="Widget Discord"
             />
         </div>
-    );
+    )
 }

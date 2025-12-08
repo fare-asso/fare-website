@@ -1,7 +1,7 @@
 export default function AdhesionDescription() {
     return (
         <div className="mb-8 w-full max-w-3xl text-left">
-            <h2 className="mb-4 text-2xl font-bold">Adhésion à la FARE :</h2>
+            <h2 className="mb-4 font-bold text-2xl">Adhésion à la FARE :</h2>
             <p className="mb-4">
                 La Fédération des Associations du Réseau Étudiant de
                 Haute-Bretagne (FARE) étant une organisation représentative
@@ -24,7 +24,7 @@ export default function AdhesionDescription() {
                 Passation.
             </p>
 
-            <h2 className="mt-8 mb-4 text-2xl font-bold">
+            <h2 className="mt-8 mb-4 font-bold text-2xl">
                 Pourquoi adhérer à la FARE ? :
             </h2>
             <p className="mb-4">
@@ -109,7 +109,7 @@ export default function AdhesionDescription() {
                 </li>
             </ul>
 
-            <h2 className="mt-8 mb-4 text-2xl font-bold">
+            <h2 className="mt-8 mb-4 font-bold text-2xl">
                 Comment adhérer à la FARE ? :
             </h2>
             <p className="mb-4">
@@ -167,5 +167,5 @@ export default function AdhesionDescription() {
                 associations néo-adhérentes.
             </p>
         </div>
-    );
+    )
 }

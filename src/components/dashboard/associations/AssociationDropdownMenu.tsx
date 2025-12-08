@@ -2,13 +2,13 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 
 export default function AssociationDropdownMenu({
-    children,
+    children
 }: {
-    children: React.ReactElement[];
+    children: React.ReactElement[]
 }) {
     return (
         <DropdownMenu>
@@ -23,5 +23,5 @@ export default function AssociationDropdownMenu({
                 <DropdownMenuItem>Subscription</DropdownMenuItem> */}
             </DropdownMenuContent>
         </DropdownMenu>
-    );
+    )
 }

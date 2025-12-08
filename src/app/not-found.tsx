@@ -1,7 +1,7 @@
 export default function NotFoundPage() {
     return (
         <div className="flex h-full w-full flex-1 flex-col items-center justify-center">
-            <span className="text-center text-[6rem] font-bold leading-[0.9]">
+            <span className="text-center font-bold text-[6rem] leading-[0.9]">
                 <span className="transition-all duration-100 hover:text-[8rem]">
                     404
                 </span>{" "}
@@ -11,5 +11,5 @@ export default function NotFoundPage() {
                 {"C'est moins que le loyer moyen d'un studio T1 à Rennes"}
             </span>
         </div>
-    );
+    )
 }

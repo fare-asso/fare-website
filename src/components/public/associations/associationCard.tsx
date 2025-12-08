@@ -1,45 +1,42 @@
-import { createClient } from "@/helpers/supabase/server";
-import { Association } from "@prisma/client";
-
-import Image from "next/image";
-import Link from "next/link";
-
-import { MdLocationPin } from "react-icons/md";
+import type { Association } from "@prisma/client"
+import Image from "next/image"
+import Link from "next/link"
+import { createClient } from "@/helpers/supabase/server"
 
 interface JsonLocation {
-    displayName: string;
-    coordinates: Coordinates;
+    displayName: string
+    coordinates: Coordinates
 }
 
 interface Coordinates {
-    lat: string;
-    lon: string;
+    lat: string
+    lon: string
 }
 
 function processLocationData(value: string): {
-    json?: JsonLocation;
-    string?: string;
+    json?: JsonLocation
+    string?: string
 } {
     try {
-        const json = JSON.parse(value);
+        const json = JSON.parse(value)
         return {
-            json: json,
-        };
+            json: json
+        }
     } catch {
         return {
-            string: value,
-        };
+            string: value
+        }
     }
 }
 
 export default async function AssociationCard({
-    association,
+    association
 }: {
-    association: Association;
+    association: Association
 }) {
-    const supabase = await createClient();
+    const supabase = await createClient()
 
-    const processedLocationData = processLocationData(association.location);
+    const _processedLocationData = processLocationData(association.location)
 
     return (
         <Link
@@ -54,19 +51,19 @@ export default async function AssociationCard({
                 }
                 width={400}
                 height={400}
-                alt={association.name + " logo"}
+                alt={`${association.name} logo`}
                 className="aspect-square w-full rounded-lg border border-black object-cover"
             />
             <div className="flex w-full flex-row">
                 <div className="mt-2 flex flex-col">
-                    <span className="text-xl font-semibold">
+                    <span className="font-semibold text-xl">
                         {association.name}
                     </span>
-                    <span className="rounded-full border border-black px-4 py-[2px] text-center text-xs font-semibold">
+                    <span className="rounded-full border border-black px-4 py-[2px] text-center font-semibold text-xs">
                         {association.major}
                     </span>
                 </div>
             </div>
         </Link>
-    );
+    )
 }

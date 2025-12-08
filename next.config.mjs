@@ -4,8 +4,8 @@ const nextConfig = {
     output: "standalone",
     experimental: {
         serverActions: {
-            bodySizeLimit: "5mb",
-        },
+            bodySizeLimit: "5mb"
+        }
     },
     images: {
         remotePatterns: [
@@ -13,10 +13,10 @@ const nextConfig = {
                 protocol: "https",
                 hostname: "ezatoworfypbxlvjkhud.supabase.co",
                 port: "",
-                pathname: "/storage/v1/object/public/**",
-            },
-        ],
-    },
-};
+                pathname: "/storage/v1/object/public/**"
+            }
+        ]
+    }
+}
 
-export default nextConfig;
+export default nextConfig

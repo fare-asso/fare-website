@@ -1,44 +1,44 @@
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import Link from "next/link"
 import {
     computeTotalDeposit,
-    joinTicketAndEquipment,
-} from "@/helpers/bagadAsso";
-import prisma from "@/helpers/db";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import Link from "next/link";
+    joinTicketAndEquipment
+} from "@/helpers/bagadAsso"
+import prisma from "@/helpers/db"
 
 export default async function Page({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }) {
-    const ticketId = Number((await params).id);
+    const ticketId = Number((await params).id)
 
-    if (isNaN(ticketId)) {
-        return <span>Le ticket n'existe pas 😔</span>;
+    if (Number.isNaN(ticketId)) {
+        return <span>Le ticket n'existe pas 😔</span>
     }
 
     const ticket = await prisma.bagadAssoTicket.findUnique({
         where: {
-            id: ticketId,
-        },
-    });
+            id: ticketId
+        }
+    })
 
     if (!ticket) {
-        return <span>Le ticket n'existe pas 😔</span>;
+        return <span>Le ticket n'existe pas 😔</span>
     }
 
-    const totalDeposit = await computeTotalDeposit(ticket);
+    const totalDeposit = await computeTotalDeposit(ticket)
 
     const allEquipments: {
-        id: number;
-        quantity: number;
-        deposit: number;
-        name: string;
-        imagePath: string | undefined;
+        id: number
+        quantity: number
+        deposit: number
+        name: string
+        imagePath: string | undefined
     }[] = JSON.parse(
-        JSON.stringify((await joinTicketAndEquipment(ticket)).equipments),
-    );
+        JSON.stringify((await joinTicketAndEquipment(ticket)).equipments)
+    )
 
     return (
         <div className="h-full w-full p-4">
@@ -48,7 +48,7 @@ export default async function Page({
             >
                 &lsaquo; Retour aux tickets
             </Link>
-            <h1 className="mt-4 text-2xl font-semibold">
+            <h1 className="mt-4 font-semibold text-2xl">
                 🗒️Ticket{" "}
                 <span className="font-mono opacity-80">#{ticket.id}</span>
             </h1>
@@ -111,7 +111,7 @@ export default async function Page({
                     <span>
                         Date de l'évènement: 📅
                         {format(ticket.eventDate, "dd MMMM yyyy", {
-                            locale: fr,
+                            locale: fr
                         })}
                     </span>
                     <span>
@@ -137,7 +137,7 @@ export default async function Page({
 
                 {/* Right Part (Bottom mobile) */}
                 <div className="h-full w-full p-4">
-                    <h2 className="text-xl font-bold">🪩Matériels demandés:</h2>
+                    <h2 className="font-bold text-xl">🪩Matériels demandés:</h2>
                     {/* Equipments List */}
                     <div className="flex flex-col px-2 py-1">
                         {allEquipments.map((equipment) => (
@@ -151,5 +151,5 @@ export default async function Page({
                 </div>
             </div>
         </div>
-    );
+    )
 }

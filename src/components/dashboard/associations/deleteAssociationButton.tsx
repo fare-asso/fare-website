@@ -1,6 +1,9 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import type { Association } from "@prisma/client"
+import { startTransition, useActionState, useEffect, useState } from "react"
+import { MdDelete } from "react-icons/md"
+import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -10,53 +13,44 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-import LoadingRing from "../loadingRing";
-
-import { startTransition, useActionState, useState } from "react";
-
-import { useEffect } from "react";
-import { MdDelete } from "react-icons/md";
-
-import { Association } from "@prisma/client";
-
-import deleteAssociationAction from "@/actions/associations/deleteAssociationAction";
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import LoadingRing from "../loadingRing"
 
 export default function DeleteAssociationButton({
-    association,
+    association
 }: {
-    association: Association;
+    association: Association
 }) {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
-    >(deleteAssociationAction, undefined);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+        number
+    >(deleteAssociationAction, undefined)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isOpen, setIsOpen] = useState<boolean>(false)
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
-            setIsLoading(false);
-            setIsOpen(false);
+            setIsLoading(false)
+            setIsOpen(false)
         }
 
-        setIsLoading(false);
-    }, [formState]);
+        setIsLoading(false)
+    }, [formState])
 
-    const handleDelete = async (
-        event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    const handleDelete = (
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
-        event.preventDefault();
+        event.preventDefault()
 
-        setIsLoading(true);
+        setIsLoading(true)
 
         startTransition(() => {
-            formAction(association.id);
-        });
-    };
+            formAction(association.id)
+        })
+    }
 
     return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -81,13 +75,10 @@ export default function DeleteAssociationButton({
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete}>
-                        {isLoading ?
-                            <LoadingRing />
-                        :   null}{" "}
-                        Supprimer
+                        {isLoading ? <LoadingRing /> : null} Supprimer
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-    );
+    )
 }

@@ -1,16 +1,10 @@
-"use client";
+"use client"
 
-import { ColumnDef } from "@tanstack/react-table";
-import { dateToString } from "@/helpers/date";
-import StatusPin from "@/components/ui/statusPin";
-
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-
+import type { ColumnDef } from "@tanstack/react-table"
+import type { ReactElement } from "react"
+import { MdVisibility, MdVisibilityOff } from "react-icons/md"
+import deleteEventAction from "@/actions/events/deleteEventAction"
+import EditEventButtonClient from "@/components/dashboard/event/editEventButton"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -20,75 +14,76 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-import { ReactElement } from "react";
-import { Button } from "@/components/ui/button";
-
-import { MdVisibility, MdVisibilityOff } from "react-icons/md";
-
-import deleteEventAction from "@/actions/events/deleteEventAction";
-import EditEventButtonClient from "@/components/dashboard/event/editEventButton";
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import StatusPin from "@/components/ui/statusPin"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
+} from "@/components/ui/tooltip"
+import { dateToString } from "@/helpers/date"
 
 function processLocationObject(value: string): string {
     try {
         const json: {
-            displayName: string;
-            coordinates: { lat: string; lon: string };
-        } = JSON.parse(value);
-        return json.displayName;
+            displayName: string
+            coordinates: { lat: string; lon: string }
+        } = JSON.parse(value)
+        return json.displayName
     } catch {
-        if (typeof value == "string") {
-            return value;
-        } else return "Non défini";
+        if (typeof value === "string") {
+            return value
+        } else return "Non défini"
     }
 }
 
 export type Event = {
-    id: number;
-    name: string;
-    desc: string;
-    startTime: Date;
-    endTime: Date;
-    location: string;
+    id: number
+    name: string
+    desc: string
+    startTime: Date
+    endTime: Date
+    location: string
     category: {
-        id: number;
-        name: string;
-    };
+        id: number
+        name: string
+    }
     createdBy: {
-        id: string;
-        name: string | null;
-    };
-    visibility: boolean;
-};
+        id: string
+        name: string | null
+    }
+    visibility: boolean
+}
 
 export const columns: ColumnDef<Event>[] = [
     {
         accessorKey: "id",
-        header: "ID",
+        header: "ID"
     },
     {
         accessorKey: "name",
-        header: "Nom",
+        header: "Nom"
     },
     {
         header: "Status",
         cell: ({ row }) => {
-            const now: Date = new Date();
-            const startTime: Date = row.getValue("startTime");
-            const endTime: Date = row.getValue("endTime");
-            let statusElement: ReactElement;
-            let tooltip: string;
+            const now: Date = new Date()
+            const startTime: Date = row.getValue("startTime")
+            const endTime: Date = row.getValue("endTime")
+            let statusElement: ReactElement
+            let tooltip: string
             if (startTime > now) {
-                statusElement = <StatusPin status="active" />;
-                tooltip = "non commencé";
+                statusElement = <StatusPin status="active" />
+                tooltip = "non commencé"
             } else if (now > endTime) {
-                statusElement = <StatusPin status="inactive" />;
-                tooltip = "fini";
+                statusElement = <StatusPin status="inactive" />
+                tooltip = "fini"
             } else {
-                statusElement = <StatusPin status="pending" />;
-                tooltip = "en cours";
+                statusElement = <StatusPin status="pending" />
+                tooltip = "en cours"
             }
             return (
                 <TooltipProvider delayDuration={100}>
@@ -99,50 +94,48 @@ export const columns: ColumnDef<Event>[] = [
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
-            );
-        },
+            )
+        }
     },
     {
         accessorKey: "desc",
         header: "Description",
         cell: ({ row }) => {
-            const desc: string = row.getValue("desc");
-            return desc.slice(0, 15) + "...";
-        },
+            const desc: string = row.getValue("desc")
+            return `${desc.slice(0, 15)}...`
+        }
     },
     {
         accessorKey: "startTime",
         header: "Commence le",
         cell: ({ row }) => {
-            const time: Date = row.getValue("startTime");
-            return dateToString(time);
-        },
+            const time: Date = row.getValue("startTime")
+            return dateToString(time)
+        }
     },
     {
         accessorKey: "endTime",
         header: "Fini le",
         cell: ({ row }) => {
-            const time: Date = row.getValue("endTime");
-            return dateToString(time);
-        },
+            const time: Date = row.getValue("endTime")
+            return dateToString(time)
+        }
     },
     {
         accessorKey: "location",
         header: "Lieu",
         cell: ({ row }) => {
-            return processLocationObject(row.getValue("location")).split(
-                ",",
-            )[0];
-        },
+            return processLocationObject(row.getValue("location")).split(",")[0]
+        }
     },
     {
         accessorKey: "category",
         header: "Catégorie",
         cell: ({ row }) => {
             const category: { id: number; name: string } =
-                row.getValue("category");
-            return category.name;
-        },
+                row.getValue("category")
+            return category.name
+        }
     },
     {
         accessorKey: "visibility",
@@ -160,7 +153,7 @@ export const columns: ColumnDef<Event>[] = [
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                );
+                )
             } else {
                 return (
                     <TooltipProvider delayDuration={100}>
@@ -173,21 +166,21 @@ export const columns: ColumnDef<Event>[] = [
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                );
+                )
             }
-        },
+        }
     },
     {
         accessorKey: "createdBy",
         header: "Créé par",
         cell: ({ row }) => {
-            const user: { name: string | null } = row.getValue("createdBy");
+            const user: { name: string | null } = row.getValue("createdBy")
             if (user.name != null) {
-                return user.name;
+                return user.name
             } else {
-                return "?";
+                return "?"
             }
-        },
+        }
     },
     {
         id: "editAndDelete",
@@ -203,10 +196,10 @@ export const columns: ColumnDef<Event>[] = [
                             startTime: row.getValue("startTime"),
                             endTime: row.getValue("endTime"),
                             location: processLocationObject(
-                                row.getValue("location"),
+                                row.getValue("location")
                             ),
                             visibility: row.getValue("visibility"),
-                            category: row.getValue("category"),
+                            category: row.getValue("category")
                         }}
                     />
 
@@ -230,7 +223,7 @@ export const columns: ColumnDef<Event>[] = [
                                 <AlertDialogAction
                                     onClick={() =>
                                         deleteEventAction({
-                                            eventId: row.getValue("id"),
+                                            eventId: row.getValue("id")
                                         })
                                     }
                                 >
@@ -240,7 +233,7 @@ export const columns: ColumnDef<Event>[] = [
                         </AlertDialogContent>
                     </AlertDialog>
                 </div>
-            );
-        },
-    },
-];
+            )
+        }
+    }
+]

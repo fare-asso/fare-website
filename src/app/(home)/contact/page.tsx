@@ -1,18 +1,13 @@
-import ContactForm from "@/components/public/contact/contactForm";
-import Link from "next/link";
-import {
-    FaArrowLeft,
-    FaBluesky,
-    FaFacebook,
-    FaInstagram,
-} from "react-icons/fa6";
-import { MdOutlineEmail } from "react-icons/md";
+import Link from "next/link"
+import { FaArrowLeft, FaFacebook, FaInstagram } from "react-icons/fa6"
+import { MdOutlineEmail } from "react-icons/md"
+import ContactForm from "@/components/public/contact/contactForm"
 
 export default function Contact() {
     return (
         <div className="mb-16 flex w-full flex-col items-center justify-start md:px-8 lg:px-16">
             {/* Main header */}
-            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
+            <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
                 Vous souhaitez nous contacter ?
             </h1>
 
@@ -25,7 +20,7 @@ export default function Contact() {
                 >
                     <div className="flex flex-row items-center space-x-4">
                         <MdOutlineEmail size={50} />
-                        <p className="text-xl font-semibold transition-all">
+                        <p className="font-semibold text-xl transition-all">
                             Email
                         </p>
                     </div>
@@ -42,7 +37,7 @@ export default function Contact() {
                 >
                     <div className="flex flex-row items-center space-x-4">
                         <FaInstagram size={50} />
-                        <p className="text-xl font-semibold transition-all">
+                        <p className="font-semibold text-xl transition-all">
                             Instagram
                         </p>
                     </div>
@@ -94,7 +89,7 @@ export default function Contact() {
                 >
                     <div className="flex flex-row items-center space-x-4">
                         <FaFacebook size={50} />
-                        <p className="text-xl font-semibold transition-all">
+                        <p className="font-semibold text-xl transition-all">
                             Facebook
                         </p>
                     </div>
@@ -108,5 +103,5 @@ export default function Contact() {
 
             <ContactForm />
         </div>
-    );
+    )
 }

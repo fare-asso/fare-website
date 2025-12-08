@@ -1,34 +1,35 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import { useRef, useState } from "react";
-import SignOutButton from "../dashboard/signOutButton";
+import Image from "next/image"
+import { useRef, useState } from "react"
+import SignOutButton from "../dashboard/signOutButton"
 
 export default function AssociationAccountDropdown({
     associationName,
-    logoUrl,
+    logoUrl
 }: {
-    associationName: string;
-    logoUrl: string;
+    associationName: string
+    logoUrl: string
 }) {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const dropdownRef = useRef<HTMLDivElement>(null)
 
     const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
-    };
+        setIsDropdownOpen(!isDropdownOpen)
+    }
 
     return (
         <div className="relative mr-2 flex flex-row items-center space-x-2">
             <span>{associationName}</span>
-            <div
+            <button
+                type="button"
                 className="relative"
                 onMouseEnter={() => setIsDropdownOpen(true)}
                 onMouseLeave={() => setIsDropdownOpen(false)}
+                onClick={toggleDropdown}
             >
                 <Image
                     src={logoUrl}
-                    onClick={toggleDropdown}
                     width={35}
                     height={35}
                     alt={`Logo de ${associationName}`}
@@ -37,15 +38,15 @@ export default function AssociationAccountDropdown({
 
                 <div
                     ref={dropdownRef}
-                    className={`absolute -right-3 top-full mt-2 flex w-max flex-col items-center space-y-1 rounded-xl border-2 border-black bg-black p-1 transition-all ${
-                        isDropdownOpen ?
-                            "scale-100 opacity-100"
-                        :   "scale-0 opacity-0"
+                    className={`-right-3 absolute top-full mt-2 flex w-max flex-col items-center space-y-1 rounded-xl border-2 border-black bg-black p-1 transition-all ${
+                        isDropdownOpen
+                            ? "scale-100 opacity-100"
+                            : "scale-0 opacity-0"
                     }`}
                 >
                     <SignOutButton />
                 </div>
-            </div>
+            </button>
         </div>
-    );
+    )
 }

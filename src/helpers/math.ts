@@ -7,5 +7,5 @@
  * @returns {number} A number in the range [min, max]
  */
 export function clamp(num: number, min: number, max: number): number {
-    return Math.min(Math.max(num, min), max);
+    return Math.min(Math.max(num, min), max)
 }

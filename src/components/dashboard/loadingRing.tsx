@@ -10,10 +10,13 @@ export default function LoadingRing({ className }: { className?: string }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className={"h-4 w-4 animate-spin " + className}
+            className={`h-4 w-4 animate-spin${className}`}
+            aria-label="Chargement"
+            role="img"
         >
+            <title>Chargement</title>
             <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
         </svg>
-    );
-    return loadingRing;
+    )
+    return loadingRing
 }

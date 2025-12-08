@@ -1,16 +1,14 @@
-import { Metadata } from "next";
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-    title: "Mentions Légales | FARE",
-};
+    title: "Mentions Légales | FARE"
+}
 
 export default function MentionsLegales() {
     return (
         <div className="flex w-full flex-col items-center justify-start">
-            <h1 className="py-24 text-3xl font-semibold">
-                {"Mentions Légales"}
-            </h1>
-            <div className="mb-10 flex h-full w-full flex-col items-start md:w-3/5 [&_li]:list-disc [&>h2]:mt-6 [&>h2]:mb-2 [&>h2]:text-xl [&>h2]:font-bold [&>h3]:mt-4 [&>h3]:mb-1 [&>h3]:text-lg [&>h3]:font-bold [&>p]:ml-8 [&>ul]:my-2 [&>ul]:ml-16">
+            <h1 className="py-24 font-semibold text-3xl">Mentions Légales</h1>
+            <div className="mb-10 flex h-full w-full flex-col items-start md:w-3/5 [&>h2]:mt-6 [&>h2]:mb-2 [&>h2]:font-bold [&>h2]:text-xl [&>h3]:mt-4 [&>h3]:mb-1 [&>h3]:font-bold [&>h3]:text-lg [&>p]:ml-8 [&>ul]:my-2 [&>ul]:ml-16 [&_li]:list-disc">
                 <h2>Définitions:</h2>
                 <p className="mb-1">
                     <b>Client :</b> Tout professionnel ou personne physique
@@ -54,9 +52,9 @@ export default function MentionsLegales() {
                 <p>
                     En vertu de l'article 6 de la loi n° 2004-575 du 21 juin
                     2004 pour la confiance dans l'économie numérique, il est
-                    précisé aux utilisateurs du site internet https://fare-asso.fr/
-                    l'identité des différents intervenants dans le cadre de sa
-                    réalisation et de son suivi :
+                    précisé aux utilisateurs du site internet
+                    https://fare-asso.fr/ l'identité des différents intervenants
+                    dans le cadre de sa réalisation et de son suivi :
                 </p>
                 <ul>
                     <li>
@@ -111,19 +109,19 @@ export default function MentionsLegales() {
                     l'intervention.
                 </p>
                 <p>
-                    Le site web https://fare-asso.fr/ est mis à jour régulièrement
-                    par https://fare-asso.fr/ responsable. De la même façon, les
-                    mentions légales peuvent être modifiées à tout moment :
-                    elles s'imposent néanmoins à l'utilisateur qui est invité à
-                    s'y référer le plus souvent possible afin d'en prendre
-                    connaissance.
+                    Le site web https://fare-asso.fr/ est mis à jour
+                    régulièrement par https://fare-asso.fr/ responsable. De la
+                    même façon, les mentions légales peuvent être modifiées à
+                    tout moment : elles s'imposent néanmoins à l'utilisateur qui
+                    est invité à s'y référer le plus souvent possible afin d'en
+                    prendre connaissance.
                 </p>
 
                 <h2>3. Description des services fournis:</h2>
                 <p>
-                    Le site internet https://fare-asso.fr/ a pour objet de fournir
-                    une information concernant l'ensemble des activités de la
-                    société. La FARE s'efforce de fournir sur le site
+                    Le site internet https://fare-asso.fr/ a pour objet de
+                    fournir une information concernant l'ensemble des activités
+                    de la société. La FARE s'efforce de fournir sur le site
                     https://fare-asso.fr/ des informations aussi précises que
                     possible. Toutefois, il ne pourra être tenu responsable des
                     oublis, des inexactitudes et des carences dans la mise à
@@ -132,11 +130,11 @@ export default function MentionsLegales() {
                 </p>
                 <p>
                     Toutes les informations indiquées sur le site
-                    https://fare-asso.fr/ sont données à titre indicatif, et sont
-                    susceptibles d'évoluer. Par ailleurs, les renseignements
-                    figurant sur le site https://fare-asso.fr/ ne sont pas
-                    exhaustifs. Ils sont donnés sous réserve de modifications
-                    ayant été apportées depuis leur mise en ligne.
+                    https://fare-asso.fr/ sont données à titre indicatif, et
+                    sont susceptibles d'évoluer. Par ailleurs, les
+                    renseignements figurant sur le site https://fare-asso.fr/ ne
+                    sont pas exhaustifs. Ils sont donnés sous réserve de
+                    modifications ayant été apportées depuis leur mise en ligne.
                 </p>
 
                 <h2>
@@ -151,18 +149,19 @@ export default function MentionsLegales() {
                     avec un navigateur de dernière génération mis-à-jour
                 </p>
                 <p>
-                    Le site https://fare-asso.fr/ est hébergé chez un prestataire sur
-                    le territoire de l'Union Européenne conformément aux
-                    dispositions du Règlement Général sur la Protection des
-                    Données (RGPD : n° 2016-679). L'objectif est d'apporter une
-                    prestation qui assure le meilleur taux d'accessibilité.
-                    L'hébergeur assure la continuité de son service 24 Heures
-                    sur 24, tous les jours de l'année. Il se réserve néanmoins
-                    la possibilité d'interrompre le service d'hébergement pour
-                    les durées les plus courtes possibles notamment à des fins
-                    de maintenance, d'amélioration de ses infrastructures, de
-                    défaillance de ses infrastructures ou si les Prestations et
-                    Services génèrent un trafic réputé anormal.
+                    Le site https://fare-asso.fr/ est hébergé chez un
+                    prestataire sur le territoire de l'Union Européenne
+                    conformément aux dispositions du Règlement Général sur la
+                    Protection des Données (RGPD : n° 2016-679). L'objectif est
+                    d'apporter une prestation qui assure le meilleur taux
+                    d'accessibilité. L'hébergeur assure la continuité de son
+                    service 24 Heures sur 24, tous les jours de l'année. Il se
+                    réserve néanmoins la possibilité d'interrompre le service
+                    d'hébergement pour les durées les plus courtes possibles
+                    notamment à des fins de maintenance, d'amélioration de ses
+                    infrastructures, de défaillance de ses infrastructures ou si
+                    les Prestations et Services génèrent un trafic réputé
+                    anormal.
                 </p>
                 <p>
                     https://fare-asso.fr/ et l'hébergeur ne pourront être tenus
@@ -174,10 +173,11 @@ export default function MentionsLegales() {
 
                 <h2>5. Propriété intellectuelle et contrefaçons:</h2>
                 <p>
-                    https://fare-asso.fr/ est propriétaire des droits de propriété
-                    intellectuelle et détient les droits d'usage sur tous les
-                    éléments accessibles sur le site internet, notamment les
-                    textes, images, graphismes, logos, vidéos, icônes et sons.
+                    https://fare-asso.fr/ est propriétaire des droits de
+                    propriété intellectuelle et détient les droits d'usage sur
+                    tous les éléments accessibles sur le site internet,
+                    notamment les textes, images, graphismes, logos, vidéos,
+                    icônes et sons.
                 </p>
                 <p>
                     Toute reproduction, représentation, modification,
@@ -204,16 +204,16 @@ export default function MentionsLegales() {
                     https://fare-asso.fr/ ne pourra être tenu responsable des
                     dommages directs et indirects causés au matériel de
                     l'utilisateur, lors de l'accès au site internet
-                    https://fare-asso.fr/, et résultant soit de l'utilisation d'un
-                    matériel ne répondant pas aux spécifications indiquées au
-                    point 4, soit de l'apparition d'un bug ou d'une
+                    https://fare-asso.fr/, et résultant soit de l'utilisation
+                    d'un matériel ne répondant pas aux spécifications indiquées
+                    au point 4, soit de l'apparition d'un bug ou d'une
                     incompatibilité.
                 </p>
                 <p>
-                    https://fare-asso.fr/ ne pourra également être tenu responsable
-                    des dommages indirects (tels par exemple qu'une perte de
-                    marché ou perte d'une chance) consécutifs à l'utilisation du
-                    site https://fare-asso.fr/.
+                    https://fare-asso.fr/ ne pourra également être tenu
+                    responsable des dommages indirects (tels par exemple qu'une
+                    perte de marché ou perte d'une chance) consécutifs à
+                    l'utilisation du site https://fare-asso.fr/.
                 </p>
                 <p>
                     Des espaces interactifs (possibilité de poser des questions
@@ -247,29 +247,30 @@ export default function MentionsLegales() {
                     création du compte personnel de l'Utilisateur et de sa
                     navigation sur le Site, le responsable du traitement des
                     Données Personnelles est : https://fare-asso.fr/.
-                    https://fare-asso.fr/ est représenté par le Bureau Fédéral, son
-                    représentant légal.
+                    https://fare-asso.fr/ est représenté par le Bureau Fédéral,
+                    son représentant légal.
                 </p>
                 <p>
                     En tant que responsable du traitement des données qu'il
-                    collecte, https://fare-asso.fr/ s'engage à respecter le cadre des
-                    dispositions légales en vigueur. Il lui appartient notamment
-                    au Client d'établir les finalités de ses traitements de
-                    données, de fournir à ses prospects et clients, à partir de
-                    la collecte de leurs consentements, une information complète
-                    sur le traitement de leurs données personnelles et de
-                    maintenir un registre des traitements conforme à la réalité.
-                    Chaque fois que https://fare-asso.fr/ traite des Données
-                    Personnelles, https://fare-asso.fr/ prend toutes les mesures
-                    raisonnables pour s'assurer de l'exactitude et de la
-                    pertinence des Données Personnelles au regard des finalités
-                    pour lesquelles https://fare-asso.fr/ les traite.
+                    collecte, https://fare-asso.fr/ s'engage à respecter le
+                    cadre des dispositions légales en vigueur. Il lui appartient
+                    notamment au Client d'établir les finalités de ses
+                    traitements de données, de fournir à ses prospects et
+                    clients, à partir de la collecte de leurs consentements, une
+                    information complète sur le traitement de leurs données
+                    personnelles et de maintenir un registre des traitements
+                    conforme à la réalité. Chaque fois que https://fare-asso.fr/
+                    traite des Données Personnelles, https://fare-asso.fr/ prend
+                    toutes les mesures raisonnables pour s'assurer de
+                    l'exactitude et de la pertinence des Données Personnelles au
+                    regard des finalités pour lesquelles https://fare-asso.fr/
+                    les traite.
                 </p>
 
                 <h3>7.2 Finalité des données collectées:</h3>
                 <p>
-                    https://fare-asso.fr/ est susceptible de traiter tout ou partie
-                    des données :
+                    https://fare-asso.fr/ est susceptible de traiter tout ou
+                    partie des données :
                 </p>
                 <ul>
                     <li>
@@ -343,28 +344,29 @@ export default function MentionsLegales() {
                     </li>
                     <li>
                         droit de définir le sort des données des Utilisateurs
-                        après leur mort et de choisir à qui https://fare-asso.fr/
-                        devra communiquer (ou non) ses données à un tiers qu'ils
-                        aura préalablement désigné
+                        après leur mort et de choisir à qui
+                        https://fare-asso.fr/ devra communiquer (ou non) ses
+                        données à un tiers qu'ils aura préalablement désigné
                     </li>
                 </ul>
                 <p>
                     Dès que https://fare-asso.fr/ a connaissance du décès d'un
                     Utilisateur et à défaut d'instructions de sa part,
-                    https://fare-asso.fr/ s'engage à détruire ses données, sauf si
-                    leur conservation s'avère nécessaire à des fins probatoires
-                    ou pour répondre à une obligation légale.
+                    https://fare-asso.fr/ s'engage à détruire ses données, sauf
+                    si leur conservation s'avère nécessaire à des fins
+                    probatoires ou pour répondre à une obligation légale.
                 </p>
                 <p>
-                    Si l'Utilisateur souhaite savoir comment https://fare-asso.fr/
-                    utilise ses Données Personnelles, demander à les rectifier
-                    ou s'oppose à leur traitement, l'Utilisateur peut contacter
-                    https://fare-asso.fr/ par écrit à l'adresse suivante : FARE - 6
-                    Cours des Alliés 35000 Rennes. Dans ce cas, l'Utilisateur
-                    doit indiquer les Données Personnelles qu'il souhaiterait
-                    que https://fare-asso.fr/ corrige, mette à jour ou supprime, en
-                    s'identifiant précisément avec une copie d'une pièce
-                    d'identité (carte d'identité ou passeport).
+                    Si l'Utilisateur souhaite savoir comment
+                    https://fare-asso.fr/ utilise ses Données Personnelles,
+                    demander à les rectifier ou s'oppose à leur traitement,
+                    l'Utilisateur peut contacter https://fare-asso.fr/ par écrit
+                    à l'adresse suivante : FARE - 6 Cours des Alliés 35000
+                    Rennes. Dans ce cas, l'Utilisateur doit indiquer les Données
+                    Personnelles qu'il souhaiterait que https://fare-asso.fr/
+                    corrige, mette à jour ou supprime, en s'identifiant
+                    précisément avec une copie d'une pièce d'identité (carte
+                    d'identité ou passeport).
                 </p>
                 <p>
                     Les demandes de suppression de Données Personnelles seront
@@ -383,23 +385,23 @@ export default function MentionsLegales() {
                     un pays situé en dehors de l'Union européenne ou reconnu
                     comme « non adéquat » par la Commission européenne sans en
                     informer préalablement le client. Pour autant,
-                    https://fare-asso.fr/ reste libre du choix de ses sous-traitants
-                    techniques et commerciaux à la condition qu'ils présentent
-                    les garanties suffisantes au regard des exigences du
-                    Règlement Général sur la Protection des Données (RGPD : n°
-                    2016-679).
+                    https://fare-asso.fr/ reste libre du choix de ses
+                    sous-traitants techniques et commerciaux à la condition
+                    qu'ils présentent les garanties suffisantes au regard des
+                    exigences du Règlement Général sur la Protection des Données
+                    (RGPD : n° 2016-679).
                 </p>
                 <p>
-                    https://fare-asso.fr/ s'engage à prendre toutes les précautions
-                    nécessaires afin de préserver la sécurité des Informations
-                    et notamment qu'elles ne soient pas communiquées à des
-                    personnes non autorisées. Cependant, si un incident
-                    impactant l'intégrité ou la confidentialité des Informations
-                    du Client est porté à la connaissance de https://fare-asso.fr/,
-                    celle-ci devra dans les meilleurs délais informer le Client
-                    et lui communiquer les mesures de corrections prises. Par
-                    ailleurs, https://fare-asso.fr/ ne collecte aucune « donnée
-                    sensible ».
+                    https://fare-asso.fr/ s'engage à prendre toutes les
+                    précautions nécessaires afin de préserver la sécurité des
+                    Informations et notamment qu'elles ne soient pas
+                    communiquées à des personnes non autorisées. Cependant, si
+                    un incident impactant l'intégrité ou la confidentialité des
+                    Informations du Client est porté à la connaissance de
+                    https://fare-asso.fr/, celle-ci devra dans les meilleurs
+                    délais informer le Client et lui communiquer les mesures de
+                    corrections prises. Par ailleurs, https://fare-asso.fr/ ne
+                    collecte aucune « donnée sensible ».
                 </p>
                 <p>
                     Les Données Personnelles de l'Utilisateur peuvent être
@@ -409,8 +411,8 @@ export default function MentionsLegales() {
                     Dans la limite de leurs attributions respectives et pour les
                     finalités rappelées ci-dessus, les principales personnes
                     susceptibles d'avoir accès aux données des Utilisateurs de
-                    https://fare-asso.fr/ sont principalement les agents de notre
-                    service client.
+                    https://fare-asso.fr/ sont principalement les agents de
+                    notre service client.
                 </p>
 
                 <h2>8. Notification d'incident:</h2>
@@ -434,10 +436,10 @@ export default function MentionsLegales() {
                 </p>
                 <p>
                     Aucune information personnelle de l'utilisateur du site
-                    https://fare-asso.fr/ n'est publiée à l'insu de l'utilisateur,
-                    échangée, transférée, cédée ou vendue sur un support
-                    quelconque à des tiers. Seule l'hypothèse du rachat de
-                    https://fare-asso.fr/ et de ses droits permettrait la
+                    https://fare-asso.fr/ n'est publiée à l'insu de
+                    l'utilisateur, échangée, transférée, cédée ou vendue sur un
+                    support quelconque à des tiers. Seule l'hypothèse du rachat
+                    de https://fare-asso.fr/ et de ses droits permettrait la
                     transmission des dites informations à l'éventuel acquéreur
                     qui serait à son tour tenu de la même obligation de
                     conservation et de modification des données vis-à-vis de
@@ -465,8 +467,8 @@ export default function MentionsLegales() {
                     internet:
                 </h2>
                 <p>
-                    Le site https://fare-asso.fr/ contient un certain nombre de liens
-                    hypertextes vers d'autres sites, mis en place avec
+                    Le site https://fare-asso.fr/ contient un certain nombre de
+                    liens hypertextes vers d'autres sites, mis en place avec
                     l'autorisation de https://fare-asso.fr/. Cependant,
                     https://fare-asso.fr/ n'a pas la possibilité de vérifier le
                     contenu des sites ainsi visités, et n'assumera en
@@ -495,24 +497,25 @@ export default function MentionsLegales() {
                     d'endommager le terminal de l'Utilisateur.
                 </p>
                 <p>
-                    https://fare-asso.fr/ est susceptible de traiter les informations
-                    de l'Utilisateur concernant sa visite du Site, telles que
-                    les pages consultées, les recherches effectuées. Ces
-                    informations permettent à https://fare-asso.fr/ d'améliorer le
-                    contenu du Site et la navigation de l'Utilisateur. Les
-                    Cookies facilitant la navigation et/ou la fourniture des
-                    services proposés par le Site, l'Utilisateur peut configurer
-                    son navigateur pour qu'il lui permette de décider s'il
-                    souhaite ou non les accepter de manière à ce que des Cookies
-                    soient enregistrés dans le terminal ou, au contraire, qu'ils
-                    soient rejetés, soit systématiquement, soit selon leur
-                    émetteur. L'Utilisateur peut également configurer son
-                    logiciel de navigation de manière à ce que l'acceptation ou
-                    le refus des Cookies lui soient proposés ponctuellement,
-                    avant qu'un Cookie soit susceptible d'être enregistré dans
-                    son terminal. https://fare-asso.fr/ informe l'Utilisateur que,
-                    dans ce cas, il se peut que les fonctionnalités de son
-                    logiciel de navigation ne soient pas toutes disponibles.
+                    https://fare-asso.fr/ est susceptible de traiter les
+                    informations de l'Utilisateur concernant sa visite du Site,
+                    telles que les pages consultées, les recherches effectuées.
+                    Ces informations permettent à https://fare-asso.fr/
+                    d'améliorer le contenu du Site et la navigation de
+                    l'Utilisateur. Les Cookies facilitant la navigation et/ou la
+                    fourniture des services proposés par le Site, l'Utilisateur
+                    peut configurer son navigateur pour qu'il lui permette de
+                    décider s'il souhaite ou non les accepter de manière à ce
+                    que des Cookies soient enregistrés dans le terminal ou, au
+                    contraire, qu'ils soient rejetés, soit systématiquement,
+                    soit selon leur émetteur. L'Utilisateur peut également
+                    configurer son logiciel de navigation de manière à ce que
+                    l'acceptation ou le refus des Cookies lui soient proposés
+                    ponctuellement, avant qu'un Cookie soit susceptible d'être
+                    enregistré dans son terminal. https://fare-asso.fr/ informe
+                    l'Utilisateur que, dans ce cas, il se peut que les
+                    fonctionnalités de son logiciel de navigation ne soient pas
+                    toutes disponibles.
                 </p>
                 <p>
                     Si l'Utilisateur refuse l'enregistrement de Cookies dans son
@@ -520,40 +523,42 @@ export default function MentionsLegales() {
                     ceux qui y sont enregistrés, l'Utilisateur est informé que
                     sa navigation et son expérience sur le Site peuvent être
                     limitées. Cela pourrait également être le cas lorsque
-                    https://fare-asso.fr/ ou l'un de ses prestataires ne peut pas
-                    reconnaître, à des fins de compatibilité technique, le type
-                    de navigateur utilisé par le terminal, les paramètres de
-                    langue et d'affichage ou le pays depuis lequel le terminal
-                    semble connecté à Internet.
+                    https://fare-asso.fr/ ou l'un de ses prestataires ne peut
+                    pas reconnaître, à des fins de compatibilité technique, le
+                    type de navigateur utilisé par le terminal, les paramètres
+                    de langue et d'affichage ou le pays depuis lequel le
+                    terminal semble connecté à Internet.
                 </p>
                 <p>
                     Le cas échéant, https://fare-asso.fr/ décline toute
                     responsabilité pour les conséquences liées au fonctionnement
                     dégradé du Site et des services éventuellement proposés par
                     https://fare-asso.fr/, résultant (i) du refus de Cookies par
-                    l'Utilisateur (ii) de l'impossibilité pour https://fare-asso.fr/
-                    d'enregistrer ou de consulter les Cookies nécessaires à leur
-                    fonctionnement du fait du choix de l'Utilisateur. Pour la
-                    gestion des Cookies et des choix de l'Utilisateur, la
-                    configuration de chaque navigateur est différente. Elle est
-                    décrite dans le menu d'aide du navigateur, qui permettra de
-                    savoir de quelle manière l'Utilisateur peut modifier ses
-                    souhaits en matière de Cookies.
+                    l'Utilisateur (ii) de l'impossibilité pour
+                    https://fare-asso.fr/ d'enregistrer ou de consulter les
+                    Cookies nécessaires à leur fonctionnement du fait du choix
+                    de l'Utilisateur. Pour la gestion des Cookies et des choix
+                    de l'Utilisateur, la configuration de chaque navigateur est
+                    différente. Elle est décrite dans le menu d'aide du
+                    navigateur, qui permettra de savoir de quelle manière
+                    l'Utilisateur peut modifier ses souhaits en matière de
+                    Cookies.
                 </p>
                 <p>
                     À tout moment, l'Utilisateur peut faire le choix d'exprimer
                     et de modifier ses souhaits en matière de Cookies.
-                    https://fare-asso.fr/ pourra en outre faire appel aux services de
-                    prestataires externes pour l'aider à recueillir et traiter
-                    les informations décrites dans cette section. Enfin, en
-                    cliquant sur les icônes dédiées aux réseaux sociaux X,
-                    Facebook, LinkedIn et Google Plus figurant sur le Site de
-                    https://fare-asso.fr/ ou dans son application mobile et si
-                    l'Utilisateur a accepté le dépôt de cookies en poursuivant
-                    sa navigation sur le Site Internet ou l'application mobile
-                    de https://fare-asso.fr/, X, Facebook, LinkedIn et Google Plus
-                    peuvent également déposer des cookies sur vos terminaux
-                    (ordinateur, tablette, téléphone portable).
+                    https://fare-asso.fr/ pourra en outre faire appel aux
+                    services de prestataires externes pour l'aider à recueillir
+                    et traiter les informations décrites dans cette section.
+                    Enfin, en cliquant sur les icônes dédiées aux réseaux
+                    sociaux X, Facebook, LinkedIn et Google Plus figurant sur le
+                    Site de https://fare-asso.fr/ ou dans son application mobile
+                    et si l'Utilisateur a accepté le dépôt de cookies en
+                    poursuivant sa navigation sur le Site Internet ou
+                    l'application mobile de https://fare-asso.fr/, X, Facebook,
+                    LinkedIn et Google Plus peuvent également déposer des
+                    cookies sur vos terminaux (ordinateur, tablette, téléphone
+                    portable).
                 </p>
                 <p>
                     Ces types de cookies ne sont déposés sur vos terminaux qu'à
@@ -566,21 +571,21 @@ export default function MentionsLegales() {
 
                 <h3>10.2 Balises (« tags ») internet:</h3>
                 <p>
-                    https://fare-asso.fr/ peut employer occasionnellement des balises
-                    Internet (également appelées « tags », ou balises d'action,
-                    GIF à un pixel, GIF transparents, GIF invisibles et GIF un à
-                    un) et les déployer par l'intermédiaire d'un partenaire
-                    spécialiste d'analyses Web susceptible de se trouver (et
-                    donc de stocker les informations correspondantes, y compris
-                    l'adresse IP de l'Utilisateur) dans un pays étranger. Ces
-                    balises sont placées à la fois dans les publicités en ligne
-                    permettant aux internautes d'accéder au Site, et sur les
-                    différentes pages de celui-ci.
+                    https://fare-asso.fr/ peut employer occasionnellement des
+                    balises Internet (également appelées « tags », ou balises
+                    d'action, GIF à un pixel, GIF transparents, GIF invisibles
+                    et GIF un à un) et les déployer par l'intermédiaire d'un
+                    partenaire spécialiste d'analyses Web susceptible de se
+                    trouver (et donc de stocker les informations
+                    correspondantes, y compris l'adresse IP de l'Utilisateur)
+                    dans un pays étranger. Ces balises sont placées à la fois
+                    dans les publicités en ligne permettant aux internautes
+                    d'accéder au Site, et sur les différentes pages de celui-ci.
                 </p>
                 <p>
-                    Cette technologie permet à https://fare-asso.fr/ d'évaluer les
-                    réponses des visiteurs face au Site et l'efficacité de ses
-                    actions (par exemple, le nombre de fois où une page est
+                    Cette technologie permet à https://fare-asso.fr/ d'évaluer
+                    les réponses des visiteurs face au Site et l'efficacité de
+                    ses actions (par exemple, le nombre de fois où une page est
                     ouverte et les informations consultées), ainsi que
                     l'utilisation de ce Site par l'Utilisateur. Le prestataire
                     externe pourra éventuellement recueillir des informations
@@ -593,12 +598,12 @@ export default function MentionsLegales() {
                 <h2>11. Droit applicable et attribution de juridiction:</h2>
                 <p>
                     Tout litige en relation avec l'utilisation du site
-                    https://fare-asso.fr/ est soumis au droit français. En dehors des
-                    cas où la loi ne le permet pas, il est fait attribution
-                    exclusive de juridiction aux tribunaux compétents de Rennes
-                    (35).
+                    https://fare-asso.fr/ est soumis au droit français. En
+                    dehors des cas où la loi ne le permet pas, il est fait
+                    attribution exclusive de juridiction aux tribunaux
+                    compétents de Rennes (35).
                 </p>
             </div>
         </div>
-    );
+    )
 }

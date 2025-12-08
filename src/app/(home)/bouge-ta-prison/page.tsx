@@ -1,15 +1,15 @@
-import Link from "next/link";
-import Image from "next/image";
+import Image from "next/image"
+import Link from "next/link"
 
-import assemblee0 from "/public/BTP/assemblee1.jpg";
-import assemblee1 from "/public/BTP/assemblee2.jpg";
+import assemblee0 from "/public/BTP/assemblee1.jpg"
+import assemblee1 from "/public/BTP/assemblee2.jpg"
 
-import logoBTP from "/public/BTP/LOGO_BTP_2024.webp";
+import logoBTP from "/public/BTP/LOGO_BTP_2024.webp"
 
 // Create metadata for the page
 export const metadata = {
-    title: "Bouge Ta Prison | FARE",
-};
+    title: "Bouge Ta Prison | FARE"
+}
 
 export default function BougeTaPrison() {
     return (
@@ -45,7 +45,7 @@ export default function BougeTaPrison() {
                         difficultés qu'il présente.
                     </p>
 
-                    <div className="mb-4 flex flex-col space-y-3 space-x-0 md:flex-row md:space-y-0 md:space-x-2 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
+                    <div className="mb-4 flex flex-col space-x-0 space-y-3 md:flex-row md:space-x-2 md:space-y-0 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
                         <Image
                             src={assemblee0}
                             alt="Photo d'une conférence de sensibilisation du milieu carcéral à l'Université de Rennes 2 qui s'est déroulée en février 2024"
@@ -110,7 +110,7 @@ export default function BougeTaPrison() {
                     {/* Intéressé pour devenir tuteur? */}
                     <div className="flex h-auto w-full flex-col items-center pt-4">
                         <div className="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-3/4">
-                            <h2 className="mb-2 text-lg font-semibold">
+                            <h2 className="mb-2 font-semibold text-lg">
                                 Intéressé pour devenir tuteur?
                             </h2>
                             <p>
@@ -161,5 +161,5 @@ export default function BougeTaPrison() {
                 </section>
             </div>
         </div>
-    );
+    )
 }

@@ -1,78 +1,76 @@
-"use server";
+"use server"
 
-import { createClient } from "@/helpers/supabase/server";
-
-import prisma from "@/helpers/db";
-
-import { revalidatePath } from "next/cache";
-import getCurrentUserRole from "@/helpers/user/role";
-import { PresseType } from "@prisma/client";
+import type { PresseType } from "@prisma/client"
+import { revalidatePath } from "next/cache"
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
+import getCurrentUserRole from "@/helpers/user/role"
 
 function isPresseType(value: string): value is PresseType {
-    return value === "CDP" || value === "DDP";
+    return value === "CDP" || value === "DDP"
 }
 
 function getPresseType(formData: FormData): PresseType | undefined {
-    const value = formData.get("CDPType")?.toString();
+    const value = formData.get("CDPType")?.toString()
 
     if (value && isPresseType(value)) {
-        return value;
+        return value
     }
 
-    return undefined;
+    return undefined
 }
 
 export default async function createCDPAction(
-    prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData,
+    _prevState: { error?: string; success?: boolean } | undefined,
+    formData: FormData
 ) {
     /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole();
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" };
-    if (role != "ADMIN")
+    const { role, error } = await getCurrentUserRole()
+    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
+    if (role !== "ADMIN")
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
-        };
+            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+        }
 
     // create supabase client
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // retrieve form data fields
-    const name = formData.get("name")?.toString();
-    const file = formData.get("CDPfilePath")?.toString();
-    const date = formData.get("date")?.toString();
-    const type: PresseType | undefined = getPresseType(formData);
+    const name = formData.get("name")?.toString()
+    const file = formData.get("CDPfilePath")?.toString()
+    const date = formData.get("date")?.toString()
+    const type: PresseType | undefined = getPresseType(formData)
 
     // Required fields
     if (!name || !type || !file) {
-        return { error: "Un ou plusieurs champs sont invalides" };
+        return { error: "Un ou plusieurs champs sont invalides" }
     }
 
     // Fetch file info before creating the record
     const { data, error: fetchError } = await supabase.storage
         .from("communique-de-presse")
-        .info(file);
+        .info(file)
     if (fetchError) {
         return {
-            error: "Une erreur est survenue lors de la récupération du fichier",
-        };
+            error: "Une erreur est survenue lors de la récupération du fichier"
+        }
     }
 
-    const fileSize = data.size!; // in bytes
-    const maxFileSize = 25; // in mb
+    const fileSize = data.size ?? 0 // in bytes
+    const maxFileSize = 25 // in mb
 
     // Check file size
-    if (fileSize == 0 || fileSize / (1024 * 1024) > maxFileSize) {
+    if (fileSize === 0 || fileSize / (1024 * 1024) > maxFileSize) {
         return {
-            error: `La taille du fichier doit être inférieure à ${maxFileSize}mo`,
-        };
+            error: `La taille du fichier doit être inférieure à ${maxFileSize}mo`
+        }
     }
 
     // Check file format
-    if (data.contentType != "application/pdf") {
+    if (data.contentType !== "application/pdf") {
         return {
-            error: "Le fichier doit être de format PDF",
-        };
+            error: "Le fichier doit être de format PDF"
+        }
     }
 
     // Create a record for the new CDP (name, path, date?)
@@ -82,38 +80,38 @@ export default async function createCDPAction(
             filePath: file,
             size: fileSize,
             createdAt: date ? new Date(date) : new Date(),
-            type: type,
-        },
-    });
+            type: type
+        }
+    })
 
     if (createdCDP != null) {
         // successfully created the record
         // revalidate cdp page
-        revalidatePath("/dashboard/communiques-de-presse");
-        revalidatePath("/presse");
+        revalidatePath("/dashboard/communiques-de-presse")
+        revalidatePath("/presse")
         revalidatePath(
-            type == "CDP" ?
-                "/presse/communiques-de-presse"
-            :   "/presse/dossiers-de-presse",
-        );
+            type === "CDP"
+                ? "/presse/communiques-de-presse"
+                : "/presse/dossiers-de-presse"
+        )
 
         return {
-            success: true,
-        };
+            success: true
+        }
     } else {
         // failed to create the record
 
         // Remove the file from the storage
         const { error } = await supabase.storage
             .from("communique-de-presse")
-            .remove([file]);
+            .remove([file])
 
         if (error) {
-            console.error(error.message);
+            console.error(error.message)
         }
 
         return {
-            error: `Echec de l'ajout du CDP dans la base de données`,
-        };
+            error: `Echec de l'ajout du CDP dans la base de données`
+        }
     }
 }

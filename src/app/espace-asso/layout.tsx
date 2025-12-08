@@ -1,19 +1,19 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "../globals.css";
-import Header from "@/components/espaceAsso/header";
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "../globals.css"
+import Header from "@/components/espaceAsso/header"
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
     title: "Espace Asso FARE",
-    description: "Espace de gestion des associations de la FARE",
-};
+    description: "Espace de gestion des associations de la FARE"
+}
 
 export default function RootLayout({
-    children,
+    children
 }: Readonly<{
-    children: React.ReactNode;
+    children: React.ReactNode
 }>) {
     return (
         <html lang="en">
@@ -26,5 +26,5 @@ export default function RootLayout({
                 </main>
             </body>
         </html>
-    );
+    )
 }

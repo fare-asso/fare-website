@@ -1,18 +1,15 @@
-"use client";
+"use client"
 
-import { cn } from "@/lib/utils";
-import { InputHTMLAttributes } from "react";
-
-import { RiErrorWarningFill } from "react-icons/ri";
-
-import React from "react";
-import { FieldError } from "react-hook-form";
+import React, { type InputHTMLAttributes } from "react"
+import type { FieldError } from "react-hook-form"
+import { RiErrorWarningFill } from "react-icons/ri"
+import { cn } from "@/lib/utils"
 
 const TextArea = React.forwardRef<
     HTMLTextAreaElement,
     InputHTMLAttributes<HTMLTextAreaElement> & {
-        className?: string;
-        error?: FieldError;
+        className?: string
+        error?: FieldError
     }
 >(({ className, error, ...props }, ref) => {
     return (
@@ -21,7 +18,7 @@ const TextArea = React.forwardRef<
 
             {/* Error */}
             {error && ( // Afficher uniquement si une erreur est présente
-                <div className="absolute bottom-0 right-0 flex flex-row items-end p-2">
+                <div className="absolute right-0 bottom-0 flex flex-row items-end p-2">
                     <RiErrorWarningFill
                         className="text-red-500 transition-all group-hover:scale-105"
                         size={20}
@@ -30,8 +27,8 @@ const TextArea = React.forwardRef<
                 </div>
             )}
         </div>
-    );
-});
+    )
+})
 
-TextArea.displayName = "TextArea";
-export default TextArea;
+TextArea.displayName = "TextArea"
+export default TextArea

@@ -1,6 +1,6 @@
-import Link from "next/link";
-import SocialLinks from "./socialLinks";
-import { MdAdminPanelSettings, MdOutlineWarning } from "react-icons/md";
+import Link from "next/link"
+import { MdAdminPanelSettings, MdOutlineWarning } from "react-icons/md"
+import SocialLinks from "./socialLinks"
 
 export default function Footer() {
     return (
@@ -9,8 +9,7 @@ export default function Footer() {
                 <div className="flex flex-row space-x-1 text-xs opacity-75 md:space-x-4 [&>a]:hover:underline">
                     <Link href="/mentions-legales">Mentions Légales</Link>
                     <span>
-                        © {new Date().getFullYear()} FARE. Tous droits
-                        réservés.
+                        © {new Date().getFullYear()} FARE. Tous droits réservés.
                     </span>
                     <Link
                         className="hidden flex-row items-center space-x-1 md:flex"
@@ -28,5 +27,5 @@ export default function Footer() {
                 <SocialLinks />
             </div>
         </footer>
-    );
+    )
 }

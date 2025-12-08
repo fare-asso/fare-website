@@ -1,18 +1,16 @@
-import AddMemberButton from "@/components/dashboard/members/addMemberButton";
-import MemberList from "@/components/dashboard/members/memberList";
-
+import { Suspense } from "react"
+import AddMemberButton from "@/components/dashboard/members/addMemberButton"
+import MemberList from "@/components/dashboard/members/memberList"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
-
-export default async function Membres() {
+export default function Membres() {
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">
@@ -30,5 +28,5 @@ export default async function Membres() {
                 <AddMemberButton />
             </CardFooter>
         </Card>
-    );
+    )
 }

@@ -1,51 +1,53 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { MouseEvent, MouseEventHandler, RefObject } from "react";
-import { usePathname } from "next/navigation";
-import { Link as L } from "./headerLinks";
-import clsx from "clsx";
+import clsx from "clsx"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import type { MouseEvent, RefObject } from "react"
+import type { NavLink } from "./headerLinks"
 
 export default function HeaderLink({
     title,
     href,
     subLinks,
-    runnerRef,
+    runnerRef
 }: {
-    title: string;
-    href: string;
-    subLinks?: L[];
-    runnerRef: RefObject<HTMLDivElement>;
+    title: string
+    href: string
+    subLinks?: NavLink[]
+    runnerRef: RefObject<HTMLDivElement>
 }) {
-    const pathname = usePathname();
+    const pathname = usePathname()
 
     const hoverHandler = (e: MouseEvent<HTMLDivElement>) => {
         if (runnerRef.current) {
-            const target = e.currentTarget as HTMLDivElement;
-            const link = target.children[0] as HTMLAnchorElement;
+            const target = e.currentTarget as HTMLDivElement
+            const link = target.children[0] as HTMLAnchorElement
             const { width, left }: { width: number; left: number } =
-                link.getBoundingClientRect();
-            runnerRef.current.style.width = width + 2 + "px";
+                link.getBoundingClientRect()
+            runnerRef.current.style.width = `${width + 2}px`
             runnerRef.current.style.left =
                 left -
-                target.parentElement!.getBoundingClientRect().left -
+                (target.parentElement?.getBoundingClientRect().left ?? 0) -
                 2 +
-                "px";
-            runnerRef.current.style.opacity = "1";
+                "px"
+            runnerRef.current.style.opacity = "1"
         } else {
-            console.log("runner is null");
+            console.log("runner is null")
         }
-    };
+    }
 
-    const unhoverHandler = (e: MouseEvent<HTMLDivElement>) => {
+    const unhoverHandler = (_e: MouseEvent<HTMLDivElement>) => {
         if (runnerRef.current) {
-            runnerRef.current.style.opacity = "0";
+            runnerRef.current.style.opacity = "0"
         } else {
-            console.log("runner is null");
+            console.log("runner is null")
         }
-    };
+    }
 
     return (
+        // biome-ignore lint/a11y/noStaticElementInteractions: hover effects for navigation dropdown
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: hover effects for navigation dropdown
         <div
             className="relative z-20 m-0 transition-all hover:[&>a]:text-white hover:[&>div]:scale-100 hover:[&>div]:opacity-100"
             onMouseEnter={hoverHandler}
@@ -55,13 +57,13 @@ export default function HeaderLink({
                 href={href}
                 className={clsx(
                     "flex h-full flex-col items-center px-4 py-1 text-black decoration-2 transition-all",
-                    href.endsWith(pathname) ? "underline" : "",
+                    href.endsWith(pathname) ? "underline" : ""
                 )}
             >
                 {title}
             </Link>
 
-            {subLinks ?
+            {subLinks ? (
                 <div className="absolute w-max scale-0 opacity-0 transition-all">
                     <div
                         id="dropdown-links"
@@ -80,7 +82,7 @@ export default function HeaderLink({
                             ))}
                     </div>
                 </div>
-            :   null}
+            ) : null}
         </div>
-    );
+    )
 }

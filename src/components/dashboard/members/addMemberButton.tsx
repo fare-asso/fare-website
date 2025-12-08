@@ -1,54 +1,47 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useCallback, useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import addMemberAction from "@/actions/members/addMemberAction"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogFooter,
-} from "@/components/ui/dialog";
+    DialogTrigger
+} from "@/components/ui/dialog"
+import FileInput from "@/components/ui/fileInput"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { formDataToString, zodFieldValuesToFormData } from "@/helpers/formData"
+import { uploadFile } from "@/helpers/supabase/upload"
+import LoadingRing from "../loadingRing"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { useState } from "react";
-
-import { useEffect, useCallback } from "react";
-
-import addMemberAction from "@/actions/members/addMemberAction";
-import LoadingRing from "../loadingRing";
-import FileInput from "@/components/ui/fileInput";
-import { uploadFile } from "@/helpers/supabase/upload";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { formDataToString, zodFieldValuesToFormData } from "@/helpers/formData";
-
-const maxUploadSizeInMb = 10;
+const maxUploadSizeInMb = 10
 
 export const memberSchema = z.object({
     lastName: z.string().min(1, "Le nom de famille est obligatoire"),
     firstName: z.string().min(1, "Le prénom est obligatoire"),
     position: z.string().min(1, "Le poste est obligatoire"),
     picture:
-        typeof window === "undefined" ?
-            z.any()
+        typeof window === "undefined"
+            ? z.any()
             : z
-                .instanceof(FileList)
-                .refine((fl) => fl.length > 0, {
-                    message: "Pas de fichier selectionné",
-                })
-                .refine((fl) => fl[0].type.split("/")[0] === "image", {
-                    message: "Le format de l'image n'est pas valide",
-                })
-                .refine((fl) => fl[0].size <= 1024 * 1024 * maxUploadSizeInMb)
-                .transform((fl) => fl[0]),
+                  .instanceof(FileList)
+                  .refine((fl) => fl.length > 0, {
+                      message: "Pas de fichier selectionné"
+                  })
+                  .refine((fl) => fl[0].type.split("/")[0] === "image", {
+                      message: "Le format de l'image n'est pas valide"
+                  })
+                  .refine((fl) => fl[0].size <= 1024 * 1024 * maxUploadSizeInMb)
+                  .transform((fl) => fl[0]),
     email: z.string().email("L'email doit être valide"),
     facebook: z
         .string()
@@ -64,51 +57,51 @@ export const memberSchema = z.object({
         .string()
         .url("L'URL Twitter doit être valide")
         .optional()
-        .or(z.literal("")),
-});
+        .or(z.literal(""))
+})
 
-export type TMemberSchema = z.infer<typeof memberSchema>;
+export type TMemberSchema = z.infer<typeof memberSchema>
 
 export default function AddMemberButton() {
-    const [error, setError] = useState<string | undefined>(undefined);
-    const [success, setSuccess] = useState<boolean>(false);
+    const [error, setError] = useState<string | undefined>(undefined)
+    const [success, setSuccess] = useState<boolean>(false)
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-        reset,
+        reset
     } = useForm<TMemberSchema>({
-        resolver: zodResolver(memberSchema),
-    });
+        resolver: zodResolver(memberSchema)
+    })
 
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const handleOpenChange = useCallback(
         (open: boolean) => {
-            setDialogIsOpen(open);
+            setDialogIsOpen(open)
             if (!open) {
                 // Réinitialiser le formulaire lorsque le dialogue est fermé
-                reset();
-                setSuccess(false);
+                reset()
+                setSuccess(false)
             }
         },
-        [setDialogIsOpen, reset],
-    );
+        [reset]
+    )
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (success) {
-            handleOpenChange(false);
+            handleOpenChange(false)
         }
 
-        setIsLoading(false);
-    }, [success, handleOpenChange]);
+        setIsLoading(false)
+    }, [success, handleOpenChange])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const onSubmit = async (data: TMemberSchema) => {
-        setIsLoading(true);
+        setIsLoading(true)
 
         const uploadResponse = await uploadFile(
             "member-pictures",
@@ -116,40 +109,40 @@ export default function AddMemberButton() {
             data.picture,
             undefined,
             maxUploadSizeInMb,
-            ["png", "jpeg", "jpg", "webp", "gif"],
-        );
+            ["png", "jpeg", "jpg", "webp", "gif"]
+        )
 
         if (uploadResponse.error) {
-            setError(uploadResponse.error);
-            setIsLoading(false);
-            return;
+            setError(uploadResponse.error)
+            setIsLoading(false)
+            return
         }
 
         // Build the formData with data values
         const formData = zodFieldValuesToFormData(data, {
-            excludeFields: ["picture"],
-        });
+            excludeFields: ["picture"]
+        })
 
         // Add the previously uploaded picture path to the formData
-        formData.append("picturePath", uploadResponse.path!);
+        formData.append("picturePath", uploadResponse.path ?? "")
 
-        console.log(formDataToString(formData));
+        console.log(formDataToString(formData))
 
         // Send formData to server action without the file
-        const response = await addMemberAction(formData);
+        const response = await addMemberAction(formData)
 
         if (response.error) {
-            setIsLoading(false);
-            setError(response.error);
-            return;
+            setIsLoading(false)
+            setError(response.error)
+            return
         }
 
         if (response.success) {
-            setIsLoading(false);
-            setSuccess(true);
-            return;
+            setIsLoading(false)
+            setSuccess(true)
+            return
         }
-    };
+    }
 
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
@@ -305,12 +298,12 @@ export default function AddMemberButton() {
                         )}
                     </div>
 
-                    {error ?
+                    {error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
-                        : null}
+                    ) : null}
                 </form>
 
                 <DialogFooter>
@@ -319,13 +312,10 @@ export default function AddMemberButton() {
                         form="addMemberForm"
                         disabled={isLoading}
                     >
-                        {isLoading ?
-                            <LoadingRing />
-                            : null}{" "}
-                        Ajouter
+                        {isLoading ? <LoadingRing /> : null} Ajouter
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    );
+    )
 }
