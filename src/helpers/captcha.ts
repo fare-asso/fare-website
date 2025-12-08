@@ -1,6 +1,6 @@
 export async function verifyCaptcha(captchaValue: string) {
     const response = await fetch(
-        `https://www.google.com/recaptcha/api/siteverify?secret=6LfNcTYqAAAAAI_3A1XCfBPmkHmOLrzBnwW51zFS&response=${captchaValue}`,
+        `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY!}&response=${captchaValue}`,
         {
             method: "POST",
             headers: {
