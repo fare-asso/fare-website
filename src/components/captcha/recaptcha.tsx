@@ -15,7 +15,7 @@ export default function Captcha({ onChange }: CaptchaProps) {
     return (
         <ReCAPTCHA
             ref={captchaRef}
-            sitekey="6LfNcTYqAAAAAG8PGcr1GDz1PwCYvtLUKtcbXZMM"
+            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
             onChange={handleCaptchaChange}
         />
     )
