@@ -3,8 +3,8 @@ import Image from "next/image"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { GoArrowLeft, GoArrowRight } from "react-icons/go"
 // Import all partner logos
-import LPI from "/public/partenaires/lapetiteimprimerie.png"
-import margueriteEtCie from "/public/partenaires/marguerite_et_cie.png"
+import LPI from "#public/partenaires/lapetiteimprimerie.png"
+import margueriteEtCie from "#public/partenaires/marguerite_et_cie.png"
 
 export default function PartnersCarousel() {
     // Array of partner logos

@@ -1,9 +1,8 @@
 "use client"
 
 import Image from "next/image"
-
 import { MdAdminPanelSettings } from "react-icons/md"
-
+import FARELogo from "#public/logo_fare.png"
 import LoginForm from "@/components/dashboard/loginForm"
 import {
     Card,
@@ -12,8 +11,6 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-
-import FARELogo from "/public/logo_fare.png"
 
 export default function LoginPage() {
     return (

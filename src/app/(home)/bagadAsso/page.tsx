@@ -1,8 +1,7 @@
 import Image from "next/image"
+import logoBagadAsso from "#public/logoBagadAsso.png"
 import BagadAssoForm from "@/components/public/bagadAsso/form"
 import prisma from "@/helpers/db"
-
-import logoBagadAsso from "/public/logoBagadAsso.png"
 
 export default async function BagadAsso() {
     const equipmentList = await prisma.bagadAssoEquipment.findMany()

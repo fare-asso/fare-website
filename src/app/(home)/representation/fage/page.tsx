@@ -1,6 +1,5 @@
 import Image from "next/image"
-
-import logoFage from "/public/Logo_FAGE.png"
+import logoFage from "#public/Logo_FAGE.png"
 
 export default function FAGE() {
     return (

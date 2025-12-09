@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa6" // Bouge Ta Prison
 // Link icons
 import { LuNetwork, LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
-import LogoFARE from "/public/logo_fare.png"
+import LogoFARE from "#public/logo_fare.png"
 // UI components
 import {
     Sidebar,
@@ -27,6 +27,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem
 } from "../ui/sidebar"
+
 import CurrentUserClient from "./currentUserClient"
 import SignOutButton from "./signOutButton"
 

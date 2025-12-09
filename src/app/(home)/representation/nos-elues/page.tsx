@@ -1,11 +1,11 @@
 import Image from "next/image"
+import logoEHESP from "#public/elues/ehesp/ehesp.png"
+import logoBougeTonCampus from "#public/elues/logo-Bouge-Ton-Campus.png"
+import logoBougeTonCrous from "#public/elues/logo-Bouge-Ton-Crous.png"
+import logoCrous from "#public/Logo_Crous_vectorisé.png"
+import logoUR2 from "#public/univ/Logo_univ-rennes2-2016.png"
+import logoUR from "#public/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
 import { Card, CardContent } from "@/components/ui/card"
-import logoEHESP from "/public/elues/ehesp/ehesp.png"
-import logoBougeTonCampus from "/public/elues/logo-Bouge-Ton-Campus.png"
-import logoBougeTonCrous from "/public/elues/logo-Bouge-Ton-Crous.png"
-import logoCrous from "/public/Logo_Crous_vectorisé.png"
-import logoUR2 from "/public/univ/Logo_univ-rennes2-2016.png"
-import logoUR from "/public/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
 
 type Elu = {
     firstName: string

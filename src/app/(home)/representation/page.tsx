@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
-import gifElues from "/public/elues/elues.gif"
-import logoFage from "/public/Logo_FAGE.png"
+import gifElues from "#public/elues/elues.gif"
+import logoFage from "#public/Logo_FAGE.png"
 
 export default function Representation() {
     return (
