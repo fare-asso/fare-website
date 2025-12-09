@@ -21,12 +21,7 @@
                         "--write"
                     ]
                 }
-            },
-            "language_servers": [
-                "biome",
-                "typescript-language-server",
-                "!vtsls"
-            ]
+            }
         },
         "TSX": {
             "formatter": {
@@ -38,12 +33,7 @@
                         "--write"
                     ]
                 }
-            },
-            "language_servers": [
-                "biome",
-                "typescript-language-server",
-                "!vtsls"
-            ]
+            }
         },
         "JavaScript": {
             "formatter": {
@@ -55,12 +45,7 @@
                         "--write"
                     ]
                 }
-            },
-            "language_servers": [
-                "biome",
-                "typescript-language-server",
-                "!vtsls"
-            ]
+            }
         },
         "JSON": {
             "formatter": {
@@ -72,8 +57,7 @@
                         "--write"
                     ]
                 }
-            },
-            "language_servers": ["biome"]
+            }
         },
         "JSONC": {
             "formatter": {
@@ -85,8 +69,7 @@
                         "--write"
                     ]
                 }
-            },
-            "language_servers": ["biome"]
+            }
         },
         "CSS": {
             "formatter": {
@@ -98,8 +81,7 @@
                         "--write"
                     ]
                 }
-            },
-            "language_servers": ["biome"]
+            }
         }
     }
 }
