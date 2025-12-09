@@ -1,7 +1,7 @@
 import { createJiti } from "jiti"
 
 // Validate env at build time. Required because of Next.js pre-rendering
-const jiti = createJiti(import.meta.url, { debug: true })
+const jiti = createJiti(import.meta.url)
 await jiti.import("./src/env")
 
 /** @type {import('next').NextConfig} */
