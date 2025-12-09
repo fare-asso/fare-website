@@ -1,13 +1,7 @@
-import Link from "next/link";
+import Link from "next/link"
 
-import {
-    FaBluesky,
-    FaFacebook,
-    FaInstagram,
-    FaLinkedin,
-    FaTiktok,
-} from "react-icons/fa6";
-import { TbBrandLinktree } from "react-icons/tb";
+import { FaFacebook, FaInstagram } from "react-icons/fa6"
+import { TbBrandLinktree } from "react-icons/tb"
 
 export default function SocialLinks() {
     return (
@@ -60,5 +54,5 @@ export default function SocialLinks() {
                 <TbBrandLinktree size={25} />
             </Link>
         </div>
-    );
+    )
 }

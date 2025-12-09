@@ -1,6 +1,5 @@
-import Image from "next/image";
-
-import logoFage from "/public/Logo_FAGE.png";
+import Image from "next/image"
+import logoFage from "#public/Logo_FAGE.png"
 
 export default function FAGE() {
     return (
@@ -15,7 +14,7 @@ export default function FAGE() {
 
             <div className="mb-20 w-full max-w-4xl space-y-8">
                 <section>
-                    <h2 className="mb-4 text-2xl font-semibold">
+                    <h2 className="mb-4 font-semibold text-2xl">
                         Présentation
                     </h2>
                     <p className="mb-4 italic">
@@ -43,7 +42,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 text-2xl font-semibold">
+                    <h2 className="mb-4 font-semibold text-2xl">
                         Reconnaissance et indépendance
                     </h2>
                     <p className="mb-4">
@@ -65,7 +64,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 text-2xl font-semibold">
+                    <h2 className="mb-4 font-semibold text-2xl">
                         Rôle et valeurs
                     </h2>
                     <p className="mb-4">
@@ -82,7 +81,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 text-2xl font-semibold">Histoire</h2>
+                    <h2 className="mb-4 font-semibold text-2xl">Histoire</h2>
                     <p className="mb-4">
                         À la fin des années 80, l'idée de fonder une
                         organisation germe à Lyon. Plusieurs réunions, se
@@ -105,7 +104,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 text-2xl font-semibold">
+                    <h2 className="mb-4 font-semibold text-2xl">
                         Projet éducatif
                     </h2>
                     <p className="mb-4">
@@ -121,5 +120,5 @@ export default function FAGE() {
                 </section>
             </div>
         </div>
-    );
+    )
 }

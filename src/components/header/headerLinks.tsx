@@ -1,69 +1,70 @@
-"use client";
+"use client"
 
-import { useRef, useState, useEffect, type RefObject } from "react";
-import HeaderLink from "./headerLink";
+import clsx from "clsx"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { type RefObject, useCallback, useEffect, useRef, useState } from "react"
 import {
     MdClose,
-    MdOutlineMenu,
     MdExpandLess,
     MdExpandMore,
-} from "react-icons/md";
-import clsx from "clsx";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+    MdOutlineMenu
+} from "react-icons/md"
+import HeaderLink from "./headerLink"
 
-export interface Link {
-    title: string;
-    href: string;
-    hidden?: boolean;
-    subLinks?: Link[];
+export interface NavLink {
+    title: string
+    href: string
+    hidden?: boolean
+    subLinks?: NavLink[]
 }
 
-export default function HeaderLinks({ links }: { links: Link[] }) {
-    const pathname = usePathname();
-    const runner = useRef<HTMLDivElement>(null);
-    const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+export default function HeaderLinks({ links }: { links: NavLink[] }) {
+    const pathname = usePathname()
+    const runner = useRef<HTMLDivElement>(null)
+    const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false)
     const [openSubMenus, setOpenSubMenus] = useState<{
-        [key: string]: boolean;
-    }>({});
-    const menuRef = useRef<HTMLDivElement>(null);
+        [key: string]: boolean
+    }>({})
+    const menuRef = useRef<HTMLDivElement>(null)
 
     const toggleSubMenu = (title: string) => {
         setOpenSubMenus((prevState) => ({
             ...prevState,
-            [title]: !prevState[title],
-        }));
-    };
+            [title]: !prevState[title]
+        }))
+    }
 
     function renderMobileLinks(
-        links: Link[],
+        links: NavLink[],
         pathname: string,
-        level: number,
+        level: number
     ): React.ReactElement | React.ReactElement[] {
         return links
             .filter((link) => !link.hidden)
             .map((link) => {
-                const isOpen = openSubMenus[link.title];
-                const hasSubLinks = link.subLinks && link.subLinks.length > 0;
+                const isOpen = openSubMenus[link.title]
+                const hasSubLinks = link.subLinks && link.subLinks.length > 0
 
                 return (
                     <div
                         key={link.title}
-                        className={clsx("flex flex-col", level == 0 && "mb-4")}
+                        className={clsx("flex flex-col", level === 0 && "mb-4")}
                     >
                         <div
                             className={clsx(
                                 "flex items-center justify-start",
-                                level == 0 && "w-fit",
+                                level === 0 && "w-fit"
                             )}
                         >
                             <Link
                                 href={link.href}
                                 className={clsx(
-                                    pathname.startsWith(link.href) ? "font-bold"
-                                    :   "font-normal",
+                                    pathname.startsWith(link.href)
+                                        ? "font-bold"
+                                        : "font-normal",
                                     `flex-1 text-lg`,
-                                    level > 0 && "pb-1 text-base!",
+                                    level > 0 && "pb-1 text-base!"
                                 )}
                                 onClick={() => setMenuIsOpen(false)}
                                 style={{ marginLeft: level * 20 }}
@@ -72,33 +73,36 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                             </Link>
                             {hasSubLinks && (
                                 <button
+                                    type="button"
                                     onClick={() => toggleSubMenu(link.title)}
                                     className="ml-2"
                                 >
-                                    {isOpen ?
+                                    {isOpen ? (
                                         <MdExpandLess size={20} />
-                                    :   <MdExpandMore size={20} />}
+                                    ) : (
+                                        <MdExpandMore size={20} />
+                                    )}
                                 </button>
                             )}
                         </div>
 
-                        {hasSubLinks && isOpen && (
+                        {hasSubLinks && isOpen && link.subLinks && (
                             <div key={`sublink-${link.title}`} className="">
                                 {renderMobileLinks(
-                                    link.subLinks!,
+                                    link.subLinks,
                                     pathname,
-                                    level + 1,
+                                    level + 1
                                 )}
                             </div>
                         )}
                     </div>
-                );
-            });
+                )
+            })
     }
 
     function renderDesktopLinks(
-        links: Link[],
-        pathname: string,
+        links: NavLink[],
+        _pathname: string
     ): React.ReactElement | React.ReactElement[] {
         return links
             .filter((link) => !link.hidden)
@@ -110,29 +114,29 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                     subLinks={link.subLinks}
                     runnerRef={runner as RefObject<HTMLDivElement>}
                 />
-            ));
+            ))
     }
 
-    const handleOutsideClick = (event: MouseEvent) => {
+    const handleOutsideClick = useCallback((event: MouseEvent) => {
         if (
             menuRef.current &&
             !menuRef.current.contains(event.target as Node)
         ) {
-            setMenuIsOpen(false);
+            setMenuIsOpen(false)
         }
-    };
+    }, [])
 
     useEffect(() => {
         if (menuIsOpen) {
-            document.addEventListener("mousedown", handleOutsideClick);
+            document.addEventListener("mousedown", handleOutsideClick)
         } else {
-            document.removeEventListener("mousedown", handleOutsideClick);
+            document.removeEventListener("mousedown", handleOutsideClick)
         }
 
         return () => {
-            document.removeEventListener("mousedown", handleOutsideClick);
-        };
-    }, [menuIsOpen]);
+            document.removeEventListener("mousedown", handleOutsideClick)
+        }
+    }, [menuIsOpen, handleOutsideClick])
 
     return (
         <div className="w-full lg:w-auto">
@@ -147,6 +151,7 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
 
             {/* Bouton Burger pour les petits écrans */}
             <button
+                type="button"
                 className="ml-auto block text-black lg:ml-0 lg:hidden"
                 onClick={() => setMenuIsOpen(true)}
             >
@@ -159,11 +164,12 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                 id="mobileMenu"
                 className={clsx(
                     "fixed top-0 right-0 z-9999 flex min-h-screen w-80 flex-col border-l-2 bg-white transition-all duration-500",
-                    menuIsOpen ? "translate-x-0" : "translate-x-80",
+                    menuIsOpen ? "translate-x-0" : "translate-x-80"
                 )}
             >
                 <div className="flex w-full flex-row items-center justify-end p-4">
                     <button
+                        type="button"
                         id="closeButton"
                         className="hover:font-bold"
                         onClick={() => setMenuIsOpen(false)}
@@ -176,5 +182,5 @@ export default function HeaderLinks({ links }: { links: Link[] }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }

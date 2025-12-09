@@ -1,11 +1,18 @@
-// This file is used to configure Next.js settings and options.
+import { createJiti } from "jiti"
+
+// Validate env at build time. Required because of Next.js pre-rendering
+const jiti = createJiti(import.meta.url)
+await jiti.import("./src/env")
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+export default {
     output: "standalone",
+    transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
     experimental: {
         serverActions: {
             bodySizeLimit: "5mb",
-        },
+            reactCompiler: true
+        }
     },
     images: {
         remotePatterns: [
@@ -13,10 +20,12 @@ const nextConfig = {
                 protocol: "https",
                 hostname: "ezatoworfypbxlvjkhud.supabase.co",
                 port: "",
-                pathname: "/storage/v1/object/public/**",
-            },
-        ],
+                pathname: "/storage/v1/object/public/**"
+            }
+        ]
     },
-};
 
-export default nextConfig;
+    /** We already do linting and typechecking as separate tasks in CI */
+    eslint: { ignoreDuringBuilds: true },
+    typescript: { ignoreBuildErrors: true }
+}

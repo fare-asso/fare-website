@@ -1,47 +1,47 @@
-"use client";
+"use client"
 
-import DatePicker from "@/components/ui/input/datePicker";
-import NumberInput from "@/components/ui/input/numberInput";
-import EquipmentSelection from "./equipmentSelection";
-import { BagadAssoEquipment } from "@prisma/client";
-import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction";
-import { useActionState, useEffect, useState } from "react";
-import LoadingRing from "@/components/dashboard/loadingRing";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import Captcha from "@/components/captcha/recaptcha";
+import type { BagadAssoEquipment } from "@prisma/client"
+import { useActionState, useEffect, useState } from "react"
+import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction"
+import Captcha from "@/components/captcha/recaptcha"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import DatePicker from "@/components/ui/input/datePicker"
+import NumberInput from "@/components/ui/input/numberInput"
+import EquipmentSelection from "./equipmentSelection"
 
 export default function BagadAssoForm({
-    equipmentList,
+    equipmentList
 }: {
-    equipmentList: BagadAssoEquipment[];
+    equipmentList: BagadAssoEquipment[]
 }) {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
-        any
-    >(submitBagadAssoFormAction, undefined);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [captchaValue, setCaptchaValue] = useState<string | null>(null);
+        FormData
+    >(submitBagadAssoFormAction, undefined)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [_captchaValue, setCaptchaValue] = useState<string | null>(null)
 
     // Arrêter le chargement lorsque l'action du formulaire indique un succès
     useEffect(() => {
-        setIsLoading(false);
-    }, [formState]);
+        setIsLoading(false)
+    }, [])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
 
-        const formData = new FormData(event.currentTarget);
+        const formData = new FormData(event.currentTarget)
 
-        setIsLoading(true);
+        setIsLoading(true)
 
-        formAction(formData);
-    };
+        formAction(formData)
+    }
 
     return (
         <form
             onSubmit={handleSubmit}
-            className={`flex w-full flex-col items-start lg:w-[60%] [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black focus:[&_input]:border-yellow-400 focus:[&_input]:ring-yellow-400 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-700 dark:[&_input]:text-white dark:[&_input]:placeholder-gray-400 dark:focus:[&_input]:border-yellow-400 dark:focus:[&_input]:ring-yellow-400 [&_label]:mb-1 [&_label]:mt-6 [&_option]:font-sans [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black focus:[&_select]:border-yellow-400 focus:[&_select]:ring-yellow-400 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-700 dark:[&_select]:text-white dark:[&_select]:placeholder-gray-400 dark:focus:[&_select]:border-yellow-400 dark:focus:[&_select]:ring-yellow-400`}
+            className={`flex w-full flex-col items-start lg:w-[60%] [&_input]:block [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-300 [&_input]:p-2.5 [&_input]:text-base [&_input]:text-black focus:[&_input]:border-yellow-400 focus:[&_input]:ring-yellow-400 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-700 dark:[&_input]:text-white dark:[&_input]:placeholder-gray-400 dark:focus:[&_input]:border-yellow-400 dark:focus:[&_input]:ring-yellow-400 [&_label]:mt-6 [&_label]:mb-1 [&_option]:font-sans [&_select]:block [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-gray-300 [&_select]:p-2.5 [&_select]:text-base [&_select]:text-black focus:[&_select]:border-yellow-400 focus:[&_select]:ring-yellow-400 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-700 dark:[&_select]:text-white dark:[&_select]:placeholder-gray-400 dark:focus:[&_select]:border-yellow-400 dark:focus:[&_select]:ring-yellow-400`}
         >
             {/* Association représentée */}
             <label htmlFor="association-name">Association représentée</label>
@@ -88,7 +88,7 @@ export default function BagadAssoForm({
 
             {/* Mail du référent */}
             <label htmlFor="association-referent-email">
-                {"Email du référent.e.s"}
+                Email du référent.e.s
             </label>
             <input
                 type="email"
@@ -149,28 +149,28 @@ export default function BagadAssoForm({
             <NumberInput name="event-participants" min={0} placeholder="999" />
 
             {/* Matériels demandés */}
-            <label htmlFor="equipment-input">{"Matériels demandés"}</label>
+            <label htmlFor="equipment-input">Matériels demandés</label>
             <EquipmentSelection
                 name="equipment-input"
                 equipmentList={equipmentList}
             />
 
             {/* Termes et conditions */}
-            <div className="mb-8 mt-6 flex flex-row items-center">
+            <div className="mt-6 mb-8 flex flex-row items-center">
                 <input
                     id="terms-and-conditions"
                     name="terms-and-conditions"
                     type="checkbox"
-                    className="focus:ring-3 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                    className="h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
                     required
                 />
                 <label
                     htmlFor="terms-and-conditions"
-                    className="m-0! ml-2! text-nowrap text-sm font-medium text-gray-900 dark:text-gray-300"
+                    className="m-0! ml-2! text-nowrap font-medium text-gray-900 text-sm dark:text-gray-300"
                 >
                     J'accepte les{" "}
                     <a
-                        href="#"
+                        href="/mentions-legales"
                         className="text-blue-600 hover:underline dark:text-blue-500"
                     >
                         termes et conditions
@@ -184,25 +184,24 @@ export default function BagadAssoForm({
                 <Captcha onChange={setCaptchaValue} />
             </div>
 
-            {formState?.error ?
+            {formState?.error ? (
                 <Alert variant="destructive">
                     <AlertTitle>Erreur</AlertTitle>
                     <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
-            :   null}
+            ) : null}
 
-            {formState?.success ?
+            {formState?.success ? (
                 <Alert
                     variant="destructive"
                     className="mt-4 border-green-600 text-green-600"
                 >
                     <AlertDescription>
-                        {
-                            "Votre soumission a été reçue. Nous vous remercions et vous contacterons sous peu."
-                        }
+                        Votre soumission a été reçue. Nous vous remercions et
+                        vous contacterons sous peu.
                     </AlertDescription>
                 </Alert>
-            :   null}
+            ) : null}
 
             <button
                 type="submit"
@@ -210,11 +209,9 @@ export default function BagadAssoForm({
                 disabled={isLoading}
             >
                 {" "}
-                {isLoading ?
-                    <LoadingRing />
-                :   null}{" "}
-                Valider la demande de matériel
+                {isLoading ? <LoadingRing /> : null} Valider la demande de
+                matériel
             </button>
         </form>
-    );
+    )
 }

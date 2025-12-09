@@ -1,64 +1,64 @@
-"use client";
+"use client"
 
-import { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import LoadingRing from "@/components/dashboard/loadingRing";
-import updateUserInfo from "@/actions/users/updateUserInfo";
-import { Role, User } from "@prisma/client";
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { Role, User } from "@prisma/client"
+import { useEffect, useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import updateUserInfo from "@/actions/users/updateUserInfo"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+    SelectValue
+} from "@/components/ui/select"
 
 const schema = z.object({
     name: z.string().min(1, "Le nom d'utilisateur est requis").nullable(),
     email: z.string().email("Email invalide"),
-    role: z.enum(["MEMBER", "ADMIN", "ASSO_OWNER"]),
-});
+    role: z.enum(["MEMBER", "ADMIN", "ASSO_OWNER"])
+})
 
-type SchemaType = z.infer<typeof schema>;
+type SchemaType = z.infer<typeof schema>
 
 export function UserInfoForm({ user }: { user: User }) {
     const userInfo = useMemo(
         () => ({
             name: user.name,
             email: user.email,
-            role: user.role as "ADMIN" | "MEMBER" | "ASSO_OWNER",
+            role: user.role as "ADMIN" | "MEMBER" | "ASSO_OWNER"
         }),
-        [user],
-    );
+        [user]
+    )
 
-    const [initialInfo, setInitialInfo] = useState(userInfo);
+    const [initialInfo, setInitialInfo] = useState(userInfo)
 
     const form = useForm<SchemaType>({
         resolver: zodResolver(schema),
-        defaultValues: userInfo,
-    });
+        defaultValues: userInfo
+    })
 
     useEffect(() => {
-        form.reset(userInfo);
-        setInitialInfo(userInfo);
-    }, [userInfo]);
+        form.reset(userInfo)
+        setInitialInfo(userInfo)
+    }, [userInfo, form.reset])
 
-    const currentValues = form.watch();
+    const currentValues = form.watch()
     const isChanged =
-        JSON.stringify(currentValues) !== JSON.stringify(initialInfo);
+        JSON.stringify(currentValues) !== JSON.stringify(initialInfo)
 
     const onSubmit = async (data: SchemaType) => {
-        const res = await updateUserInfo(user.id, data);
+        const res = await updateUserInfo(user.id, data)
         if (res.success) {
-            form.reset(data);
-            setInitialInfo(data);
+            form.reset(data)
+            setInitialInfo(data)
         }
-    };
+    }
 
     return (
         <form
@@ -78,7 +78,7 @@ export function UserInfoForm({ user }: { user: User }) {
                         placeholder={user.name ? "" : "NULL"}
                     />
                     {form.formState.errors.name && (
-                        <p className="text-sm text-red-500">
+                        <p className="text-red-500 text-sm">
                             {form.formState.errors.name.message}
                         </p>
                     )}
@@ -91,7 +91,7 @@ export function UserInfoForm({ user }: { user: User }) {
                         {...form.register("email")}
                     />
                     {form.formState.errors.email && (
-                        <p className="text-sm text-red-500">
+                        <p className="text-red-500 text-sm">
                             {form.formState.errors.email.message}
                         </p>
                     )}
@@ -128,5 +128,5 @@ export function UserInfoForm({ user }: { user: User }) {
                 {form.formState.isSubmitting && <LoadingRing />}Enregistrer
             </Button>
         </form>
-    );
+    )
 }

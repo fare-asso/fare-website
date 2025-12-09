@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { Input } from "../input";
+import { Input } from "../input"
 
 type Time = {
-    hours: number;
-    minutes: number;
-};
+    hours: number
+    minutes: number
+}
 
 /**
  * @param {Time} defaultValue - Default hour and minutes of the inputs
@@ -17,11 +17,11 @@ type Time = {
 export default function TimePicker({
     defaultValue,
     hoursInputName,
-    minutesInputName,
+    minutesInputName
 }: {
-    defaultValue: Time;
-    hoursInputName: string;
-    minutesInputName: string;
+    defaultValue: Time
+    hoursInputName: string
+    minutesInputName: string
 }) {
     return (
         <div className="flex flex-row items-center justify-start space-x-2">
@@ -45,5 +45,5 @@ export default function TimePicker({
                 className="w-11 text-center"
             />
         </div>
-    );
+    )
 }

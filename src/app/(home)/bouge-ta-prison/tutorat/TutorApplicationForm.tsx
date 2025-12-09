@@ -1,11 +1,14 @@
-"use client";
+"use client"
 
-import submitTutorApplication from "@/actions/bouge-ta-prison/submitTutorApplication";
-import Captcha from "@/components/captcha/recaptcha";
-import LoadingRing from "@/components/dashboard/loadingRing";
-import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import submitTutorApplication from "@/actions/bouge-ta-prison/submitTutorApplication"
+import Captcha from "@/components/captcha/recaptcha"
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import {
     Form,
     FormControl,
@@ -13,27 +16,24 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+    FormMessage
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+    SelectValue
+} from "@/components/ui/select"
 import {
-    BTPTutorApplication,
-    BTPTutorApplicationSchema,
-} from "@/schemas/bougeTaPrison";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+    type BTPTutorApplication,
+    BTPTutorApplicationSchema
+} from "@/schemas/bougeTaPrison"
 
 export default function TutorApplicationForm() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [success, setSuccess] = useState<boolean | undefined>(undefined);
+    const [isLoading, setIsLoading] = useState(false)
+    const [success, setSuccess] = useState<boolean | undefined>(undefined)
 
     const form = useForm<BTPTutorApplication>({
         resolver: zodResolver(BTPTutorApplicationSchema),
@@ -44,36 +44,36 @@ export default function TutorApplicationForm() {
             major: "",
             studyYear: "L3",
             cv: undefined,
-            motivationLetter: undefined,
-        },
-    });
+            motivationLetter: undefined
+        }
+    })
 
     const onSubmit = async (data: BTPTutorApplication) => {
         // Do something with the data...
-        setIsLoading(true);
+        setIsLoading(true)
 
-        const formData = new FormData();
+        const formData = new FormData()
 
-        Object.entries(data).forEach(([key, value]) => {
-            formData.append(key, value);
-        });
+        for (const [key, value] of Object.entries(data)) {
+            formData.append(key, value)
+        }
 
-        const res = await submitTutorApplication(formData);
+        const res = await submitTutorApplication(formData)
 
-        if (!res.success) {
-            res.errors?.forEach((error) => {
+        if (!res.success && res.errors) {
+            for (const error of res.errors) {
                 form.setError(
                     Object.keys(error)[0] as keyof BTPTutorApplication,
                     {
-                        message: Object.values(error)[0],
-                    },
-                );
-            });
+                        message: Object.values(error)[0]
+                    }
+                )
+            }
         }
-        setSuccess(res.success);
-        form.reset();
-        setIsLoading(false);
-    };
+        setSuccess(res.success)
+        form.reset()
+        setIsLoading(false)
+    }
 
     return (
         <Card>
@@ -170,7 +170,7 @@ export default function TutorApplicationForm() {
                         <FormField
                             name="studyYear"
                             control={form.control}
-                            render={({ field }) => (
+                            render={({ field: _field }) => (
                                 <FormItem>
                                     <FormLabel>Année d'étude</FormLabel>
                                     <FormControl>
@@ -218,7 +218,7 @@ export default function TutorApplicationForm() {
                                             accept="application/pdf"
                                             onChange={(e) =>
                                                 field.onChange(
-                                                    e.target.files?.[0],
+                                                    e.target.files?.[0]
                                                 )
                                             }
                                             onBlur={field.onBlur}
@@ -248,7 +248,7 @@ export default function TutorApplicationForm() {
                                             accept="application/pdf"
                                             onChange={(e) =>
                                                 field.onChange(
-                                                    e.target.files?.[0],
+                                                    e.target.files?.[0]
                                                 )
                                             }
                                             onBlur={field.onBlur}
@@ -276,15 +276,13 @@ export default function TutorApplicationForm() {
                             variant="default"
                             disabled={isLoading}
                         >
-                            {isLoading ?
-                                <LoadingRing />
-                            :   null}
+                            {isLoading ? <LoadingRing /> : null}
                             Soumettre
                         </Button>
                     </form>
                 </Form>
 
-                {success === true ?
+                {success === true ? (
                     <Alert
                         variant="default"
                         className="mt-4 flex flex-row items-center border-green-500 bg-green-100 text-green-900"
@@ -294,8 +292,8 @@ export default function TutorApplicationForm() {
                             votre intérêt!
                         </span>
                     </Alert>
-                :   null}
-                {success === false ?
+                ) : null}
+                {success === false ? (
                     <Alert
                         variant="destructive"
                         className="mt-4 flex flex-row items-center"
@@ -305,8 +303,8 @@ export default function TutorApplicationForm() {
                             candidature. Veuillez réessayer.
                         </span>
                     </Alert>
-                :   null}
+                ) : null}
             </CardContent>
         </Card>
-    );
+    )
 }

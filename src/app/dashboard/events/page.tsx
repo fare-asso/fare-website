@@ -1,18 +1,16 @@
-import CreateEventButton from "@/components/dashboard/event/createEventButton";
-import EventDataTable from "@/components/dashboard/event/eventDataTable";
-
+import { Suspense } from "react"
+import CreateEventButton from "@/components/dashboard/event/createEventButton"
+import EventDataTable from "@/components/dashboard/event/eventDataTable"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
-
-export default async function EventsPage() {
+export default function EventsPage() {
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">
@@ -30,5 +28,5 @@ export default async function EventsPage() {
                 <CreateEventButton />
             </CardFooter>
         </Card>
-    );
+    )
 }

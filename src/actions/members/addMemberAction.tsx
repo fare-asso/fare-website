@@ -1,10 +1,10 @@
-"use server";
+"use server"
 
-import prisma from "@/helpers/db";
-import { createClient } from "@/helpers/supabase/server";
-import getCurrentUserRole from "@/helpers/user/role";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { revalidatePath } from "next/cache"
+import { z } from "zod"
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
+import getCurrentUserRole from "@/helpers/user/role"
 
 const MemberSchema = z.object({
     lastName: z.string().min(1, "Le nom de famille est obligatoire"),
@@ -26,22 +26,22 @@ const MemberSchema = z.object({
         .string()
         .url("L'URL Twitter doit être valide")
         .optional()
-        .or(z.literal("")),
-});
+        .or(z.literal(""))
+})
 
 export default async function addMemberAction(
-    formData: FormData,
+    formData: FormData
 ): Promise<{ success?: boolean; error?: string }> {
     // Auth and role verifications
-    const { role, error } = await getCurrentUserRole();
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" };
+    const { role, error } = await getCurrentUserRole()
+    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
     if (role !== "ADMIN")
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
-        };
+            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+        }
 
     // Create supabase client
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // Retrieve form data fields
     const memberData = {
@@ -52,29 +52,29 @@ export default async function addMemberAction(
         email: formData.get("email"),
         facebook: formData.get("facebook"),
         instagram: formData.get("instagram"),
-        twitter: formData.get("twitter"),
-    };
+        twitter: formData.get("twitter")
+    }
 
     // Validate form data with zod
-    const parsed = MemberSchema.safeParse(memberData);
+    const parsed = MemberSchema.safeParse(memberData)
     if (!parsed.success) {
-        console.log("Error: ", parsed.error.toString());
+        console.log("Error: ", parsed.error.toString())
         return {
             success: false,
-            error: "Un ou plusieurs champs sont invalides",
-        };
+            error: "Un ou plusieurs champs sont invalides"
+        }
     }
 
     // Fetch picture info
-    const { data, error: pictureError } = await supabase.storage
+    const { error: pictureError } = await supabase.storage
         .from("member-pictures")
-        .info(parsed.data?.picturePath!);
+        .info(parsed.data.picturePath)
 
     if (pictureError) {
         return {
             success: false,
-            error: "Erreur lors de la récupération de l'image",
-        };
+            error: "Erreur lors de la récupération de l'image"
+        }
     }
 
     // Create record
@@ -88,19 +88,19 @@ export default async function addMemberAction(
                 email: parsed.data.email,
                 facebookUrl: parsed.data.facebook,
                 instagramUrl: parsed.data.instagram,
-                twitterUrl: parsed.data.twitter,
-            },
-        });
+                twitterUrl: parsed.data.twitter
+            }
+        })
 
         // Revalidate path
-        revalidatePath("/dashboard/membres");
-        revalidatePath("/bureau");
+        revalidatePath("/dashboard/membres")
+        revalidatePath("/bureau")
 
-        return { success: true };
+        return { success: true }
     } catch {
         return {
             success: false,
-            error: "La création du membre dans la base de données a échoué... Veuillez contacter un administrateur",
-        };
+            error: "La création du membre dans la base de données a échoué... Veuillez contacter un administrateur"
+        }
     }
 }

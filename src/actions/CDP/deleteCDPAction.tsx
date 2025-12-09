@@ -1,56 +1,55 @@
-"use server";
+"use server"
 
-import prisma from "@/helpers/db";
-
-import { createClient } from "@/helpers/supabase/server";
-import getCurrentUserRole from "@/helpers/user/role";
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from "next/cache"
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
+import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function deleteCDPAction({ id }: { id: number }) {
     /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole();
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" };
-    if (role != "ADMIN")
+    const { role, error } = await getCurrentUserRole()
+    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
+    if (role !== "ADMIN")
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
-        };
+            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+        }
 
     // create supabase client
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // Delete Record from DB
     const deletedCdpRecord = await prisma.communiqueDePresse.delete({
         where: {
-            id: id,
-        },
-    });
+            id: id
+        }
+    })
 
     if (deletedCdpRecord == null) {
         return {
-            error: "Echec de la suppression du communiqué de presse",
-        };
+            error: "Echec de la suppression du communiqué de presse"
+        }
     }
 
     // remove file from storage
-    const { error: err, data } = await supabase.storage
+    const { error: err } = await supabase.storage
         .from("communique-de-presse")
-        .remove([deletedCdpRecord.filePath]);
+        .remove([deletedCdpRecord.filePath])
 
     if (err) {
-        console.error(err.message);
+        console.error(err.message)
         return {
-            error: "Echec de la suppression du communiqué de presse dans le stockage",
-        };
+            error: "Echec de la suppression du communiqué de presse dans le stockage"
+        }
     } else {
         // success
 
         // revalidate Path
-        revalidatePath("/dashboard/communiques-de-presse");
-        revalidatePath("/presse");
-        revalidatePath("/presse/communiques-de-presse");
-        revalidatePath("/presse/dossiers-de-presse");
+        revalidatePath("/dashboard/communiques-de-presse")
+        revalidatePath("/presse")
+        revalidatePath("/presse/communiques-de-presse")
+        revalidatePath("/presse/dossiers-de-presse")
         return {
-            success: true,
-        };
+            success: true
+        }
     }
 }

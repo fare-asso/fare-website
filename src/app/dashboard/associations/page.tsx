@@ -1,17 +1,16 @@
-import AddAssociationButton from "@/components/dashboard/associations/addAssociationButton";
-import AssociationList from "@/components/dashboard/associations/associationList";
+import { Suspense } from "react"
+import AddAssociationButton from "@/components/dashboard/associations/addAssociationButton"
+import AssociationList from "@/components/dashboard/associations/associationList"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
-
-export default async function Associations() {
+export default function Associations() {
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">
@@ -29,5 +28,5 @@ export default async function Associations() {
                 <AddAssociationButton />
             </CardFooter>
         </Card>
-    );
+    )
 }

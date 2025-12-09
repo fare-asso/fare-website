@@ -1,11 +1,10 @@
-import BagadAssoForm from "@/components/public/bagadAsso/form";
-import prisma from "@/helpers/db";
-import Image from "next/image";
-
-import logoBagadAsso from "/public/logoBagadAsso.png";
+import Image from "next/image"
+import logoBagadAsso from "#public/logoBagadAsso.png"
+import BagadAssoForm from "@/components/public/bagadAsso/form"
+import prisma from "@/helpers/db"
 
 export default async function BagadAsso() {
-    const equipmentList = await prisma.bagadAssoEquipment.findMany();
+    const equipmentList = await prisma.bagadAssoEquipment.findMany()
 
     return (
         <div className="flex w-full flex-col items-center justify-start">
@@ -19,7 +18,7 @@ export default async function BagadAsso() {
 
             {/* Présentation du projet */}
             <div className="mb-12 max-w-4xl rounded-xl bg-black p-8 text-justify text-white">
-                <h2 className="mb-4 text-xl font-semibold">
+                <h2 className="mb-4 font-semibold text-xl">
                     Présentation du projet
                 </h2>
                 <p className="mb-4">
@@ -62,10 +61,10 @@ export default async function BagadAsso() {
             </div>
 
             <section className="mb-12 w-full max-w-4xl">
-                <h2 className="mb-4 text-2xl font-bold">Nos services</h2>
+                <h2 className="mb-4 font-bold text-2xl">Nos services</h2>
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                     <div>
-                        <h3 className="mb-2 text-xl font-semibold">
+                        <h3 className="mb-2 font-semibold text-xl">
                             Logistique
                         </h3>
                         <ul className="list-inside list-disc">
@@ -77,7 +76,7 @@ export default async function BagadAsso() {
                         </ul>
                     </div>
                     <div>
-                        <h3 className="mb-2 text-xl font-semibold">
+                        <h3 className="mb-2 font-semibold text-xl">
                             Prévention
                         </h3>
                         <ul className="list-inside list-disc">
@@ -89,7 +88,7 @@ export default async function BagadAsso() {
                         </ul>
                     </div>
                     <div>
-                        <h3 className="mb-2 text-xl font-semibold">Services</h3>
+                        <h3 className="mb-2 font-semibold text-xl">Services</h3>
                         <ul className="list-inside list-disc">
                             <li>Personnes de confiance</li>
                             <li>Tarif réduit sur la SACEM</li>
@@ -102,5 +101,5 @@ export default async function BagadAsso() {
             {/* Formulaire de demande de matériel */}
             <BagadAssoForm equipmentList={equipmentList} />
         </div>
-    );
+    )
 }

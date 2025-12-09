@@ -1,18 +1,16 @@
-import CreateArticleButton from "@/components/dashboard/Articles/createArticleButton";
+import { Suspense } from "react"
+import ArticleList from "@/components/dashboard/Articles/articleList"
+import CreateArticleButton from "@/components/dashboard/Articles/createArticleButton"
 import {
     Card,
     CardContent,
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    CardTitle
+} from "@/components/ui/card"
 
-import { Suspense } from "react";
-
-import ArticleList from "@/components/dashboard/Articles/articleList";
-
-export default async function Articles() {
+export default function Articles() {
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">
@@ -30,5 +28,5 @@ export default async function Articles() {
                 <CreateArticleButton />
             </CardFooter>
         </Card>
-    );
+    )
 }

@@ -1,91 +1,90 @@
-"use client";
+"use client"
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import { Inter } from "next/font/google";
-import L from "leaflet";
-import { Association } from "@prisma/client";
-import AssociationMapSearchBar from "./associationMapSearchBar";
-import { useState, useRef, ChangeEvent } from "react";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
+import "leaflet/dist/leaflet.css"
+import type { Association } from "@prisma/client"
+import L from "leaflet"
+import { Inter } from "next/font/google"
+import Image from "next/image"
+import { type ChangeEvent, useRef, useState } from "react"
 
-import { createClient } from "@/helpers/supabase/client";
+import { createClient } from "@/helpers/supabase/client"
+import AssociationMapSearchBar from "./associationMapSearchBar"
 
-import Image from "next/image";
-
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
         "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-});
+    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png"
+})
 
 interface JsonLocation {
-    displayName: string;
-    coordinates: Coordinates;
+    displayName: string
+    coordinates: Coordinates
 }
 
 interface Coordinates {
-    lat: string;
-    lon: string;
+    lat: string
+    lon: string
 }
 
 function processLocationData(value: string): {
-    json?: JsonLocation;
-    string?: string;
+    json?: JsonLocation
+    string?: string
 } {
     try {
-        const json = JSON.parse(value);
+        const json = JSON.parse(value)
         return {
-            json: json,
-        };
+            json: json
+        }
     } catch {
         return {
-            string: value,
-        };
+            string: value
+        }
     }
 }
 
 export default function AssociationMap({
-    associations,
+    associations
 }: {
-    associations: Association[];
+    associations: Association[]
 }) {
-    const supabase = createClient();
+    const supabase = createClient()
 
-    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [searchQuery, setSearchQuery] = useState<string>("")
     const [searchError, setSearchError] = useState<string | undefined>(
-        undefined,
-    );
-    const mapRef = useRef<L.Map>(null);
+        undefined
+    )
+    const mapRef = useRef<L.Map>(null)
 
     const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
+        event.preventDefault()
 
-        const value = event.target.value;
-        setSearchQuery(value);
+        const value = event.target.value
+        setSearchQuery(value)
 
         const association = associations.find((assoc) =>
-            assoc.name.toLowerCase().includes(value.toLowerCase()),
-        );
+            assoc.name.toLowerCase().includes(value.toLowerCase())
+        )
 
-        console.log(association);
+        console.log(association)
 
         if (association) {
-            setSearchError(undefined);
-            const locationData = processLocationData(association.location);
+            setSearchError(undefined)
+            const locationData = processLocationData(association.location)
             if (locationData.json) {
-                const { lat, lon } = locationData.json.coordinates;
+                const { lat, lon } = locationData.json.coordinates
                 if (mapRef.current) {
-                    const map = mapRef.current;
-                    map.setView([Number(lat), Number(lon)], 14); // Zoom niveau 14 par exemple
+                    const map = mapRef.current
+                    map.setView([Number(lat), Number(lon)], 14) // Zoom niveau 14 par exemple
                 }
             }
         } else {
-            setSearchError("Aucune association trouvée.");
+            setSearchError("Aucune association trouvée.")
         }
-    };
+    }
 
     return (
         <MapContainer
@@ -93,7 +92,7 @@ export default function AssociationMap({
             zoom={9}
             scrollWheelZoom={false}
             className={
-                "h-[400px] w-full rounded-xl border-[1.5px] border-black md:h-[600px] " +
+                "h-[400px] w-full rounded-xl border-[1.5px] border-black md:h-[600px]" +
                 inter.className
             }
             ref={mapRef}
@@ -104,7 +103,7 @@ export default function AssociationMap({
                     onChange={handleSearchChange}
                 />
                 {searchError && (
-                    <div className="border-1 mt-2 rounded-full bg-black/50 px-2 py-1 text-center text-white/90">
+                    <div className="mt-2 rounded-full border bg-black/50 px-2 py-1 text-center text-white/90">
                         {searchError}
                     </div>
                 )}
@@ -114,17 +113,19 @@ export default function AssociationMap({
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             {associations.map((association) => {
-                const locationData = processLocationData(association.location);
+                const locationData = processLocationData(association.location)
 
                 if (locationData.string) {
-                    return null;
-                } else if (locationData.json) {
+                    return null
+                }
+
+                if (locationData.json) {
                     return (
                         <Marker
                             key={association.id}
                             position={[
                                 Number(locationData.json.coordinates.lat),
-                                Number(locationData.json.coordinates.lon),
+                                Number(locationData.json.coordinates.lon)
                             ]}
                             alt={association.name}
                         >
@@ -135,7 +136,7 @@ export default function AssociationMap({
                                             supabase.storage
                                                 .from("association-pictures")
                                                 .getPublicUrl(
-                                                    association.logoPath,
+                                                    association.logoPath
                                                 ).data.publicUrl
                                         }
                                         width={100}
@@ -147,7 +148,7 @@ export default function AssociationMap({
                                         className="aspect-square rounded-md object-cover"
                                     />
                                     <div className="ml-3">
-                                        <h2 className="text-base font-semibold">
+                                        <h2 className="font-semibold text-base">
                                             {association.name}
                                         </h2>
                                         <p className="text-xs opacity-80">
@@ -157,9 +158,11 @@ export default function AssociationMap({
                                 </div>
                             </Popup>
                         </Marker>
-                    );
+                    )
                 }
+
+                return null
             })}
         </MapContainer>
-    );
+    )
 }

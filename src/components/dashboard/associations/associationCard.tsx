@@ -1,46 +1,47 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-
-import { Association } from "@prisma/client";
-import EditAssociationButton from "./editAssociationButton";
-import SendInvitationLinkButton from "./sendInvitationLinkButton";
-import DeleteRepresentativeButton from "./deleteRepresentativeButton";
-import DeleteAssociationButton from "./deleteAssociationButton";
+import type { Association } from "@prisma/client"
+import Image from "next/image"
+import DeleteAssociationButton from "./deleteAssociationButton"
+import DeleteRepresentativeButton from "./deleteRepresentativeButton"
+import EditAssociationButton from "./editAssociationButton"
+import SendInvitationLinkButton from "./sendInvitationLinkButton"
 
 export default function AssociationCard({
     association,
-    logoUrl,
+    logoUrl
 }: {
-    association: Association;
-    logoUrl: string;
+    association: Association
+    logoUrl: string
 }) {
     return (
-        <div className="bg-card text-card-foreground flex h-full w-full flex-col items-start rounded-lg border p-3 shadow-xs">
+        <div className="flex h-full w-full flex-col items-start rounded-lg border bg-card p-3 text-card-foreground shadow-xs">
             <div className="relative">
                 {/* Hover buttons */}
                 <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 lg:opacity-0 lg:hover:opacity-100">
                     <DeleteAssociationButton association={association} />
                     <EditAssociationButton association={association} />
-                    {association.representativeId ?
+                    {association.representativeId ? (
                         <DeleteRepresentativeButton association={association} />
-                    :   <SendInvitationLinkButton association={association} />}
+                    ) : (
+                        <SendInvitationLinkButton association={association} />
+                    )}
                 </div>
                 <Image
                     src={logoUrl}
                     width={500}
                     height={500}
-                    alt={"Logo de l'association " + association.name}
+                    alt={`Logo de l'association ${association.name}`}
                     className="mb-1 aspect-square rounded-md object-cover shadow-xs"
                 />
             </div>
 
-            <div className="text-card-foreground flex w-full flex-row space-x-1 overflow-hidden font-medium text-nowrap text-ellipsis">
+            <div className="flex w-full flex-row space-x-1 overflow-hidden text-ellipsis text-nowrap font-medium text-card-foreground">
                 {association.name}
             </div>
             <div className="text-foreground/70 text-sm">
                 {association.major}
             </div>
         </div>
-    );
+    )
 }

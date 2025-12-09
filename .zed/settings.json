@@ -1,0 +1,87 @@
+{
+    "format_on_save": "on",
+    "code_actions_on_format": {
+        "source.organizeImports.biome": true,
+        "source.fixAll.biome": true
+    },
+    "language_servers": [
+        "biome",
+        "!eslint",
+        "!typescript-language-server",
+        "..."
+    ],
+    "languages": {
+        "TypeScript": {
+            "formatter": {
+                "external": {
+                    "command": "node_modules/@biomejs/biome/bin/biome",
+                    "arguments": [
+                        "check",
+                        "--stdin-file-path={buffer_path}",
+                        "--write"
+                    ]
+                }
+            }
+        },
+        "TSX": {
+            "formatter": {
+                "external": {
+                    "command": "node_modules/@biomejs/biome/bin/biome",
+                    "arguments": [
+                        "check",
+                        "--stdin-file-path={buffer_path}",
+                        "--write"
+                    ]
+                }
+            }
+        },
+        "JavaScript": {
+            "formatter": {
+                "external": {
+                    "command": "node_modules/@biomejs/biome/bin/biome",
+                    "arguments": [
+                        "check",
+                        "--stdin-file-path={buffer_path}",
+                        "--write"
+                    ]
+                }
+            }
+        },
+        "JSON": {
+            "formatter": {
+                "external": {
+                    "command": "node_modules/@biomejs/biome/bin/biome",
+                    "arguments": [
+                        "check",
+                        "--stdin-file-path={buffer_path}",
+                        "--write"
+                    ]
+                }
+            }
+        },
+        "JSONC": {
+            "formatter": {
+                "external": {
+                    "command": "node_modules/@biomejs/biome/bin/biome",
+                    "arguments": [
+                        "check",
+                        "--stdin-file-path={buffer_path}",
+                        "--write"
+                    ]
+                }
+            }
+        },
+        "CSS": {
+            "formatter": {
+                "external": {
+                    "command": "node_modules/@biomejs/biome/bin/biome",
+                    "arguments": [
+                        "check",
+                        "--stdin-file-path={buffer_path}",
+                        "--write"
+                    ]
+                }
+            }
+        }
+    }
+}

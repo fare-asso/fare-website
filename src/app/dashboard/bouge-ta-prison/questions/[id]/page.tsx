@@ -1,22 +1,22 @@
-import prisma from "@/helpers/db";
-import { format } from "date-fns";
-import Link from "next/link";
+import { format } from "date-fns"
+import Link from "next/link"
+import prisma from "@/helpers/db"
 
 export default async function TutorApplicationPage({
-    params,
+    params
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>
 }) {
-    const id = (await params).id;
+    const id = (await params).id
 
     const tutorQuestion = await prisma.bTPTutorQuestion.findUnique({
         where: {
-            id: Number(id),
-        },
-    });
+            id: Number(id)
+        }
+    })
 
     if (!tutorQuestion) {
-        return <span>Cette question n'existe pas ou plus... 😔</span>;
+        return <span>Cette question n'existe pas ou plus... 😔</span>
     }
 
     return (
@@ -27,7 +27,7 @@ export default async function TutorApplicationPage({
             >
                 &lsaquo; Retour aux questions
             </Link>
-            <h1 className="mt-4 text-2xl font-semibold">
+            <h1 className="mt-4 font-semibold text-2xl">
                 ❓Question{" "}
                 <span className="font-mono opacity-80">
                     #{tutorQuestion.id}
@@ -73,7 +73,7 @@ export default async function TutorApplicationPage({
 
                 {/* Right Part (Bottom mobile) */}
                 <div className="h-full w-full p-4">
-                    <h2 className="text-xl font-bold">📝Message:</h2>
+                    <h2 className="font-bold text-xl">📝Message:</h2>
                     <div>
                         <p className="whitespace-break-spaces text-justify">
                             {tutorQuestion.question}
@@ -82,5 +82,5 @@ export default async function TutorApplicationPage({
                 </div>
             </div>
         </div>
-    );
+    )
 }

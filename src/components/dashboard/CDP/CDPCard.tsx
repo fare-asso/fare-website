@@ -1,56 +1,50 @@
-"use client";
+"use client"
 
-import deleteCDPAction from "@/actions/CDP/deleteCDPAction";
-import Link from "next/link";
-import { MouseEvent, useState } from "react";
-
-import { FaRegFilePdf } from "react-icons/fa";
-import { FaRegFolderOpen } from "react-icons/fa6";
-
-import { MdDelete } from "react-icons/md";
-import { MdOutlineFileDownload } from "react-icons/md";
-
-import { useToast } from "@/components/ui/use-toast";
-
-import clsx from "clsx";
-import { CommuniqueDePresse } from "@prisma/client";
+import type { CommuniqueDePresse } from "@prisma/client"
+import Link from "next/link"
+import type { MouseEvent } from "react"
+import { FaRegFilePdf } from "react-icons/fa"
+import { FaRegFolderOpen } from "react-icons/fa6"
+import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
+import deleteCDPAction from "@/actions/CDP/deleteCDPAction"
+import { useToast } from "@/components/ui/use-toast"
 
 function downloadFile(url: string) {
-    const a = document.createElement("a");
-    a.href = url;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const a = document.createElement("a")
+    a.href = url
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
 }
 
 export default function CdpCard({
     cdp,
     url,
-    dlUrl,
+    dlUrl
 }: {
-    cdp: CommuniqueDePresse;
-    url: string;
-    dlUrl: string;
+    cdp: CommuniqueDePresse
+    url: string
+    dlUrl: string
 }) {
-    const { toast } = useToast();
+    const { toast } = useToast()
 
     const handleDelete = async (event: MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
+        event.preventDefault()
+        event.stopPropagation()
 
-        const res = await deleteCDPAction({ id: cdp.id });
+        const res = await deleteCDPAction({ id: cdp.id })
         if (res.error) {
             toast({
                 title: "Erreur",
                 variant: "destructive",
-                description: res.error,
-            });
+                description: res.error
+            })
         } else {
             toast({
-                description: `Le communiqué ${cdp.name} a bien été supprimé`,
-            });
+                description: `Le communiqué ${cdp.name} a bien été supprimé`
+            })
         }
-    };
+    }
 
     return (
         <div className="flex h-full w-full flex-col items-center">
@@ -59,21 +53,23 @@ export default function CdpCard({
                 target="blank"
                 className="flex h-min w-full flex-col items-center"
             >
-                <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-xs outline-offset-2 outline-black/30 hover:outline hover:outline-2">
+                <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-xs outline-black/30 outline-offset-2 hover:outline">
                     {/* Hover buttons */}
                     <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-0 hover:opacity-100">
                         <button
+                            type="button"
                             id="downloadIcon"
                             onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                downloadFile(dlUrl);
+                                event.preventDefault()
+                                event.stopPropagation()
+                                downloadFile(dlUrl)
                             }}
                             className="rounded-md bg-black/10 p-1 hover:bg-black/20"
                         >
                             <MdOutlineFileDownload size={20} />
                         </button>
                         <button
+                            type="button"
                             id="deleteIcon"
                             onClick={handleDelete}
                             className="rounded-md bg-black/10 p-1 hover:bg-black/20"
@@ -82,9 +78,11 @@ export default function CdpCard({
                         </button>
                     </div>
 
-                    {cdp.type == "CDP" ?
+                    {cdp.type === "CDP" ? (
                         <FaRegFilePdf size={55} className="text-red-600" />
-                    :   <FaRegFolderOpen size={55} className="text-red-600" />}
+                    ) : (
+                        <FaRegFolderOpen size={55} className="text-red-600" />
+                    )}
                 </div>
             </Link>
 
@@ -92,7 +90,7 @@ export default function CdpCard({
                 <Link
                     href={url}
                     target="blank"
-                    className="w-full overflow-hidden text-ellipsis text-nowrap text-center text-sm font-medium hover:underline"
+                    className="w-full overflow-hidden text-ellipsis text-nowrap text-center font-medium text-sm hover:underline"
                 >
                     {/* {cdp.name.length > 20 ?
                         cdp.name.slice(0, 20) + "..."
@@ -105,5 +103,5 @@ export default function CdpCard({
                 </div>
             </div>
         </div>
-    );
+    )
 }

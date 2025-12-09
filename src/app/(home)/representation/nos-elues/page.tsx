@@ -1,23 +1,18 @@
-import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-
-import logoCrous from "/public/Logo_Crous_vectorisé.png";
-
-import logoUR from "/public/univ/UNIRENNES_LOGOnoir_centre_RVB.png";
-import logoUR2 from "/public/univ/Logo_univ-rennes2-2016.png";
-
-import logoBougeTonCampus from "/public/elues/logo-Bouge-Ton-Campus.png";
-import logoBougeTonCrous from "/public/elues/logo-Bouge-Ton-Crous.png";
-import logoEHESP from "/public/elues/ehesp/ehesp.png";
-
-import Image from "next/image";
+import Image from "next/image"
+import logoEHESP from "#public/elues/ehesp/ehesp.png"
+import logoBougeTonCampus from "#public/elues/logo-Bouge-Ton-Campus.png"
+import logoBougeTonCrous from "#public/elues/logo-Bouge-Ton-Crous.png"
+import logoCrous from "#public/Logo_Crous_vectorisé.png"
+import logoUR2 from "#public/univ/Logo_univ-rennes2-2016.png"
+import logoUR from "#public/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
+import { Card, CardContent } from "@/components/ui/card"
 
 type Elu = {
-    firstName: string;
-    lastName: string;
-    position: string;
-    details?: string;
-};
+    firstName: string
+    lastName: string
+    position: string
+    details?: string
+}
 
 const EluCard = ({ elu }: { elu: Elu }) => {
     return (
@@ -32,20 +27,20 @@ const EluCard = ({ elu }: { elu: Elu }) => {
                     <h3 className="font-semibold">
                         {elu.firstName} {elu.lastName}
                     </h3>
-                    <p className="text-sm text-gray-600">{elu.position}</p>
+                    <p className="text-gray-600 text-sm">{elu.position}</p>
                     {elu.details && (
-                        <p className="text-sm text-gray-500">{elu.details}</p>
+                        <p className="text-gray-500 text-sm">{elu.details}</p>
                     )}
                 </div>
             </CardContent>
         </Card>
-    );
-};
+    )
+}
 
 export default function Elues() {
     return (
         <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
+            <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
                 Nos élu·e·s étudiant·e·s de la FARE
             </h1>
 
@@ -82,10 +77,10 @@ export default function Elues() {
                             />
                         </div>
 
-                        <h2 className="mb-4 text-2xl font-semibold">
+                        <h2 className="mb-4 font-semibold text-2xl">
                             Nos élu.e.s “Bouge Ton CROUS” au CROUS Bretagne
                         </h2>
-                        <p className="py-3 text-sm font-medium">
+                        <p className="py-3 font-medium text-sm">
                             Contact : elus.crous@fare-asso.fr
                         </p>
                     </div>
@@ -115,38 +110,38 @@ export default function Elues() {
                                 firstName: "Zoée",
                                 lastName: "PEROCHON-DE-JAMETEL",
                                 position: "Titulaire",
-                                details: "Étudiante en Psychologie",
+                                details: "Étudiante en Psychologie"
                             },
                             {
                                 firstName: "Gurvan",
                                 lastName: "MORVAN",
                                 position: "Titulaire",
-                                details: "Étudiant en Soins infirmiers",
+                                details: "Étudiant en Soins infirmiers"
                             },
                             {
                                 firstName: "Agathe",
                                 lastName: "LEMU",
                                 position: "Titulaire",
-                                details: "Étudiante en Langues",
+                                details: "Étudiante en Langues"
                             },
                             {
                                 firstName: "Yoann",
                                 lastName: "ZARAGOSA",
                                 position: "Suppléant",
-                                details: "Étudiant en Informatique",
+                                details: "Étudiant en Informatique"
                             },
                             {
                                 firstName: "Ninon",
                                 lastName: "BRIAND",
                                 position: "Suppléante",
-                                details: "Étudiante en Pharmacie",
+                                details: "Étudiante en Pharmacie"
                             },
                             {
                                 firstName: "Robin",
                                 lastName: "HUET",
                                 position: "Suppléant",
-                                details: "Étudiant en AES",
-                            },
+                                details: "Étudiant en AES"
+                            }
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
                         ))}
@@ -169,18 +164,18 @@ export default function Elues() {
                             />
                         </div>
 
-                        <h2 className="mb-4 text-2xl font-semibold">
+                        <h2 className="mb-4 font-semibold text-2xl">
                             Nos élu.e.s “Bouge Ton Campus” de l'Université de
                             Rennes
                         </h2>
-                        <p className="py-3 text-sm font-medium">
+                        <p className="py-3 font-medium text-sm">
                             Contact : btc.univrennes@fare-asso.fr
                         </p>
                     </div>
 
                     {/* VPE */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Vice-Présidence Étudiante (VPE)
                         </h3>
                         <p>
@@ -218,8 +213,8 @@ export default function Elues() {
                                 firstName: "Mathilde",
                                 lastName: "GUERLESQUIN",
                                 position: "VPE",
-                                details: "Étudiante en Sciences Politiques",
-                            },
+                                details: "Étudiante en Sciences Politiques"
+                            }
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
                         ))}
@@ -227,7 +222,7 @@ export default function Elues() {
 
                     {/* CA */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Administration (CA)
                         </h3>
                         <p>
@@ -253,26 +248,26 @@ export default function Elues() {
                                 firstName: "Mathilde",
                                 lastName: "GUERLESQUIN",
                                 position: "Titulaire",
-                                details: "Étudiante en Sciences Politiques",
+                                details: "Étudiante en Sciences Politiques"
                             },
                             {
                                 firstName: "Ulysse",
                                 lastName: "DAVID",
                                 position: "titulaire",
-                                details: "Étudiant ingénieur",
+                                details: "Étudiant ingénieur"
                             },
                             {
                                 firstName: "Tristan",
                                 lastName: "GONTIER",
                                 position: "Suppléant",
-                                details: "Étudiant en IUT",
+                                details: "Étudiant en IUT"
                             },
                             {
                                 firstName: "Maëlyss",
                                 lastName: "CABON",
                                 position: "Suppléante",
-                                details: "Étudiante en Informatique",
-                            },
+                                details: "Étudiante en Informatique"
+                            }
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
                         ))}
@@ -280,7 +275,7 @@ export default function Elues() {
 
                     {/* CFVE */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil de Formation & Vie Étudiante (CFVE)
                         </h3>
                         <p>
@@ -306,42 +301,42 @@ export default function Elues() {
                                 firstName: "Valentin",
                                 lastName: "REGNAULT",
                                 position: "Titulaire",
-                                details: "Étudiant en Informatique",
+                                details: "Étudiant en Informatique"
                             },
                             {
                                 firstName: "Thomas",
                                 lastName: "HURTAUD",
                                 position: "Titulaire",
-                                details: "Étudiant en IUT",
+                                details: "Étudiant en IUT"
                             },
                             {
                                 firstName: "Claudia",
                                 lastName: "PERREIRA",
-                                position: "Titulaire",
+                                position: "Titulaire"
                             },
                             {
                                 firstName: "Carla",
                                 lastName: "RICHARD",
                                 position: "Titulaire",
-                                details: "Étudiante en Odontologie",
+                                details: "Étudiante en Odontologie"
                             },
                             {
                                 firstName: "Morgane",
                                 lastName: "GRAND",
-                                position: "Titulaire",
+                                position: "Titulaire"
                             },
                             {
                                 firstName: "Bryan",
                                 lastName: "GROUSSARD",
                                 position: "Suppléant",
-                                details: "Étudiant en Soins infirmiers",
+                                details: "Étudiant en Soins infirmiers"
                             },
                             {
                                 firstName: "Paol",
                                 lastName: "LE GALLOU",
                                 position: "Suppléant",
-                                details: "Étudiant ingénieur",
-                            },
+                                details: "Étudiant ingénieur"
+                            }
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
                         ))}
@@ -349,7 +344,7 @@ export default function Elues() {
 
                     {/* Conseil d'Unité de Formation & de Recherche (UFR) */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Unité de Formation & de Recherche (UFR)
                         </h3>
                         <p>
@@ -376,62 +371,62 @@ export default function Elues() {
                                 firstName: "Mattéo",
                                 lastName: "BECART",
                                 position: "Titulaire",
-                                details: "Étudiant en Kinésithérapie",
+                                details: "Étudiant en Kinésithérapie"
                             },
                             {
                                 firstName: "Gabrielle",
                                 lastName: "CORREIA",
                                 position: "Titulaire",
-                                details: "Étudiante en Kinésithérapie",
+                                details: "Étudiante en Kinésithérapie"
                             },
                             {
                                 firstName: "Laure",
                                 lastName: "CHABOT",
                                 position: "Titulaire",
-                                details: "Étudiante en Soins infirmiers",
+                                details: "Étudiante en Soins infirmiers"
                             },
                             {
                                 firstName: "Liz-Marie",
                                 lastName: "PRAUD",
                                 position: "Titulaire",
-                                details: "Étudiante en Odontologie",
+                                details: "Étudiante en Odontologie"
                             },
                             {
                                 firstName: "Yves",
                                 lastName: "ALLAIN",
                                 position: "Titulaire",
-                                details: "Étudiant en Odontologie",
+                                details: "Étudiant en Odontologie"
                             },
                             {
                                 firstName: "Émile",
                                 lastName: "CHAPPÉ",
                                 position: "Suppléant",
-                                details: "Étudiant en Odontologie",
+                                details: "Étudiant en Odontologie"
                             },
                             {
                                 firstName: "Carla",
                                 lastName: "RICHARD",
                                 position: "Suppléante",
-                                details: "Étudiante en Odontologie",
+                                details: "Étudiante en Odontologie"
                             },
                             {
                                 firstName: "Alexandre",
                                 lastName: "JAMES",
                                 position: "Suppléant",
-                                details: "Étudiant en Odontologie",
+                                details: "Étudiant en Odontologie"
                             },
                             {
                                 firstName: "Adèle",
                                 lastName: "SERRE",
                                 position: "Suppléante",
-                                details: "Étudiante en Odontologie",
+                                details: "Étudiante en Odontologie"
                             },
                             {
                                 firstName: "Maëlle",
                                 lastName: "VERGNON",
                                 position: "Titulaire",
-                                details: "Étudiante en Odontologie",
-                            },
+                                details: "Étudiante en Odontologie"
+                            }
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
                         ))}
@@ -447,10 +442,10 @@ export default function Elues() {
                             />
                         </div>
 
-                        <h2 className="mb-4 text-2xl font-semibold">
+                        <h2 className="mb-4 font-semibold text-2xl">
                             Nos élu.e.s au CA de l'EHESP Rennes
                         </h2>
-                        <p className="py-3 text-sm font-medium">
+                        <p className="py-3 font-medium text-sm">
                             Contact : btc.univrennes@fare-asso.fr
                         </p>
                     </div>
@@ -479,14 +474,14 @@ export default function Elues() {
                                 firstName: "Clémence",
                                 lastName: "GAIGNEUX",
                                 position: "Titulaire",
-                                details: "Étudiante en Santé Publique",
+                                details: "Étudiante en Santé Publique"
                             },
                             {
                                 firstName: "Emma",
                                 lastName: "PELTAIS",
                                 position: "Suppléante",
-                                details: "Étudiante en Santé Publique",
-                            },
+                                details: "Étudiante en Santé Publique"
+                            }
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
                         ))}
@@ -508,18 +503,18 @@ export default function Elues() {
                                 className="h-auto w-32 md:h-44 md:w-auto"
                             />
                         </div>
-                        <h2 className="mb-4 text-2xl font-semibold">
+                        <h2 className="mb-4 font-semibold text-2xl">
                             Nos élu.e.s “Bouge Ton Campus” de l'Université de
                             Rennes 2
                         </h2>
-                        <p className="py-3 text-sm font-medium">
+                        <p className="py-3 font-medium text-sm">
                             Contact : btc.univrennes2@fare-asso.fr
                         </p>
                     </div>
 
                     {/* CA */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Administration (CA)
                         </h3>
                         <p>
@@ -545,14 +540,14 @@ export default function Elues() {
                                 firstName: "Robin",
                                 lastName: "HUET",
                                 position: "Titulaire",
-                                details: "Étudiant en AES",
+                                details: "Étudiant en AES"
                             },
                             {
                                 firstName: "Orane",
                                 lastName: "MÉNAGER",
                                 position: "Suppléante",
-                                details: "Étudiante en STAPS",
-                            },
+                                details: "Étudiante en STAPS"
+                            }
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
                         ))}
@@ -560,7 +555,7 @@ export default function Elues() {
 
                     {/* CFVU */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil de Formation & Vie Universitaire (CFVU)
                         </h3>
                         <p>
@@ -586,37 +581,36 @@ export default function Elues() {
                                 firstName: "Eliott",
                                 lastName: "LESUEUR",
                                 position: "Titulaire",
-                                details:
-                                    "Étudiant en Information-Communication",
+                                details: "Étudiant en Information-Communication"
                             },
                             {
                                 firstName: "Elisa",
                                 lastName: "BOINET",
                                 position: "Titulaire",
-                                details: "Étudiante en STAPS",
+                                details: "Étudiante en STAPS"
                             },
                             {
                                 firstName: "Lysia",
                                 lastName: "LE COENT",
                                 position: "Titulaire",
-                                details: "Étudiante en STAPS",
+                                details: "Étudiante en STAPS"
                             },
                             {
                                 firstName: "Alexis",
                                 lastName: "WALTER",
                                 position: "Suppléant",
-                                details: "Étudiant en AES",
+                                details: "Étudiant en AES"
                             },
                             {
                                 firstName: "Alexandre",
                                 lastName: "JOUGLA",
-                                position: "Suppléant",
+                                position: "Suppléant"
                             },
                             {
                                 firstName: "Elouan",
                                 lastName: "DANIEL",
-                                position: "Suppléant",
-                            },
+                                position: "Suppléant"
+                            }
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
                         ))}
@@ -624,7 +618,7 @@ export default function Elues() {
 
                     {/* Conseil d’Unité de Formation & de Recherche (UFR) */}
                     <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 text-xl font-semibold">
+                        <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Unité de Formation & de Recherche (UFR)
                         </h3>
                         <p>
@@ -651,56 +645,56 @@ export default function Elues() {
                                 firstName: "Manaël",
                                 lastName: "FORGET",
                                 position: "Titulaire",
-                                details: "Étudiant en STAPS",
+                                details: "Étudiant en STAPS"
                             },
                             {
                                 firstName: "Kenan",
                                 lastName: "BRIAND",
                                 position: "Titulaire",
-                                details: "Étudiant en STAPS",
+                                details: "Étudiant en STAPS"
                             },
                             {
                                 firstName: "Lysia",
                                 lastName: "LE COENT",
                                 position: "Titulaire",
-                                details: "Étudiante en STAPS",
+                                details: "Étudiante en STAPS"
                             },
                             {
                                 firstName: "Logan",
                                 lastName: "PEREZ",
                                 position: "Titulaire",
-                                details: "Étudiant en STAPS",
+                                details: "Étudiant en STAPS"
                             },
                             {
                                 firstName: "Albane",
                                 lastName: "ROZE",
                                 position: "Titulaire",
-                                details: "Étudiante en STAPS",
+                                details: "Étudiante en STAPS"
                             },
                             {
                                 firstName: "Anthony",
                                 lastName: "GUYOMARD",
                                 position: "Suppléant",
-                                details: "Étudiant en STAPS",
+                                details: "Étudiant en STAPS"
                             },
                             {
                                 firstName: "Elisa",
                                 lastName: "BOINET",
                                 position: "Suppléante",
-                                details: "Étudiante en STAPS",
+                                details: "Étudiante en STAPS"
                             },
                             {
                                 firstName: "Tom",
                                 lastName: "PORTENEUVE",
                                 position: "Suppléant",
-                                details: "Étudiant en STAPS",
+                                details: "Étudiant en STAPS"
                             },
                             {
                                 firstName: "Ana",
                                 lastName: "PORS",
                                 position: "Suppléant",
-                                details: "Étudiant en STAPS",
-                            },
+                                details: "Étudiant en STAPS"
+                            }
                         ].map((elu, index) => (
                             <EluCard key={index} elu={elu} />
                         ))}
@@ -708,5 +702,5 @@ export default function Elues() {
                 </section>
             </div>
         </div>
-    );
+    )
 }

@@ -1,29 +1,28 @@
-"use client";
+"use client"
 
-import { ChangeEvent, useState } from "react";
-import { Input } from "../input";
-import { Label } from "../label";
+import { type ChangeEvent, useState } from "react"
+import { Input } from "../input"
 
 export default function CurrencyAmountInput({
     name,
     currency,
     defaultValue,
-    placeholder,
+    placeholder
 }: {
-    name: string;
-    currency: string;
-    defaultValue?: number;
-    placeholder?: string;
+    name: string
+    currency: string
+    defaultValue?: number
+    placeholder?: string
 }) {
-    const [amount, setAmount] = useState(defaultValue?.toString() ?? "0");
+    const [amount, setAmount] = useState(defaultValue?.toString() ?? "0")
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
+        e.preventDefault()
 
-        if (!isNaN(Number(e.target.value)) || e.target.value == ".") {
-            setAmount(e.target.value);
+        if (!Number.isNaN(Number(e.target.value)) || e.target.value === ".") {
+            setAmount(e.target.value)
         }
-    };
+    }
 
     return (
         <div className="flex flex-row items-center">
@@ -40,5 +39,5 @@ export default function CurrencyAmountInput({
                 {currency}
             </span>
         </div>
-    );
+    )
 }

@@ -1,42 +1,32 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { MouseEvent, useState } from "react";
+import type { Adhesion } from "@prisma/client"
+import clsx from "clsx"
+import { format } from "date-fns"
+import { type MouseEvent, useState } from "react"
+import { FaFileArchive } from "react-icons/fa"
+import { MdOutlineFileDownload } from "react-icons/md"
+import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
+import LoadingRing from "../loadingRing"
 
-import { FaRegFolderOpen } from "react-icons/fa6";
-import { FaFileArchive, FaRegFileArchive } from "react-icons/fa";
-
-import { MdDelete } from "react-icons/md";
-import { MdOutlineFileDownload } from "react-icons/md";
-
-import { useToast } from "@/components/ui/use-toast";
-
-import clsx from "clsx";
-import { Adhesion } from "@prisma/client";
-import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction";
-import LoadingRing from "../loadingRing";
-import { format } from "date-fns";
-
-function downloadFile(url: string) {
-    const a = document.createElement("a");
-    a.href = url;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+function _downloadFile(url: string) {
+    const a = document.createElement("a")
+    a.href = url
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
 }
 
 export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    const { toast } = useToast();
+    const [hidden, setIsHidden] = useState<boolean>(false)
 
-    const [hidden, setIsHidden] = useState<boolean>(false);
+    const _handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault()
+        event.stopPropagation()
 
-    const handleDelete = async (event: MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        setIsHidden(true);
+        setIsHidden(true)
         // const res = await deleteCDPAction({id: cdp.id});
         // if(res.error) {
         //     toast({
@@ -49,61 +39,64 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
         //         description: `Le communiqué ${name} a bien été supprimé`
         //     })
         // }
-    };
+    }
 
     const handleDownload = async (event: MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
+        event.preventDefault()
 
-        setIsLoading(true);
+        setIsLoading(true)
         try {
             const result = await downloadFolderAction(
                 undefined,
-                adhesion.folderPath,
-            );
+                adhesion.folderPath
+            )
             if (result.error) {
-                console.error(result.error);
+                console.error(result.error)
                 // Afficher une notification d'erreur à l'utilisateur
             } else if (result.success && result.zipData) {
-                const byteCharacters = atob(result.zipData);
-                const byteNumbers = new Array(byteCharacters.length);
+                const byteCharacters = atob(result.zipData)
+                const byteNumbers = new Array(byteCharacters.length)
                 for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    byteNumbers[i] = byteCharacters.charCodeAt(i)
                 }
-                const byteArray = new Uint8Array(byteNumbers);
-                const blob = new Blob([byteArray], { type: "application/zip" });
+                const byteArray = new Uint8Array(byteNumbers)
+                const blob = new Blob([byteArray], { type: "application/zip" })
 
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.style.display = "none";
-                a.href = url;
-                a.download = result.filename || "download.zip";
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement("a")
+                a.style.display = "none"
+                a.href = url
+                a.download = result.filename || "download.zip"
+                document.body.appendChild(a)
+                a.click()
+                window.URL.revokeObjectURL(url)
+                document.body.removeChild(a)
             }
         } catch (error) {
-            console.error("Erreur lors du téléchargement:", error);
+            console.error("Erreur lors du téléchargement:", error)
             // Afficher une notification d'erreur à l'utilisateur
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
 
     return (
         <div className={clsx("flex flex-col items-center", hidden && "hidden")}>
-            <div className="bg-card text-card-foreground relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border p-6 shadow-xs outline-offset-2 outline-black/30 hover:outline-2">
+            <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-xs outline-black/30 outline-offset-2 hover:outline-2">
                 {/* Hover buttons */}
                 <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-100 md:opacity-0 md:hover:opacity-100">
                     <button
+                        type="button"
                         id="downloadIcon"
                         onClick={handleDownload}
                         disabled={isLoading}
                         className="rounded-md bg-black/10 p-1 hover:bg-black/20"
                     >
-                        {isLoading ?
+                        {isLoading ? (
                             <LoadingRing className="mr-0!" />
-                        :   <MdOutlineFileDownload size={20} />}
+                        ) : (
+                            <MdOutlineFileDownload size={20} />
+                        )}
                     </button>
                     {/* <button id="deleteIcon" onClick={handleDelete} className="bg-black/10 rounded-md p-1 hover:bg-black/20"><MdDelete size={20}/></button> */}
                 </div>
@@ -113,7 +106,7 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
             </div>
 
             <div className="mt-2 flex flex-col items-center justify-start">
-                <span className="text-center text-sm font-medium">
+                <span className="text-center font-medium text-sm">
                     {adhesion.association}
                 </span>
                 {/* <Link href={"/"} target="blank" className="font-medium text-sm hover:underline text-center">
@@ -125,5 +118,5 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }

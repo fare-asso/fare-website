@@ -1,42 +1,41 @@
-"use server";
+"use server"
 
-import prisma from "@/helpers/db";
-
-import { createClient } from "@/helpers/supabase/server";
-import getCurrentUserId from "@/helpers/user/id";
-import { revalidatePath } from "next/cache";
-import getCurrentUserRole from "@/helpers/user/role";
-import { JSONContent } from "@tiptap/react";
+import type { JSONContent } from "@tiptap/react"
+import { revalidatePath } from "next/cache"
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
+import getCurrentUserId from "@/helpers/user/id"
+import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function createArticleAction(
-    prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData,
+    _prevState: { error?: string; success?: boolean } | undefined,
+    formData: FormData
 ): Promise<{ error?: string; success?: boolean }> {
     /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole();
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" };
-    if (role != "ADMIN")
+    const { role, error } = await getCurrentUserRole()
+    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
+    if (role !== "ADMIN")
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération.",
-        };
+            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+        }
 
     // create supabase client
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // retrieve form data fields
-    const title = formData.get("title")?.toString();
-    const content = formData.get("content")?.toString();
+    const title = formData.get("title")?.toString()
+    const content = formData.get("content")?.toString()
 
     // Fields Validation
     if (!title || !content) {
-        return { error: "Veuillez remplir tous les champs obligatoires." };
+        return { error: "Veuillez remplir tous les champs obligatoires." }
     }
 
     // Images
-    const images = formData.getAll("images") as File[];
-    images.forEach((image) => {
-        console.log(image);
-    });
+    const images = formData.getAll("images") as File[]
+    for (const image of images) {
+        console.log(image)
+    }
 
     // upload images to storage
     const responses = await Promise.all(
@@ -44,52 +43,56 @@ export default async function createArticleAction(
             async (file) =>
                 await supabase.storage
                     .from("article-pictures")
-                    .upload(file.name, file),
-        ),
-    );
+                    .upload(file.name, file)
+        )
+    )
 
     // check for errors
-    responses.forEach((response) => {
+    for (const response of responses) {
         if (response.error) {
             return {
-                error: "L'upload des images a échoué. Veuillez réessayer",
-            };
+                error: "L'upload des images a échoué. Veuillez réessayer"
+            }
         }
-    });
+    }
 
-    const contentDelta: JSONContent = JSON.parse(content);
+    const contentDelta: JSONContent = JSON.parse(content)
 
-    const { userId, error: userIdError } = await getCurrentUserId();
+    const { userId, error: userIdError } = await getCurrentUserId()
 
-    if (userIdError) {
+    if (userIdError || !userId) {
         // Delete uploaded images
         await Promise.all(
             responses.map(async (response) => {
-                await supabase.storage
-                    .from("article-pictures")
-                    .remove([response.data?.path!]);
-            }),
-        );
+                if (response.data?.path) {
+                    await supabase.storage
+                        .from("article-pictures")
+                        .remove([response.data.path])
+                }
+            })
+        )
 
         return {
-            error: "Echec de l'authentification de l'utilisateur",
-        };
+            error: "Echec de l'authentification de l'utilisateur"
+        }
     }
 
     // insert article to database
-    const record = await prisma.article.create({
+    const _record = await prisma.article.create({
         data: {
             title: title,
             content: contentDelta,
-            imagesPath: responses.map((response) => response.data?.path!),
-            authorId: userId!,
-        },
-    });
+            imagesPath: responses
+                .map((response) => response.data?.path)
+                .filter((path): path is string => path !== undefined),
+            authorId: userId
+        }
+    })
 
-    revalidatePath("/actualites");
-    revalidatePath("/dashboard/articles");
+    revalidatePath("/actualites")
+    revalidatePath("/dashboard/articles")
 
-    return { success: true };
+    return { success: true }
     // if (contentDelta.ops && contentDelta.ops.length > 0) {
     //     // content is not null
 

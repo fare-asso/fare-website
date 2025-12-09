@@ -1,5 +1,19 @@
-"use client";
+"use client"
 
+import type { Permission } from "@prisma/client"
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
+import {
+    FaHandcuffs,
+    FaPeopleGroup,
+    FaRegNewspaper,
+    FaUsers
+} from "react-icons/fa6" // Bouge Ta Prison
+// Link icons
+import { LuNetwork, LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
+import LogoFARE from "#public/logo_fare.png"
 // UI components
 import {
     Sidebar,
@@ -11,87 +25,71 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem,
-} from "../ui/sidebar";
+    SidebarMenuItem
+} from "../ui/sidebar"
 
-import SignOutButton from "./signOutButton";
-
-// Link icons
-import { LuPartyPopper, LuUser } from "react-icons/lu"; // Bagad'Asso
-import { FaHandcuffs, FaUser } from "react-icons/fa6"; // Bouge Ta Prison
-import { FaPeopleGroup } from "react-icons/fa6"; // Membres
-import { FaRegNewspaper } from "react-icons/fa6"; // Presse
-import { FaUsers } from "react-icons/fa6"; // Adhésions
-import { FaPen } from "react-icons/fa"; // Articles
-import { FaRegCalendarAlt } from "react-icons/fa"; // Evènements
-import { LuNetwork } from "react-icons/lu"; // Associations
-
-import Image from "next/image";
-import LogoFARE from "/public/logo_fare.png";
-import { usePathname } from "next/navigation";
-import CurrentUserClient from "./currentUserClient";
-import Link from "next/link";
-import { Permission } from "@prisma/client";
+import CurrentUserClient from "./currentUserClient"
+import SignOutButton from "./signOutButton"
 
 export default function SideBarApp({
-    permissions,
+    permissions
 }: {
-    permissions?: Permission[];
+    permissions?: Permission[]
 }) {
-    const pathname = usePathname();
+    const pathname = usePathname()
 
     const links = [
         {
             href: "/dashboard/events",
             title: "Evènements",
             icon: <FaRegCalendarAlt />,
-            hidden: true,
+            hidden: true
         },
         {
             href: "/dashboard/associations",
             title: "Associations",
-            icon: <LuNetwork />,
+            icon: <LuNetwork />
         },
         {
             href: "/dashboard/articles",
             title: "Articles",
-            icon: <FaPen />,
+            icon: <FaPen />
         },
         {
             href: "/dashboard/communiques-de-presse",
             title: "Presse",
-            icon: <FaRegNewspaper />,
+            icon: <FaRegNewspaper />
         },
         {
             href: "/dashboard/membres",
             title: "Membres",
-            icon: <FaPeopleGroup />,
+            icon: <FaPeopleGroup />
         },
         {
             href: "/dashboard/bagadAsso",
             title: "Bagad'Asso",
             icon: <LuPartyPopper />,
-            hidden: !permissions?.find((p) => p.name === "access:bagad-asso"),
+            hidden: !permissions?.find((p) => p.name === "access:bagad-asso")
         },
         {
             href: "/dashboard/adhesions",
             title: "Adhésions",
             icon: <FaUsers />,
-            hidden: !permissions?.find((p) => p.name === "access:adhesions"),
+            hidden: !permissions?.find((p) => p.name === "access:adhesions")
         },
         {
             href: "/dashboard/bouge-ta-prison",
             title: "Bouge Ta Prison",
             icon: <FaHandcuffs />,
-            hidden: !permissions?.find((p) => p.name === "access:btp"),
+            hidden: !permissions?.find((p) => p.name === "access:btp")
         },
         {
             href: "/dashboard/users",
             title: "Utilisateurs",
             icon: <LuUser />,
-            hidden: !permissions?.find((p) => p.name === "access:users"),
-        },
-    ];
+            hidden: !permissions?.find((p) => p.name === "access:users")
+        }
+    ]
 
     return (
         <Sidebar variant="inset" collapsible="offcanvas">
@@ -121,7 +119,7 @@ export default function SideBarApp({
                                         <SidebarMenuButton
                                             asChild
                                             isActive={pathname.startsWith(
-                                                link.href,
+                                                link.href
                                             )}
                                         >
                                             <a href={link.href}>
@@ -140,5 +138,5 @@ export default function SideBarApp({
                 <SignOutButton />
             </SidebarFooter>
         </Sidebar>
-    );
+    )
 }

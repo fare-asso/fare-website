@@ -1,33 +1,38 @@
-"use client";
-import "./styles.css";
-import { useEditor, EditorContent, JSONContent, Editor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
-import { TextStyle } from "@tiptap/extension-text-style";
-import Color from "@tiptap/extension-color";
-import TextAlign from "@tiptap/extension-text-align";
-import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
-import ListKeymap from "@tiptap/extension-list-keymap";
+"use client"
+import "./styles.css"
+import Color from "@tiptap/extension-color"
+import Image from "@tiptap/extension-image"
+import Link from "@tiptap/extension-link"
+import ListKeymap from "@tiptap/extension-list-keymap"
+import TextAlign from "@tiptap/extension-text-align"
+import { TextStyle } from "@tiptap/extension-text-style"
+import Underline from "@tiptap/extension-underline"
+import {
+    type Editor,
+    EditorContent,
+    type JSONContent,
+    useEditor
+} from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
 // import FileHandler from "@tiptap-pro/extension-file-handler";
 
-import clsx from "clsx";
-import { useRef } from "react";
-import EditorBubbleMenu from "./bubbleMenu";
-import { compressImage } from "@/helpers/image";
+import clsx from "clsx"
+import { useRef } from "react"
+import { compressImage } from "@/helpers/image"
+import EditorBubbleMenu from "./bubbleMenu"
 
 export default function RichTextEditor({
     className,
     defaultContent,
-    onChange,
+    onChange
 }: {
-    className?: string;
-    defaultContent?: JSONContent;
-    onChange?: (content: JSONContent) => void;
+    className?: string
+    defaultContent?: JSONContent
+    onChange?: (content: JSONContent) => void
 }) {
-    const editorRef = useRef<HTMLDivElement>(null);
+    const editorRef = useRef<HTMLDivElement>(null)
 
-    const processAndInsertImage = async (editor: any, file: File) => {
+    const _processAndInsertImage = async (editor: Editor, file: File) => {
         try {
             // Compression de l'image
             const compressedBlob = await compressImage(
@@ -35,38 +40,38 @@ export default function RichTextEditor({
                 800, // Largeur maximale
                 600, // Hauteur maximale
                 0.8, // Qualité de compression
-                "image/webp", // Format cible
-            );
+                "image/webp" // Format cible
+            )
             const compressedFile = new File([compressedBlob], file.name, {
-                type: compressedBlob.type,
-            });
+                type: compressedBlob.type
+            })
 
             // Convertir en base64 pour affichage immédiat
-            const reader = new FileReader();
+            const reader = new FileReader()
             reader.onload = (readerEvent) => {
-                const imageUrl = readerEvent.target?.result as string;
+                const imageUrl = readerEvent.target?.result as string
                 if (imageUrl) {
-                    editor.chain().focus().setImage({ src: imageUrl }).run();
+                    editor.chain().focus().setImage({ src: imageUrl }).run()
                 }
-            };
-            reader.readAsDataURL(compressedFile);
+            }
+            reader.readAsDataURL(compressedFile)
         } catch (error) {
-            console.error("Erreur lors de la compression de l'image :", error);
+            console.error("Erreur lors de la compression de l'image :", error)
         }
-    };
+    }
 
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
                 heading: {
-                    levels: [1, 2, 3],
-                },
+                    levels: [1, 2, 3]
+                }
             }),
             Underline,
             Color,
             TextStyle,
             TextAlign.configure({
-                types: ["heading", "paragraph"],
+                types: ["heading", "paragraph"]
             }),
             Link,
             // FileHandler.configure({
@@ -82,27 +87,27 @@ export default function RichTextEditor({
             //     },
             // }),
             Image,
-            ListKeymap,
+            ListKeymap
         ],
         content: defaultContent ?? "<p>Lorem ispum</p>",
         immediatelyRender: true,
         onUpdate: ({ editor }) => {
             // Runs when the editor content changes
-            const content = editor.getJSON();
-            onChange?.(content);
-        },
-    });
+            const content = editor.getJSON()
+            onChange?.(content)
+        }
+    })
 
     return (
         <div
             className={clsx(
-                "m-w-full border-input h-full max-h-96 min-h-64 overflow-y-auto rounded-lg border p-4",
-                className,
+                "m-w-full h-full max-h-96 min-h-64 overflow-y-auto rounded-lg border border-input p-4",
+                className
             )}
             ref={editorRef}
         >
             <EditorBubbleMenu editor={editor} />
             <EditorContent editor={editor} className="h-auto" />
         </div>
-    );
+    )
 }

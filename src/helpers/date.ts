@@ -1,11 +1,11 @@
 export function dateToString(date: Date): string {
     const options = {
-        day: "2-digit" as "2-digit",
-        month: "long" as "long",
-        year: "numeric" as "numeric",
-        hour: "2-digit" as "2-digit",
-        minute: "2-digit" as "2-digit",
-    };
-    const formatted = date.toLocaleString("fr-FR", options);
-    return formatted;
+        day: "2-digit" as const,
+        month: "long" as const,
+        year: "numeric" as const,
+        hour: "2-digit" as const,
+        minute: "2-digit" as const
+    }
+    const formatted = date.toLocaleString("fr-FR", options)
+    return formatted
 }

@@ -1,22 +1,23 @@
-import React, { useRef } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
+import { useRef } from "react"
+import ReCAPTCHA from "react-google-recaptcha"
+import { env } from "@/env"
 
 interface CaptchaProps {
-    onChange: (token: string | null) => void;
+    onChange: (token: string | null) => void
 }
 
 export default function Captcha({ onChange }: CaptchaProps) {
-    const captchaRef = useRef<ReCAPTCHA>(null);
+    const captchaRef = useRef<ReCAPTCHA>(null)
 
     const handleCaptchaChange = (value: string | null) => {
-        onChange(value);
-    };
+        onChange(value)
+    }
 
     return (
         <ReCAPTCHA
             ref={captchaRef}
-            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+            sitekey={env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
             onChange={handleCaptchaChange}
         />
-    );
+    )
 }
