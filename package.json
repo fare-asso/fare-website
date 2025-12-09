@@ -8,7 +8,9 @@
         "build": "next build",
         "vercel-build": "prisma generate --no-hints && prisma migrate deploy && next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "biome check --write",
+        "check:lint": "biome ci",
+        "format": "biome format"
     },
     "dependencies": {
         "@hookform/resolvers": "^5.2.2",
