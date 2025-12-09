@@ -1,5 +1,5 @@
-import process from "node:process"
 import { PrismaClient } from "@prisma/client"
+import { isProduction } from "std-env"
 
 const prismaClientSingleton = () => {
     return new PrismaClient()
@@ -15,5 +15,5 @@ const prisma =
 
 export default prisma
 
-if (process.env.NODE_ENV !== "production")
+if (isProduction)
     (globalThis as unknown as typeof globalThisWithPrisma).prismaGlobal = prisma

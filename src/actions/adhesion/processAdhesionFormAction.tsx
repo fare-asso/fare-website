@@ -1,9 +1,9 @@
 "use server"
 
-import process from "node:process"
 import { format } from "date-fns"
 import { revalidatePath } from "next/cache"
 import { PDFDocument, type PDFPage, rgb, StandardFonts } from "pdf-lib"
+import { env } from "@/env"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
@@ -319,8 +319,7 @@ export async function processAdhesionForm(
 
     // Fonction pour ajouter le SVG à une page
     const addCornerLabelToPage = async (page: PDFPage) => {
-        const baseUrl =
-            process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+        const baseUrl = env.NEXT_PUBLIC_SITE_URL
         const absoluteUrl = `${baseUrl}${"/corner-pdf-FAHB.png"}`
 
         const pngImageBytes = await fetch(absoluteUrl).then((res) =>

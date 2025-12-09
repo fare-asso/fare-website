@@ -113,7 +113,7 @@ export default function ContactForm() {
                 >
                     {getFirstError() ??
                         (isLoading ? (
-                            <LoadingRing className="size-[28px]!" />
+                            <LoadingRing className="size-7!" />
                         ) : success ? (
                             <div className="flex flex-row items-center justify-center">
                                 <RiCheckFill size={25} className="mr-1" />{" "}
