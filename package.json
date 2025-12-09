@@ -10,7 +10,8 @@
         "start": "next start",
         "lint": "biome check --write",
         "check:lint": "biome ci",
-        "format": "biome format"
+        "check:types": "tsc --noEmit",
+        "format": "biome format --write"
     },
     "dependencies": {
         "@hookform/resolvers": "^5.2.2",
