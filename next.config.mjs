@@ -10,7 +10,8 @@ export default {
     transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
     experimental: {
         serverActions: {
-            bodySizeLimit: "5mb"
+            bodySizeLimit: "5mb",
+            reactCompiler: true
         }
     },
     images: {
@@ -22,5 +23,9 @@ export default {
                 pathname: "/storage/v1/object/public/**"
             }
         ]
-    }
+    },
+
+    /** We already do linting and typechecking as separate tasks in CI */
+    eslint: { ignoreDuringBuilds: true },
+    typescript: { ignoreBuildErrors: true }
 }
