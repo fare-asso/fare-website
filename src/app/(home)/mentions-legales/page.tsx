@@ -70,8 +70,8 @@ export default function MentionsLegales() {
                         contact@fare-asso.fr
                     </li>
                     <li>
-                        <b>Hébergeur :</b> OVH - 2 rue Kellermann 59100 Roubaix
-                        1007
+                        <b>Hébergeur :</b> Hetzner Online GmbH, Industriestr. 25
+                        91710 Gunzenhausen, Allemagne
                     </li>
                     <li>
                         <b>Délégué à la protection des données :</b> Bureau
