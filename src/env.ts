@@ -1,4 +1,5 @@
-// biome-ignore-all lint/correctness/noProcessGlobal: process
+// biome-ignore-all lint/correctness/noProcessGlobal: process is needed
+// biome-ignore-all lint/style/noProcessEnv: it's the env file
 
 import { createEnv } from "@t3-oss/env-nextjs"
 import { z } from "zod"
