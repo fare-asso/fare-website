@@ -182,9 +182,6 @@ importers:
       install:
         specifier: ^0.13.0
         version: 0.13.0
-      jiti:
-        specifier: ^2.6.1
-        version: 2.6.1
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
