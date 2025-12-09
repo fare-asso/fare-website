@@ -1,6 +1,6 @@
-import process from "node:process"
 import type { BTPTutorApplication as BTPTutorApplicationPrisma } from "@prisma/client"
 import { format } from "date-fns"
+import { env } from "@/env"
 import type {
     BTPTutorApplication,
     BTPTutorQuestion
@@ -9,7 +9,7 @@ import type { Contact } from "@/schemas/contact"
 
 export const adhesionEmailTemplate = (associationName: string): string => `
             <p>Une nouvelle adhésion a été reçue pour l'association <strong>${associationName}</strong>.</p>
-            <p>Vous pouvez consulter les détails de cette adhésion dans le <a href="${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/adhesions">tableau de bord des adhésions</a>.</p>
+            <p>Vous pouvez consulter les détails de cette adhésion dans le <a href="${env.NEXT_PUBLIC_SITE_URL}/dashboard/adhesions">tableau de bord des adhésions</a>.</p>
             `
 
 export const bagadAssoTicketEmailTemplate = (
@@ -19,7 +19,7 @@ export const bagadAssoTicketEmailTemplate = (
     eventName: string
 ): string => `
             <p>Un nouveau ticket Bagad'Asso à été soumit par l'association <strong>${associationName}</strong> pour l'évènement <strong>${eventName}</strong> qui aura lieu le <strong>${format(eventDate, "dd/MM/yyy")}</strong>.</p>
-            <p>Vous pouvez consulter les détails du ticket sur le <a href="${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/bagadAsso/tickets/${ticketId}">tableau de bord des tickets bagadAssos</a>.</p>
+            <p>Vous pouvez consulter les détails du ticket sur le <a href="${env.NEXT_PUBLIC_SITE_URL}/dashboard/bagadAsso/tickets/${ticketId}">tableau de bord des tickets bagadAssos</a>.</p>
             `
 
 export const contactEmailTemplate = (data: Contact): string => `
@@ -38,7 +38,7 @@ export const tutorApplicationEmailTemplate = (
             <p style="text-align: center;"><strong>Nom:</strong> ${data.lastName}</p>
             <p style="text-align: center;"><strong>Prénom:</strong> ${data.firstName}</p>
             <p style="text-align: center;"><strong>Email:</strong> ${data.email}</p>
-            <p style="text-align: center;">Vous pouvez consulter les détails de cette candidature sur le <a href="${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/bouge-ta-prison">tableau de bord des candidatures tutorats du projet Bouge Ta Prison</a></p>
+            <p style="text-align: center;">Vous pouvez consulter les détails de cette candidature sur le <a href="${env.NEXT_PUBLIC_SITE_URL}/dashboard/bouge-ta-prison">tableau de bord des candidatures tutorats du projet Bouge Ta Prison</a></p>
             `
 
 export const tutorQuestionEmailTemplate = (
@@ -49,7 +49,7 @@ export const tutorQuestionEmailTemplate = (
             <p style="text-align: center;"><strong>Nom:</strong> ${data.lastName}</p>
             <p style="text-align: center;"><strong>Prénom:</strong> ${data.firstName}</p>
             <p style="text-align: center;"><strong>Email:</strong> ${data.email}</p>
-            <p style="text-align: center;">Vous pouvez consulter les détails de cette question sur le <a href="${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/bouge-ta-prison/questions/${id}">tableau de bord des questions tutorats du projet Bouge Ta Prison</a></p>
+            <p style="text-align: center;">Vous pouvez consulter les détails de cette question sur le <a href="${env.NEXT_PUBLIC_SITE_URL}/dashboard/bouge-ta-prison/questions/${id}">tableau de bord des questions tutorats du projet Bouge Ta Prison</a></p>
             `
 
 export const tutorApplicationApprovalEmailTemplate = (

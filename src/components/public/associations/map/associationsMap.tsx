@@ -103,7 +103,7 @@ export default function AssociationMap({
                     onChange={handleSearchChange}
                 />
                 {searchError && (
-                    <div className="mt-2 rounded-full border-1 bg-black/50 px-2 py-1 text-center text-white/90">
+                    <div className="mt-2 rounded-full border bg-black/50 px-2 py-1 text-center text-white/90">
                         {searchError}
                     </div>
                 )}

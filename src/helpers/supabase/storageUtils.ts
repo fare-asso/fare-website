@@ -1,6 +1,7 @@
-import process from "node:process"
+import { env } from "@/env"
+
 export class StorageUtils {
-    private storageUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""
+    private storageUrl: string = env.NEXT_PUBLIC_SUPABASE_URL
 
     public constructor(storageUrl?: string) {
         if (storageUrl) {

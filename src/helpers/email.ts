@@ -1,5 +1,6 @@
-import process from "node:process"
 import nodemailer from "nodemailer"
+import { isProduction } from "std-env"
+import { env } from "@/env"
 
 interface EmailPayload {
     to: string
@@ -9,13 +10,13 @@ interface EmailPayload {
 
 // Configuration du transporteur
 const transporter = nodemailer.createTransport({
-    service: process.env.SMTP_SERVICE || "Gmail",
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: Number.parseInt(process.env.SMTP_PORT || "465", 10),
-    secure: process.env.SMTP_SECURE === "true",
+    service: env.SMTP_SERVICE,
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    secure: env.SMTP_SECURE,
     auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_APP_PASS
+        user: env.SMTP_USER,
+        pass: env.SMTP_APP_PASS
     }
 })
 
@@ -25,16 +26,10 @@ export async function sendEmail(
     const { to, subject, html } = payload
 
     try {
-        const _response = await transporter.sendMail({
-            from: process.env.SMTP_FROM_EMAIL,
-            to:
-                process.env.NODE_ENV === "production"
-                    ? to
-                    : "outils-numeriques@fare-asso.fr",
-            subject:
-                process.env.NODE_ENV === "production"
-                    ? subject
-                    : `TEST - ${subject}`,
+        await transporter.sendMail({
+            from: env.SMTP_FROM_EMAIL,
+            to: isProduction ? to : "outils-numeriques@fare-asso.fr",
+            subject: isProduction ? subject : `TEST - ${subject}`,
             html
         })
         return { success: true }

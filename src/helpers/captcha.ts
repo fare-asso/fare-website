@@ -1,6 +1,8 @@
+import { env } from "@/env"
+
 export async function verifyCaptcha(captchaValue: string) {
     const response = await fetch(
-        `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY!}&response=${captchaValue}`,
+        `https://www.google.com/recaptcha/api/siteverify?secret=${env.RECAPTCHA_SECRET_KEY}&response=${captchaValue}`,
         {
             method: "POST",
             headers: {

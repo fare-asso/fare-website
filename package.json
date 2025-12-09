@@ -48,6 +48,7 @@
         "@supabase/ssr": "^0.7.0",
         "@supabase/storage-js": "^2.86.2",
         "@supabase/supabase-js": "^2.86.2",
+        "@t3-oss/env-nextjs": "^0.13.8",
         "@tanstack/react-table": "^8.21.3",
         "@tiptap/extension-color": "^3.13.0",
         "@tiptap/extension-history": "^3.13.0",
@@ -72,6 +73,7 @@
         "html-react-parser": "^5.2.10",
         "input-otp": "^1.4.2",
         "install": "^0.13.0",
+        "jiti": "^2.6.1",
         "leaflet": "^1.9.4",
         "lucide-react": "^0.546.0",
         "motion": "^12.23.25",
@@ -92,6 +94,7 @@
         "recharts": "^2.15.4",
         "sharp": "^0.34.5",
         "sonner": "^2.0.7",
+        "std-env": "^3.10.0",
         "tailwind-merge": "^3.4.0",
         "uuid": "^13.0.0",
         "vaul": "^1.1.2",
@@ -122,5 +125,5 @@
     "overrides": {
         "react-is": "^19.0.1"
     },
-    "packageManager": "pnpm@10.24.0"
+    "packageManager": "pnpm@10.25.0"
 }
