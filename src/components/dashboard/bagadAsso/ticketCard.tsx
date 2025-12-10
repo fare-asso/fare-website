@@ -6,30 +6,16 @@ import Link from "next/link"
 import { useState } from "react"
 import { MdDelete } from "react-icons/md"
 import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction"
-import type { ToastActionElement, ToastProps } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
 import LoadingRing from "../loadingRing"
 
-type ToasterToast = ToastProps & {
-    id: string
-    title?: React.ReactNode
-    description?: React.ReactNode
-    action?: ToastActionElement
-}
-
-type Toast = Omit<ToasterToast, "id">
-
 export default function BagadAssoTicketCard({
-    ticket,
-    toast
+    ticket
 }: {
     ticket: BagadAssoTicket
-    toast: ({ ...props }: Toast) => {
-        id: string
-        dismiss: () => void
-        update: (props: ToasterToast) => void
-    }
 }) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const { toast } = useToast()
 
     const onDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()

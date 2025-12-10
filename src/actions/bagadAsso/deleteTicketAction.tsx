@@ -19,9 +19,12 @@ export default async function deleteBagadAssoTicketAction(
         }
 
     try {
-        await prisma.bagadAssoTicket.delete({
+        await prisma.bagadAssoTicket.update({
             where: {
                 id: ticketId
+            },
+            data: {
+                deleted: new Date()
             }
         })
 
