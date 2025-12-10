@@ -1,6 +1,31 @@
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import {
+    BalloonIcon,
+    HandCoinsIcon,
+    ShapesIcon,
+    SquareUserRoundIcon,
+    UsersIcon
+} from "lucide-react"
 import Link from "next/link"
+import {
+    FaCalendarAlt,
+    FaCaretLeft,
+    FaEnvelope,
+    FaMapMarkerAlt,
+    FaPhone,
+    FaUsers
+} from "react-icons/fa"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 import {
     computeTotalDeposit,
     joinTicketAndEquipment
@@ -15,7 +40,23 @@ export default async function Page({
     const ticketId = Number((await params).id)
 
     if (Number.isNaN(ticketId)) {
-        return <span>Le ticket n'existe pas 😔</span>
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <Card className="max-w-md">
+                    <CardContent className="pt-6 text-center">
+                        <span className="text-4xl">😔</span>
+                        <p className="mt-4 text-lg text-muted-foreground">
+                            Le ticket n'existe pas
+                        </p>
+                        <Button asChild className="mt-4">
+                            <Link href="/dashboard/bagadAsso">
+                                Retour aux tickets
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        )
     }
 
     const ticket = await prisma.bagadAssoTicket.findUnique({
@@ -25,7 +66,23 @@ export default async function Page({
     })
 
     if (!ticket) {
-        return <span>Le ticket n'existe pas 😔</span>
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <Card className="max-w-md">
+                    <CardContent className="pt-6 text-center">
+                        <span className="text-4xl">😔</span>
+                        <p className="mt-4 text-lg text-muted-foreground">
+                            Le ticket n'existe pas
+                        </p>
+                        <Button asChild className="mt-4">
+                            <Link href="/dashboard/bagadAsso">
+                                Retour aux tickets
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        )
     }
 
     const totalDeposit = await computeTotalDeposit(ticket)
@@ -41,113 +98,213 @@ export default async function Page({
     )
 
     return (
-        <div className="h-full w-full p-4">
-            <Link
-                href="/dashboard/bagadAsso"
-                className="text-sm underline opacity-80 transition-all hover:font-bold"
-            >
-                &lsaquo; Retour aux tickets
-            </Link>
-            <h1 className="mt-4 font-semibold text-2xl">
-                🗒️Ticket{" "}
-                <span className="font-mono opacity-80">#{ticket.id}</span>
-            </h1>
-            <span className="text-sm">
-                Demande soumise le{" "}
-                <span className="font-bold">
-                    {format(ticket.creationDate, "dd/MM/yy")}
-                </span>
-            </span>
+        <div className="h-full w-full px-2 md:px-4">
+            {/* Header */}
+            <div className="mb-6">
+                <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="-ml-3 mb-4"
+                >
+                    <Link href="/dashboard/bagadAsso">
+                        <FaCaretLeft className="mr-1" />
+                        Retour aux tickets
+                    </Link>
+                </Button>
 
-            {/* Divide space in two (large screen) */}
-            <div className="m-0 flex w-full flex-col md:flex-row">
-                {/* Left Part (Top mobile) */}
-                <div className="flex h-full w-full flex-col p-4">
-                    <span>
-                        Soumis par:{" "}
-                        <b>
-                            {ticket.firstName} {ticket.lastName}
-                        </b>
-                    </span>
-                    <span>
-                        Pour l'association: <b>{ticket.assocation}</b>
-                    </span>
-                    <span>
-                        Email de l'association:{" "}
-                        <a
-                            href={`mailto:${ticket.associationEmail}`}
-                            className="underline transition-all hover:font-semibold"
-                        >
-                            ✉️{ticket.associationEmail}
-                        </a>
-                    </span>
-
-                    <span className="mt-4">
-                        Téléphone de contact:{" "}
-                        <a href="tel:{ticket.phoneNumber}" className="">
-                            📞{ticket.phoneNumber}
-                        </a>
-                    </span>
-                    <span>
-                        Email de contact:{" "}
-                        <a
-                            href={`mailto:${ticket.representativeEmail}`}
-                            className="underline transition-all hover:font-semibold"
-                        >
-                            ✉️{ticket.representativeEmail}
-                        </a>
-                    </span>
-
-                    <span className="mt-4">
-                        Nom de l'évènement:{" "}
-                        <span className="font-bold">{`${ticket.eventName}`}</span>
-                    </span>
-                    <span>
-                        Type de l'évènement:{" "}
-                        <span className="font-bold">
-                            🎈{`${ticket.eventType}`}
+                <div className="flex flex-wrap items-center gap-3">
+                    <h1 className="font-bold text-3xl">
+                        Ticket{" "}
+                        <span className="font-mono text-muted-foreground">
+                            #{ticket.id}
                         </span>
-                    </span>
-                    <span>
-                        Date de l'évènement: 📅
-                        {format(ticket.eventDate, "dd MMMM yyyy", {
-                            locale: fr
-                        })}
-                    </span>
-                    <span>
-                        Lieu de l'évènement:{" "}
-                        <a
-                            href={`https://www.google.fr/maps/search/${ticket.eventAddr}`}
-                            target="blank"
-                            className="underline transition-all hover:font-bold"
-                        >
-                            🗺️{ticket.eventAddr}
-                        </a>
-                    </span>
+                    </h1>
+                    <Badge variant="secondary">
+                        Créé le {format(ticket.creationDate, "dd/MM/yyyy")}
+                    </Badge>
+                </div>
+            </div>
 
-                    <span>
-                        Nombre de participants estimé:{" "}
-                        <b>👥{ticket.estimatedParticipants} personnes</b>
-                    </span>
+            {/* Main Content Grid */}
+            <div className="grid gap-6 pb-8 lg:grid-cols-2">
+                {/* Left Column */}
+                <div className="space-y-6">
+                    {/* Contact Information Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <SquareUserRoundIcon className="size-5" />
+                                <span>Informations de contact</span>
+                            </CardTitle>
+                            <CardDescription>
+                                Personne ayant soumis la demande
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <p className="font-medium text-lg">
+                                    {ticket.firstName} {ticket.lastName}
+                                </p>
+                            </div>
 
-                    <span className="mt-4">
-                        Caution totale: <b>🏦{totalDeposit}€</b>
-                    </span>
+                            <Separator />
+
+                            <div className="grid gap-3">
+                                <a
+                                    href={`mailto:${ticket.representativeEmail}`}
+                                    className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
+                                >
+                                    <FaEnvelope className="text-muted-foreground" />
+                                    {ticket.representativeEmail}
+                                </a>
+                                <a
+                                    href={`tel:${ticket.phoneNumber}`}
+                                    className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
+                                >
+                                    <FaPhone className="text-muted-foreground" />
+                                    {ticket.phoneNumber}
+                                </a>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Association Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <UsersIcon className="size-4" />
+                                <span>Association</span>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <p className="font-semibold text-lg">
+                                {ticket.assocation}
+                            </p>
+                            <a
+                                href={`mailto:${ticket.associationEmail}`}
+                                className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
+                            >
+                                <FaEnvelope className="text-muted-foreground" />
+                                {ticket.associationEmail}
+                            </a>
+                        </CardContent>
+                    </Card>
+
+                    {/* Event Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <BalloonIcon className="size-4" />
+                                <span>Évènement</span>
+                            </CardTitle>
+                            <CardDescription>
+                                Détails de l'évènement prévu
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <p className="font-semibold text-lg">
+                                    {ticket.eventName}
+                                </p>
+                                <Badge variant="outline" className="mt-1">
+                                    {ticket.eventType}
+                                </Badge>
+                            </div>
+
+                            <Separator />
+
+                            <div className="grid gap-3">
+                                <div className="flex items-start gap-2 text-sm">
+                                    <FaCalendarAlt className="mt-0.5 text-muted-foreground" />
+                                    <span>
+                                        {format(
+                                            ticket.eventDate,
+                                            "EEEE dd MMMM yyyy",
+                                            { locale: fr }
+                                        )}
+                                    </span>
+                                </div>
+                                <a
+                                    href={`https://www.google.fr/maps/search/${ticket.eventAddr}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-start gap-2 text-sm transition-colors hover:text-primary"
+                                >
+                                    <FaMapMarkerAlt className="mt-0.5 text-muted-foreground" />
+                                    <span>{ticket.eventAddr}</span>
+                                </a>
+                                <div className="flex items-center gap-2 text-sm">
+                                    <FaUsers className="text-muted-foreground" />
+                                    <span>
+                                        {ticket.estimatedParticipants}{" "}
+                                        participants estimés
+                                    </span>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
-                {/* Right Part (Bottom mobile) */}
-                <div className="h-full w-full p-4">
-                    <h2 className="font-bold text-xl">🪩Matériels demandés:</h2>
-                    {/* Equipments List */}
-                    <div className="flex flex-col px-2 py-1">
-                        {allEquipments.map((equipment) => (
-                            <div key={equipment.id} id={`${equipment.id}`}>
-                                {equipment.quantity}&times; {equipment.name}{" "}
-                                (caution:{" "}
-                                {equipment.quantity * equipment.deposit}€)
+                {/* Right Column */}
+                <div className="space-y-6">
+                    {/* Equipment Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <ShapesIcon className="size-4" />
+                                Matériels demandés
+                            </CardTitle>
+                            <CardDescription>
+                                {allEquipments.length} type(s) de matériel
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="divide-y rounded-lg border">
+                                {allEquipments.map((equipment) => (
+                                    <div
+                                        key={equipment.id}
+                                        className="flex items-center justify-between p-3"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <Badge
+                                                variant="secondary"
+                                                className="font-mono"
+                                            >
+                                                {equipment.quantity}×
+                                            </Badge>
+                                            <span className="font-medium">
+                                                {equipment.name}
+                                            </span>
+                                        </div>
+                                        <span className="text-muted-foreground text-sm">
+                                            {equipment.quantity *
+                                                equipment.deposit}
+                                            €
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Deposit Summary Card */}
+                    <Card className="border-primary/20 bg-primary/5">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <HandCoinsIcon className="size-4" />
+                                Caution totale
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="font-bold text-4xl text-primary">
+                                {totalDeposit}€
+                            </p>
+                            <p className="mt-1 text-muted-foreground text-sm">
+                                À verser avant le retrait du matériel
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>
