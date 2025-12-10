@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { isDevelopment, isProduction } from "std-env"
 import { verifyCaptcha } from "@/helpers/captcha"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
@@ -13,15 +14,17 @@ export default async function submitBagadAssoFormAction(
     // Retrieve CAPTCHA value
     const captchaValue = formData.get("g-recaptcha-response")?.toString()
 
-    // Verify CAPTCHA
-    if (!captchaValue) {
-        return { error: "Veuillez compléter le CAPTCHA." }
-    }
+    if (!isDevelopment) {
+        // Verify CAPTCHA
+        if (!captchaValue) {
+            return { error: "Veuillez compléter le CAPTCHA." }
+        }
 
-    const isCaptchaValid = await verifyCaptcha(captchaValue)
-    if (!isCaptchaValid) {
-        return {
-            error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
+        const isCaptchaValid = await verifyCaptcha(captchaValue)
+        if (!isCaptchaValid) {
+            return {
+                error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
+            }
         }
     }
 
@@ -113,19 +116,21 @@ export default async function submitBagadAssoFormAction(
             }
         })
 
-        const emailTransporterResponse = await sendEmail({
-            to: "evenement@fare-asso.fr",
-            subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
-            html: bagadAssoTicketEmailTemplate(
-                ticketRecord.id,
-                ticketRecord.assocation,
-                ticketRecord.eventDate,
-                ticketRecord.eventName
-            )
-        })
+        if (isProduction) {
+            const emailTransporterResponse = await sendEmail({
+                to: "evenement@fare-asso.fr",
+                subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
+                html: bagadAssoTicketEmailTemplate(
+                    ticketRecord.id,
+                    ticketRecord.assocation,
+                    ticketRecord.eventDate,
+                    ticketRecord.eventName
+                )
+            })
 
-        if (emailTransporterResponse.error) {
-            console.log("[ERROR] Failed to send email notification email")
+            if (emailTransporterResponse.error) {
+                console.log("[ERROR] Failed to send email notification email")
+            }
         }
 
         revalidatePath("/dashboard/bagadAsso")
