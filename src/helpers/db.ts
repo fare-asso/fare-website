@@ -15,5 +15,5 @@ const prisma =
 
 export default prisma
 
-if (isProduction)
+if (!isProduction)
     (globalThis as unknown as typeof globalThisWithPrisma).prismaGlobal = prisma
