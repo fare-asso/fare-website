@@ -4,7 +4,7 @@ import TicketList from "./ticketList"
 export default async function Tickets() {
     const tickets = await prisma.bagadAssoTicket.findMany({
         where: {
-            deleted: undefined
+            deleted: null
         }
     })
 

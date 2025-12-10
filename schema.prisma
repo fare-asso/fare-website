@@ -142,6 +142,7 @@ model BagadAssoTicket {
   equipments            Json
   associationEmail      String
   representativeEmail   String
+  deleted               DateTime?
 }
 
 model Adhesion {
