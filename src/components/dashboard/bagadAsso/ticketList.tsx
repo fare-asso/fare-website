@@ -1,7 +1,6 @@
 "use client"
 
 import type { BagadAssoTicket } from "@prisma/client"
-import { useToast } from "@/components/ui/use-toast"
 import BagadAssoTicketCard from "./ticketCard"
 
 export default function TicketList({
@@ -9,8 +8,6 @@ export default function TicketList({
 }: {
     tickets: BagadAssoTicket[]
 }) {
-    const { toast } = useToast()
-
     return (
         <div className="flex h-full flex-col">
             <div className="flex-1 overflow-y-auto rounded-lg border p-4 shadow-xs">
@@ -20,7 +17,6 @@ export default function TicketList({
                             <BagadAssoTicketCard
                                 key={ticket.id}
                                 ticket={ticket}
-                                toast={toast}
                             />
                         ))
                     ) : (
