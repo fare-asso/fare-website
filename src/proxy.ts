@@ -26,7 +26,7 @@ const permissionProtectedRoutes: {
     // add more routes and permissions as needed
 ]
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const supabase = await createClient()
     const response = await updateSession(request)
     const { data, error } = await supabase.auth.getUser()
