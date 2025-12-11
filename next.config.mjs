@@ -8,6 +8,8 @@ await jiti.import("./src/env")
 export default {
     output: "standalone",
     transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
+
+    reactCompiler: true,
     experimental: {
         serverActions: {
             bodySizeLimit: "5mb",
@@ -33,7 +35,6 @@ export default {
     },
 
     /** We already do linting and typechecking as separate tasks in CI */
-    eslint: { ignoreDuringBuilds: true },
     typescript: { ignoreBuildErrors: true },
 
     devIndicators: false
