@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import "../globals.css"
 
+import Script from "next/script"
 import Footer from "@/components/footer/footer"
 import Header from "@/components/header/header"
 
@@ -22,6 +23,11 @@ export default function RootLayout({
                 {children}
             </div>
             <Footer />
+            <Script
+                defer
+                src="https://a.fare-asso.fr/script.js"
+                data-website-id="7133dde1-d746-40d0-b0b2-9ec15d49c711"
+            />
         </main>
         // Previous version
         // <html lang="en">
