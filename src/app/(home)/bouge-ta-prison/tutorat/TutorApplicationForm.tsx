@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import submitTutorApplication from "@/actions/bouge-ta-prison/submitTutorApplication"
-import Captcha from "@/components/captcha/recaptcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -170,29 +169,30 @@ export default function TutorApplicationForm() {
                         <FormField
                             name="studyYear"
                             control={form.control}
-                            render={({ field: _field }) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Année d'étude</FormLabel>
-                                    <FormControl>
-                                        <Select>
-                                            <FormControl>
-                                                <SelectTrigger className="w-full md:w-1/2">
-                                                    <SelectValue placeholder="Veuillez selectionner une année d'étude" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="L3">
-                                                    Licence 3
-                                                </SelectItem>
-                                                <SelectItem value="M1">
-                                                    M1
-                                                </SelectItem>
-                                                <SelectItem value="M2">
-                                                    M2
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="w-full md:w-1/2">
+                                                <SelectValue placeholder="Veuillez selectionner une année d'étude" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="L3">
+                                                Licence 3
+                                            </SelectItem>
+                                            <SelectItem value="M1">
+                                                M1
+                                            </SelectItem>
+                                            <SelectItem value="M2">
+                                                M2
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     <FormDescription>
                                         Votre année d'étude prévue pour
                                         2025-2026
@@ -270,7 +270,6 @@ export default function TutorApplicationForm() {
                                 </FormItem>
                             )}
                         />
-                        <Captcha onChange={() => console.log("Captcha")} />
                         <Button
                             type="submit"
                             variant="default"

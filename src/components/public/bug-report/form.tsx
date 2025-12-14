@@ -2,7 +2,7 @@
 
 import { startTransition, useActionState, useState } from "react"
 import bugReportAction from "@/actions/bug-report/bugReportAction"
-import Captcha from "@/components/captcha/recaptcha"
+import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
@@ -152,7 +152,7 @@ export default function BugReportForm() {
 
             {/* ReCaptcha Input */}
             <div>
-                <Captcha onChange={setCaptchaValue} />
+                <Captcha onComplete={setCaptchaValue} />
             </div>
 
             {formState?.error ? (

@@ -224,8 +224,6 @@ export default function QuestionForm() {
                             )}
                         />
 
-                        {/* <Captcha onChange={() => console.log("Captcha")} /> */}
-
                         <Button
                             type="submit"
                             variant="default"

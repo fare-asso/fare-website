@@ -35,7 +35,7 @@ export type BTPTutorApplication = z.infer<typeof BTPTutorApplicationSchema>
 export const BTPTutorQuestionSchema = z.object({
     lastName: z.string().min(1, { message: "Le nom est obligatoire" }),
     firstName: z.string().min(1, { message: "Le prénom est obligatoire" }),
-    email: z.string().email({ message: "Email non-valide" }),
+    email: z.email({ message: "Email non-valide" }),
     major: z.string().min(1, { message: "La filière est obligatoire" }),
     studyYear: z.enum(["L3", "M1", "M2", "other"], {
         message: "L'année d'étude est obligatoire"

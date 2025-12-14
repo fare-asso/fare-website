@@ -3,7 +3,7 @@
 import type { BagadAssoEquipment } from "@prisma/client"
 import { useActionState, useEffect, useState } from "react"
 import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction"
-import Captcha from "@/components/captcha/recaptcha"
+import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import DatePicker from "@/components/ui/input/datePicker"
@@ -181,7 +181,7 @@ export default function BagadAssoForm({
 
             {/* ReCaptcha Input */}
             <div>
-                <Captcha onChange={setCaptchaValue} />
+                <Captcha onComplete={setCaptchaValue} />
             </div>
 
             {formState?.error ? (
