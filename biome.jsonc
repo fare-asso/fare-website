@@ -6,6 +6,7 @@
         "includes": [
             "**",
             "!**/pnpm-lock.yaml",
+            "!**/next-env.d.ts",
             "!**/migrations/**/*",
             "!**/node_modules/**/*",
             "!**/dist",
