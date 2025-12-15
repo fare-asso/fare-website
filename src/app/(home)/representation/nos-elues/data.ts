@@ -55,104 +55,74 @@ export function useElusUnivRennes(): {
     return {
         VPE: [
             {
-                firstName: "Mathilde",
-                lastName: "GUERLESQUIN",
-                position: "VPE",
-                details: "Étudiante en Sciences Politiques"
+                firstName: "Leny",
+                lastName: "REBU",
+                position: "VPE – Conseil d'Administration (CA)",
+                details: "Étudiant en Administration de la Santé (EHESP)"
+            },
+            {
+                firstName: "Elsa",
+                lastName: "SOLARZ",
+                position: "VPE – Commission Formation et Vie Étudiante (CFVE)",
+                details: "Étudiante en Sciences"
             }
         ],
         CA: [
             {
-                firstName: "Mathilde",
-                lastName: "GUERLESQUIN",
+                firstName: "Ilona",
+                lastName: "DENIS",
                 position: "Titulaire",
-                details: "Étudiante en Sciences Politiques"
-            },
-            {
-                firstName: "Ulysse",
-                lastName: "DAVID",
-                position: "titulaire",
-                details: "Étudiant ingénieur"
-            },
-            {
-                firstName: "Tristan",
-                lastName: "GONTIER",
-                position: "Suppléant",
-                details: "Étudiant en IUT"
-            },
-            {
-                firstName: "Maëlyss",
-                lastName: "CABON",
-                position: "Suppléante",
-                details: "Étudiante en Informatique"
-            }
-        ],
-        CFVE: [
-            {
-                firstName: "Valentin",
-                lastName: "REGNAULT",
-                position: "Titulaire",
-                details: "Étudiant en Informatique"
-            },
-            {
-                firstName: "Thomas",
-                lastName: "HURTAUD",
-                position: "Titulaire",
-                details: "Étudiant en IUT"
-            },
-            {
-                firstName: "Claudia",
-                lastName: "PERREIRA",
-                position: "Titulaire"
+                details: "Étudiante en Santé Publique (EHESP)"
             },
             {
                 firstName: "Carla",
                 lastName: "RICHARD",
                 position: "Titulaire",
-                details: "Étudiante en Odontologie"
+                details: "Étudiante en Dentaire"
             },
             {
-                firstName: "Morgane",
-                lastName: "GRAND",
-                position: "Titulaire"
+                firstName: "Ambre",
+                lastName: "MARGELY",
+                position: "Suppléante",
+                details: "Étudiante en Pharmacie"
             },
             {
-                firstName: "Bryan",
-                lastName: "GROUSSARD",
+                firstName: "Niels",
+                lastName: "MONTEIRO PEIXOTO",
                 position: "Suppléant",
-                details: "Étudiant en Soins infirmiers"
+                details: "Étudiant en Médecine"
             },
             {
-                firstName: "Paol",
-                lastName: "LE GALLOU",
-                position: "Suppléant",
-                details: "Étudiant ingénieur"
+                firstName: "Adèle",
+                lastName: "LESUEUR",
+                position: "Suppléante",
+                details: "Étudiante en Pharmacie"
             }
         ],
-        UFR: [
+        CFVE: [
             {
-                firstName: "Mattéo",
-                lastName: "BECART",
+                firstName: "Florian",
+                lastName: "TESSIER",
                 position: "Titulaire",
-                details: "Étudiant en Kinésithérapie"
+                details: "Étudiant en Sciences"
             },
             {
-                firstName: "Gabrielle",
-                lastName: "CORREIA",
+                firstName: "Axelle",
+                lastName: "BREBANT",
                 position: "Titulaire",
-                details: "Étudiante en Kinésithérapie"
+                details: "Étudiante en Éco-Gestion"
             },
             {
-                firstName: "Laure",
-                lastName: "CHABOT",
+                firstName: "Paul",
+                lastName: "ROBERT",
                 position: "Titulaire",
-                details: "Étudiante en Soins infirmiers"
+                details: "Étudiant en Pharmacie"
             },
             {
-                firstName: "Liz-Marie",
-                lastName: "PRAUD",
+                firstName: "Camille",
+                lastName: "BLOT",
                 position: "Titulaire",
-                details: "Étudiante en Odontologie"
+                details: "Étudiante en Maïeutique"
             },
             {
                 firstName: "Yves",
@@ -161,36 +131,79 @@ export function useElusUnivRennes(): {
                 details: "Étudiant en Odontologie"
             },
             {
-                firstName: "Émile",
-                lastName: "CHAPPÉ",
-                position: "Suppléant",
-                details: "Étudiant en Odontologie"
-            },
-            {
-                firstName: "Carla",
-                lastName: "RICHARD",
-                position: "Suppléante",
-                details: "Étudiante en Odontologie"
-            },
-            {
-                firstName: "Alexandre",
-                lastName: "JAMES",
-                position: "Suppléant",
-                details: "Étudiant en Odontologie"
-            },
-            {
-                firstName: "Adèle",
-                lastName: "SERRE",
-                position: "Suppléante",
-                details: "Étudiante en Odontologie"
-            },
-            {
-                firstName: "Maëlle",
-                lastName: "VERGNON",
+                firstName: "Jeanne",
+                lastName: "CORMIER",
                 position: "Titulaire",
-                details: "Étudiante en Odontologie"
+                details: "Étudiante en Pharmacie"
+            },
+            {
+                firstName: "Agathe",
+                lastName: "BROUDER",
+                position: "Titulaire",
+                details: "Étudiante en BUT Carrières Juridiques"
+            },
+            {
+                firstName: "Raphaël",
+                lastName: "ABONCKELET",
+                position: "Titulaire",
+                details: "Étudiant en Droit"
+            },
+            {
+                firstName: "Étienne",
+                lastName: "PINEL",
+                position: "Suppléant",
+                details: "Étudiant en Sciences"
+            },
+            {
+                firstName: "Hugo",
+                lastName: "MAHE",
+                position: "Suppléant",
+                details: "Étudiant en Droit"
+            },
+            {
+                firstName: "Océane",
+                lastName: "TOURNEUR",
+                position: "Suppléante",
+                details: "Étudiante en Droit (Saint-Brieuc)"
+            },
+            {
+                firstName: "Tanguy",
+                lastName: "MAIRE-AMIOT",
+                position: "Suppléant",
+                details: "Étudiant en Ingénerie (ESIR)"
+            },
+            {
+                firstName: "Astrid",
+                lastName: "MATHIOTTE",
+                position: "Suppléante",
+                details: "Étudiante en Sciences"
+            },
+            {
+                firstName: "Malo",
+                lastName: "DAGORNE",
+                position: "Suppléant",
+                details: "Étudiant en Kinésithérapie"
+            },
+            {
+                firstName: "Emma",
+                lastName: "PINSARD",
+                position: "Suppléante",
+                details: "Étudiante en Médecine"
+            },
+            {
+                firstName: "Owen",
+                lastName: "GALLACIER",
+                position: "Suppléant",
+                details: "Étudiant en Sciences Infirmières"
+            },
+            {
+                firstName: "Mathilde",
+                lastName: "IGLESIAS",
+                position: "Suppléante",
+                details: "Étudiante en Santé Publique (EHESP)"
             }
-        ]
+        ],
+        UFR: []
     }
 }
 
