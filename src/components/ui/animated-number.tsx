@@ -4,6 +4,7 @@ import { type MotionValue, motion, useSpring, useTransform } from "motion/react"
 import { useEffect, useRef, useState } from "react"
 
 interface AnimatedNumberProps {
+    className?: string
     value: number
     mass?: number
     stiffness?: number
@@ -46,6 +47,7 @@ export function AutoAnimatedNumber({ value, ...props }: AnimatedNumberProps) {
 
 function AnimatedNumber({
     ref,
+    className,
     value,
     mass = 0.8,
     stiffness = 75,
@@ -70,5 +72,9 @@ function AnimatedNumber({
         return () => unsubscribe()
     }, [spring, value, onAnimationStart, onAnimationComplete])
 
-    return <motion.span ref={ref}>{display}</motion.span>
+    return (
+        <motion.span ref={ref} className={className}>
+            {display}
+        </motion.span>
+    )
 }
