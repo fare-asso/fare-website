@@ -14,17 +14,15 @@ export default async function submitBagadAssoFormAction(
     // Retrieve CAPTCHA value
     const captchaValue = formData.get("frc-captcha-response")?.toString()
 
-    if (!isDevelopment) {
-        // Verify CAPTCHA
-        if (!captchaValue) {
-            return { error: "Veuillez compléter le CAPTCHA." }
-        }
+    // Verify CAPTCHA
+    if (!captchaValue) {
+        return { error: "Veuillez compléter le CAPTCHA." }
+    }
 
-        const isCaptchaValid = await verifyCaptcha(captchaValue)
-        if (!isCaptchaValid) {
-            return {
-                error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
-            }
+    const isCaptchaValid = await verifyCaptcha(captchaValue)
+    if (!isCaptchaValid) {
+        return {
+            error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         }
     }
 
@@ -98,8 +96,9 @@ export default async function submitBagadAssoFormAction(
         return { error: "La date de l'événement n'est pas valide." }
     }
 
+    let ticketRecord
     try {
-        const ticketRecord = await prisma.bagadAssoTicket.create({
+        ticketRecord = await prisma.bagadAssoTicket.create({
             data: {
                 assocation: associationName,
                 associationEmail: associationEmail,
@@ -115,7 +114,13 @@ export default async function submitBagadAssoFormAction(
                 equipments: equipmentInput
             }
         })
+    } catch {
+        return {
+            error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
+        }
+    }
 
+    try {
         if (isProduction) {
             const emailTransporterResponse = await sendEmail({
                 to: "evenement@fare-asso.fr",
@@ -136,8 +141,11 @@ export default async function submitBagadAssoFormAction(
         revalidatePath("/dashboard/bagadAsso")
         return { success: true }
     } catch {
+        console.error(
+            "Failed to send Bagad'Asso ticket creation notification email"
+        )
         return {
-            error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
+            error: "Une erreur est survenue lors de la création du ticket. Merci de réessayer plus tard."
         }
     }
 }

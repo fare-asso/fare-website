@@ -30,10 +30,9 @@ export default function BagadAssoForm({
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setIsLoading(true)
 
         const formData = new FormData(event.currentTarget)
-
-        setIsLoading(true)
 
         formAction(formData)
     }
