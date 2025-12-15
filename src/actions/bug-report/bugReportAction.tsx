@@ -1,6 +1,6 @@
 "use server"
 
-import { verifyCaptcha } from "@/helpers/captcha"
+import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 
 export default async function bugReportAction(
@@ -8,7 +8,7 @@ export default async function bugReportAction(
     formData: FormData
 ) {
     // Retrieve CAPTCHA value
-    const captchaValue = formData.get("g-recaptcha-response")?.toString()
+    const captchaValue = formData.get("frc-captcha-response")?.toString()
 
     // Verify CAPTCHA
     if (!captchaValue) {

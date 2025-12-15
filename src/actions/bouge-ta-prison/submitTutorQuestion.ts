@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { isDevelopment } from "std-env"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { tutorQuestionEmailTemplate } from "@/lib/htmlEmailTemplates"
@@ -33,11 +34,13 @@ export default async function submitTutorQuestion(
         }
     })
 
-    const _emailTransporterRes = await sendEmail({
-        to: "intervention-carceral@fare-asso.fr",
-        subject: "Nouvelle question tutorat Bouge Ta Prison",
-        html: tutorQuestionEmailTemplate(data, BTPTutorQuestion.id)
-    })
+    if (!isDevelopment) {
+        await sendEmail({
+            to: "intervention-carceral@fare-asso.fr",
+            subject: "Nouvelle question tutorat Bouge Ta Prison",
+            html: tutorQuestionEmailTemplate(data, BTPTutorQuestion.id)
+        })
+    }
 
     revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }

@@ -12,6 +12,9 @@ importers:
 
   .:
     dependencies:
+      '@friendlycaptcha/sdk':
+        specifier: ^0.1.36
+        version: 0.1.36
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.68.0(react@19.2.3))
@@ -654,6 +657,9 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@friendlycaptcha/sdk@0.1.36':
+    resolution: {integrity: sha512-G5TbQaTHj4uxAGjaf1EGav1/9bd34C0uaivjU4mzfI5F6W7YQXfbu/n34FgnegctChhwtl/0rG/rsZofj8y8xg==}
 
   '@hookform/resolvers@5.2.2':
     resolution: {integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==}
@@ -5298,6 +5304,8 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@friendlycaptcha/sdk@0.1.36': {}
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.68.0(react@19.2.3))':
     dependencies:

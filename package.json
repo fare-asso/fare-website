@@ -14,6 +14,7 @@
         "format": "biome format --write"
     },
     "dependencies": {
+        "@friendlycaptcha/sdk": "^0.1.36",
         "@hookform/resolvers": "^5.2.2",
         "@neondatabase/serverless": "^1.0.2",
         "@next/third-parties": "16.0.10",

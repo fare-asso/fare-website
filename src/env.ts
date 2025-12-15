@@ -6,7 +6,7 @@ import { z } from "zod"
 
 export const env = createEnv({
     server: {
-        RECAPTCHA_SECRET_KEY: z.string(),
+        FRIENDLY_CAPTCHA_API_KEY: z.string(),
 
         SUPABASE_SERVICE_ROLE_KEY: z.string(),
 
@@ -23,7 +23,7 @@ export const env = createEnv({
         NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
 
         NEXT_PUBLIC_SITE_URL: z.url().default("http://localhost:3000"),
-        NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string().min(1)
+        NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: z.string().min(1)
     },
     // biome-ignore lint/style/useNamingConvention: it's a lib
     experimental__runtimeEnv: {
@@ -31,9 +31,9 @@ export const env = createEnv({
         NEXT_PUBLIC_SUPABASE_ANON_KEY:
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 
-        NEXT_PUBLIC_RECAPTCHA_SITE_KEY:
-            process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
-        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL
+        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+        NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY:
+            process.env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
     },
 
     emptyStringAsUndefined: true

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { isDevelopment, isProduction } from "std-env"
-import { verifyCaptcha } from "@/helpers/captcha"
+import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { bagadAssoTicketEmailTemplate } from "@/lib/htmlEmailTemplates"
@@ -12,7 +12,7 @@ export default async function submitBagadAssoFormAction(
     formData: FormData
 ) {
     // Retrieve CAPTCHA value
-    const captchaValue = formData.get("g-recaptcha-response")?.toString()
+    const captchaValue = formData.get("frc-captcha-response")?.toString()
 
     if (!isDevelopment) {
         // Verify CAPTCHA
