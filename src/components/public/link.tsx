@@ -1,24 +1,22 @@
 import Link from "next/link"
+import { Button, type ButtonVariants } from "../ui/button"
 
 export default function LinkButton({
     href,
     title,
-    className
+    className,
+    variant
 }: {
     href: string
     title: string
     className?: string
+    variant?: ButtonVariants["variant"]
 }) {
     return (
-        <Link
-            href={href}
-            title={title}
-            className={
-                "rounded-full px-4 py-1 text-center font-semibold transition-all hover:scale-105" +
-                className
-            }
-        >
-            {title}
-        </Link>
+        <Button asChild variant={variant} className={className}>
+            <Link href={href} title={title}>
+                {title}
+            </Link>
+        </Button>
     )
 }

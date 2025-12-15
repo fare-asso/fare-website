@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-    title: "Nos partenaires | FARE",
+    title: "Nos partenaires",
     description: "Page des partenariats de la FARE"
 }
 

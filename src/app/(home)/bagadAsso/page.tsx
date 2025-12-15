@@ -1,7 +1,12 @@
+import type { Metadata } from "next"
 import Image from "next/image"
 import logoBagadAsso from "#public/logoBagadAsso.png"
 import BagadAssoForm from "@/components/public/bagadAsso/form"
 import prisma from "@/helpers/db"
+
+export const metadata: Metadata = {
+    title: "Badag'Asso"
+}
 
 export default async function BagadAsso() {
     const equipmentList = await prisma.bagadAssoEquipment.findMany()

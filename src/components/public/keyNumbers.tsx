@@ -1,6 +1,41 @@
 import type { Association } from "@prisma/client"
+import type { ReactNode } from "react"
 import prisma from "@/helpers/db"
 import { AutoAnimatedNumber } from "../ui/animated-number"
+
+function GridItem({
+    title,
+    value
+}: {
+    value: number
+    title: string | ReactNode
+}) {
+    return (
+        <div className="flex flex-col items-center justify-center gap-4 text-balance rounded-xl bg-fare-accent p-4 md:p-2 md:px-6">
+            <AutoAnimatedNumber
+                className="w-fit font-semibold text-2xl text-white md:text-[2.5rem]"
+                value={value}
+            />
+            <span className="text-center text-white text-xl opacity-95">
+                {title}
+            </span>
+        </div>
+    )
+}
+
+function Grid({
+    values
+}: {
+    values: { title: string | ReactNode; value: number }[]
+}) {
+    return (
+        <div className="key-numbers grid grid-rows-1 gap-6 md:grid-rows-3">
+            {values.map(({ title, value }) => (
+                <GridItem key={String(title)} title={title} value={value} />
+            ))}
+        </div>
+    )
+}
 
 export default async function KeyNumbers() {
     let associations: Association[] | undefined
@@ -12,35 +47,34 @@ export default async function KeyNumbers() {
     }
 
     return (
-        <div className="mt-2 flex w-[90%] flex-col items-center justify-center space-x-0 space-y-2 md:mt-0 md:ml-4 md:w-2/3 md:flex-row md:space-x-2 md:space-y-0 [&>div]:h-36 md:[&>div]:h-44">
-            <div className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-fahbyellow p-4 md:w-1/3 md:p-2">
-                <span className="font-semibold text-2xl text-white md:text-[2.5rem]">
-                    <AutoAnimatedNumber
-                        value={associations ? associations.length : 20}
-                    />
-                </span>
-                <span className="text-center text-white text-xl opacity-95 md:p-1">
-                    Associations étudiantes
-                </span>
-            </div>
+        <Grid
+            values={[
+                {
+                    title: "Associations étudiantes",
+                    value: associations ? associations.length : 20
+                },
+                { title: "Étudiant.e.s", value: 88000 },
+                {
+                    title: (
+                        <>
+                            Élu.e.s universitaires <br /> & CROUS
+                        </>
+                    ),
+                    value: 57
+                }
+            ]}
+        />
+    )
+}
 
-            <div className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-fahbyellow p-4 md:w-1/3 md:p-2">
-                <span className="font-semibold text-2xl text-white md:text-[2.5rem]">
-                    <AutoAnimatedNumber value={88000} />
-                </span>
-                <span className="text-center text-white text-xl opacity-95 md:p-1">
-                    Étudiant.e.s
-                </span>
-            </div>
-
-            <div className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-fahbyellow p-4 md:w-1/3 md:p-2">
-                <span className="font-semibold text-2xl text-white md:text-[2.5rem]">
-                    <AutoAnimatedNumber value={57} />
-                </span>
-                <span className="text-center text-white text-xl opacity-95 md:p-1">
-                    Élu.e.s universitaires & CROUS
-                </span>
-            </div>
-        </div>
+export function KeyNumbersSkeleton() {
+    return (
+        <Grid
+            values={[
+                { title: "Associations étudiantes", value: 0 },
+                { title: "Étudiant.e.s", value: 0 },
+                { title: "Élu.e.s universitaires & CROUS", value: 0 }
+            ]}
+        />
     )
 }

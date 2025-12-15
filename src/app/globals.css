@@ -4,6 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+    --color-fare-accent: var(--color-fare-accent);
+
     --color-fahbyellow: rgb(255, 203, 0);
     --color-border: hsl(var(--border));
     --color-input: hsl(var(--input));
@@ -113,6 +115,12 @@
 
 @layer base {
     :root {
+        --color-fare-accent: #004aad;
+
+        @supports (oklch(0 0 0)) {
+            --color-fare-accent: oklch(0.4365 0.1709 259.21);
+        }
+
         --background: 0 0% 100%;
         --foreground: 224 71.4% 4.1%;
 

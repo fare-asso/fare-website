@@ -5,6 +5,7 @@ import {
     MessageSquareTextIcon,
     SquareUserRoundIcon
 } from "lucide-react"
+import type { Metadata } from "next"
 import Link from "next/link"
 import { FaCaretLeft, FaEnvelope } from "react-icons/fa"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +19,17 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db"
+
+export async function generateMetadata({
+    params
+}: {
+    params: Promise<{ id: string }>
+}): Promise<Metadata> {
+    const id = (await params).id
+    return {
+        title: `BTP - Question ${id}`
+    }
+}
 
 export default async function TutorQuestionPage({
     params

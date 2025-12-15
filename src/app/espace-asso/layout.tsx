@@ -6,7 +6,7 @@ import Header from "@/components/espaceAsso/header"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-    title: "Espace Asso FARE",
+    title: "Espace Asso",
     description: "Espace de gestion des associations de la FARE"
 }
 

@@ -1,5 +1,10 @@
+import type { Metadata } from "next"
 import DossierDePresseCard from "@/components/public/presse/ddpCard"
 import prisma from "@/helpers/db"
+
+export const metadata: Metadata = {
+    title: "Dossiers de presse"
+}
 
 export default async function DossiersDePresse() {
     const dossiers = await prisma.communiqueDePresse.findMany({

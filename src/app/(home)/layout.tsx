@@ -5,12 +5,6 @@ import Script from "next/script"
 import Footer from "@/components/footer/footer"
 import Header from "@/components/header/header"
 
-export const metadata: Metadata = {
-    title: "FARE",
-    description:
-        "Site internet de la Fédération des Associations de Haute-Bretagne"
-}
-
 export default function RootLayout({
     children
 }: Readonly<{

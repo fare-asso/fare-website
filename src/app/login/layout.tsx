@@ -1,8 +1,10 @@
 import "../globals.css"
 
-export const metadata = {
-    title: "Connection Admin",
-    description: ""
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+    title: "Connexion",
+    description: "Page de connexion pour les administrateur·ice·s"
 }
 
 export default function RootLayout({

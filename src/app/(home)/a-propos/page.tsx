@@ -1,6 +1,7 @@
-// Create metadata for the page
-export const metadata = {
-    title: "À propos de la FARE | FARE"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+    title: "À propos de la FARE"
 }
 
 export default function APropos() {

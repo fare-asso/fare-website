@@ -4,7 +4,7 @@ import CurrentEvents from "@/components/public/events/currentEvents"
 import SoonEvents from "@/components/public/events/soon"
 
 export const metadata: Metadata = {
-    title: "Agenda | FARE",
+    title: "Agenda",
     description: "Page regroupant les événements lié à la FARE"
 }
 

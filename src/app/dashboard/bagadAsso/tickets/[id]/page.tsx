@@ -7,6 +7,7 @@ import {
     SquareUserRoundIcon,
     UsersIcon
 } from "lucide-react"
+import type { Metadata } from "next"
 import Link from "next/link"
 import {
     FaCalendarAlt,
@@ -31,6 +32,17 @@ import {
     joinTicketAndEquipment
 } from "@/helpers/bagadAsso"
 import prisma from "@/helpers/db"
+
+export async function generateMetadata({
+    params
+}: {
+    params: Promise<{ id: string }>
+}): Promise<Metadata> {
+    const id = (await params).id
+    return {
+        title: `Bagad'Asso - Ticket ${id}`
+    }
+}
 
 export default async function Page({
     params

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import AddNewCDPButton from "@/components/dashboard/CDP/addCDPButton"
 import CDPList from "@/components/dashboard/CDP/CDPList"
@@ -9,6 +10,10 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+
+export const metadata: Metadata = {
+    title: "Communiqués de presse"
+}
 
 export default function CommuDePresse() {
     return (

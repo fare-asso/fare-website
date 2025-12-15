@@ -10,7 +10,10 @@ import { Toaster } from "@/components/ui/toaster"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
 export const metadata: Metadata = {
-    title: "Dashboard",
+    title: {
+        template: "%s | Dashboard FARE",
+        default: "Dashboard"
+    },
     description: ""
 }
 
@@ -33,7 +36,7 @@ export default async function RootLayout({
 
     return (
         <SidebarProvider>
-            <div className="flex h-screen w-screen overflow-hidden">
+            <div className="flex h-svh w-screen overflow-hidden">
                 {/* Sidebar à gauche */}
                 <SideBarApp permissions={permissions} />
 

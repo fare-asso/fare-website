@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import {
     Card,
     CardContent,
@@ -9,6 +10,10 @@ import {
 import prisma from "@/helpers/db"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
+
+export const metadata: Metadata = {
+    title: "Utilisateurs"
+}
 
 export default async function UsersPage() {
     const users = await prisma.user.findMany({

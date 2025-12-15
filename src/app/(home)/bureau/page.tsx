@@ -3,7 +3,7 @@ import MemberList from "@/components/public/bureau/memberList"
 import prisma from "@/helpers/db"
 
 export const metadata: Metadata = {
-    title: "Le Bureau | FARE",
+    title: "Le Bureau",
     description: "Page des membres du bureau de la FARE"
 }
 
