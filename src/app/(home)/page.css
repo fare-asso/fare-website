@@ -1,0 +1,21 @@
+section.hero {
+    display: grid;
+    grid-template-areas:
+        "img numbers"
+        "intro intro";
+
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+
+    & > img {
+        grid-area: img;
+    }
+
+    & > div.key-numbers {
+        grid-area: numbers;
+    }
+
+    & > div.intro {
+        grid-area: intro;
+    }
+}

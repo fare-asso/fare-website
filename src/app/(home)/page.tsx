@@ -4,10 +4,12 @@ import Image from "next/image"
 import { Suspense } from "react"
 import AssoMap from "@/components/public/AssoMap"
 import DiscordWidget from "@/components/public/discordWidget"
-import KeyNumbers from "@/components/public/keyNumbers"
+import KeyNumbers, { KeyNumbersSkeleton } from "@/components/public/keyNumbers"
 import LinkButton from "@/components/public/link"
 import PartnersCarousel from "@/components/public/partenariats/partnersCarousel"
 import WelcomeImage from "../../../public/welcome.jpg"
+
+import "./page.css"
 
 export const metadata: Metadata = {
     title: "Accueil | FARE"
@@ -16,8 +18,8 @@ export const metadata: Metadata = {
 export default function Home() {
     return (
         <div className="flex w-full flex-col items-center md:w-[90%]">
-            {/* Welcome picture */}
-            <div className="mb-8 w-full md:w-[70%]">
+            <section className="hero gap-6">
+                {/* Welcome picture */}
                 <Image
                     src={WelcomeImage}
                     alt="Image des membres du bureau"
@@ -25,15 +27,13 @@ export default function Home() {
                     priority={true}
                     placeholder="blur"
                 />
-            </div>
 
-            <Suspense fallback="loading...">
-                <KeyNumbers />
-            </Suspense>
+                <Suspense fallback={<KeyNumbersSkeleton />}>
+                    <KeyNumbers />
+                </Suspense>
 
-            {/* Qui sommes-nous ? */}
-            <div className="my-10 flex w-full flex-col items-center">
-                <div className="flex w-full flex-col items-start justify-between rounded-xl bg-black p-8 text-lg text-white md:w-[80%]">
+                {/* Qui sommes-nous ? */}
+                <div className="intro flex w-full flex-col items-start justify-between rounded-xl bg-black p-8 text-lg text-white">
                     <h2 className="mb-2 font-semibold text-2xl">
                         Qui sommes-nous ?
                     </h2>
@@ -52,10 +52,11 @@ export default function Home() {
                             href="/a-propos"
                             title="En savoir +"
                             className="bg-white text-black"
+                            variant="outline"
                         />
                     </div>
                 </div>
-            </div>
+            </section>
 
             {/* Last articles
       <div className="my-10 w-full flex flex-col">
