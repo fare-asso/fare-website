@@ -19,9 +19,7 @@ pnpm dev
 ## TODO
 
 - changer les comptes pour faire avec les mails généraux (secretariat, bougetaprison, bagadasso, etc.)
-- Fédération des Associations du Réseau Étudiant de Haute-Bretagne
 - Faire un dashboard pour les élus (comme pour assos)
 - Justifier texte
 - ne pas afficher d'erreur si mail fail to sends
-- change favicon
 - ajouter une page partenariats
