@@ -1,16 +1,5 @@
 import type { Role, User } from "@prisma/client"
-import prisma from "@/helpers/db"
 import type { UserWithPermissions } from "./supabase/auth"
-
-export async function checkPermission(userId: string, permissionName: string) {
-    const result = await prisma.userPermission.findFirst({
-        where: {
-            userId,
-            permission: { name: permissionName }
-        }
-    })
-    return Boolean(result)
-}
 
 export function hasRole(user: User, role: Role) {
     return user.role === role
