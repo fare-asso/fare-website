@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function FAGE() {
     return (
         <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Fédération des Associations Générales Étudiantes (FAGE)</h1> */}
+            {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Fédération des Associations du Réseau Étudiant de Haute-Bretagne (FAGE)</h1> */}
 
             <Image
                 src={logoFage}
@@ -25,8 +25,8 @@ export default function FAGE() {
                     <p className="mb-4 italic">
                         La{" "}
                         <strong>
-                            Fédération des associations générales étudiantes -
-                            FAGE
+                            Fédération des Associations du Réseau Étudiant de
+                            Haute-Bretagne - FAGE
                         </strong>{" "}
                         - est la première organisation étudiante de France.
                         Fondée en 1989, elle assoit son fonctionnement sur la

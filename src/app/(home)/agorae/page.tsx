@@ -70,8 +70,8 @@ export default function AGORAe() {
                         >
                             FAGE
                         </Link>{" "}
-                        (Fédération des Associations Générales Étudiantes) et
-                        porté à Saint-Brieuc par la{" "}
+                        (Fédération des Associations du Réseau Étudiant de
+                        Haute-Bretagne) et porté à Saint-Brieuc par la{" "}
                         <Link
                             href="/a-propos"
                             className="text-blue-600 hover:underline"
