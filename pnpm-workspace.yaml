@@ -1,8 +1,7 @@
 onlyBuiltDependencies:
-  - '@prisma/client'
-  - '@prisma/engines'
-  - '@vercel/speed-insights'
-  - prisma
-  - sharp
-  - supabase
-  - unrs-resolver
+    - "@prisma/client"
+    - "@prisma/engines"
+    - prisma
+    - sharp
+    - supabase
+    - unrs-resolver
