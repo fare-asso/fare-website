@@ -1,7 +1,19 @@
+import type { Metadata } from "next"
 import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db"
 import { UserInfoForm } from "./userInfoForm"
 import { UserPermissionsForm } from "./userPermissionForm"
+
+export async function generateMetadata({
+    params
+}: {
+    params: Promise<{ id: string }>
+}): Promise<Metadata> {
+    const id = (await params).id
+    return {
+        title: `Utilisateur ${id}`
+    }
+}
 
 export default async function UserPage({
     params

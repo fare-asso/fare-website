@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import ArticleList from "@/components/public/articles/articleList"
 
 export const metadata: Metadata = {
-    title: "Actualités | FARE",
+    title: "Actualités",
     description: "Page regroupant les actualités lié à la FARE"
 }
 

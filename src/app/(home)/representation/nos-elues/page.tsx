@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Image from "next/image"
 import logoEHESP from "#public/elues/ehesp/ehesp.png"
 import logoBougeTonCampus from "#public/elues/logo-Bouge-Ton-Campus.png"
@@ -13,6 +14,10 @@ import {
     useElusRennes2,
     useElusUnivRennes
 } from "./data"
+
+export const metadata: Metadata = {
+    title: "Élus"
+}
 
 const EluCard = ({ elu }: { elu: Elu }) => {
     return (

@@ -5,7 +5,7 @@ import AssociationMapCaller from "@/components/public/associations/map/associati
 import prisma from "@/helpers/db"
 
 export const metadata: Metadata = {
-    title: "Réseau | FARE",
+    title: "Réseau",
     description: "Page des associations du réseau FARE"
 }
 

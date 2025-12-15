@@ -1,7 +1,12 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { FaArrowLeft, FaFacebook, FaInstagram } from "react-icons/fa6"
 import { MdOutlineEmail } from "react-icons/md"
 import ContactForm from "@/components/public/contact/contactForm"
+
+export const metadata: Metadata = {
+    title: "Contact"
+}
 
 export default function Contact() {
     return (

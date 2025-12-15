@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import AddAssociationButton from "@/components/dashboard/associations/addAssociationButton"
 import AssociationList from "@/components/dashboard/associations/associationList"
@@ -9,6 +10,10 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+
+export const metadata: Metadata = {
+    title: "Associations"
+}
 
 export default function Associations() {
     return (

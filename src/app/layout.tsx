@@ -5,7 +5,10 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"], display: "swap" })
 
 export const metadata: Metadata = {
-    title: "FARE",
+    title: {
+        template: "%s | FARE",
+        default: "FARE"
+    },
     description:
         "Fédération des Associations du Réseau Étudiant de Haute-Bretagne"
 }

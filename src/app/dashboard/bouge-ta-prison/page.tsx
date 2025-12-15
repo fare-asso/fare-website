@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import {
     Card,
@@ -10,6 +11,10 @@ import {
 import ApplicationList from "./candidatures-tutorat/applicationList"
 import QuestionList from "./questions/questionList"
 import TabSwitcher from "./tabSwitcher"
+
+export const metadata: Metadata = {
+    title: "Bouge Ta Prison"
+}
 
 export default function EspaceBougeTaPrison() {
     return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import AdhesionList from "@/components/dashboard/adhesions/adhesionList"
 import {
@@ -8,6 +9,10 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+
+export const metadata: Metadata = {
+    title: "Adhésions"
+}
 
 export default function Adhesions() {
     return (

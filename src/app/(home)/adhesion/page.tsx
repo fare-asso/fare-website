@@ -1,5 +1,10 @@
+import type { Metadata } from "next"
 import AdhesionDescription from "@/components/public/adhesion/adhesionDescription"
 import AdhesionForm from "@/components/public/adhesion/form"
+
+export const metadata: Metadata = {
+    title: "Formulaire d'adhésion"
+}
 
 export default function Adhesion() {
     return (

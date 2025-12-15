@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import AddMemberButton from "@/components/dashboard/members/addMemberButton"
 import MemberList from "@/components/dashboard/members/memberList"
@@ -9,6 +10,10 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+
+export const metadata: Metadata = {
+    title: "Membres"
+}
 
 export default function Membres() {
     return (

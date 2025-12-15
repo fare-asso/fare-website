@@ -1,4 +1,9 @@
+import type { Metadata } from "next"
 import BugReportForm from "@/components/public/bug-report/form"
+
+export const metadata: Metadata = {
+    title: "Rapport de bug"
+}
 
 export default function BugReport() {
     return (

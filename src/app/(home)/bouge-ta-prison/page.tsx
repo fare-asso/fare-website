@@ -1,12 +1,12 @@
+import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import assemblee0 from "#public/BTP/assemblee1.jpg"
 import assemblee1 from "#public/BTP/assemblee2.jpg"
 import logoBTP from "#public/BTP/LOGO_BTP_2024.webp"
 
-// Create metadata for the page
-export const metadata = {
-    title: "Bouge Ta Prison | FARE"
+export const metadata: Metadata = {
+    title: "Bouge ta Prison"
 }
 
 export default function BougeTaPrison() {

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import Equipments from "@/components/dashboard/bagadAsso/equipments"
 import Tickets from "@/components/dashboard/bagadAsso/tickets"
@@ -10,6 +11,10 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import TabSwitcher from "./tabSwitcher"
+
+export const metadata: Metadata = {
+    title: "Bagad'Asso"
+}
 
 export default function BagadAsso() {
     return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import ArticleList from "@/components/dashboard/Articles/articleList"
 import CreateArticleButton from "@/components/dashboard/Articles/createArticleButton"
@@ -9,6 +10,10 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+
+export const metadata: Metadata = {
+    title: "Articles"
+}
 
 export default function Articles() {
     return (

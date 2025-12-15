@@ -12,7 +12,7 @@ import WelcomeImage from "../../../public/welcome.jpg"
 import "./page.css"
 
 export const metadata: Metadata = {
-    title: "Accueil | FARE"
+    title: "Accueil"
 }
 
 export default function Home() {

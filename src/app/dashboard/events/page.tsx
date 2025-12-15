@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import CreateEventButton from "@/components/dashboard/event/createEventButton"
 import EventDataTable from "@/components/dashboard/event/eventDataTable"
@@ -9,6 +10,10 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+
+export const metadata: Metadata = {
+    title: "Évènements"
+}
 
 export default function EventsPage() {
     return (

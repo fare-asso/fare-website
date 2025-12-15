@@ -1,9 +1,9 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import TutorApplicationForm from "./TutorApplicationForm"
 
-// Create metadata for the page
-export const metadata = {
-    title: "Devenir tuteur Bouge Ta Prison | FARE"
+export const metadata: Metadata = {
+    title: "Devenir tuteur Bouge ta Prison"
 }
 
 export default function Tutorat() {

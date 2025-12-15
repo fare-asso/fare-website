@@ -1,5 +1,10 @@
+import type { Metadata } from "next"
 import Image from "next/image"
 import logoFage from "#public/Logo_FAGE.png"
+
+export const metadata: Metadata = {
+    title: "FAGE"
+}
 
 export default function FAGE() {
     return (

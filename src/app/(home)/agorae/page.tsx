@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import food from "#public/AGORAe/food.jpg"
@@ -6,6 +7,10 @@ import recettesParMois from "#public/AGORAe/recettes_par_mois.png"
 import salle from "#public/AGORAe/salle.jpg"
 import tableauRAV from "#public/AGORAe/tableau_rav.png"
 import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
+
+export const metadata: Metadata = {
+    title: "AGORAé"
+}
 
 export default function AGORAe() {
     return (

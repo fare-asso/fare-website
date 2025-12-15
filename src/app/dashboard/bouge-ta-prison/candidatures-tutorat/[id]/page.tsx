@@ -7,6 +7,7 @@ import {
     GraduationCapIcon,
     SquareUserRoundIcon
 } from "lucide-react"
+import type { Metadata } from "next"
 import Link from "next/link"
 import { FaCaretLeft, FaEnvelope } from "react-icons/fa"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +23,17 @@ import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 import SendApprovalButton from "./sendApprovalButton"
+
+export async function generateMetadata({
+    params
+}: {
+    params: Promise<{ id: string }>
+}): Promise<Metadata> {
+    const id = (await params).id
+    return {
+        title: `BTP - Candidature ${id}`
+    }
+}
 
 export default async function TutorApplicationPage({
     params

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-    title: "Mentions Légales | FARE"
+    title: "Mentions Légales"
 }
 
 export default function MentionsLegales() {
