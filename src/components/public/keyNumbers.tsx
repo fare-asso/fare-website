@@ -1,26 +1,37 @@
 import type { Association } from "@prisma/client"
+import type { ReactNode } from "react"
 import prisma from "@/helpers/db"
 import { AutoAnimatedNumber } from "../ui/animated-number"
 
-function GridItem({ title, value }: { value: number; title: string }) {
+function GridItem({
+    title,
+    value
+}: {
+    value: number
+    title: string | ReactNode
+}) {
     return (
-        <div className="grid grid-cols-1 grid-rows-2 place-items-center items-center rounded-xl bg-fare-accent p-4 md:p-2">
+        <div className="flex flex-col items-center justify-center gap-4 text-balance rounded-xl bg-fare-accent p-4 md:p-2 md:px-6">
             <AutoAnimatedNumber
                 className="w-fit font-semibold text-2xl text-white md:text-[2.5rem]"
                 value={value}
             />
-            <span className="text-center text-white text-xl opacity-95 md:p-1">
+            <span className="text-center text-white text-xl opacity-95">
                 {title}
             </span>
         </div>
     )
 }
 
-function Grid({ values }: { values: { title: string; value: number }[] }) {
+function Grid({
+    values
+}: {
+    values: { title: string | ReactNode; value: number }[]
+}) {
     return (
         <div className="key-numbers grid grid-rows-1 gap-6 md:grid-rows-3">
             {values.map(({ title, value }) => (
-                <GridItem key={title} title={title} value={value} />
+                <GridItem key={String(title)} title={title} value={value} />
             ))}
         </div>
     )
@@ -43,7 +54,14 @@ export default async function KeyNumbers() {
                     value: associations ? associations.length : 20
                 },
                 { title: "Étudiant.e.s", value: 88000 },
-                { title: "Élu.e.s universitaires & CROUS", value: 57 }
+                {
+                    title: (
+                        <>
+                            Élu.e.s universitaires <br /> & CROUS
+                        </>
+                    ),
+                    value: 57
+                }
             ]}
         />
     )

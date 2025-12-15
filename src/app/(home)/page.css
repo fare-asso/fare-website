@@ -2,13 +2,27 @@ section.hero {
     display: grid;
     grid-template-areas:
         "img numbers"
-        "intro intro";
-
+        "intro numbers";
     grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
+    grid-template-rows: auto auto auto;
+
+    @media screen and (max-width: 768px) {
+        grid-template-areas:
+            "img"
+            "numbers"
+            "intro";
+        grid-template-columns: auto;
+        grid-template-rows: auto;
+    }
 
     & > img {
         grid-area: img;
+        height: 65svh;
+        object-fit: cover;
+
+        @media screen and (max-width: 768px) {
+            height: auto;
+        }
     }
 
     & > div.key-numbers {

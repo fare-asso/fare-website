@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function Home() {
     return (
         <div className="flex w-full flex-col items-center md:w-[90%]">
-            <section className="hero gap-6">
+            <section className="hero gap-4 md:gap-6">
                 {/* Welcome picture */}
                 <Image
                     src={WelcomeImage}
