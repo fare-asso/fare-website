@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { isDevelopment, isProduction } from "std-env"
+import { isProduction } from "std-env"
 import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
@@ -96,7 +96,7 @@ export default async function submitBagadAssoFormAction(
         return { error: "La date de l'événement n'est pas valide." }
     }
 
-    let ticketRecord
+    let ticketRecord: Awaited<ReturnType<typeof prisma.bagadAssoTicket.create>>
     try {
         ticketRecord = await prisma.bagadAssoTicket.create({
             data: {
