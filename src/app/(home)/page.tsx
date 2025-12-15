@@ -2,12 +2,12 @@ import { YouTubeEmbed } from "@next/third-parties/google"
 import type { Metadata } from "next"
 import Image from "next/image"
 import { Suspense } from "react"
+import WelcomeImage from "#public/hero-image.jpg"
 import AssoMap from "@/components/public/AssoMap"
 import DiscordWidget from "@/components/public/discordWidget"
 import KeyNumbers, { KeyNumbersSkeleton } from "@/components/public/keyNumbers"
 import LinkButton from "@/components/public/link"
 import PartnersCarousel from "@/components/public/partenariats/partnersCarousel"
-import WelcomeImage from "../../../public/welcome.jpg"
 
 import "./page.css"
 
@@ -26,6 +26,7 @@ export default function Home() {
                     className="w-full rounded-xl"
                     priority={true}
                     placeholder="blur"
+                    width={1200}
                 />
 
                 <Suspense fallback={<KeyNumbersSkeleton />}>
