@@ -25,7 +25,7 @@ import LoadingRing from "../loadingRing"
 
 const maxUploadSizeInMb = 10
 
-export const memberSchema = z.object({
+const memberSchema = z.object({
     lastName: z.string().min(1, "Le nom de famille est obligatoire"),
     firstName: z.string().min(1, "Le prénom est obligatoire"),
     position: z.string().min(1, "Le poste est obligatoire"),

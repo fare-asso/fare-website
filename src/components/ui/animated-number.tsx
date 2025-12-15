@@ -44,7 +44,7 @@ export function AutoAnimatedNumber({ value, ...props }: AnimatedNumberProps) {
     return <AnimatedNumber ref={ref} value={number} {...props} />
 }
 
-export function AnimatedNumber({
+function AnimatedNumber({
     ref,
     value,
     mass = 0.8,
