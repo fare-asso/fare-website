@@ -82,7 +82,7 @@ const links: NavLink[] = [
         ]
     },
     {
-        title: "Projet",
+        title: "Projets",
         href: "/projets",
         subLinks: [
             {
