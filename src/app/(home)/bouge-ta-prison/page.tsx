@@ -3,7 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import assemblee0 from "#public/BTP/assemblee1.jpg"
 import assemblee1 from "#public/BTP/assemblee2.jpg"
-import logoBTP from "#public/BTP/LOGO_BTP_2024.webp"
+import logoBTP from "#public/BTP/Logo_BTP.png"
 
 export const metadata: Metadata = {
     title: "Bouge ta Prison"
@@ -11,13 +11,11 @@ export const metadata: Metadata = {
 
 export default function BougeTaPrison() {
     return (
-        <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Bouge Ta Prison</h1> */}
-
+        <div className="mb-20 flex w-full flex-col items-center justify-start gap-6 px-4 md:px-8 lg:px-16">
             <Image
                 src={logoBTP}
                 alt="Logo du projet Bouge Ta Prison"
-                className="w-full md:w-1/2"
+                className="w-72"
             />
 
             <div className="w-full max-w-4xl space-y-12">
