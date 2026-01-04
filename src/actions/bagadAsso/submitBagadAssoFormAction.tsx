@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { isProduction } from "std-env"
+import { isDevelopment, isProduction } from "std-env"
 import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
@@ -11,18 +11,20 @@ export default async function submitBagadAssoFormAction(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
-    // Retrieve CAPTCHA value
-    const captchaValue = formData.get("frc-captcha-response")?.toString()
+    if (!isDevelopment) {
+        // Retrieve CAPTCHA value
+        const captchaValue = formData.get("frc-captcha-response")?.toString()
 
-    // Verify CAPTCHA
-    if (!captchaValue) {
-        return { error: "Veuillez compléter le CAPTCHA." }
-    }
+        // Verify CAPTCHA
+        if (!captchaValue) {
+            return { error: "Veuillez compléter le CAPTCHA." }
+        }
 
-    const isCaptchaValid = await verifyCaptcha(captchaValue)
-    if (!isCaptchaValid) {
-        return {
-            error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
+        const isCaptchaValid = await verifyCaptcha(captchaValue)
+        if (!isCaptchaValid) {
+            return {
+                error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
+            }
         }
     }
 

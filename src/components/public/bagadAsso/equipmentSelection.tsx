@@ -4,10 +4,12 @@ import EquipmentCard from "./equipmentCard"
 
 export default function EquipmentSelection({
     equipmentList,
-    name
+    name,
+    onChange
 }: {
     equipmentList: BagadAssoEquipment[]
     name?: string
+    onChange?: (value: string) => void
 }) {
     const [selectedEquipment, setSelectedEquipment] = useState<{
         [key: number]: number
@@ -21,6 +23,15 @@ export default function EquipmentSelection({
         }))
     }
 
+    const selectedEquipmentJson = JSON.stringify(
+        Object.entries(selectedEquipment)
+            .map(([id, quantity]) => ({
+                id: Number.parseInt(id, 10),
+                quantity
+            }))
+            .filter((item) => item.quantity > 0)
+    )
+
     useEffect(() => {
         // Calculate the total guarantee whenever selected equipment changes
         const total = Object.entries(selectedEquipment).reduce(
@@ -33,16 +44,12 @@ export default function EquipmentSelection({
             0
         )
         setTotalGuarantee(total)
-    }, [selectedEquipment, equipmentList])
 
-    const selectedEquipmentJson = JSON.stringify(
-        Object.entries(selectedEquipment)
-            .map(([id, quantity]) => ({
-                id: Number.parseInt(id, 10),
-                quantity
-            }))
-            .filter((item) => item.quantity > 0)
-    )
+        // Call onChange callback if provided (for TanStack Form integration)
+        if (onChange) {
+            onChange(selectedEquipmentJson)
+        }
+    }, [selectedEquipment, equipmentList, onChange, selectedEquipmentJson])
 
     return (
         <div className="container mx-auto rounded-xl border border-gray-300 p-4">
