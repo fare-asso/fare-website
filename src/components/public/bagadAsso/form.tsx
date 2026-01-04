@@ -6,7 +6,9 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
 import { startTransition, useActionState, useState } from "react"
-import submitBagadAssoFormAction from "@/actions/bagadAsso/submitBagadAssoFormAction"
+import submitBagadAssoFormAction, {
+    type FormState
+} from "@/actions/bagadAsso/submitBagadAssoFormAction"
 import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -43,7 +45,7 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import EquipmentSelection from "./equipmentSelection"
-import { eventTypes } from "./form-schema"
+import { type BagadAssoFormData, eventTypes } from "./form-schema"
 
 interface BagadAssoFormProps {
     equipmentList: BagadAssoEquipment[]
@@ -54,8 +56,8 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
     const [formState, formAction, pending] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
+        FormState | undefined,
+        BagadAssoFormData
     >(submitBagadAssoFormAction, undefined)
 
     const [captchaToken, setCaptchaToken] = useState<string>("")
@@ -77,36 +79,26 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
             termsAccepted: false
         },
         onSubmit: ({ value }) => {
-            const formData = new FormData()
-            formData.set("association-name", value.associationName)
-            formData.set("association-email", value.associationEmail)
-            formData.set("association-referent-name", value.referentLastName)
-            formData.set(
-                "association-referent-first-name",
-                value.referentFirstName
-            )
-            formData.set("association-referent-email", value.referentEmail)
-            formData.set("association-referent-phone", value.referentPhone)
-            formData.set("event-name", value.eventName)
-            formData.set("event-type", value.eventType)
-            formData.set(
-                "event-date",
-                value.eventDate ? value.eventDate.toISOString() : ""
-            )
-            formData.set("event-address", value.eventAddress)
-            formData.set(
-                "event-participants",
-                value.eventParticipants.toString()
-            )
-            formData.set("equipment-input", value.equipment)
-            formData.set(
-                "terms-and-conditions",
-                value.termsAccepted ? "on" : ""
-            )
-            formData.set("frc-captcha-response", captchaToken)
+            // Prepare the data for the server action
+            const submitData: BagadAssoFormData = {
+                associationName: value.associationName,
+                associationEmail: value.associationEmail,
+                referentLastName: value.referentLastName,
+                referentFirstName: value.referentFirstName,
+                referentEmail: value.referentEmail,
+                referentPhone: value.referentPhone,
+                eventName: value.eventName,
+                eventType: value.eventType,
+                eventDate: value.eventDate ?? new Date(),
+                eventAddress: value.eventAddress,
+                eventParticipants: value.eventParticipants,
+                equipment: value.equipment,
+                termsAccepted: value.termsAccepted as true,
+                captchaToken: captchaToken
+            }
 
             startTransition(() => {
-                formAction(formData)
+                formAction(submitData)
             })
         }
     })

@@ -1,5 +1,5 @@
 import type { BagadAssoEquipment } from "@prisma/client"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import EquipmentCard from "./equipmentCard"
 
 export default function EquipmentSelection({
@@ -15,6 +15,7 @@ export default function EquipmentSelection({
         [key: number]: number
     }>({})
     const [totalGuarantee, setTotalGuarantee] = useState<number>(0)
+    const isInitialMount = useRef(true)
 
     const handleQuantityChange = (id: number, quantity: number) => {
         setSelectedEquipment((prev) => ({
@@ -46,8 +47,13 @@ export default function EquipmentSelection({
         setTotalGuarantee(total)
 
         // Call onChange callback if provided (for TanStack Form integration)
+        // Skip on initial mount to avoid marking the field as touched
         if (onChange) {
-            onChange(selectedEquipmentJson)
+            if (isInitialMount.current) {
+                isInitialMount.current = false
+            } else {
+                onChange(selectedEquipmentJson)
+            }
         }
     }, [selectedEquipment, equipmentList, onChange, selectedEquipmentJson])
 
