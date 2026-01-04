@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import logoBagadAsso from "#public/logoBagadAsso.png"
+import logoBagadAsso from "#public/Logo_Bagadasso.png"
 import BagadAssoForm from "@/components/public/bagadAsso/form"
 import prisma from "@/helpers/db"
 
@@ -13,12 +13,10 @@ export default async function BagadAsso() {
 
     return (
         <div className="flex w-full flex-col items-center justify-start">
-            {/* <h1 className="py-12 sm:py-24 md:py-32 lg:py-44 text-[3rem] font-semibold">{"Bagad'Asso"}</h1> */}
-
             <Image
                 src={logoBagadAsso}
                 alt="Logo du projet Bagad'Asso"
-                className="mb-12 w-[90%] md:w-[40%]"
+                className="mb-12 w-72"
             />
 
             {/* Présentation du projet */}
