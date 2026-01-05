@@ -4,8 +4,8 @@ import MemberCard from "./memberCard"
 export default function MembersList({ members }: { members: Member[] }) {
     const positionOrder: { [key: string]: number } = {
         Président: 1,
-        "Porte-Parole": 2,
-        Trésorier: 3,
+        "VPG en charge de la Stratégie Électorale": 2,
+        Trésorière: 3,
         "Secrétaire Général": 4,
         "VP Générale en charge de l'Accompagnement": 5,
         Réseau: 6,
