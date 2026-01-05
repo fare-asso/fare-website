@@ -86,30 +86,14 @@ export default async function submitBagadAssoFormAction(
     }
 
     // Send email notification
-    try {
-        if (isProduction) {
-            const emailTransporterResponse = await sendEmail({
-                to: "evenement@fare-asso.fr",
-                subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
-                html: await render(
-                    <NewBagadAssoTicket
-                        ticketId={ticketRecord.id}
-                        associationName={ticketRecord.assocation}
-                        eventDate={ticketRecord.eventDate}
-                        eventName={ticketRecord.eventName}
-                    />
-                )
-            })
+    const emailTransporterResponse = await sendEmail({
+        to: "evenement@fare-asso.fr",
+        subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
+        html: await render(<NewBagadAssoTicket data={ticketRecord} />)
+    })
 
-            if (emailTransporterResponse.error) {
-                console.error("[ERROR] Failed to send email notification")
-            }
-        }
-    } catch (error) {
-        console.error(
-            "Failed to send Bagad'Asso ticket creation notification email:",
-            error
-        )
+    if (emailTransporterResponse.error) {
+        console.error("[ERROR] Failed to send email notification")
     }
 
     revalidatePath("/dashboard/bagadAsso")
