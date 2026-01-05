@@ -1,18 +1,21 @@
 import type { BagadAssoEquipment } from "@prisma/client"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import EquipmentCard from "./equipmentCard"
 
 export default function EquipmentSelection({
     equipmentList,
-    name
+    name,
+    onChange
 }: {
     equipmentList: BagadAssoEquipment[]
     name?: string
+    onChange?: (value: string) => void
 }) {
     const [selectedEquipment, setSelectedEquipment] = useState<{
         [key: number]: number
     }>({})
     const [totalGuarantee, setTotalGuarantee] = useState<number>(0)
+    const isInitialMount = useRef(true)
 
     const handleQuantityChange = (id: number, quantity: number) => {
         setSelectedEquipment((prev) => ({
@@ -20,6 +23,15 @@ export default function EquipmentSelection({
             [id]: quantity
         }))
     }
+
+    const selectedEquipmentJson = JSON.stringify(
+        Object.entries(selectedEquipment)
+            .map(([id, quantity]) => ({
+                id: Number.parseInt(id, 10),
+                quantity
+            }))
+            .filter((item) => item.quantity > 0)
+    )
 
     useEffect(() => {
         // Calculate the total guarantee whenever selected equipment changes
@@ -33,16 +45,17 @@ export default function EquipmentSelection({
             0
         )
         setTotalGuarantee(total)
-    }, [selectedEquipment, equipmentList])
 
-    const selectedEquipmentJson = JSON.stringify(
-        Object.entries(selectedEquipment)
-            .map(([id, quantity]) => ({
-                id: Number.parseInt(id, 10),
-                quantity
-            }))
-            .filter((item) => item.quantity > 0)
-    )
+        // Call onChange callback if provided (for TanStack Form integration)
+        // Skip on initial mount to avoid marking the field as touched
+        if (onChange) {
+            if (isInitialMount.current) {
+                isInitialMount.current = false
+            } else {
+                onChange(selectedEquipmentJson)
+            }
+        }
+    }, [selectedEquipment, equipmentList, onChange, selectedEquipmentJson])
 
     return (
         <div className="container mx-auto rounded-xl border border-gray-300 p-4">
