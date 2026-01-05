@@ -102,16 +102,13 @@ export default async function submitBagadAssoFormAction(
                 console.error("[ERROR] Failed to send email notification")
             }
         }
-
-        revalidatePath("/dashboard/bagadAsso")
-        return { success: true }
     } catch (error) {
         console.error(
             "Failed to send Bagad'Asso ticket creation notification email:",
             error
         )
-        return {
-            error: "Une erreur est survenue lors de la création du ticket. Merci de réessayer plus tard."
-        }
     }
+
+    revalidatePath("/dashboard/bagadAsso")
+    return { success: true }
 }
