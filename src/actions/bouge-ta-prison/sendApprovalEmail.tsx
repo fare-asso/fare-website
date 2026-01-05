@@ -1,10 +1,11 @@
 "use server"
 
 import type { BTPTutorApplication } from "@prisma/client"
+import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { tutorApplicationApprovalEmailTemplate } from "@/lib/htmlEmailTemplates"
+import BtpApplicationAck from "../../../emails/btp-application-aknowledgement"
 
 export default async function sendApprovalEmail(
     application: BTPTutorApplication
@@ -17,7 +18,13 @@ export default async function sendApprovalEmail(
     const { success } = await sendEmail({
         to: application.email,
         subject: "Bouge Ta Prison - Informations sur votre candidature",
-        html: tutorApplicationApprovalEmailTemplate(application)
+        html: await render(
+            <BtpApplicationAck
+                firstName={application.firstName}
+                lastName={application.lastName}
+                email={application.email}
+            />
+        )
     })
 
     if (!success) {

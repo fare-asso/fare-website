@@ -1,8 +1,9 @@
 "use server"
 
+import { render } from "@react-email/render"
 import { sendEmail } from "@/helpers/email"
-import { contactEmailTemplate } from "@/lib/htmlEmailTemplates"
 import { type Contact, ContactSchema } from "@/schemas/contact"
+import ContactTemplate from "../../../emails/contact"
 
 export default async function submitContactFormAction(
     data: Contact
@@ -19,7 +20,14 @@ export default async function submitContactFormAction(
     const emailTransporterRes = await sendEmail({
         to: "contact@fare-asso.fr",
         subject: `${parsed.data.firstName} ${parsed.data.lastName} veut vous contacter`,
-        html: contactEmailTemplate(parsed.data)
+        html: await render(
+            <ContactTemplate
+                firstName={parsed.data.firstName}
+                lastName={parsed.data.lastName}
+                message={parsed.data.message}
+                email={parsed.data.email}
+            />
+        )
     })
 
     if (emailTransporterRes.error) return { success: false }

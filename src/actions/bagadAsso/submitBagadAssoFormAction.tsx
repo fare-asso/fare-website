@@ -1,5 +1,6 @@
 "use server"
 
+import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
 import { isDevelopment, isProduction } from "std-env"
 import { verifyCaptcha } from "@/components/captcha/verify"
@@ -9,7 +10,7 @@ import {
 } from "@/components/public/bagadAsso/form-schema"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { bagadAssoTicketEmailTemplate } from "@/lib/htmlEmailTemplates"
+import NewBagadAssoTicket from "../../../emails/badagasso-ticket"
 
 export type FormState = {
     error?: string
@@ -90,11 +91,13 @@ export default async function submitBagadAssoFormAction(
             const emailTransporterResponse = await sendEmail({
                 to: "evenement@fare-asso.fr",
                 subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
-                html: bagadAssoTicketEmailTemplate(
-                    ticketRecord.id,
-                    ticketRecord.assocation,
-                    ticketRecord.eventDate,
-                    ticketRecord.eventName
+                html: await render(
+                    <NewBagadAssoTicket
+                        ticketId={ticketRecord.id}
+                        associationName={ticketRecord.assocation}
+                        eventDate={ticketRecord.eventDate}
+                        eventName={ticketRecord.eventName}
+                    />
                 )
             })
 
