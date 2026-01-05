@@ -50,8 +50,8 @@ export const bagadAssoFormSchema = z.object({
         error: "Vous devez accepter les termes et conditions."
     }),
     // requite captcha token only when !isDevelopment
-    captchaToken: z.string().refine((val) => !isDevelopment || val !== "", {
-        message: "Veuillez entrer le captcha."
+    captchaToken: z.string().refine((val) => isDevelopment || val !== "", {
+        message: "Veuillez valider le captcha."
     })
 })
 
