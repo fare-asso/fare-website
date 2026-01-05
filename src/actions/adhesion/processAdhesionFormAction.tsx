@@ -610,15 +610,12 @@ export async function processAdhesionForm(
         if (emailTransporterResponse.error) {
             console.log("[ERROR] Failed to send email notification")
         }
-        revalidatePath("/dashboard/adhesions")
-        return { success: true }
     } catch (error) {
         console.error(
             "Erreur lors de l'enregistrement dans la base de données :",
             error
         )
-        return {
-            error: "Une erreur est survenue lors de l'envoi du formulaire. Veuillez réessayer plus tard."
-        }
     }
+    revalidatePath("/dashboard/adhesions")
+    return { success: true }
 }
