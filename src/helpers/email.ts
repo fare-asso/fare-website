@@ -10,13 +10,12 @@ interface EmailPayload {
 
 // Configuration du transporteur
 const transporter = nodemailer.createTransport({
-    service: env.SMTP_SERVICE,
     host: env.SMTP_HOST,
     port: env.SMTP_PORT,
     secure: env.SMTP_SECURE,
     auth: {
         user: env.SMTP_USER,
-        pass: env.SMTP_APP_PASS
+        pass: env.SMTP_PASS
     }
 })
 
@@ -27,7 +26,7 @@ export async function sendEmail(
 
     try {
         await transporter.sendMail({
-            from: env.SMTP_FROM_EMAIL,
+            from: `FARE <${env.SMTP_FROM_EMAIL}>`,
             to: isProduction ? to : "outils-numeriques@fare-asso.fr",
             subject: isProduction ? subject : `TEST - ${subject}`,
             html
