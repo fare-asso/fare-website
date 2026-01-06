@@ -1,6 +1,7 @@
 "use client"
 
 import type { Permission } from "@prisma/client"
+import { FileUserIcon, MessageCircleQuestionMarkIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -37,7 +38,6 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem
 } from "../ui/sidebar"
-
 import CurrentUserClient from "./currentUserClient"
 import SignOutButton from "./signOutButton"
 
@@ -111,7 +111,19 @@ export default function SideBarApp({
             href: "/dashboard/bouge-ta-prison",
             title: "Bouge Ta Prison",
             icon: <FaHandcuffs />,
-            hidden: !permissions?.find((p) => p.name === "access:btp")
+            hidden: !permissions?.find((p) => p.name === "access:btp"),
+            children: [
+                {
+                    href: "/dashboard/bouge-ta-prison",
+                    title: "Candidatures",
+                    icon: <FileUserIcon />
+                },
+                {
+                    href: "/dashboard/bouge-ta-prison/questions",
+                    title: "Questions",
+                    icon: <MessageCircleQuestionMarkIcon />
+                }
+            ]
         },
         {
             href: "/dashboard/users",
