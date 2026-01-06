@@ -51,6 +51,7 @@ model Member {
   twitterUrl   String?
   picturePath  String
   position     String  @default("membre actif")
+  order        Int     @default(0)
 }
 
 model Association {
