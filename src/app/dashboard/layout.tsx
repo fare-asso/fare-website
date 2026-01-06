@@ -1,6 +1,4 @@
 import type { Metadata } from "next"
-import "../globals.css"
-
 import { redirect } from "next/navigation"
 import CurrentRoute from "@/components/dashboard/currentRoute"
 import SideBarApp from "@/components/dashboard/sideBarApp"
@@ -8,6 +6,8 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/toaster"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import "../globals.css"
+import "./layout.css"
 
 export const metadata: Metadata = {
     title: {
