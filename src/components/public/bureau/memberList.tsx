@@ -8,11 +8,9 @@ export default function MembersList({ members }: { members: Member[] }) {
                 Les membres du bureau
             </h2>
             <div className="grid h-full w-full grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-                {members
-                    .toSorted((a, b) => a.order - b.order)
-                    .map((member) => (
-                        <MemberCard key={member.id} member={member} />
-                    ))}
+                {members.map((member) => (
+                    <MemberCard key={member.id} member={member} />
+                ))}
             </div>
         </div>
     )
