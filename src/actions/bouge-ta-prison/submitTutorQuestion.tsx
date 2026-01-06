@@ -1,14 +1,15 @@
 "use server"
 
+import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
 import { isDevelopment } from "std-env"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { tutorQuestionEmailTemplate } from "@/lib/htmlEmailTemplates"
 import {
     type BTPTutorQuestion,
     BTPTutorQuestionSchema
 } from "@/schemas/bougeTaPrison"
+import { BtpContact } from "../../../emails/btp-contact"
 
 export default async function submitTutorQuestion(
     data: BTPTutorQuestion
@@ -38,7 +39,15 @@ export default async function submitTutorQuestion(
         await sendEmail({
             to: "intervention-carceral@fare-asso.fr",
             subject: "Nouvelle question tutorat Bouge Ta Prison",
-            html: tutorQuestionEmailTemplate(data, BTPTutorQuestion.id)
+            html: await render(
+                <BtpContact
+                    firstName={data.firstName}
+                    lastName={data.lastName}
+                    email={data.email}
+                    message={data.message}
+                    id={BTPTutorQuestion.id}
+                />
+            )
         })
     }
 

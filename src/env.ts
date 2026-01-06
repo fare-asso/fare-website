@@ -10,12 +10,11 @@ export const env = createEnv({
 
         SUPABASE_SERVICE_ROLE_KEY: z.string(),
 
-        SMTP_SERVICE: z.string().default("Gmail"),
-        SMTP_HOST: z.string().default("smtp.gmail.com"),
+        SMTP_HOST: z.string(),
         SMTP_PORT: z.coerce.number().default(465),
         SMTP_SECURE: z.coerce.boolean().default(true),
         SMTP_USER: z.string(),
-        SMTP_APP_PASS: z.string(),
+        SMTP_PASS: z.string(),
         SMTP_FROM_EMAIL: z.email()
     },
     client: {

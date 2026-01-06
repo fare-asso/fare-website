@@ -1,5 +1,6 @@
 "use server"
 
+import { render } from "@react-email/render"
 import { format } from "date-fns"
 import { revalidatePath } from "next/cache"
 import { PDFDocument, type PDFPage, rgb, StandardFonts } from "pdf-lib"
@@ -8,7 +9,7 @@ import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
-import { adhesionEmailTemplate } from "@/lib/htmlEmailTemplates"
+import AdhesionTemplate from "../../../emails/new-adhesion"
 
 interface ValidationError {
     field: string
@@ -603,8 +604,10 @@ export async function processAdhesionForm(
 
         const emailTransporterResponse = await sendEmail({
             to: "secretariat@fare-asso.fr",
-            subject: `Une nouvelle adhésion a été reçue - ${record.association}`,
-            html: adhesionEmailTemplate(record.association)
+            subject: `Une nouvelle demande d'adhésion adhésion a été reçue - ${record.association}`,
+            html: await render(
+                <AdhesionTemplate associationName={record.association} />
+            )
         })
 
         if (emailTransporterResponse.error) {
