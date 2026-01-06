@@ -1,7 +1,7 @@
 "use client"
 
+import { Trash2Icon } from "lucide-react"
 import { startTransition, useActionState, useEffect } from "react"
-import { MdDelete } from "react-icons/md"
 import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction"
 import {
     AlertDialog,
@@ -47,8 +47,13 @@ export default function DeleteEquipmentButton({
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="aspect-square p-2" variant="destructive">
-                    <MdDelete size={20} />
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8 border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                >
+                    <Trash2Icon className="h-4 w-4" />
+                    <span className="sr-only">Supprimer</span>
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

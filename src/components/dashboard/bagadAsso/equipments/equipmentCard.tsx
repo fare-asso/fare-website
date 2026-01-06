@@ -1,8 +1,11 @@
 import type { BagadAssoEquipment } from "@prisma/client"
+import { BoxIcon, CoinsIcon } from "lucide-react"
 import Image from "next/image"
 import { MdOutlineHideImage } from "react-icons/md"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { createClient } from "@/helpers/supabase/server"
 import DeleteEquipmentButton from "./deleteEquipmentButton"
+import EditEquipmentDialog from "./editEquipmentDialog"
 
 export default async function EquipmentCard({
     equipment
@@ -11,47 +14,62 @@ export default async function EquipmentCard({
 }) {
     const supabase = await createClient()
 
+    const imageUrl = equipment.imagePath
+        ? supabase.storage
+              .from("equipment-pictures")
+              .getPublicUrl(equipment.imagePath).data.publicUrl
+        : null
+
     return (
-        <div className="flex flex-col space-y-1 rounded-lg border bg-card p-4 text-card-foreground shadow-xs">
+        <Card className="group flex flex-col gap-3 overflow-hidden py-0 transition-shadow hover:shadow-md">
             {/* Image */}
-            <div className="flex aspect-square h-auto w-full flex-col items-center justify-center rounded-md bg-gray-100 object-contain">
-                {equipment.imagePath ? (
-                    <Image
-                        width={300}
-                        height={300}
-                        alt={`Photo de ${equipment.name}`}
-                        className="aspect-square rounded-md object-cover"
-                        src={
-                            supabase.storage
-                                .from("equipment-pictures")
-                                .getPublicUrl(equipment.imagePath).data
-                                .publicUrl
-                        }
-                    />
-                ) : (
-                    <>
-                        <MdOutlineHideImage size={40} />{" "}
-                        <span className="mt-1 overflow-hidden text-center text-xs">
-                            Pas d'image trouvée
-                        </span>
-                    </>
-                )}
-            </div>
+            <CardHeader className="p-0">
+                <div className="relative aspect-4/3 w-full overflow-hidden bg-muted">
+                    {imageUrl ? (
+                        <Image
+                            fill
+                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 16vw"
+                            alt={`Photo de ${equipment.name}`}
+                            className="object-cover transition-transform group-hover:scale-105"
+                            src={imageUrl}
+                        />
+                    ) : (
+                        <div className="flex h-full w-full flex-col items-center justify-center text-muted-foreground">
+                            <MdOutlineHideImage className="h-8 w-8 opacity-50" />
+                            <span className="mt-1 text-center text-xs">
+                                Pas d'image
+                            </span>
+                        </div>
+                    )}
+                </div>
+            </CardHeader>
 
-            {/* Equipment name */}
-            <span className="font-semibold">{equipment.name}</span>
+            {/* Content */}
+            <CardContent className="flex flex-1 flex-col gap-1 px-3 py-1">
+                <h3 className="line-clamp-3 font-medium text-base leading-tight">
+                    {equipment.name}
+                </h3>
 
-            {/* Security deposit */}
-            <span className="text-sm opacity-75">{`Caution: ${equipment.deposit}€`}</span>
+                <div className="flex items-center gap-3 text-muted-foreground text-xs">
+                    <div className="flex items-center gap-1">
+                        <CoinsIcon className="h-3 w-3" />
+                        <span>{equipment.deposit}€</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <BoxIcon className="h-3 w-3" />
+                        <span>{equipment.quantity}×</span>
+                    </div>
+                </div>
+            </CardContent>
 
-            {/* Number */}
-            <span className="text-green-500 text-sm">{`Quantité: ${equipment.quantity}`}</span>
-
-            {/* Edit or delete */}
-            <div className="flex w-full flex-row items-stretch space-x-2">
-                {/* <Button variant='outline' className="p-2 aspect-square"><MdModeEditOutline size={20}/></Button> */}
+            {/* Actions */}
+            <CardFooter className="flex gap-1.5 border-t bg-muted/30 px-2 py-0 pt-2! pb-2!">
+                <EditEquipmentDialog
+                    equipment={equipment}
+                    currentImageUrl={imageUrl}
+                />
                 <DeleteEquipmentButton equipmentId={equipment.id} />
-            </div>
-        </div>
+            </CardFooter>
+        </Card>
     )
 }
