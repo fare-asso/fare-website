@@ -12,24 +12,24 @@ const links: NavLink[] = [
             },
             {
                 title: "Le Bureau",
-                href: "/bureau"
+                href: "/a-propos/bureau"
             },
             {
                 title: "Les Associations du réseau",
-                href: "/reseau"
+                href: "/a-propos/reseau"
             },
             {
                 title: "Rejoindre la FARE",
-                href: "/adhesion"
+                href: "/a-propos/adhesion"
             },
             {
                 title: "Nos partenaires",
-                href: "/partenaires",
+                href: "/a-propos/partenaires",
                 hidden: true
             },
             {
                 title: "Nous contacter",
-                href: "/contact",
+                href: "/a-propos/contact",
                 hidden: false
             }
         ]
@@ -87,15 +87,15 @@ const links: NavLink[] = [
         subLinks: [
             {
                 title: "AGORAé",
-                href: "/agorae"
+                href: "/projets/agorae"
             },
             {
                 title: "Bouge Ta Prison",
-                href: "/bouge-ta-prison"
+                href: "/projets/bouge-ta-prison"
             },
             {
                 title: "Bagad'Asso",
-                href: "/bagadAsso"
+                href: "/projets/bagad-asso"
             }
         ]
     },
