@@ -1,5 +1,6 @@
 "use client"
 
+import { PlusIcon } from "lucide-react"
 import Image from "next/image"
 import {
     type ChangeEvent,
@@ -28,7 +29,7 @@ import { Input } from "@/components/ui/input"
 import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput"
 import NumberInput from "@/components/ui/input/numberInput"
 import { Label } from "@/components/ui/label"
-import LoadingRing from "../loadingRing"
+import LoadingRing from "../../loadingRing"
 
 export default function AddEquipmentButton() {
     const [formState, formAction, pending] = useActionState<
@@ -89,7 +90,10 @@ export default function AddEquipmentButton() {
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button>Ajouter du matériel</Button>
+                <Button>
+                    <PlusIcon />
+                    Ajouter du matériel
+                </Button>
             </DialogTrigger>
 
             {/* Content */}

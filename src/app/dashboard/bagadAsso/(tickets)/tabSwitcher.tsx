@@ -10,7 +10,7 @@ export default function TabSwitcher({
 }: {
     children: React.ReactNode
 }) {
-    const [tab, setTab] = useQueryState("tab", { defaultValue: "tickets" })
+    const [tab, setTab] = useQueryState("tab", { defaultValue: "active" })
 
     return (
         <Tabs
@@ -18,15 +18,19 @@ export default function TabSwitcher({
             onValueChange={setTab}
             className="flex h-full w-full flex-col items-center gap-2"
         >
-            <TabsList className="grid w-full grid-cols-2 md:w-1/2">
-                <TabsTrigger value="tickets">Tickets</TabsTrigger>
-                <TabsTrigger value="materiels">Matériels</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 md:w-1/2">
+                <TabsTrigger value="active">Actifs</TabsTrigger>
+                <TabsTrigger value="past">Passés</TabsTrigger>
+                <TabsTrigger value="archived">Archivés</TabsTrigger>
             </TabsList>
-            <TabsContent value="tickets" className="h-0 w-full">
+            <TabsContent value="active" className="h-0 w-full">
                 {React.Children.toArray(children)[0]}
             </TabsContent>
-            <TabsContent value="materiels" className="h-0 w-full">
+            <TabsContent value="past" className="h-0 w-full">
                 {React.Children.toArray(children)[1]}
+            </TabsContent>
+            <TabsContent value="archived" className="h-0 w-full">
+                {React.Children.toArray(children)[2]}
             </TabsContent>
         </Tabs>
     )

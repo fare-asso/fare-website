@@ -4,6 +4,7 @@ import type { Permission } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import type { ReactNode } from "react"
 import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
 import {
     FaHandcuffs,
@@ -12,7 +13,13 @@ import {
     FaUsers
 } from "react-icons/fa6" // Bouge Ta Prison
 // Link icons
-import { LuNetwork, LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
+import {
+    LuBox,
+    LuNetwork,
+    LuPartyPopper,
+    LuTicket,
+    LuUser
+} from "react-icons/lu" // Bagad'Asso
 import LogoFARE from "#public/logo_fare.png"
 // UI components
 import {
@@ -25,11 +32,22 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem
+    SidebarMenuItem,
+    SidebarMenuSub,
+    SidebarMenuSubButton,
+    SidebarMenuSubItem
 } from "../ui/sidebar"
 
 import CurrentUserClient from "./currentUserClient"
 import SignOutButton from "./signOutButton"
+
+type SidebarLink = {
+    href: string
+    title: string
+    icon?: ReactNode
+    hidden?: boolean
+    children?: SidebarLink[]
+}
 
 export default function SideBarApp({
     permissions
@@ -38,7 +56,7 @@ export default function SideBarApp({
 }) {
     const pathname = usePathname()
 
-    const links = [
+    const links: SidebarLink[] = [
         {
             href: "/dashboard/events",
             title: "Evènements",
@@ -68,8 +86,20 @@ export default function SideBarApp({
         {
             href: "/dashboard/bagadAsso",
             title: "Bagad'Asso",
+            hidden: !permissions?.find((p) => p.name === "access:bagad-asso"),
             icon: <LuPartyPopper />,
-            hidden: !permissions?.find((p) => p.name === "access:bagad-asso")
+            children: [
+                {
+                    href: "/dashboard/bagadAsso",
+                    title: "Tickets",
+                    icon: <LuTicket />
+                },
+                {
+                    href: "/dashboard/bagadAsso/equipments",
+                    title: "Matériel",
+                    icon: <LuBox />
+                }
+            ]
         },
         {
             href: "/dashboard/adhesions",
@@ -114,21 +144,59 @@ export default function SideBarApp({
                         <SidebarMenu>
                             {links
                                 .filter((link) => !link.hidden)
-                                .map((link) => (
-                                    <SidebarMenuItem key={link.href}>
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={pathname.startsWith(
-                                                link.href
-                                            )}
-                                        >
-                                            <a href={link.href}>
+                                .map((link) =>
+                                    link.children ? (
+                                        <SidebarMenuItem key={link.href}>
+                                            <SidebarMenuButton>
                                                 {link.icon && link.icon}
                                                 <span>{link.title}</span>
-                                            </a>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
+                                            </SidebarMenuButton>
+                                            <SidebarMenuSub>
+                                                {link.children.map((child) => (
+                                                    <SidebarMenuSubItem
+                                                        key={child.href}
+                                                    >
+                                                        <SidebarMenuSubButton
+                                                            asChild
+                                                            isActive={
+                                                                pathname ===
+                                                                child.href
+                                                            }
+                                                        >
+                                                            <a
+                                                                href={
+                                                                    child.href
+                                                                }
+                                                            >
+                                                                {child.icon &&
+                                                                    child.icon}
+                                                                <span>
+                                                                    {
+                                                                        child.title
+                                                                    }
+                                                                </span>
+                                                            </a>
+                                                        </SidebarMenuSubButton>
+                                                    </SidebarMenuSubItem>
+                                                ))}
+                                            </SidebarMenuSub>
+                                        </SidebarMenuItem>
+                                    ) : (
+                                        <SidebarMenuItem key={link.href}>
+                                            <SidebarMenuButton
+                                                asChild
+                                                isActive={pathname.startsWith(
+                                                    link.href
+                                                )}
+                                            >
+                                                <a href={link.href}>
+                                                    {link.icon && link.icon}
+                                                    <span>{link.title}</span>
+                                                </a>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    )
+                                )}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

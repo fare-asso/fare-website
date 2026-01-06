@@ -15,7 +15,7 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import LoadingRing from "../loadingRing"
+import LoadingRing from "../../loadingRing"
 
 export default function DeleteEquipmentButton({
     equipmentId
