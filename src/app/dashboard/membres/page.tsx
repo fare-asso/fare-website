@@ -25,7 +25,7 @@ export default function Membres() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="h-1/2 flex-1 p-0">
-                <Suspense fallback={<p>Chargements...</p>}>
+                <Suspense fallback={<p>Chargement...</p>}>
                     <MemberList />
                 </Suspense>
             </CardContent>

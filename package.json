@@ -16,6 +16,9 @@
         "format": "biome format --write"
     },
     "dependencies": {
+        "@dnd-kit/core": "^6.3.1",
+        "@dnd-kit/sortable": "^10.0.0",
+        "@dnd-kit/utilities": "^3.2.2",
         "@friendlycaptcha/sdk": "^0.1.36",
         "@hookform/resolvers": "^5.2.2",
         "@next/third-parties": "16.0.10",
