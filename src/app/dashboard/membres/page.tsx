@@ -11,8 +11,6 @@ import {
     CardTitle
 } from "@/components/ui/card"
 
-export const dynamic = "force-dynamic"
-
 export const metadata: Metadata = {
     title: "Membres"
 }
