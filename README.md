@@ -23,3 +23,5 @@ pnpm dev
 - Justifier texte
 - ne pas afficher d'erreur si mail fail to sends
 - ajouter une page partenariats
+- séparer commité territorial: CdV + formateurs
+- Bagad'asso: ajouter poste dans l'asso
