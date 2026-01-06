@@ -22,18 +22,5 @@ export default function RootLayout({
                 data-website-id="7133dde1-d746-40d0-b0b2-9ec15d49c711"
             />
         </main>
-        // Previous version
-        // <html lang="en">
-        //     <body className={inter.className}>
-        //         <main className="flex min-h-screen flex-col items-center">
-        //             <Header />
-        //             <div className="flex w-full flex-1 flex-col items-center p-4 lg:p-10">
-        //                 {children}
-        //                 <SpeedInsights />
-        //             </div>
-        //             <Footer />
-        //         </main>
-        //     </body>
-        // </html>
     )
 }
