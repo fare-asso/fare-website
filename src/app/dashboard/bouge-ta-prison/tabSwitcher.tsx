@@ -1,7 +1,7 @@
 "use client"
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import React, { useCallback } from "react"
+import { useQueryState } from "nuqs"
+import React from "react"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -10,49 +10,19 @@ export default function TabSwitcher({
 }: {
     children: React.ReactNode
 }) {
-    const searchParams = useSearchParams()
-    const pathname = usePathname()
-    const router = useRouter()
-
-    const defaultTab = searchParams.get("tab") ?? "candidatures"
-
-    // Get a new searchParams string by merging the current
-    // searchParams with a provided key/value pair
-    const createQueryString = useCallback(
-        (name: string, value: string) => {
-            const params = new URLSearchParams(searchParams.toString())
-            params.set(name, value)
-
-            return params.toString()
-        },
-        [searchParams]
-    )
-
-    const setTab = useCallback(
-        (tab: string) => {
-            router.push(`${pathname}?${createQueryString("tab", tab)}`)
-        },
-        [createQueryString, pathname, router]
-    )
+    const [tab, setTab] = useQueryState("tab", {
+        defaultValue: "candidatures"
+    })
 
     return (
         <Tabs
-            defaultValue={defaultTab}
+            value={tab}
+            onValueChange={setTab}
             className="flex h-full w-full flex-col items-center gap-2"
         >
             <TabsList className="grid w-full grid-cols-2 md:w-1/2">
-                <TabsTrigger
-                    value="candidatures"
-                    onClick={(_e) => setTab("candidatures")}
-                >
-                    Candidatures
-                </TabsTrigger>
-                <TabsTrigger
-                    value="questions"
-                    onClick={(_e) => setTab("questions")}
-                >
-                    Questions
-                </TabsTrigger>
+                <TabsTrigger value="candidatures">Candidatures</TabsTrigger>
+                <TabsTrigger value="questions">Questions</TabsTrigger>
             </TabsList>
             <TabsContent value="candidatures" className="h-0 w-full">
                 {React.Children.toArray(children)[0]}
