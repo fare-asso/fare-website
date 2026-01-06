@@ -147,9 +147,11 @@ export default function SideBarApp({
                                 .map((link) =>
                                     link.children ? (
                                         <SidebarMenuItem key={link.href}>
-                                            <SidebarMenuButton>
-                                                {link.icon && link.icon}
-                                                <span>{link.title}</span>
+                                            <SidebarMenuButton asChild>
+                                                <a href={link.href}>
+                                                    {link.icon && link.icon}
+                                                    <span>{link.title}</span>
+                                                </a>
                                             </SidebarMenuButton>
                                             <SidebarMenuSub>
                                                 {link.children.map((child) => (
