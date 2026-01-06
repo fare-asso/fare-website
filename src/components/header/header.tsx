@@ -15,10 +15,6 @@ const links: NavLink[] = [
                 href: "/a-propos/bureau"
             },
             {
-                title: "Le Bureau",
-                href: "/a-propos/commite-territorial"
-            },
-            {
                 title: "Les Associations du réseau",
                 href: "/a-propos/reseau"
             },
