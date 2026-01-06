@@ -2,7 +2,7 @@
 
 import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
-import { isDevelopment, isProduction } from "std-env"
+import { isDevelopment } from "std-env"
 import { verifyCaptcha } from "@/components/captcha/verify"
 import {
     type BagadAssoFormData,

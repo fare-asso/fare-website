@@ -32,6 +32,7 @@ import {
     joinTicketAndEquipment
 } from "@/helpers/bagadAsso"
 import prisma from "@/helpers/db"
+import TicketActions from "./ticketActions"
 
 export async function generateMetadata({
     params
@@ -317,6 +318,13 @@ export default async function Page({
                             </p>
                         </CardContent>
                     </Card>
+
+                    {/* Ticket Actions */}
+                    <TicketActions
+                        ticketId={ticket.id}
+                        ticketName={ticket.assocation}
+                        isArchived={ticket.deleted !== null}
+                    />
                 </div>
             </div>
         </div>
