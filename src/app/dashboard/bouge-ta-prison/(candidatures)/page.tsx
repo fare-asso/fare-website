@@ -11,8 +11,6 @@ import ArchivedApplications from "./archivedApplications"
 import PendingApplications from "./pendingApplications"
 import TabSwitcher from "./tabSwitcher"
 
-export const dynamic = "force-dynamic"
-
 export const metadata: Metadata = {
     title: "Bouge Ta Prison"
 }

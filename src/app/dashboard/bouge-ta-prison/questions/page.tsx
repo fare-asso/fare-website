@@ -10,8 +10,6 @@ import ActiveQuestions from "./activeQuestions"
 import ArchivedQuestions from "./archivedQuestions"
 import TabSwitcher from "./tabSwitcher"
 
-export const dynamic = "force-dynamic"
-
 export const metadata: Metadata = {
     title: "Bouge Ta Prison — Questions"
 }
