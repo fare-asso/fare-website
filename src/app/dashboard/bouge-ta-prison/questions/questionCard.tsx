@@ -126,12 +126,12 @@ export default function QuestionCard({
 
                 <Link
                     href={`/dashboard/bouge-ta-prison/questions/${question.id}`}
-                    className="hover:text-primary text-base font-semibold transition-colors hover:underline"
+                    className="font-semibold text-base transition-colors hover:text-primary hover:underline"
                 >
                     {question.firstName} {question.lastName}
                 </Link>
 
-                <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-sm">
                     <div className="flex items-center gap-1.5">
                         <MailIcon className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">{question.email}</span>
@@ -153,7 +153,7 @@ export default function QuestionCard({
                 </div>
 
                 {/* Question preview */}
-                <div className="text-muted-foreground flex items-start gap-1.5 text-sm">
+                <div className="flex items-start gap-1.5 text-muted-foreground text-sm">
                     <MessageSquareTextIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span className="line-clamp-2">{question.question}</span>
                 </div>

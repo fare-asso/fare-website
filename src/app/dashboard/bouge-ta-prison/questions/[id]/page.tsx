@@ -45,7 +45,7 @@ export default async function TutorQuestionPage({
                 <Card className="max-w-md">
                     <CardContent className="pt-6 text-center">
                         <span className="text-4xl">😔</span>
-                        <p className="text-muted-foreground mt-4 text-lg">
+                        <p className="mt-4 text-lg text-muted-foreground">
                             Cette question n'existe pas
                         </p>
                         <Button asChild className="mt-4">
@@ -71,7 +71,7 @@ export default async function TutorQuestionPage({
                 <Card className="max-w-md">
                     <CardContent className="pt-6 text-center">
                         <span className="text-4xl">😔</span>
-                        <p className="text-muted-foreground mt-4 text-lg">
+                        <p className="mt-4 text-lg text-muted-foreground">
                             Cette question n'existe pas ou plus
                         </p>
                         <Button asChild className="mt-4">
@@ -93,7 +93,7 @@ export default async function TutorQuestionPage({
                     asChild
                     variant="ghost"
                     size="sm"
-                    className="mb-4 -ml-3"
+                    className="-ml-3 mb-4"
                 >
                     <Link href="/dashboard/bouge-ta-prison/questions">
                         <FaCaretLeft className="mr-1" />
@@ -102,9 +102,9 @@ export default async function TutorQuestionPage({
                 </Button>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="text-3xl font-bold">
+                    <h1 className="font-bold text-3xl">
                         Question{" "}
-                        <span className="text-muted-foreground font-mono">
+                        <span className="font-mono text-muted-foreground">
                             #{tutorQuestion.id}
                         </span>
                     </h1>
@@ -134,8 +134,8 @@ export default async function TutorQuestionPage({
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="bg-muted/50 rounded-lg border p-4">
-                                <p className="text-justify leading-relaxed whitespace-break-spaces">
+                            <div className="rounded-lg border bg-muted/50 p-4">
+                                <p className="whitespace-break-spaces text-justify leading-relaxed">
                                     {tutorQuestion.question}
                                 </p>
                             </div>
@@ -158,7 +158,7 @@ export default async function TutorQuestionPage({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <p className="text-lg font-medium">
+                                <p className="font-medium text-lg">
                                     {tutorQuestion.firstName}{" "}
                                     {tutorQuestion.lastName}
                                 </p>
@@ -169,7 +169,7 @@ export default async function TutorQuestionPage({
                             <div className="grid gap-3">
                                 <a
                                     href={`mailto:${tutorQuestion.email}`}
-                                    className="hover:text-primary flex items-center gap-2 text-sm transition-colors"
+                                    className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
                                 >
                                     <FaEnvelope className="text-muted-foreground" />
                                     {tutorQuestion.email}
@@ -192,14 +192,14 @@ export default async function TutorQuestionPage({
                         <CardContent className="space-y-4">
                             <div className="grid gap-3">
                                 <div className="flex items-center gap-2 text-sm">
-                                    <BookOpenIcon className="text-muted-foreground size-4" />
+                                    <BookOpenIcon className="size-4 text-muted-foreground" />
                                     <span>Filière :</span>
                                     <span className="font-medium">
                                         {tutorQuestion.major}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm">
-                                    <GraduationCapIcon className="text-muted-foreground size-4" />
+                                    <GraduationCapIcon className="size-4 text-muted-foreground" />
                                     <span>Année d'études :</span>
                                     <span className="font-medium">
                                         {tutorQuestion.studyYear}

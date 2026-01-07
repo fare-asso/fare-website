@@ -100,8 +100,8 @@ export default function QuestionActions({
     }
 
     return (
-        <div className="border-muted-foreground/30 flex flex-col gap-3 rounded-lg border border-dashed p-4">
-            <p className="text-muted-foreground text-xs tracking-wide uppercase">
+        <div className="flex flex-col gap-3 rounded-lg border border-muted-foreground/30 border-dashed p-4">
+            <p className="text-muted-foreground text-xs uppercase tracking-wide">
                 Actions sur la question
             </p>
             <div className="flex flex-wrap gap-2">
@@ -175,7 +175,7 @@ export default function QuestionActions({
                             variant="outline"
                             size="sm"
                             disabled={isDeleteLoading}
-                            className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive gap-2"
+                            className="gap-2 border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
                         >
                             {isDeleteLoading ? (
                                 <LoadingRing className="m-0!" />
@@ -195,7 +195,7 @@ export default function QuestionActions({
                                     <p>
                                         La question #{questionId} de "
                                         {questionAuthor}" sera{" "}
-                                        <span className="text-destructive font-semibold">
+                                        <span className="font-semibold text-destructive">
                                             supprimée de manière permanente
                                         </span>
                                         .
