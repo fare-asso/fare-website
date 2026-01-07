@@ -154,8 +154,8 @@ model Adhesion {
 }
 
 model BTPTutorApplication {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
   firstName   String
   lastName    String
   email       String
@@ -163,19 +163,21 @@ model BTPTutorApplication {
   studyYear   String
   mlPath      String
   cvPath      String
-  approved    Boolean  @default(false)
+  approved    Boolean   @default(false)
+  archived    DateTime?
 }
 
 model BTPTutorQuestion {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   firstName   String
   lastName    String
   email       String
   major       String
   studyYear   String
   question    String
-  createdAt   DateTime @default(now())
-  read        Boolean  @default(false)
+  createdAt   DateTime  @default(now())
+  read        Boolean   @default(false)
+  archived    DateTime?
 }
 
 model LocationCache {

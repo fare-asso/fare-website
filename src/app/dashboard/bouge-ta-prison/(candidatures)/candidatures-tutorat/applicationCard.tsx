@@ -2,83 +2,235 @@
 
 import type { BTPTutorApplication } from "@prisma/client"
 import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import {
+    ArchiveIcon,
+    ArchiveRestoreIcon,
+    CalendarIcon,
+    GraduationCapIcon,
+    MailIcon
+} from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
-import { FaCheckCircle, FaQuestionCircle } from "react-icons/fa"
-import { MdDelete } from "react-icons/md"
-import deleteTutorApplication from "@/actions/bouge-ta-prison/deleteTutorApplication"
+import archiveTutorApplication from "@/actions/bouge-ta-prison/archiveTutorApplication"
+import unarchiveTutorApplication from "@/actions/bouge-ta-prison/unarchiveTutorApplication"
 import LoadingRing from "@/components/dashboard/loadingRing"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger
+} from "@/components/ui/tooltip"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function ApplicationCard({
     application
 }: {
     application: BTPTutorApplication
 }) {
-    const [isDeleting, setIsDeleting] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const { toast } = useToast()
 
-    const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault()
+    const isArchived = application.archived !== null
 
-        setIsDeleting(true)
-        // Delete the application
-        await deleteTutorApplication(application.id)
-        setIsDeleting(false)
+    const onArchive = async () => {
+        setIsLoading(true)
+        const response = await archiveTutorApplication(application.id)
+
+        if (response.error) {
+            toast({
+                variant: "destructive",
+                description: response.error,
+                title: "Erreur"
+            })
+        } else {
+            toast({
+                variant: "default",
+                description: "La candidature a été archivée.",
+                title: "Succès"
+            })
+        }
+        setIsLoading(false)
+    }
+
+    const onUnarchive = async () => {
+        setIsLoading(true)
+        const response = await unarchiveTutorApplication(application.id)
+
+        if (response.error) {
+            toast({
+                variant: "destructive",
+                description: response.error,
+                title: "Erreur"
+            })
+        } else {
+            toast({
+                variant: "default",
+                description: "La candidature a été désarchivée.",
+                title: "Succès"
+            })
+        }
+        setIsLoading(false)
+    }
+
+    const getStatusBadge = () => {
+        if (isArchived) {
+            return (
+                <Badge variant="outline" className="text-muted-foreground">
+                    Archivée
+                </Badge>
+            )
+        }
+        if (application.approved) {
+            return (
+                <Badge
+                    variant="default"
+                    className="bg-green-600 hover:bg-green-700"
+                >
+                    Approuvée
+                </Badge>
+            )
+        }
+        return <Badge variant="secondary">En attente</Badge>
     }
 
     return (
-        <div className="flex w-full flex-row items-center justify-between rounded-lg border p-2 shadow-xs md:p-4">
-            <div className="flex flex-row items-center gap-2">
-                <span className="ml-1 font-semibold text-base capitalize">
-                    <Link
-                        href={`/dashboard/bouge-ta-prison/candidatures-tutorat/${application.id}`}
-                        className="w-full overflow-hidden text-ellipsis text-nowrap text-sm underline transition-all hover:opacity-75"
-                    >
-                        {`${application.firstName} ${application.lastName}`
-                            .length > 20
-                            ? `${`${application.firstName} ${application.lastName}`.slice(0, 20)}...`
-                            : `${application.firstName} ${application.lastName}`}
-                    </Link>
-                </span>
+        <div
+            className={`flex flex-col gap-3 rounded-lg border p-4 transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between ${
+                isArchived
+                    ? "border-muted bg-muted/30 opacity-75"
+                    : "border-border"
+            }`}
+        >
+            {/* Left: Main info */}
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-4">
+                    {getStatusBadge()}
+                    <span className="text-muted-foreground text-xs">
+                        #{application.id}
+                    </span>
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                        <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
+                        <span>
+                            {format(application.createdAt, "d MMM yyyy", {
+                                locale: fr
+                            })}
+                        </span>
+                    </div>
+                </div>
 
-                {application.approved ? (
-                    <FaCheckCircle
-                        size={15}
-                        className="inline-block text-green-500"
-                    />
-                ) : (
-                    <FaQuestionCircle
-                        size={15}
-                        className="inline-block text-amber-500"
-                    />
-                )}
+                <Link
+                    href={`/dashboard/bouge-ta-prison/candidatures-tutorat/${application.id}`}
+                    className="font-semibold text-base transition-colors hover:text-primary hover:underline"
+                >
+                    {application.firstName} {application.lastName}
+                </Link>
 
-                <span className="hidden text-sm opacity-75 md:block">
-                    {format(application.createdAt, "dd/MM/yyyy")}
-                </span>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-sm">
+                    <div className="flex items-center gap-1.5">
+                        <MailIcon className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">{application.email}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <GraduationCapIcon className="h-3.5 w-3.5 shrink-0" />
+                        <span>
+                            {application.major} — {application.studyYear}
+                        </span>
+                    </div>
+                </div>
             </div>
 
-            <div>
-                {/* Delete */}
-                <Button
-                    variant="destructive"
-                    className="p-3"
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                >
-                    {isDeleting ? (
-                        <span className="mr-1 hidden md:block">
-                            Suppression
-                        </span>
-                    ) : (
-                        <span className="mr-1 hidden md:block">Supprimer</span>
-                    )}
-                    {isDeleting ? (
-                        <LoadingRing className="mr-0!" />
-                    ) : (
-                        <MdDelete size={20} />
-                    )}
-                </Button>
+            {/* Right: Actions */}
+            <div className="flex shrink-0 items-center gap-2">
+                <AlertDialog>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className={`shrink-0 ${
+                                        isArchived
+                                            ? "text-primary hover:bg-primary/10 hover:text-primary"
+                                            : "text-muted-foreground hover:text-foreground"
+                                    }`}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <LoadingRing className="m-0!" />
+                                    ) : isArchived ? (
+                                        <ArchiveRestoreIcon className="h-4 w-4" />
+                                    ) : (
+                                        <ArchiveIcon className="h-4 w-4" />
+                                    )}
+                                    <span className="sr-only">
+                                        {isArchived
+                                            ? "Désarchiver"
+                                            : "Archiver"}
+                                    </span>
+                                </Button>
+                            </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            {isArchived ? "Désarchiver" : "Archiver"}
+                        </TooltipContent>
+                    </Tooltip>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {isArchived
+                                    ? "Désarchiver la candidature ?"
+                                    : "Archiver la candidature ?"}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription asChild>
+                                <div>
+                                    {isArchived ? (
+                                        <p>
+                                            La candidature de{" "}
+                                            {application.firstName}{" "}
+                                            {application.lastName} sera
+                                            restaurée et réapparaîtra dans la
+                                            liste des candidatures actives.
+                                        </p>
+                                    ) : (
+                                        <>
+                                            <p>
+                                                La candidature de{" "}
+                                                {application.firstName}{" "}
+                                                {application.lastName} sera
+                                                archivée et masquée de la liste.
+                                            </p>
+                                            <p className="mt-1">
+                                                Elle pourra être restaurée si
+                                                besoin.
+                                            </p>
+                                        </>
+                                    )}
+                                </div>
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={isArchived ? onUnarchive : onArchive}
+                            >
+                                {isArchived ? "Désarchiver" : "Archiver"}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </div>
     )

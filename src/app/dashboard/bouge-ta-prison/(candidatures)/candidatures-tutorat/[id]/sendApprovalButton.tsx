@@ -1,9 +1,9 @@
 "use client"
 
 import type { BTPTutorApplication } from "@prisma/client"
+import { SendIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { MdSend } from "react-icons/md"
 import sendApprovalEmail from "@/actions/bouge-ta-prison/sendApprovalEmail"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Button } from "@/components/ui/button"
@@ -19,7 +19,7 @@ export default function SendApprovalButton({
     const handleSendApproval = async () => {
         setIsLoading(true)
         await sendApprovalEmail(application)
-        router.push("/dashboard/bouge-ta-prison?tab=candidatures")
+        router.push("/dashboard/bouge-ta-prison?tab=approved")
     }
 
     return (
@@ -28,7 +28,7 @@ export default function SendApprovalButton({
             disabled={isLoading}
             className="text-wrap"
         >
-            {isLoading ? <LoadingRing /> : <MdSend size={20} />}
+            {isLoading ? <LoadingRing /> : <SendIcon size={20} />}
             Envoyer un email de bonne réception
         </Button>
     )

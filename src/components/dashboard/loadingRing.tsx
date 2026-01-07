@@ -10,7 +10,7 @@ export default function LoadingRing({ className }: { className?: string }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className={`h-4 w-4 animate-spin${className}`}
+            className={`h-4 w-4 animate-spin ${className}`}
             aria-label="Chargement"
             role="img"
         >

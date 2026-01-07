@@ -110,7 +110,7 @@ export default async function TutorApplicationPage({
                     size="sm"
                     className="-ml-3 mb-4"
                 >
-                    <Link href="/dashboard/bouge-ta-prison?tab=candidatures">
+                    <Link href="/dashboard/bouge-ta-prison">
                         <FaCaretLeft className="mr-1" />
                         Retour aux candidatures
                     </Link>

@@ -42,7 +42,7 @@ export default async function sendApprovalEmail(
         }
     })
     revalidatePath("/dashboard/bouge-ta-prison/candidatures-tutorat/18")
-    revalidatePath("/dashboard/bouge-ta-prison?tab=candidatures")
+    revalidatePath("/dashboard/bouge-ta-prison")
     return {
         success: true,
         error: null

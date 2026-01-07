@@ -1,14 +1,16 @@
 import type { Metadata } from "next"
-import { Suspense } from "react"
 import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import QuestionList from "./questionList"
+import ActiveQuestions from "./activeQuestions"
+import ArchivedQuestions from "./archivedQuestions"
+import TabSwitcher from "./tabSwitcher"
+
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
     title: "Bouge Ta Prison — Questions"
@@ -24,11 +26,11 @@ export default function QuestionsPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="h-1/2 flex-1 p-0">
-                <Suspense fallback={<div>Chargement...</div>}>
-                    <QuestionList />
-                </Suspense>
+                <TabSwitcher>
+                    <ActiveQuestions />
+                    <ArchivedQuestions />
+                </TabSwitcher>
             </CardContent>
-            <CardFooter className="p-0"></CardFooter>
         </Card>
     )
 }
