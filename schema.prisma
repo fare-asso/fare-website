@@ -133,6 +133,7 @@ model BagadAssoTicket {
   assocation            String
   firstName             String
   lastName              String
+  position              String   @default("")
   phoneNumber           String?
   eventName             String
   eventType             String

@@ -68,6 +68,7 @@ export default async function submitBagadAssoFormAction(
                 associationEmail: validatedData.associationEmail,
                 firstName: validatedData.referentFirstName,
                 lastName: validatedData.referentLastName,
+                position: validatedData.referentPosition,
                 phoneNumber: validatedData.referentPhone,
                 representativeEmail: validatedData.referentEmail,
                 eventName: validatedData.eventName,

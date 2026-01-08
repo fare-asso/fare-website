@@ -69,6 +69,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
             associationEmail: "",
             referentLastName: "",
             referentFirstName: "",
+            referentPosition: "",
             referentEmail: "",
             referentPhone: "",
             eventName: "",
@@ -91,6 +92,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                 associationEmail: value.associationEmail,
                 referentLastName: value.referentLastName,
                 referentFirstName: value.referentFirstName,
+                referentPosition: value.referentPosition,
                 referentEmail: value.referentEmail,
                 referentPhone: value.referentPhone,
                 eventName: value.eventName,
@@ -310,6 +312,42 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                     }}
                                 />
                             </div>
+
+                            <form.Field
+                                name="referentPosition"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched &&
+                                        !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>
+                                                Poste dans l'association
+                                            </FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) =>
+                                                    field.handleChange(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                aria-invalid={isInvalid}
+                                                placeholder="Président·e, Trésorier·e, etc."
+                                            />
+                                            {isInvalid && (
+                                                <FieldError
+                                                    errors={
+                                                        field.state.meta.errors
+                                                    }
+                                                />
+                                            )}
+                                        </Field>
+                                    )
+                                }}
+                            />
 
                             <form.Field
                                 name="referentEmail"

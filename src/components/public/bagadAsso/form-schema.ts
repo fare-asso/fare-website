@@ -19,6 +19,9 @@ const baseFields = {
         .min(1, "L'email de l'association est requis."),
     referentLastName: z.string().min(1, "Le nom du référent est requis."),
     referentFirstName: z.string().min(1, "Le prénom du référent est requis."),
+    referentPosition: z
+        .string()
+        .min(1, "Le poste dans l'association est requis."),
     referentEmail: z
         .email("Veuillez entrer une adresse email valide.")
         .min(1, "L'email du référent est requis."),
