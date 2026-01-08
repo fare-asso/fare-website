@@ -11,7 +11,7 @@ export default async function ActiveTickets() {
             }
         },
         orderBy: {
-            eventDate: "desc"
+            eventDate: "asc"
         }
     })
 
