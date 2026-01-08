@@ -159,6 +159,11 @@ export default async function Page({
                                 <p className="font-medium text-lg">
                                     {ticket.firstName} {ticket.lastName}
                                 </p>
+                                {ticket.position && (
+                                    <p className="text-muted-foreground text-sm">
+                                        {ticket.position}
+                                    </p>
+                                )}
                             </div>
 
                             <Separator />
