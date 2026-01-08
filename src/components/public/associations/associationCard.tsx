@@ -40,8 +40,8 @@ export default async function AssociationCard({
 
     return (
         <Link
-            href={`/reseau/associations/${association.id}`}
-            className="relative flex flex-col rounded-lg bg-white p-4 outline outline-1 outline-black transition-all hover:scale-105"
+            href={`/a-propos/reseau/associations/${association.id}`}
+            className="relative flex flex-col rounded-lg bg-white p-4 outline-1 outline-black transition-all hover:scale-105"
         >
             <Image
                 src={
@@ -59,7 +59,7 @@ export default async function AssociationCard({
                     <span className="font-semibold text-xl">
                         {association.name}
                     </span>
-                    <span className="rounded-full border border-black px-4 py-[2px] text-center font-semibold text-xs">
+                    <span className="rounded-full border border-black px-4 py-0.5 text-center font-semibold text-xs">
                         {association.major}
                     </span>
                 </div>
