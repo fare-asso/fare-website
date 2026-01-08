@@ -5,7 +5,7 @@ import { useForm } from "@tanstack/react-form"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
-import { startTransition, useActionState, useState } from "react"
+import { Suspense, startTransition, useActionState, useState } from "react"
 import submitBagadAssoFormAction, {
     type FormState
 } from "@/actions/bagadAsso/submitBagadAssoFormAction"
@@ -48,7 +48,7 @@ import EquipmentSelection from "./equipmentSelection"
 import { type BagadAssoFormData, eventTypes } from "./form-schema"
 
 interface BagadAssoFormProps {
-    equipmentList: BagadAssoEquipment[]
+    equipmentList: Promise<BagadAssoEquipment[]>
 }
 
 // Email validation regex
@@ -746,14 +746,24 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                         !field.state.meta.isValid
                                     return (
                                         <Field data-invalid={isInvalid}>
-                                            <EquipmentSelection
-                                                equipmentList={equipmentList}
-                                                name="equipment-input"
-                                                onChange={(value) => {
-                                                    field.handleChange(value)
-                                                    field.handleBlur()
-                                                }}
-                                            />
+                                            <Suspense
+                                                fallback={
+                                                    <div>Chargement...</div>
+                                                }
+                                            >
+                                                <EquipmentSelection
+                                                    equipmentList={
+                                                        equipmentList
+                                                    }
+                                                    name="equipment-input"
+                                                    onChange={(value) => {
+                                                        field.handleChange(
+                                                            value
+                                                        )
+                                                        field.handleBlur()
+                                                    }}
+                                                />
+                                            </Suspense>
                                             {isInvalid && (
                                                 <FieldError
                                                     errors={

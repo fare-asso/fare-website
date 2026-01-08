@@ -53,7 +53,7 @@ export default async function deleteEquipmentAction(
             }
         })
         revalidatePath("/dashboard/bagadAsso")
-        revalidatePath("/bagadAsso")
+        revalidatePath("/projets/bagad-asso")
         return { success: true }
     } catch (_) {
         return {

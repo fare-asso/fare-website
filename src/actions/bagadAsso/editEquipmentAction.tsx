@@ -134,7 +134,7 @@ export default async function editEquipmentAction(
         })
 
         revalidatePath("/dashboard/bagadAsso")
-        revalidatePath("/bagadAsso")
+        revalidatePath("/projets/bagad-asso")
         return { success: true }
     } catch (_error) {
         // Failed

@@ -8,8 +8,9 @@ export const metadata: Metadata = {
     title: "Badag'Asso"
 }
 
+// biome-ignore lint/suspicious/useAwait: Next RSC
 export default async function BagadAsso() {
-    const equipmentList = await prisma.bagadAssoEquipment.findMany()
+    const equipmentList = prisma.bagadAssoEquipment.findMany()
 
     return (
         <div className="flex w-full flex-col items-center justify-start">
