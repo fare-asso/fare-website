@@ -45,14 +45,15 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import EquipmentSelection from "./equipmentSelection"
-import { type BagadAssoFormData, eventTypes } from "./form-schema"
+import {
+    BagadAssoClientFormSchema,
+    type BagadAssoFormData,
+    eventTypes
+} from "./form-schema"
 
 interface BagadAssoFormProps {
     equipmentList: Promise<BagadAssoEquipment[]>
 }
-
-// Email validation regex
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
     const [formState, formAction, pending] = useActionState<
@@ -76,7 +77,12 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
             eventAddress: "",
             eventParticipants: 1,
             equipment: "[]",
-            termsAccepted: false
+            termsAccepted: false,
+            captchaToken: ""
+        },
+        validators: {
+            onChange: BagadAssoClientFormSchema,
+            onSubmit: BagadAssoClientFormSchema
         },
         onSubmit: ({ value }) => {
             // Prepare the data for the server action
@@ -145,12 +151,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                             <form.Field
                                 name="associationName"
-                                validators={{
-                                    onBlur: ({ value }) =>
-                                        value
-                                            ? undefined
-                                            : "Le nom de l'association est requis."
-                                }}
                                 children={(field) => {
                                     const isInvalid =
                                         field.state.meta.isTouched &&
@@ -187,15 +187,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                             <form.Field
                                 name="associationEmail"
-                                validators={{
-                                    onBlur: ({ value }) => {
-                                        if (!value)
-                                            return "L'email de l'association est requis."
-                                        if (!emailRegex.test(value))
-                                            return "Veuillez entrer une adresse email valide."
-                                        return undefined
-                                    }
-                                }}
                                 children={(field) => {
                                     const isInvalid =
                                         field.state.meta.isTouched &&
@@ -243,12 +234,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                             <div className="grid gap-4 md:grid-cols-2">
                                 <form.Field
                                     name="referentLastName"
-                                    validators={{
-                                        onBlur: ({ value }) =>
-                                            value
-                                                ? undefined
-                                                : "Le nom du référent est requis."
-                                    }}
                                     children={(field) => {
                                         const isInvalid =
                                             field.state.meta.isTouched &&
@@ -288,12 +273,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                                 <form.Field
                                     name="referentFirstName"
-                                    validators={{
-                                        onBlur: ({ value }) =>
-                                            value
-                                                ? undefined
-                                                : "Le prénom du référent est requis."
-                                    }}
                                     children={(field) => {
                                         const isInvalid =
                                             field.state.meta.isTouched &&
@@ -334,15 +313,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                             <form.Field
                                 name="referentEmail"
-                                validators={{
-                                    onBlur: ({ value }) => {
-                                        if (!value)
-                                            return "L'email du référent est requis."
-                                        if (!emailRegex.test(value))
-                                            return "Veuillez entrer une adresse email valide."
-                                        return undefined
-                                    }
-                                }}
                                 children={(field) => {
                                     const isInvalid =
                                         field.state.meta.isTouched &&
@@ -429,12 +399,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                             <form.Field
                                 name="eventName"
-                                validators={{
-                                    onBlur: ({ value }) =>
-                                        value
-                                            ? undefined
-                                            : "Le nom de l'évènement est requis."
-                                }}
                                 children={(field) => {
                                     const isInvalid =
                                         field.state.meta.isTouched &&
@@ -471,12 +435,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                             <form.Field
                                 name="eventType"
-                                validators={{
-                                    onBlur: ({ value }) =>
-                                        value
-                                            ? undefined
-                                            : "Le type de l'évènement est requis."
-                                }}
                                 children={(field) => {
                                     const isInvalid =
                                         field.state.meta.isTouched &&
@@ -484,7 +442,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                     return (
                                         <Field data-invalid={isInvalid}>
                                             <FieldLabel htmlFor={field.name}>
-                                                Type d&apos;évènement
+                                                Type d'évènement
                                             </FieldLabel>
                                             <Select
                                                 name={field.name}
@@ -527,12 +485,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                             <div className="grid gap-4 md:grid-cols-2">
                                 <form.Field
                                     name="eventDate"
-                                    validators={{
-                                        onBlur: ({ value }) =>
-                                            value
-                                                ? undefined
-                                                : "La date de l'évènement est requise."
-                                    }}
                                     children={(field) => {
                                         const isInvalid =
                                             field.state.meta.isTouched &&
@@ -617,12 +569,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                                 <form.Field
                                     name="eventParticipants"
-                                    validators={{
-                                        onBlur: ({ value }) =>
-                                            value < 1
-                                                ? "Le nombre de participants doit être au moins 1."
-                                                : undefined
-                                    }}
                                     children={(field) => {
                                         const isInvalid =
                                             field.state.meta.isTouched &&
@@ -669,12 +615,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                             <form.Field
                                 name="eventAddress"
-                                validators={{
-                                    onBlur: ({ value }) =>
-                                        value
-                                            ? undefined
-                                            : "L'adresse de l'évènement est requise."
-                                }}
                                 children={(field) => {
                                     const isInvalid =
                                         field.state.meta.isTouched &&
@@ -724,22 +664,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                             <form.Field
                                 name="equipment"
-                                validators={{
-                                    onBlur: ({ value }) => {
-                                        try {
-                                            const parsed = JSON.parse(value)
-                                            if (
-                                                !Array.isArray(parsed) ||
-                                                parsed.length === 0
-                                            ) {
-                                                return "Veuillez sélectionner au moins un matériel."
-                                            }
-                                            return undefined
-                                        } catch {
-                                            return "Veuillez sélectionner au moins un matériel."
-                                        }
-                                    }
-                                }}
                                 children={(field) => {
                                     const isInvalid =
                                         field.state.meta.isTouched &&
@@ -783,12 +707,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                         <div className="space-y-4">
                             <form.Field
                                 name="termsAccepted"
-                                validators={{
-                                    onBlur: ({ value }) =>
-                                        value
-                                            ? undefined
-                                            : "Vous devez accepter les termes et conditions."
-                                }}
                                 children={(field) => {
                                     const isInvalid =
                                         field.state.meta.isTouched &&
@@ -840,7 +758,35 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                             />
 
                             <div className="pt-4">
-                                <Captcha onComplete={setCaptchaToken} />
+                                <form.Field
+                                    name="captchaToken"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        return (
+                                            <Field data-invalid={isInvalid}>
+                                                <Captcha
+                                                    onComplete={(token) => {
+                                                        setCaptchaToken(token)
+                                                        field.handleChange(
+                                                            token
+                                                        )
+                                                        field.handleBlur()
+                                                    }}
+                                                />
+                                                {isInvalid && (
+                                                    <FieldError
+                                                        errors={
+                                                            field.state.meta
+                                                                .errors
+                                                        }
+                                                    />
+                                                )}
+                                            </Field>
+                                        )
+                                    }}
+                                />
                             </div>
                         </div>
 

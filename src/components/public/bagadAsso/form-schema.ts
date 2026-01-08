@@ -11,8 +11,8 @@ export const eventTypes = [
     { value: "other", label: "Autre" }
 ] as const
 
-// Schema for server-side validation
-export const bagadAssoFormSchema = z.object({
+// Base schema fields (shared between client and server)
+const baseFields = {
     associationName: z.string().min(1, "Le nom de l'association est requis."),
     associationEmail: z
         .email("Veuillez entrer une adresse email valide.")
@@ -22,12 +22,18 @@ export const bagadAssoFormSchema = z.object({
     referentEmail: z
         .email("Veuillez entrer une adresse email valide.")
         .min(1, "L'email du référent est requis."),
-    referentPhone: z.string(),
+    referentPhone: z
+        .string()
+        .refine(
+            (val) => /^\d*$/.test(val),
+            "Le numéro de téléphone ne doit contenir que des chiffres."
+        )
+        .refine(
+            (val) => val.length === 0 || val.length >= 10,
+            "Le numéro de téléphone doit contenir au moins 10 chiffres."
+        ),
     eventName: z.string().min(1, "Le nom de l'évènement est requis."),
     eventType: z.string().min(1, "Le type de l'évènement est requis."),
-    eventDate: z.coerce.date({
-        error: "La date de l'évènement est requise."
-    }),
     eventAddress: z.string().min(1, "L'adresse de l'évènement est requise."),
     eventParticipants: z
         .number()
@@ -49,11 +55,29 @@ export const bagadAssoFormSchema = z.object({
     termsAccepted: z.literal(true, {
         error: "Vous devez accepter les termes et conditions."
     }),
-    // requite captcha token only when !isDevelopment
+    // require captcha token only when !isDevelopment
     captchaToken: z.string().refine((val) => isDevelopment || val !== "", {
         message: "Veuillez valider le captcha."
+    })
+}
+
+// Schema for client-side validation (used in TanStack Form)
+// Uses z.date() for eventDate since the form works with Date objects
+export const BagadAssoClientFormSchema = z.object({
+    ...baseFields,
+    eventDate: z.date({
+        error: "La date de l'évènement est requise."
+    })
+})
+
+// Schema for server-side validation
+// Uses z.coerce.date() for eventDate to handle string serialization
+export const BagadAssoFormSchema = z.object({
+    ...baseFields,
+    eventDate: z.coerce.date({
+        error: "La date de l'évènement est requise."
     })
 })
 
 // Type for data sent to server action
-export type BagadAssoFormData = z.infer<typeof bagadAssoFormSchema>
+export type BagadAssoFormData = z.infer<typeof BagadAssoFormSchema>

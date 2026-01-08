@@ -17,6 +17,9 @@ export default function EquipmentSelection({
     }>({})
     const [totalGuarantee, setTotalGuarantee] = useState<number>(0)
     const isInitialMount = useRef(true)
+    // Store onChange in a ref to avoid triggering useEffect when it changes
+    const onChangeRef = useRef(onChange)
+    onChangeRef.current = onChange
 
     const handleQuantityChange = (id: number, quantity: number) => {
         setSelectedEquipment((prev) => ({
@@ -49,14 +52,14 @@ export default function EquipmentSelection({
 
         // Call onChange callback if provided (for TanStack Form integration)
         // Skip on initial mount to avoid marking the field as touched
-        if (onChange) {
+        if (onChangeRef.current) {
             if (isInitialMount.current) {
                 isInitialMount.current = false
             } else {
-                onChange(selectedEquipmentJson)
+                onChangeRef.current(selectedEquipmentJson)
             }
         }
-    }, [selectedEquipment, equipmentList, onChange, selectedEquipmentJson])
+    }, [selectedEquipment, equipmentList, selectedEquipmentJson])
 
     return (
         <div className="container mx-auto rounded-xl border border-gray-300 p-4">

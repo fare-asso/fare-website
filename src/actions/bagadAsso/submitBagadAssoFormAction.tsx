@@ -6,7 +6,7 @@ import { isDevelopment } from "std-env"
 import { verifyCaptcha } from "@/components/captcha/verify"
 import {
     type BagadAssoFormData,
-    bagadAssoFormSchema
+    BagadAssoFormSchema
 } from "@/components/public/bagadAsso/form-schema"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
@@ -23,7 +23,7 @@ export default async function submitBagadAssoFormAction(
     data: BagadAssoFormData
 ): Promise<FormState> {
     // Validate the data using Zod schema
-    const result = bagadAssoFormSchema.safeParse(data)
+    const result = BagadAssoFormSchema.safeParse(data)
 
     if (!result.success) {
         // Extract field errors from Zod
