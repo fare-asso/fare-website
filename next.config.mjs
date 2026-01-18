@@ -34,6 +34,26 @@ export default {
         ]
     },
 
+    redirects() {
+        return [
+            {
+                source: "/bouge-ta-prison/:slug*",
+                destination: "/projets/bouge-ta-prison/:slug*",
+                permanent: true
+            },
+            {
+                source: "/bagadAsso/:slug*",
+                destination: "/projets/bagad-asso/:slug*",
+                permanent: true
+            },
+            {
+                source: "/agorae/:slug*",
+                destination: "/projets/agorae/:slug*",
+                permanent: true
+            }
+        ]
+    },
+
     /** We already do linting and typechecking as separate tasks in CI */
     typescript: { ignoreBuildErrors: true },
 

@@ -18,7 +18,7 @@ export default function Projets() {
 
             <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-x-20 md:space-y-0">
                 <Link
-                    href="/agorae"
+                    href="/projets/agorae"
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
                     <Image
@@ -30,7 +30,7 @@ export default function Projets() {
                 </Link>
 
                 <Link
-                    href="/bouge-ta-prison"
+                    href="/projets/bouge-ta-prison"
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
                     <Image
@@ -42,7 +42,7 @@ export default function Projets() {
                 </Link>
 
                 <Link
-                    href="/bagadAsso"
+                    href="/projets/bagad-asso"
                     className="flex flex-col items-center p-4 transition-all hover:scale-105"
                 >
                     <Image
