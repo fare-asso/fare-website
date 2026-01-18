@@ -70,7 +70,10 @@ export default async function Page({
 
     return (
         <div className="flex w-[90%] flex-col items-start pt-14">
-            <Link href="/reseau" className="text-sm opacity-40 hover:underline">
+            <Link
+                href="/a-propos/reseau"
+                className="text-sm opacity-40 hover:underline"
+            >
                 &lt; Retour aux associations
             </Link>
             <h1 className="mt-2 font-bold text-3xl">

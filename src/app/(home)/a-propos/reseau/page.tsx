@@ -37,7 +37,7 @@ export default async function Reseau() {
                     Pour plus d'informations sur l'adhésion, cliquez ci-dessous.
                 </p>
                 <Link
-                    href="/adhesion"
+                    href="/a-propos/adhesion"
                     className="mt-4 ml-auto w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
                 >
                     Nous rejoindre
