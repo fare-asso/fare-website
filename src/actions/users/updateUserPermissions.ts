@@ -1,5 +1,6 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
@@ -42,6 +43,8 @@ export default async function updateUserPermissions(
                 skipDuplicates: true
             })
         })
+
+        revalidatePath(`/dashboard/users/${userId}`)
 
         return { success: true }
     } catch (error) {

@@ -1,26 +1,10 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
 import type { Permission } from "@prisma/client"
-import { Info } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
+import { useOptimistic, useTransition } from "react"
 import updateUserPermissions from "@/actions/users/updateUserPermissions"
-import LoadingRing from "@/components/dashboard/loadingRing"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger
-} from "@/components/ui/tooltip"
-
-const schema = z.object({
-    permissions: z.array(z.number())
-})
-
-type SchemaType = z.infer<typeof schema>
+import { PermissionCard } from "./permissionCard"
 
 type Props = {
     userId: string
@@ -33,34 +17,19 @@ export function UserPermissionsForm({
     userPermissions,
     allPermissions
 }: Props) {
-    const [initialPermissions, setInitialPermissions] =
-        useState(userPermissions)
+    const [isPending, startTransition] = useTransition()
+    const [optimisticPermissions, setOptimisticPermissions] =
+        useOptimistic(userPermissions)
 
-    const form = useForm<SchemaType>({
-        resolver: zodResolver(schema),
-        defaultValues: {
-            permissions: userPermissions
-        }
-    })
+    const togglePermission = (permissionId: number) => {
+        const newPermissions = optimisticPermissions.includes(permissionId)
+            ? optimisticPermissions.filter((id) => id !== permissionId)
+            : [...optimisticPermissions, permissionId]
 
-    const currentPermissions = form.watch("permissions")
-    const isChanged =
-        JSON.stringify(currentPermissions.sort()) !==
-        JSON.stringify([...initialPermissions].sort())
-
-    useEffect(() => {
-        form.reset({ permissions: userPermissions })
-        setInitialPermissions(userPermissions)
-    }, [userPermissions, form.reset])
-
-    const onSubmit = async (data: SchemaType) => {
-        const res = await updateUserPermissions(userId, data.permissions)
-        if (res.success) {
-            form.reset({
-                permissions: data.permissions
-            })
-            setInitialPermissions(data.permissions)
-        }
+        startTransition(async () => {
+            setOptimisticPermissions(newPermissions)
+            await updateUserPermissions(userId, newPermissions)
+        })
     }
 
     const permissionCategories = allPermissions.reduce(
@@ -73,79 +42,82 @@ export function UserPermissionsForm({
         {} as Record<string, typeof allPermissions>
     )
 
-    return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {Object.entries(permissionCategories).map(
-                ([category, permissions]) => (
-                    <div key={category} className="space-y-2">
-                        <h3 className="font-semibold text-lg">{category}</h3>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {permissions.map((permission) => (
-                                <div
-                                    key={permission.id}
-                                    className="flex items-center gap-2"
-                                >
-                                    <Checkbox
-                                        id={`perm-${permission.id}`}
-                                        checked={form
-                                            .watch("permissions")
-                                            .includes(permission.id)}
-                                        onCheckedChange={(checked) => {
-                                            const perms =
-                                                form.getValues("permissions")
-                                            if (checked) {
-                                                form.setValue("permissions", [
-                                                    ...perms,
-                                                    permission.id
-                                                ])
-                                            } else {
-                                                form.setValue(
-                                                    "permissions",
-                                                    perms.filter(
-                                                        (id) =>
-                                                            id !== permission.id
-                                                    )
-                                                )
-                                            }
-                                        }}
-                                    />
-                                    <div className="space-y-1">
-                                        <label
-                                            htmlFor={`perm-${permission.id}`}
-                                            className="font-medium text-sm"
-                                        >
-                                            {permission.title}
-                                        </label>
-                                    </div>
-                                    {permission.description && (
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <Info className="h-4 w-4 text-muted-foreground" />
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p className="w-52 text-xs">
-                                                    {permission.description}
-                                                    <br />
-                                                    <span className="text-muted-foreground text-xs">
-                                                        {permission.name}
-                                                    </span>
-                                                </p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )
-            )}
+    const selectAllInCategory = (categoryPermissions: Permission[]) => {
+        const categoryIds = categoryPermissions.map((p) => p.id)
+        const newPermissions = [
+            ...new Set([...optimisticPermissions, ...categoryIds])
+        ]
 
-            <Button
-                type="submit"
-                disabled={!isChanged || form.formState.isSubmitting}
-            >
-                {form.formState.isSubmitting && <LoadingRing />}Enregistrer
-            </Button>
-        </form>
+        startTransition(async () => {
+            setOptimisticPermissions(newPermissions)
+            await updateUserPermissions(userId, newPermissions)
+        })
+    }
+
+    const deselectAllInCategory = (categoryPermissions: Permission[]) => {
+        const categoryIds = new Set(categoryPermissions.map((p) => p.id))
+        const newPermissions = optimisticPermissions.filter(
+            (id) => !categoryIds.has(id)
+        )
+
+        startTransition(async () => {
+            setOptimisticPermissions(newPermissions)
+            await updateUserPermissions(userId, newPermissions)
+        })
+    }
+
+    const isCategoryFullySelected = (categoryPermissions: Permission[]) => {
+        return categoryPermissions.every((p) =>
+            optimisticPermissions.includes(p.id)
+        )
+    }
+
+    return (
+        <div className="space-y-8">
+            {Object.entries(permissionCategories).map(
+                ([category, permissions]) => {
+                    const allSelected = isCategoryFullySelected(permissions)
+                    return (
+                        <div key={category} className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h3 className="font-semibold text-lg">
+                                    {category}
+                                </h3>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled={isPending}
+                                    onClick={() =>
+                                        allSelected
+                                            ? deselectAllInCategory(permissions)
+                                            : selectAllInCategory(permissions)
+                                    }
+                                >
+                                    {allSelected
+                                        ? "Tout deselectionner"
+                                        : "Tout selectionner"}
+                                </Button>
+                            </div>
+                            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                                {permissions.map((permission) => (
+                                    <PermissionCard
+                                        key={permission.id}
+                                        permission={permission}
+                                        isSelected={optimisticPermissions.includes(
+                                            permission.id
+                                        )}
+                                        onToggle={() =>
+                                            togglePermission(permission.id)
+                                        }
+                                        disabled={isPending}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )
+                }
+            )}
+        </div>
     )
 }

@@ -33,6 +33,7 @@ model User {
   email           String
   image           String?
   createdAt       DateTime     @default(now())
+  deletedAt       DateTime?
   role            Role         @default(MEMBER)
   writtenArticles Article[]
   association     Association?

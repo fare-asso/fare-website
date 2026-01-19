@@ -1,6 +1,12 @@
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import { AlertTriangle } from "lucide-react"
 import type { Metadata } from "next"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db"
+import { DeleteUserButton } from "./deleteUserButton"
+import { RestoreUserButton } from "./restoreUserButton"
 import { UserInfoForm } from "./userInfoForm"
 import { UserPermissionsForm } from "./userPermissionForm"
 
@@ -38,18 +44,55 @@ export default async function UserPage({
     }
 
     const allPermissions = await prisma.permission.findMany()
+    const isDeleted = user.deletedAt !== null
 
     return (
-        <div className="flex h-full w-full flex-col overflow-y-auto px-4 [&_h2]:font-bold">
-            <h2>Informations</h2>
-            <UserInfoForm user={user} />
-            <Separator className="my-4" />
-            <h2>Permissions</h2>
-            <UserPermissionsForm
-                userId={user.id}
-                userPermissions={user.permissions.map((p) => p.permission.id)}
-                allPermissions={allPermissions}
-            />
+        <div className="flex h-full w-full flex-col gap-6 overflow-y-auto px-4 pb-8">
+            {/* Deleted user warning banner */}
+            {isDeleted && user.deletedAt && (
+                <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Utilisateur supprime</AlertTitle>
+                    <AlertDescription>
+                        Cet utilisateur a ete supprime le{" "}
+                        {format(user.deletedAt, "d MMMM yyyy 'a' HH:mm", {
+                            locale: fr
+                        })}
+                        . Il ne peut plus se connecter.
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            {/* User Info Section */}
+            <section>
+                <h2 className="mb-4 font-bold text-lg">Informations</h2>
+                <UserInfoForm user={user} />
+            </section>
+
+            <Separator />
+
+            {/* Permissions Section */}
+            <section>
+                <h2 className="mb-4 font-bold text-lg">Permissions</h2>
+                <UserPermissionsForm
+                    userId={user.id}
+                    userPermissions={user.permissions.map(
+                        (p) => p.permission.id
+                    )}
+                    allPermissions={allPermissions}
+                />
+            </section>
+
+            <Separator />
+
+            {/* Danger Zone */}
+            <section>
+                {isDeleted ? (
+                    <RestoreUserButton userId={user.id} userName={user.name} />
+                ) : (
+                    <DeleteUserButton userId={user.id} userName={user.name} />
+                )}
+            </section>
         </div>
     )
 }
