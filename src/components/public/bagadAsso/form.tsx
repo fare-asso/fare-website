@@ -61,8 +61,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
         BagadAssoFormData
     >(submitBagadAssoFormAction, undefined)
 
-    const [captchaToken, setCaptchaToken] = useState<string>("")
-
     const form = useForm({
         defaultValues: {
             associationName: "",
@@ -102,7 +100,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                 eventParticipants: value.eventParticipants,
                 equipment: value.equipment,
                 termsAccepted: value.termsAccepted as true,
-                captchaToken: captchaToken
+                captchaToken: value.captchaToken
             }
 
             startTransition(() => {
@@ -532,7 +530,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
-                                                    Date de l&apos;évènement
+                                                    Date de l'évènement
                                                 </FieldLabel>
                                                 <Popover>
                                                     <PopoverTrigger asChild>
@@ -806,7 +804,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                             <Field data-invalid={isInvalid}>
                                                 <Captcha
                                                     onComplete={(token) => {
-                                                        setCaptchaToken(token)
                                                         field.handleChange(
                                                             token
                                                         )
@@ -838,13 +835,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                         )}
 
                         <div className="flex justify-end gap-4 pt-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => form.reset()}
-                            >
-                                Réinitialiser
-                            </Button>
                             <Button
                                 type="submit"
                                 disabled={pending}
