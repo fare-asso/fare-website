@@ -5,7 +5,13 @@ import { useForm } from "@tanstack/react-form"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
-import { Suspense, startTransition, useActionState, useState } from "react"
+import {
+    memo,
+    Suspense,
+    startTransition,
+    useActionState,
+    useCallback
+} from "react"
 import submitBagadAssoFormAction, {
     type FormState
 } from "@/actions/bagadAsso/submitBagadAssoFormAction"
@@ -55,13 +61,38 @@ interface BagadAssoFormProps {
     equipmentList: Promise<BagadAssoEquipment[]>
 }
 
+interface CaptchaFieldProps {
+    onTokenChange: (token: string) => void
+}
+
+// Memoized wrapper that only renders the Captcha widget
+// The onTokenChange callback must be stable (wrapped in useCallback by parent)
+const CaptchaWidget = memo(function CaptchaWidget({
+    onTokenChange
+}: CaptchaFieldProps) {
+    return <Captcha onComplete={onTokenChange} />
+})
+
+// Separate component for validation errors that can re-render independently
+function CaptchaValidation({
+    isTouched,
+    isValid,
+    errors
+}: {
+    isTouched: boolean
+    isValid: boolean
+    errors: Array<{ message?: string } | string | undefined>
+}) {
+    const isInvalid = isTouched && !isValid
+    if (!isInvalid) return null
+    return <FieldError errors={errors} />
+}
+
 export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
     const [formState, formAction, pending] = useActionState<
         FormState | undefined,
         BagadAssoFormData
     >(submitBagadAssoFormAction, undefined)
-
-    const [captchaToken, setCaptchaToken] = useState<string>("")
 
     const form = useForm({
         defaultValues: {
@@ -102,7 +133,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                 eventParticipants: value.eventParticipants,
                 equipment: value.equipment,
                 termsAccepted: value.termsAccepted as true,
-                captchaToken: captchaToken
+                captchaToken: value.captchaToken
             }
 
             startTransition(() => {
@@ -110,6 +141,18 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
             })
         }
     })
+
+    // Stable callback for captcha - form.setFieldValue is stable
+    const handleCaptchaComplete = useCallback(
+        (token: string) => {
+            form.setFieldValue("captchaToken", token)
+            form.setFieldMeta("captchaToken", (prev) => ({
+                ...prev,
+                isTouched: true
+            }))
+        },
+        [form]
+    )
 
     if (formState?.success) {
         return (
@@ -532,7 +575,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
-                                                    Date de l&apos;évènement
+                                                    Date de l'évènement
                                                 </FieldLabel>
                                                 <Popover>
                                                     <PopoverTrigger asChild>
@@ -796,35 +839,25 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                             />
 
                             <div className="pt-4">
-                                <form.Field
-                                    name="captchaToken"
-                                    children={(field) => {
-                                        const isInvalid =
-                                            field.state.meta.isTouched &&
-                                            !field.state.meta.isValid
-                                        return (
-                                            <Field data-invalid={isInvalid}>
-                                                <Captcha
-                                                    onComplete={(token) => {
-                                                        setCaptchaToken(token)
-                                                        field.handleChange(
-                                                            token
-                                                        )
-                                                        field.handleBlur()
-                                                    }}
-                                                />
-                                                {isInvalid && (
-                                                    <FieldError
-                                                        errors={
-                                                            field.state.meta
-                                                                .errors
-                                                        }
-                                                    />
-                                                )}
-                                            </Field>
-                                        )
-                                    }}
-                                />
+                                <Field>
+                                    <CaptchaWidget
+                                        onTokenChange={handleCaptchaComplete}
+                                    />
+                                    <form.Field
+                                        name="captchaToken"
+                                        children={(field) => (
+                                            <CaptchaValidation
+                                                isTouched={
+                                                    field.state.meta.isTouched
+                                                }
+                                                isValid={
+                                                    field.state.meta.isValid
+                                                }
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    />
+                                </Field>
                             </div>
                         </div>
 
@@ -838,13 +871,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                         )}
 
                         <div className="flex justify-end gap-4 pt-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => form.reset()}
-                            >
-                                Réinitialiser
-                            </Button>
                             <Button
                                 type="submit"
                                 disabled={pending}
