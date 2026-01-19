@@ -5,7 +5,13 @@ import { useForm } from "@tanstack/react-form"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
-import { Suspense, startTransition, useActionState } from "react"
+import {
+    memo,
+    Suspense,
+    startTransition,
+    useActionState,
+    useCallback
+} from "react"
 import submitBagadAssoFormAction, {
     type FormState
 } from "@/actions/bagadAsso/submitBagadAssoFormAction"
@@ -53,6 +59,33 @@ import {
 
 interface BagadAssoFormProps {
     equipmentList: Promise<BagadAssoEquipment[]>
+}
+
+interface CaptchaFieldProps {
+    onTokenChange: (token: string) => void
+}
+
+// Memoized wrapper that only renders the Captcha widget
+// The onTokenChange callback must be stable (wrapped in useCallback by parent)
+const CaptchaWidget = memo(function CaptchaWidget({
+    onTokenChange
+}: CaptchaFieldProps) {
+    return <Captcha onComplete={onTokenChange} />
+})
+
+// Separate component for validation errors that can re-render independently
+function CaptchaValidation({
+    isTouched,
+    isValid,
+    errors
+}: {
+    isTouched: boolean
+    isValid: boolean
+    errors: Array<{ message?: string } | string | undefined>
+}) {
+    const isInvalid = isTouched && !isValid
+    if (!isInvalid) return null
+    return <FieldError errors={errors} />
 }
 
 export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
@@ -108,6 +141,18 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
             })
         }
     })
+
+    // Stable callback for captcha - form.setFieldValue is stable
+    const handleCaptchaComplete = useCallback(
+        (token: string) => {
+            form.setFieldValue("captchaToken", token)
+            form.setFieldMeta("captchaToken", (prev) => ({
+                ...prev,
+                isTouched: true
+            }))
+        },
+        [form]
+    )
 
     if (formState?.success) {
         return (
@@ -794,34 +839,25 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                             />
 
                             <div className="pt-4">
-                                <form.Field
-                                    name="captchaToken"
-                                    children={(field) => {
-                                        const isInvalid =
-                                            field.state.meta.isTouched &&
-                                            !field.state.meta.isValid
-                                        return (
-                                            <Field data-invalid={isInvalid}>
-                                                <Captcha
-                                                    onComplete={(token) => {
-                                                        field.handleChange(
-                                                            token
-                                                        )
-                                                        field.handleBlur()
-                                                    }}
-                                                />
-                                                {isInvalid && (
-                                                    <FieldError
-                                                        errors={
-                                                            field.state.meta
-                                                                .errors
-                                                        }
-                                                    />
-                                                )}
-                                            </Field>
-                                        )
-                                    }}
-                                />
+                                <Field>
+                                    <CaptchaWidget
+                                        onTokenChange={handleCaptchaComplete}
+                                    />
+                                    <form.Field
+                                        name="captchaToken"
+                                        children={(field) => (
+                                            <CaptchaValidation
+                                                isTouched={
+                                                    field.state.meta.isTouched
+                                                }
+                                                isValid={
+                                                    field.state.meta.isValid
+                                                }
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    />
+                                </Field>
                             </div>
                         </div>
 
