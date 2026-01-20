@@ -38,7 +38,6 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem
 } from "../ui/sidebar"
-import CurrentUserClient from "./currentUserClient"
 import SignOutButton from "./signOutButton"
 
 type SidebarLink = {
@@ -50,9 +49,11 @@ type SidebarLink = {
 }
 
 export default function SideBarApp({
-    permissions
+    permissions,
+    email
 }: {
     permissions?: Permission[]
+    email?: string
 }) {
     const pathname = usePathname()
 
@@ -216,7 +217,10 @@ export default function SideBarApp({
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
-                <CurrentUserClient />
+                <div className="flex flex-col items-center text-black text-sm">
+                    Connecté en tant que
+                    <div className="font-semibold">{email}</div>
+                </div>
                 <SignOutButton />
             </SidebarFooter>
         </Sidebar>
