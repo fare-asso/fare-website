@@ -16,7 +16,7 @@ export default async function getCurrentUserRole(): Promise<{
 
     if (user) {
         // fetch User in the public db with auth user id
-        const pUser = await prisma.user.findUniqueOrThrow({
+        const pUser = await prisma.user.findUnique({
             where: {
                 id: user.id
             }

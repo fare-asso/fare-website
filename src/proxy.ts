@@ -38,19 +38,27 @@ export async function proxy(request: NextRequest) {
 
     /* Authenticated */
 
-    // Fetch user role
-    const roleObject = await supabase
+    // Fetch user role and check if soft-deleted
+    const userObject = await supabase
         .from("User")
-        .select("role")
+        .select("role, deletedAt")
         .eq("id", data.user.id)
         .single()
 
-    if (roleObject.error || !roleObject.data) {
-        console.error(roleObject.error?.message || "Role not found")
+    if (userObject.error || !userObject.data) {
+        console.error(userObject.error?.message || "User not found")
         return NextResponse.redirect(new URL("/", request.url))
     }
 
-    const role: Role = roleObject.data.role
+    // Block soft-deleted users
+    if (userObject.data.deletedAt !== null) {
+        await supabase.auth.signOut()
+        return NextResponse.redirect(
+            new URL("/login?error=account_deleted", request.url)
+        )
+    }
+
+    const role: Role = userObject.data.role
 
     if (request.url.includes("/dashboard")) {
         const allowedRolesInDashboard: Role[] = ["MEMBER", "ADMIN"]

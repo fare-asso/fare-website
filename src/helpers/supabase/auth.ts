@@ -16,9 +16,12 @@ export async function getCurrentUserWithPermissions(): Promise<UserWithPermissio
 
     if (!user) return null
 
-    // Match avec public.User
-    const dbUser = await prisma.user.findUnique({
-        where: { id: user.id },
+    // Match avec public.User, exclude soft-deleted users
+    const dbUser = await prisma.user.findFirst({
+        where: {
+            id: user.id,
+            deletedAt: null // Block soft-deleted users
+        },
         include: {
             permissions: {
                 include: {
