@@ -15,7 +15,10 @@ export async function loginWithGoogleAction() {
     const protocol = headersList.get("x-forwarded-proto") || "https"
     const origin = `${protocol}://${host}`
 
-    console.log("loginWithGoogleAction - redirectTo:", `${origin}/login/callback/google`)
+    console.log(
+        "loginWithGoogleAction - redirectTo:",
+        `${origin}/login/callback/google`
+    )
 
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
