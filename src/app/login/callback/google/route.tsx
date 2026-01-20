@@ -2,13 +2,15 @@ import { render } from "@react-email/render"
 import { NextResponse } from "next/server"
 import { isDevelopment } from "std-env"
 import NewGoogleUserTemplate from "@/../emails/new-google-user"
+import { env } from "@/env"
 import { sendEmail } from "@/helpers/email"
 import { createClient } from "@/helpers/supabase/server"
 
 const NEW_USER_THRESHOLD_MS = 60_000 // 60 seconds
 
 export async function GET(request: Request) {
-    const { searchParams, origin } = new URL(request.url)
+    const host = new URL(env.NEXT_PUBLIC_SITE_URL).host
+    const { searchParams } = new URL(request.url)
     const code = searchParams.get("code")
     // if "next" is in param, use it as the redirect URL
     let next = searchParams.get("next") ?? "/dashboard"
@@ -29,17 +31,17 @@ export async function GET(request: Request) {
             const forwardedHost = request.headers.get("x-forwarded-host") // original origin before load balancer
             if (isDevelopment) {
                 // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-                return NextResponse.redirect(`${origin}${next}`)
+                return NextResponse.redirect(`${host}${next}`)
             } else if (forwardedHost) {
                 return NextResponse.redirect(`https://${forwardedHost}${next}`)
             } else {
-                return NextResponse.redirect(`${origin}${next}`)
+                return NextResponse.redirect(`${host}${next}`)
             }
         }
     }
 
     // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/login?error=true`)
+    return NextResponse.redirect(`${host}/login?error=true`)
 }
 
 async function handleNewUserNotification(
