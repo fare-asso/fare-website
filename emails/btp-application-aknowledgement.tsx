@@ -24,7 +24,7 @@ export function BtpApplicationAck({
             </Text>
             <Text>
                 Merci pour l'intérêt que tu portes au projet, j'ai bien reçu ta
-                candidature pour devenir tuteur pour l'année 2025-2026. Je
+                candidature pour devenir tuteur pour l'année 2026-2027. Je
                 reviens vers toi prochainement à l'adresse{" "}
                 <span className="text-stone-600">{email}</span>.
             </Text>

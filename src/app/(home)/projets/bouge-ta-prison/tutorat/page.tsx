@@ -47,7 +47,7 @@ export default function Tutorat() {
                     <ul className="mb-8 ml-4 list-inside list-disc space-y-2">
                         <li>
                             être <strong>minimum en L3</strong> sur l'année
-                            <strong> 2025-2026</strong>
+                            <strong> 2026-2027</strong>
                         </li>
                         <li>
                             être <strong>étudiant à Rennes</strong>
@@ -70,7 +70,7 @@ export default function Tutorat() {
                     </p>
                     <p className="mb-4">
                         Si vous êtes intéressés pour candidater pour l'année
-                        2025-2026, merci de remplir le formulaire et de déposer
+                        2026-2027, merci de remplir le formulaire et de déposer
                         <strong> obligatoirement</strong> votre CV et lettre de
                         motivation.
                     </p>

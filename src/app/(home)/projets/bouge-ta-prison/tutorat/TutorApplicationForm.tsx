@@ -195,7 +195,7 @@ export default function TutorApplicationForm() {
                                     </Select>
                                     <FormDescription>
                                         Votre année d'étude prévue pour
-                                        2025-2026
+                                        2026-2027
                                     </FormDescription>
                                     <FormMessage>
                                         {
