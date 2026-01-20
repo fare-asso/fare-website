@@ -101,6 +101,11 @@ function LoginPageContent() {
                         </>
                     )}
                 </Button>
+                <div className="mt-2 text-balance text-center text-gray-500 text-xs">
+                    Utilisez votre adresse Google FARE (qui termine par
+                    @fare-asso.fr)
+                </div>
+
                 <div className="flex w-96 max-w-full items-center justify-center py-6">
                     <div className="flex-1 border-gray-300 border-t"></div>
                     <span className="px-4 text-gray-500 text-sm">ou</span>
