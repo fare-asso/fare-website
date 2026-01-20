@@ -3,7 +3,7 @@
 import { LoaderIcon } from "lucide-react"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
-import { useActionState, useTransition } from "react"
+import { Suspense, useActionState, useTransition } from "react"
 import { FcGoogle } from "react-icons/fc"
 import { MdAdminPanelSettings } from "react-icons/md"
 import FARELogo from "#public/logo_fare.png"
@@ -20,6 +20,29 @@ import { Label } from "@/components/ui/label"
 import { loginWithGoogleAction, loginWithPasswordAction } from "./loginAction"
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={<LoginPageSkeleton />}>
+            <LoginPageContent />
+        </Suspense>
+    )
+}
+
+function LoginPageSkeleton() {
+    return (
+        <Card className="mx-auto mt-20 min-w-1/3 max-w-sm">
+            <CardHeader className="flex flex-col items-start">
+                <div className="mx-auto mb-6 h-16 w-16 animate-pulse rounded bg-gray-200" />
+                <div className="h-6 w-40 animate-pulse rounded bg-gray-200" />
+                <div className="mt-2 h-4 w-60 animate-pulse rounded bg-gray-200" />
+            </CardHeader>
+            <CardContent>
+                <div className="h-12 w-96 max-w-full animate-pulse rounded bg-gray-200" />
+            </CardContent>
+        </Card>
+    )
+}
+
+function LoginPageContent() {
     const searchParams = useSearchParams()
     const error = searchParams.get("error")
 
