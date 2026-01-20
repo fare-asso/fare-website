@@ -13,7 +13,7 @@ export async function loginWithGoogleAction() {
     // Get the origin from the request headers (works for both dev and preview deployments)
     const url = new URL(env.NEXT_PUBLIC_SITE_URL)
     const origin = isDevelopment
-        ? "http://localhost"
+        ? "http://localhost:3000"
         : `${url.protocol}//${url.host}`
 
     console.log(

@@ -13,7 +13,7 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <main className="flex min-h-screen flex-col items-center p-8">
+        <main className="grid min-h-screen place-items-center items-center p-2">
             {children}
         </main>
     )

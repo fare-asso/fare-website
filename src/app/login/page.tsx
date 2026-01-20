@@ -60,7 +60,7 @@ function LoginPageContent() {
     }
 
     return (
-        <Card className="mx-auto mt-20 min-w-1/3 max-w-sm">
+        <Card className="mx-auto min-w-1/3 max-w-full">
             <CardHeader className="flex flex-col items-start">
                 <Image
                     src={FARELogo}
@@ -84,7 +84,7 @@ function LoginPageContent() {
             <CardContent>
                 <Button
                     type="button"
-                    className="h-12 w-96 max-w-full"
+                    className="h-12 w-full max-w-full"
                     variant="outline"
                     onClick={handleGoogleLogin}
                     disabled={googlePending}
