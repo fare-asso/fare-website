@@ -54,8 +54,8 @@ function LoginPageContent() {
     const [googlePending, startTransition] = useTransition()
 
     const handleGoogleLogin = () => {
-        startTransition(() => {
-            loginWithGoogleAction()
+        startTransition(async () => {
+            await loginWithGoogleAction()
         })
     }
 

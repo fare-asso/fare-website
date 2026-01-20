@@ -90,13 +90,14 @@ export async function loginWithPasswordAction(
         case "ADMIN":
             revalidatePath("/dashboard")
             redirect("/dashboard")
-
+            break
         case "ASSO_OWNER":
             revalidatePath("/espace-asso")
             redirect("/espace-asso")
-
+            break
         case "MEMBER":
             revalidatePath("/dashboard")
             redirect("/dashboard")
+            break
     }
 }
