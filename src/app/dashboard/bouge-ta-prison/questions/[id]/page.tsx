@@ -129,9 +129,6 @@ export default async function TutorQuestionPage({
                                 <MessageSquareTextIcon className="size-5" />
                                 <span>Message</span>
                             </CardTitle>
-                            <CardDescription>
-                                Question posée par l'utilisateur
-                            </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="rounded-lg border bg-muted/50 p-4">
@@ -152,9 +149,6 @@ export default async function TutorQuestionPage({
                                 <SquareUserRoundIcon className="size-5" />
                                 <span>Informations personnelles</span>
                             </CardTitle>
-                            <CardDescription>
-                                Coordonnées de la personne
-                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>

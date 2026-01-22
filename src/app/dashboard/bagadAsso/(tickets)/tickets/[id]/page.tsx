@@ -150,9 +150,6 @@ export default async function Page({
                                 <SquareUserRoundIcon className="size-5" />
                                 <span>Informations de contact</span>
                             </CardTitle>
-                            <CardDescription>
-                                Personne ayant soumis la demande
-                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
@@ -176,13 +173,15 @@ export default async function Page({
                                     <FaEnvelope className="text-muted-foreground" />
                                     {ticket.representativeEmail}
                                 </a>
-                                <a
-                                    href={`tel:${ticket.phoneNumber}`}
-                                    className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
-                                >
-                                    <FaPhone className="text-muted-foreground" />
-                                    {ticket.phoneNumber}
-                                </a>
+                                {ticket.phoneNumber && (
+                                    <a
+                                        href={`tel:${ticket.phoneNumber}`}
+                                        className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
+                                    >
+                                        <FaPhone className="text-muted-foreground" />
+                                        {ticket.phoneNumber}
+                                    </a>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
