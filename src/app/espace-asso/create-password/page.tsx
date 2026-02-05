@@ -7,9 +7,7 @@ export default async function CreatePasswordPage() {
 
     if (error) {
         return (
-            <div>
-                {"Echec de l'authentification de votre compte représentant"}
-            </div>
+            <div>Echec de l'authentification de votre compte représentant</div>
         )
     }
 

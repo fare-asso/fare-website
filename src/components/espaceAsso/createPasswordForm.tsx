@@ -22,7 +22,6 @@ export default function CreatePasswordForm({ email }: { email: string }) {
         { error?: string; success?: boolean } | undefined,
         FormData
     >(createPasswordForRepresentativeAction, undefined)
-    const [_dialogIsOpen, _setDialogIsOpen] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
