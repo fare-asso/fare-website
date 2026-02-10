@@ -56,7 +56,7 @@ export function useElusUnivRennes(): {
         VPE: [
             {
                 firstName: "Leny",
-                lastName: "REBU",
+                lastName: "RABU",
                 position: "VPE – Conseil d'Administration (CA)",
                 details: "Étudiant en Administration de la Santé (EHESP)"
             },
