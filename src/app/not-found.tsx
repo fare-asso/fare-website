@@ -10,7 +10,7 @@ export default function NotFoundPage() {
             <div className="flex w-[90%] translate-x-[5%] flex-col items-center justify-center gap-12 md:translate-x-0">
                 <div className="flex w-[70%] max-w-80 flex-col items-start justify-start">
                     <h2 className="title-404 m-0 w-full">
-                        Vous vous êtes perdu...?
+                        Vous vous êtes perdu·e...?
                     </h2>
                     <Image
                         src={FareLoutreSad}
