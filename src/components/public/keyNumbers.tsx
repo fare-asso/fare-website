@@ -73,7 +73,14 @@ export function KeyNumbersSkeleton() {
             values={[
                 { title: "Associations étudiantes", value: 0 },
                 { title: "Étudiant.e.s", value: 0 },
-                { title: "Élu.e.s universitaires & CROUS", value: 0 }
+                {
+                    title: (
+                        <>
+                            Élu.e.s universitaires <br /> & CROUS
+                        </>
+                    ),
+                    value: 0
+                }
             ]}
         />
     )
