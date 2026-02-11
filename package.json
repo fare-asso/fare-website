@@ -105,7 +105,8 @@
         "typescript": "^5.9.3"
     },
     "overrides": {
-        "react-is": "^19.0.1"
+        "react-is": "^19.0.1",
+        "baseline-browser-mapping": "^2.9.19"
     },
     "packageManager": "pnpm@10.29.2",
     "pnpm": {
