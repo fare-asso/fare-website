@@ -1,0 +1,14 @@
+@supports (anchor-name: --my-anchor) {
+    .title-404 {
+        anchor-name: --title;
+    }
+
+    .sad-otter {
+        position: absolute;
+        position-anchor: --title;
+        margin: 0;
+        top: calc(anchor(bottom) - 2rem);
+        left: calc(anchor(left) - 4rem);
+        z-index: -1;
+    }
+}
