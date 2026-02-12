@@ -8,38 +8,38 @@ export type Elu = {
 export function useElusCROUS(): Elu[] {
     return [
         {
-            firstName: "Zoée",
-            lastName: "PEROCHON-DE-JAMETEL",
+            firstName: "Laure",
+            lastName: "CHABOT",
             position: "Titulaire",
-            details: "Étudiante en Psychologie"
+            details: "Étudiante en LLCER Chinois"
         },
         {
-            firstName: "Gurvan",
-            lastName: "MORVAN",
+            firstName: "Aurélien",
+            lastName: "AYME",
             position: "Titulaire",
-            details: "Étudiant en Soins infirmiers"
+            details: "Étudiant en Géomatique"
         },
         {
-            firstName: "Agathe",
-            lastName: "LEMU",
+            firstName: "Danaé",
+            lastName: "LE MATELOT",
             position: "Titulaire",
-            details: "Étudiante en Langues"
-        },
-        {
-            firstName: "Yoann",
-            lastName: "ZARAGOSA",
-            position: "Suppléant",
-            details: "Étudiant en Informatique"
-        },
-        {
-            firstName: "Ninon",
-            lastName: "BRIAND",
-            position: "Suppléante",
             details: "Étudiante en Pharmacie"
         },
         {
-            firstName: "Robin",
-            lastName: "HUET",
+            firstName: "Timéo",
+            lastName: "GALLACIER",
+            position: "Suppléant",
+            details: "Étudiant en Droit et Sciences Politiques"
+        },
+        {
+            firstName: "Sterenn",
+            lastName: "LESAUX-COUGARD",
+            position: "Suppléante",
+            details: "Étudiante en Maïeutique"
+        },
+        {
+            firstName: "Pol",
+            lastName: "BLANCHARD",
             position: "Suppléant",
             details: "Étudiant en AES"
         }
