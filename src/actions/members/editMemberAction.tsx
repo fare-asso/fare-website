@@ -11,19 +11,16 @@ const MemberSchema = z.object({
     firstName: z.string().min(1, "Le prénom est obligatoire"),
     position: z.string().min(1, "Le poste est obligatoire"),
     picturePath: z.string().min(1, "Le chemin de l'image est obligatoire"),
-    email: z.string().email("L'email doit être valide"),
+    email: z.email("L'email doit être valide"),
     facebook: z
-        .string()
         .url("L'URL Facebook doit être valide")
         .optional()
         .or(z.literal("")),
     instagram: z
-        .string()
         .url("L'URL Instagram doit être valide")
         .optional()
         .or(z.literal("")),
     twitter: z
-        .string()
         .url("L'URL Twitter doit être valide")
         .optional()
         .or(z.literal(""))
@@ -107,7 +104,7 @@ export default async function editMemberAction(formData: FormData, id: number) {
 
         // Révalidation des chemins
         revalidatePath("/dashboard/membres")
-        revalidatePath("/bureau")
+        revalidatePath("/a-propos/bureau")
 
         return { success: true }
     } catch (err) {

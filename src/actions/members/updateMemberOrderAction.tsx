@@ -34,7 +34,7 @@ export default async function updateMemberOrderAction(
 
         // Revalidate paths
         revalidatePath("/dashboard/membres")
-        revalidatePath("/bureau")
+        revalidatePath("/a-propos/bureau")
 
         return { success: true }
     } catch (err) {

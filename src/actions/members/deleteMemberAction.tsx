@@ -32,7 +32,7 @@ export default async function deleteMemberAction({ id }: { id: number }) {
             return { error: error.message }
         } else {
             revalidatePath("/dashboard/membres")
-            revalidatePath("/bureau")
+            revalidatePath("/a-propos/bureau")
             return { success: true }
         }
     } else return { error: "Failed to delete record" }

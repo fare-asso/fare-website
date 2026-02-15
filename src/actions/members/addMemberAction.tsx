@@ -94,7 +94,7 @@ export default async function addMemberAction(
 
         // Revalidate path
         revalidatePath("/dashboard/membres")
-        revalidatePath("/bureau")
+        revalidatePath("/a-propos/bureau")
 
         return { success: true }
     } catch {
