@@ -1,17 +1,41 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
-import AdhesionList from "@/components/dashboard/adhesions/adhesionList"
+import AdhesionSummary from "@/components/dashboard/adhesions/adhesionSummary"
 import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import ActiveAdhesions from "./activeAdhesions"
+import ArchivedAdhesions from "./archivedAdhesions"
+import AdhesionTabSwitcher from "./tabSwitcher"
 
 export const metadata: Metadata = {
     title: "Adhésions"
+}
+
+export const dynamic = "force-dynamic"
+
+function SummarySkeleton() {
+    return (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-4 w-4" />
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-8 w-12" />
+                        <Skeleton className="mt-1 h-3 w-32" />
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    )
 }
 
 export default function Adhesions() {
@@ -23,12 +47,19 @@ export default function Adhesions() {
                     Espace de gestion des demandes d'adhésion à la FARE
                 </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto p-0">
-                <Suspense fallback={<p>Chargements...</p>}>
-                    <AdhesionList />
+            <CardContent className="flex-1 space-y-6 overflow-y-auto p-0">
+                <Suspense fallback={<SummarySkeleton />}>
+                    <AdhesionSummary />
                 </Suspense>
+                <AdhesionTabSwitcher>
+                    <Suspense fallback={<p>Chargement...</p>}>
+                        <ActiveAdhesions />
+                    </Suspense>
+                    <Suspense fallback={<p>Chargement...</p>}>
+                        <ArchivedAdhesions />
+                    </Suspense>
+                </AdhesionTabSwitcher>
             </CardContent>
-            <CardFooter></CardFooter>
         </Card>
     )
 }

@@ -149,10 +149,23 @@ model BagadAssoTicket {
 }
 
 model Adhesion {
-  id             Int      @id @default(autoincrement())
-  createdAt      DateTime @default(now())
-  association    String
-  folderPath     String
+  id                          Int       @id @default(autoincrement())
+  createdAt                   DateTime  @default(now())
+  archived                    DateTime?
+  association                 String
+  folderPath                  String
+  nomComplet                  String    @default("")
+  sigle                       String    @default("")
+  email                       String    @default("")
+  telephonePortable           String    @default("")
+  telephoneFixe               String?
+  college                     String    @default("")
+  objetPrincipal              String    @default("")
+  adresseAdministrative       String    @default("")
+  dateAG                      DateTime?
+  nombreAdherents             Int       @default(0)
+  nombreEtudiantsRepresentes  Int       @default(0)
+  bureau                      Json?
 }
 
 model BTPTutorApplication {

@@ -1,39 +1,34 @@
-import prisma from "@/helpers/db"
-import { StorageUtils } from "@/helpers/supabase/storageUtils"
+"use client"
+
+import type { Adhesion } from "@prisma/client"
+import { FileTextIcon } from "lucide-react"
 import AdhesionCard from "./adhesionCard"
 
-export default async function AdhesionList() {
-    const _su = new StorageUtils()
-
-    // fetch all adhesion from DB
-    const adhesions = await prisma.adhesion.findMany({
-        take: 32,
-        orderBy: {
-            createdAt: "desc"
-        }
-    })
-
-    if (adhesions) {
-        const adhesionCards = adhesions.map((adhesion) => (
-            <AdhesionCard key={adhesion.id} adhesion={adhesion} />
-        ))
-
-        return (
-            <div className="relative h-full w-full rounded-lg border bg-card p-6 text-card-foreground shadow-xs">
-                <div className="grid h-full w-full grid-cols-1 gap-8 overflow-auto p-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-                    {adhesionCards.length > 0 ? (
-                        adhesionCards
-                    ) : (
-                        <span>Aucunes demandes d'adhésion.</span>
-                    )}
-                </div>
+export default function AdhesionList({ adhesions }: { adhesions: Adhesion[] }) {
+    return (
+        <div className="@container flex h-full flex-col">
+            <div className="flex-1 overflow-y-auto">
+                {adhesions.length > 0 ? (
+                    <div className="grid @min-2xl:grid-cols-2 grid-cols-1 gap-4">
+                        {adhesions.map((adhesion) => (
+                            <AdhesionCard
+                                key={adhesion.id}
+                                adhesion={adhesion}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30">
+                        <FileTextIcon className="mb-3 h-12 w-12 text-muted-foreground/50" />
+                        <p className="font-medium text-muted-foreground">
+                            Aucune demande d'adhésion
+                        </p>
+                        <p className="mt-1 text-muted-foreground/70 text-sm">
+                            Les demandes d'adhésion apparaîtront ici
+                        </p>
+                    </div>
+                )}
             </div>
-        )
-    } else {
-        return (
-            <span className="text-red-800 text-xl">
-                Echec du chargement des adhésions, veuillez réessayer
-            </span>
-        )
-    }
+        </div>
+    )
 }

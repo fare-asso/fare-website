@@ -10,8 +10,13 @@
         "cssVariables": true,
         "prefix": ""
     },
+    "iconLibrary": "lucide",
     "aliases": {
         "components": "@/components",
+        "hooks": "@/hooks",
         "utils": "@/lib/utils"
+    },
+    "registries": {
+        "@diceui": "https://diceui.com/r/{name}.json"
     }
 }

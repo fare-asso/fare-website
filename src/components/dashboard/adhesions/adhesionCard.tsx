@@ -1,122 +1,144 @@
 "use client"
 
 import type { Adhesion } from "@prisma/client"
-import clsx from "clsx"
 import { format } from "date-fns"
-import { type MouseEvent, useState } from "react"
-import { FaFileArchive } from "react-icons/fa"
-import { MdOutlineFileDownload } from "react-icons/md"
-import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
-import LoadingRing from "../loadingRing"
-
-function _downloadFile(url: string) {
-    const a = document.createElement("a")
-    a.href = url
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-}
+import { fr } from "date-fns/locale"
+import {
+    BuildingIcon,
+    MailIcon,
+    MapPinIcon,
+    PhoneIcon,
+    UsersIcon
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
+import AdhesionCardActions from "./adhesionCardActions"
 
 export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-
-    const [hidden, setIsHidden] = useState<boolean>(false)
-
-    const _handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault()
-        event.stopPropagation()
-
-        setIsHidden(true)
-        // const res = await deleteCDPAction({id: cdp.id});
-        // if(res.error) {
-        //     toast({
-        //         title: "Erreur",
-        //         variant: "destructive",
-        //         description: res.error
-        //     })
-        // } else {
-        //     toast({
-        //         description: `Le communiqué ${name} a bien été supprimé`
-        //     })
-        // }
-    }
-
-    const handleDownload = async (event: MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault()
-
-        setIsLoading(true)
-        try {
-            const result = await downloadFolderAction(
-                undefined,
-                adhesion.folderPath
-            )
-            if (result.error) {
-                console.error(result.error)
-                // Afficher une notification d'erreur à l'utilisateur
-            } else if (result.success && result.zipData) {
-                const byteCharacters = atob(result.zipData)
-                const byteNumbers = new Array(byteCharacters.length)
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i)
-                }
-                const byteArray = new Uint8Array(byteNumbers)
-                const blob = new Blob([byteArray], { type: "application/zip" })
-
-                const url = window.URL.createObjectURL(blob)
-                const a = document.createElement("a")
-                a.style.display = "none"
-                a.href = url
-                a.download = result.filename || "download.zip"
-                document.body.appendChild(a)
-                a.click()
-                window.URL.revokeObjectURL(url)
-                document.body.removeChild(a)
-            }
-        } catch (error) {
-            console.error("Erreur lors du téléchargement:", error)
-            // Afficher une notification d'erreur à l'utilisateur
-        } finally {
-            setIsLoading(false)
-        }
-    }
+    const isArchived = adhesion.archived !== null
 
     return (
-        <div className={clsx("flex flex-col items-center", hidden && "hidden")}>
-            <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-xs outline-black/30 outline-offset-2 hover:outline-2">
-                {/* Hover buttons */}
-                <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-1 opacity-100 md:opacity-0 md:hover:opacity-100">
-                    <button
-                        type="button"
-                        id="downloadIcon"
-                        onClick={handleDownload}
-                        disabled={isLoading}
-                        className="rounded-md bg-black/10 p-1 hover:bg-black/20"
-                    >
-                        {isLoading ? (
-                            <LoadingRing className="mr-0!" />
-                        ) : (
-                            <MdOutlineFileDownload size={20} />
-                        )}
-                    </button>
-                    {/* <button id="deleteIcon" onClick={handleDelete} className="bg-black/10 rounded-md p-1 hover:bg-black/20"><MdDelete size={20}/></button> */}
-                </div>
-                {/* <FaRegFilePdf size={55} className="text-red-600"/> : */}
-                {/* <FaRegFolderOpen size={55} className="text-[#7e8bac]"/> */}
-                <FaFileArchive size={55} className="text-[#7e8bac]" />
-            </div>
+        <Card
+            className={`flex h-full flex-col transition-all hover:shadow-md ${
+                isArchived
+                    ? "border-muted bg-muted/30 opacity-75"
+                    : "border-border"
+            }`}
+        >
+            <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Badge
+                                variant="secondary"
+                                className="shrink-0 font-mono text-xs"
+                            >
+                                #{adhesion.id}
+                            </Badge>
+                            {adhesion.college && (
+                                <Badge variant="outline">
+                                    Collège {adhesion.college}
+                                </Badge>
+                            )}
+                            {isArchived && (
+                                <Badge
+                                    variant="outline"
+                                    className="text-muted-foreground"
+                                >
+                                    Archivée
+                                </Badge>
+                            )}
+                        </div>
+                        <CardTitle className="text-lg">
+                            {adhesion.nomComplet || adhesion.association}
+                        </CardTitle>
+                        {adhesion.sigle &&
+                            adhesion.nomComplet &&
+                            adhesion.sigle !== adhesion.nomComplet && (
+                                <CardDescription className="font-medium">
+                                    {adhesion.sigle}
+                                </CardDescription>
+                            )}
+                    </div>
 
-            <div className="mt-2 flex flex-col items-center justify-start">
-                <span className="text-center font-medium text-sm">
-                    {adhesion.association}
-                </span>
-                {/* <Link href={"/"} target="blank" className="font-medium text-sm hover:underline text-center">
-                    {adhesion.association}
-                </Link> */}
-
-                <div className="text-xs opacity-50">
-                    {format(adhesion.createdAt, "dd/MM/yy")}
+                    <AdhesionCardActions adhesion={adhesion} />
                 </div>
-            </div>
-        </div>
+            </CardHeader>
+
+            <CardContent className="flex flex-1 flex-col pt-0">
+                <div className="grid gap-3 text-sm sm:grid-cols-2">
+                    {adhesion.email && (
+                        <a
+                            href={`mailto:${adhesion.email}`}
+                            className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
+                        >
+                            <MailIcon className="h-4 w-4 shrink-0" />
+                            <span className="truncate">{adhesion.email}</span>
+                        </a>
+                    )}
+
+                    {adhesion.telephonePortable && (
+                        <a
+                            href={`tel:${adhesion.telephonePortable}`}
+                            className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
+                        >
+                            <PhoneIcon className="h-4 w-4 shrink-0" />
+                            <span>{adhesion.telephonePortable}</span>
+                        </a>
+                    )}
+
+                    {adhesion.objetPrincipal && (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                            <BuildingIcon className="h-4 w-4 shrink-0" />
+                            <span className="truncate">
+                                {adhesion.objetPrincipal}
+                            </span>
+                        </div>
+                    )}
+
+                    {adhesion.adresseAdministrative && (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                            <MapPinIcon className="h-4 w-4 shrink-0" />
+                            <span className="truncate">
+                                {adhesion.adresseAdministrative}
+                            </span>
+                        </div>
+                    )}
+
+                    {adhesion.nombreAdherents > 0 && (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                            <UsersIcon className="h-4 w-4 shrink-0" />
+                            <span>
+                                {adhesion.nombreAdherents} adhérent
+                                {adhesion.nombreAdherents > 1 ? "s" : ""}
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                <div className="mt-auto flex items-center justify-between border-t pt-3 text-muted-foreground text-xs">
+                    {adhesion.nombreEtudiantsRepresentes > 0 && (
+                        <span>
+                            {adhesion.nombreEtudiantsRepresentes} étudiant
+                            {adhesion.nombreEtudiantsRepresentes > 1 ? "s" : ""}{" "}
+                            représenté
+                            {adhesion.nombreEtudiantsRepresentes > 1 ? "s" : ""}
+                        </span>
+                    )}
+                    <span className="ml-auto">
+                        Reçue le{" "}
+                        {format(adhesion.createdAt, "d MMM yyyy", {
+                            locale: fr
+                        })}
+                    </span>
+                </div>
+            </CardContent>
+        </Card>
     )
 }
