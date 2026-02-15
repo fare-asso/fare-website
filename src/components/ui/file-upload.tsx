@@ -1242,6 +1242,7 @@ function FileUploadItemProgress(props: FileUploadItemProgressProps) {
                         className
                     )}
                 >
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: it's fine */}
                     <svg
                         className="-rotate-90 transform"
                         width={size}
