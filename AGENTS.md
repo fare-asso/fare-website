@@ -60,13 +60,25 @@ Always use `pnpm`, never use `npm`
 - Use Zod schemas for runtime validation of form inputs and API data
 - Validate environment variables at build time using `src/env.ts`
 
+### Imports & Exports
+
+- **Use `export type` for TypeScript types and interfaces:** `export type MyType = { ... }`
+- **Use ES modules:** `import ... from "..."` (not CommonJS `require`)
+- Use Node.js import protocol for standard library: `import fs from "node:fs"`
+- Auto-organize imports with Biome (uses `useImportType`, `useExportType`)
+- Path aliases: `@/` for `src/` (configured in tsconfig.json)
+
 ### Formatting & Linting
 
 - **Biome** is the source of truth (replaces ESLint and Prettier)
 - Auto-format with `pnpm lint` before committing
-- 80 character line width, 4-space indentation
+- **Line width:** 80 characters (Biome enforces via `lineWidth`)
+- **Indentation:** 4 spaces (not tabs)
+- **No semicolons** (Biome removes via `semicolons: asNeeded`)
+- **Quote style:** Double quotes for JSX, double quotes for strings
+- **Naming:** camelCase for variables/functions, PascalCase for components/types, CONSTANT_CASE for constants
 - Biome checks accessibility rules (a11y) and Next.js patterns
-- No semicolons, use camelCase for variables/functions, PascalCase for components
+- Tailwind classes auto-sorted via `useSortedClasses` rule (functions: `cn`, `twMerge`, `cva`)
 
 ### Component Patterns
 
@@ -81,6 +93,15 @@ Always use `pnpm`, never use `npm`
     }
     export function Button({ variant = 'primary', ...props }: ButtonProps) { ... }
     ```
+
+### Error Handling
+
+- **Server actions** return typed responses: `{ success: boolean; data?: T; error?: string }`
+- Log errors with `console.error()` before returning error response
+- Never expose sensitive data (stack traces, keys) in error messages
+- Use Sonner toasts for client-side error display
+- Throw `Error` instances with descriptive messages (Biome enforces `useThrowOnlyError`)
+- Always validate Zod parse results with `.safeParse()` (never throw from validation)
 
 ### Folder Structure & Organization
 
