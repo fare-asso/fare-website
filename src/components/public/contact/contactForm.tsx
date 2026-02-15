@@ -1,129 +1,319 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import clsx from "clsx"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { RiCheckFill } from "react-icons/ri"
-import submitContactFormAction from "@/actions/contact/submitContactFormAction"
+import { useForm } from "@tanstack/react-form"
+import { memo, startTransition, useActionState, useCallback } from "react"
+import submitContactFormAction, {
+    type FormState
+} from "@/actions/contact/submitContactFormAction"
+import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
-import { type Contact, ContactSchema } from "@/schemas/contact"
-import Input from "./input"
-import TextArea from "./textarea"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import type { Contact } from "@/schemas/contact"
+import { ContactSchema } from "@/schemas/contact"
+
+interface CaptchaFieldProps {
+    onTokenChange: (token: string) => void
+}
+
+const CaptchaWidget = memo(function CaptchaWidget({
+    onTokenChange
+}: CaptchaFieldProps) {
+    return <Captcha onComplete={onTokenChange} />
+})
+
+function CaptchaValidation({
+    isTouched,
+    isValid,
+    errors
+}: {
+    isTouched: boolean
+    isValid: boolean
+    errors: Array<{ message?: string } | string | undefined>
+}) {
+    const isInvalid = isTouched && !isValid
+    if (!isInvalid) return null
+    return <FieldError errors={errors} />
+}
 
 export default function ContactForm() {
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [success, setSuccess] = useState<boolean>(false)
+    const [formState, formAction, pending] = useActionState<
+        FormState | undefined,
+        Contact
+    >(submitContactFormAction, undefined)
 
-    const form = useForm<Contact>({
-        resolver: zodResolver(ContactSchema)
+    const form = useForm({
+        defaultValues: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            message: "",
+            captchaToken: ""
+        },
+        validators: {
+            onChange: ContactSchema,
+            onSubmit: ContactSchema
+        },
+        onSubmit: ({ value }) => {
+            const submitData: Contact = {
+                firstName: value.firstName,
+                lastName: value.lastName,
+                email: value.email,
+                message: value.message,
+                captchaToken: value.captchaToken
+            }
+
+            startTransition(() => {
+                formAction(submitData)
+            })
+        }
     })
 
-    const getFirstError = () => {
-        const firstError = Object.entries(form.formState.errors)[0]
-        return firstError ? firstError[1].message : null
-    }
+    const handleCaptchaComplete = useCallback(
+        (token: string) => {
+            form.setFieldValue("captchaToken", token)
+            form.setFieldMeta("captchaToken", (prev) => ({
+                ...prev,
+                isTouched: true
+            }))
+        },
+        [form]
+    )
 
-    const onSubmit = async (data: Contact) => {
-        setIsLoading(true)
-
-        const res = await submitContactFormAction(data)
-
-        if (res.errors) {
-            for (const { message, field } of res.errors) {
-                form.setError(field as keyof Contact, {
-                    type: "manual",
-                    message
-                })
-            }
-        }
-
-        if (res.success) {
-            setIsLoading(false)
-            setSuccess(true)
-            form.reset()
-        }
+    if (formState?.success) {
+        return (
+            <Card className="mx-auto w-full max-w-2xl">
+                <CardContent className="pt-6">
+                    <Alert className="border-green-600 text-green-600">
+                        <AlertTitle>Message envoyé</AlertTitle>
+                        <AlertDescription>
+                            Votre message a été envoyé avec succès. Notre équipe
+                            vous répondra dans les plus brefs délais.
+                        </AlertDescription>
+                    </Alert>
+                </CardContent>
+            </Card>
+        )
     }
 
     return (
-        <div className="mt-12 flex w-full flex-col rounded-3xl bg-black p-4 md:w-[70%] md:flex-row md:p-8">
-            {/* Text Section */}
-            <div className="mb-6 flex w-full flex-col justify-center pr-0 md:mb-0 md:w-1/2 md:pr-8">
-                <h2 className="mb-4 font-semibold text-2xl text-white">
-                    Vous avez une question ?
-                </h2>
-                <p className="text-gray-300">
-                    N'hésitez pas à nous contacter. Notre équipe se fera un
+        <Card className="mx-auto w-full max-w-2xl">
+            <CardHeader>
+                <CardTitle>Vous avez une question ?</CardTitle>
+                <CardDescription>
+                    N&apos;hésitez pas à nous contacter. Notre équipe se fera un
                     plaisir de vous répondre dans les plus brefs délais.
-                </p>
-            </div>
-
-            {/* Form Section */}
-            <form
-                className="flex w-full flex-col space-y-4 text-white md:w-1/2"
-                onSubmit={form.handleSubmit(onSubmit)}
-            >
-                {/* First name + Last name */}
-                <div className="flex w-full flex-col gap-4 sm:flex-row">
-                    <Input
-                        {...form.register("firstName")}
-                        error={form.formState.errors.firstName}
-                        type="text"
-                        placeholder="Prénom"
-                        className="w-full flex-1 rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-hidden focus:ring-2 focus:ring-white/20"
-                    />
-                    <Input
-                        {...form.register("lastName")}
-                        error={form.formState.errors.lastName}
-                        type="text"
-                        placeholder="Nom"
-                        className="w-full flex-1 rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-hidden focus:ring-2 focus:ring-white/20"
-                    />
-                </div>
-
-                {/* Email address */}
-                <Input
-                    {...form.register("email")}
-                    error={form.formState.errors.email}
-                    type="email"
-                    placeholder="Email"
-                    className="w-full rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-hidden focus:ring-2 focus:ring-white/20"
-                />
-
-                {/* Message */}
-                <TextArea
-                    {...form.register("message")}
-                    error={form.formState.errors.message}
-                    placeholder="Entrez votre message ici"
-                    className="h-32 w-full resize-none rounded-xl bg-[#202124] px-4 py-3 text-center focus:outline-hidden focus:ring-2 focus:ring-white/20"
-                ></TextArea>
-
-                {/* Submit button */}
-                <button
-                    type="submit"
-                    disabled={isLoading || success}
-                    className={clsx(
-                        "flex w-full flex-row items-center justify-center rounded-full bg-white/20 py-3 text-gray-200 text-lg transition-colors duration-200 hover:bg-white/30",
-                        getFirstError() &&
-                            "cursor-not-allowed bg-red-500! hover:bg-red-500",
-                        success &&
-                            "cursor-default bg-green-500! hover:bg-green-500",
-                        isLoading && "cursor-wait"
-                    )}
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <form
+                    id="contact-form"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        form.handleSubmit()
+                    }}
                 >
-                    {getFirstError() ??
-                        (isLoading ? (
-                            <LoadingRing className="size-7!" />
-                        ) : success ? (
-                            <div className="flex flex-row items-center justify-center">
-                                <RiCheckFill size={25} className="mr-1" />{" "}
-                                Demande envoyée
-                            </div>
-                        ) : (
-                            "Envoyer"
-                        ))}
-                </button>
-            </form>
-        </div>
+                    <FieldGroup>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <form.Field
+                                name="firstName"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched &&
+                                        !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>
+                                                Prénom
+                                            </FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) =>
+                                                    field.handleChange(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                aria-invalid={isInvalid}
+                                                placeholder="Jean"
+                                            />
+                                            {isInvalid && (
+                                                <FieldError
+                                                    errors={
+                                                        field.state.meta.errors
+                                                    }
+                                                />
+                                            )}
+                                        </Field>
+                                    )
+                                }}
+                            />
+
+                            <form.Field
+                                name="lastName"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched &&
+                                        !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>
+                                                Nom
+                                            </FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) =>
+                                                    field.handleChange(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                aria-invalid={isInvalid}
+                                                placeholder="Dupont"
+                                            />
+                                            {isInvalid && (
+                                                <FieldError
+                                                    errors={
+                                                        field.state.meta.errors
+                                                    }
+                                                />
+                                            )}
+                                        </Field>
+                                    )
+                                }}
+                            />
+                        </div>
+
+                        <form.Field
+                            name="email"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Email
+                                        </FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            type="email"
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
+                                            placeholder="jean.dupont@email.fr"
+                                        />
+                                        {isInvalid && (
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    </Field>
+                                )
+                            }}
+                        />
+
+                        <form.Field
+                            name="message"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Message
+                                        </FieldLabel>
+                                        <Textarea
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
+                                            placeholder="Entrez votre message ici..."
+                                            className="min-h-32"
+                                        />
+                                        {isInvalid && (
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    </Field>
+                                )
+                            }}
+                        />
+
+                        <div className="pt-2">
+                            <Field>
+                                <CaptchaWidget
+                                    onTokenChange={handleCaptchaComplete}
+                                />
+                                <form.Field
+                                    name="captchaToken"
+                                    children={(field) => (
+                                        <CaptchaValidation
+                                            isTouched={
+                                                field.state.meta.isTouched
+                                            }
+                                            isValid={field.state.meta.isValid}
+                                            errors={field.state.meta.errors}
+                                        />
+                                    )}
+                                />
+                            </Field>
+                        </div>
+
+                        {formState?.error && (
+                            <Alert variant="destructive">
+                                <AlertTitle>Erreur</AlertTitle>
+                                <AlertDescription>
+                                    {formState.error}
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
+                        <div className="flex justify-end pt-2">
+                            <Button
+                                type="submit"
+                                disabled={pending}
+                                className="min-w-32"
+                            >
+                                {pending ? <LoadingRing /> : "Envoyer"}
+                            </Button>
+                        </div>
+                    </FieldGroup>
+                </form>
+            </CardContent>
+        </Card>
     )
 }

@@ -4,12 +4,14 @@ import React from "react"
 import type { Contact } from "@/schemas/contact"
 import BaseTemplate from "./base"
 
+type ContactTemplateProps = Omit<Contact, "captchaToken">
+
 export function ContactTemplate({
     firstName,
     lastName,
     email,
     message
-}: Contact) {
+}: ContactTemplateProps) {
     return (
         <BaseTemplate>
             <Heading className="font-normal text-4xl text-stone-800">
@@ -30,6 +32,6 @@ ContactTemplate.PreviewProps = {
     email: "marie.durand@gmail.com",
     message:
         "Bonjour, j'ai une question. Comment qu'on fait pour être étudiant??"
-} as Contact
+} as ContactTemplateProps
 
 export default ContactTemplate

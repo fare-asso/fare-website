@@ -1,109 +1,77 @@
+import { ExternalLinkIcon, MailIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
-import { FaArrowLeft, FaFacebook, FaInstagram } from "react-icons/fa6"
-import { MdOutlineEmail } from "react-icons/md"
+import { FaFacebook, FaInstagram } from "react-icons/fa6"
 import ContactForm from "@/components/public/contact/contactForm"
 
 export const metadata: Metadata = {
     title: "Contact"
 }
 
+const socialLinks = [
+    {
+        name: "Email",
+        description: "contact@fare-asso.fr",
+        href: "mailto:contact@fare-asso.fr",
+        icon: MailIcon,
+        iconColor: "text-[#4B6CB7]",
+        borderColor: "border-[#4B6CB7]/40 hover:border-[#4B6CB7]"
+    },
+    {
+        name: "Instagram",
+        description: "@fare_hautebretagne",
+        href: "https://www.instagram.com/fare_hautebretagne",
+        icon: FaInstagram,
+        iconColor: "text-[#E1306C]",
+        borderColor: "border-[#E1306C]/40 hover:border-[#E1306C]"
+    },
+    {
+        name: "Facebook",
+        description: "fare.hautebretagne",
+        href: "https://www.facebook.com/fare.hautebretagne",
+        icon: FaFacebook,
+        iconColor: "text-[#1877F2]",
+        borderColor: "border-[#1877F2]/40 hover:border-[#1877F2]"
+    }
+] as const
+
 export default function Contact() {
     return (
-        <div className="mb-16 flex w-full flex-col items-center justify-start md:px-8 lg:px-16">
-            {/* Main header */}
+        <div className="mb-16 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
             <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
                 Vous souhaitez nous contacter ?
             </h1>
 
-            {/* Links */}
-            <div className="mb-12 flex w-full flex-col space-y-4 md:w-[80%]">
-                {/* Email */}
-                <Link
-                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-[#4B6CB7] p-4 text-white"
-                    href="mailto:contact@fare-asso.fr"
-                >
-                    <div className="flex flex-row items-center space-x-4">
-                        <MdOutlineEmail size={50} />
-                        <p className="font-semibold text-xl transition-all">
-                            Email
-                        </p>
-                    </div>
-                    {/* Arrow */}
-                    <div className="translate-x-14 scale-75 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100">
-                        <FaArrowLeft size={40} />
-                    </div>
-                </Link>
-
-                {/* Instagram */}
-                <Link
-                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-linear-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] p-4 text-white"
-                    href="https://www.instagram.com/fare_hautebretagne"
-                >
-                    <div className="flex flex-row items-center space-x-4">
-                        <FaInstagram size={50} />
-                        <p className="font-semibold text-xl transition-all">
-                            Instagram
-                        </p>
-                    </div>
-
-                    {/* Arrow */}
-                    <div className="translate-x-14 scale-75 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100">
-                        <FaArrowLeft size={40} />
-                    </div>
-                </Link>
-
-                {/* Twitter - Not used anymore */}
-                {/* <Link
-                    className="group flex flex-row items-center justify-between rounded-xl bg-linear-to-r from-[#14171a] to-[#2d3236] w-full p-4 text-white"
-                    href="https://instagram.com/"
-                >
-                    <div className="flex flex-row space-x-4 items-center">
-                        <FaXTwitter size={50} />
-                        <p className="text-xl font-semibold transition-all">
-                            Twitter
-                        </p>
-                    </div>
-
-                    <div className="opacity-0 scale-75 translate-x-14 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 duration-500 transition-all">
-                        <FaArrowLeft size={40} />
-                    </div>
-                </Link> */}
-
-                {/* Bluesky */}
-                {/* <Link
-                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-linear-to-r from-[#14171a] to-[#2d3236] p-4 text-white"
-                    href="https://bsky.app/profile/fahb.bsky.social"
-                >
-                    <div className="flex flex-row items-center space-x-4">
-                        <FaBluesky size={50} />
-                        <p className="text-xl font-semibold transition-all">
-                            Bluesky
-                        </p>
-                    </div>
-
-                    <div className="translate-x-14 scale-75 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100">
-                        <FaArrowLeft size={40} />
-                    </div>
-                </Link> */}
-
-                {/* Facebook */}
-                <Link
-                    className="group flex w-full flex-row items-center justify-between rounded-xl bg-linear-to-l from-[#00c6ff] to-[#0072ff] p-4 text-white"
-                    href="https://www.facebook.com/fare.hautebretagne"
-                >
-                    <div className="flex flex-row items-center space-x-4">
-                        <FaFacebook size={50} />
-                        <p className="font-semibold text-xl transition-all">
-                            Facebook
-                        </p>
-                    </div>
-
-                    {/* Arrow */}
-                    <div className="translate-x-14 scale-75 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100">
-                        <FaArrowLeft size={40} />
-                    </div>
-                </Link>
+            {/* Social links */}
+            <div className="mb-12 grid w-full max-w-2xl gap-3 sm:grid-cols-3">
+                {socialLinks.map((link) => (
+                    <Link
+                        key={link.name}
+                        className={`group flex flex-col items-center gap-2 rounded-xl border-2 bg-card p-5 text-center transition-colors hover:bg-accent ${link.borderColor}`}
+                        href={link.href}
+                        target={
+                            link.href.startsWith("mailto:")
+                                ? undefined
+                                : "_blank"
+                        }
+                        rel={
+                            link.href.startsWith("mailto:")
+                                ? undefined
+                                : "noopener noreferrer"
+                        }
+                    >
+                        <link.icon
+                            className={`size-8 ${link.iconColor} transition-transform group-hover:scale-110`}
+                        />
+                        <span className="font-medium text-sm">{link.name}</span>
+                        <span className="flex items-center gap-1 text-muted-foreground text-xs">
+                            {link.description}
+                            {!link.href.startsWith("mailto:") && (
+                                <ExternalLinkIcon className="size-3" />
+                            )}
+                        </span>
+                    </Link>
+                ))}
             </div>
 
             <ContactForm />
