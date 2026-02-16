@@ -210,14 +210,14 @@ export function useElusUnivRennes(): {
 export function useElusEHESP(): Elu[] {
     return [
         {
-            firstName: "Clémence",
-            lastName: "GAIGNEUX",
+            firstName: "Flavie",
+            lastName: "POULET",
             position: "Titulaire",
             details: "Étudiante en Santé Publique"
         },
         {
-            firstName: "Emma",
-            lastName: "PELTAIS",
+            firstName: "Grave",
+            lastName: "KOBOKOLA",
             position: "Suppléante",
             details: "Étudiante en Santé Publique"
         }
@@ -225,61 +225,11 @@ export function useElusEHESP(): Elu[] {
 }
 
 export function useElusRennes2(): {
-    CA: Elu[]
-    CFVU: Elu[]
+    CA?: Elu[]
+    CFVU?: Elu[]
     UFR: Elu[]
 } {
     return {
-        CA: [
-            {
-                firstName: "Robin",
-                lastName: "HUET",
-                position: "Titulaire",
-                details: "Étudiant en AES"
-            },
-            {
-                firstName: "Orane",
-                lastName: "MÉNAGER",
-                position: "Suppléante",
-                details: "Étudiante en STAPS"
-            }
-        ],
-        CFVU: [
-            {
-                firstName: "Eliott",
-                lastName: "LESUEUR",
-                position: "Titulaire",
-                details: "Étudiant en Information-Communication"
-            },
-            {
-                firstName: "Elisa",
-                lastName: "BOINET",
-                position: "Titulaire",
-                details: "Étudiante en STAPS"
-            },
-            {
-                firstName: "Lysia",
-                lastName: "LE COENT",
-                position: "Titulaire",
-                details: "Étudiante en STAPS"
-            },
-            {
-                firstName: "Alexis",
-                lastName: "WALTER",
-                position: "Suppléant",
-                details: "Étudiant en AES"
-            },
-            {
-                firstName: "Alexandre",
-                lastName: "JOUGLA",
-                position: "Suppléant"
-            },
-            {
-                firstName: "Elouan",
-                lastName: "DANIEL",
-                position: "Suppléant"
-            }
-        ],
         UFR: [
             {
                 firstName: "Manaël",
