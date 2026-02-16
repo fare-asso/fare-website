@@ -50,7 +50,7 @@ export function useElusUnivRennes(): {
     VPE: Elu[]
     CA: Elu[]
     CFVE: Elu[]
-    UFR: Elu[]
+    UFR: { title: string; elus: Elu[] }[]
 } {
     return {
         VPE: [
@@ -203,7 +203,123 @@ export function useElusUnivRennes(): {
                 details: "Étudiante en Santé Publique (EHESP)"
             }
         ],
-        UFR: []
+        UFR: [
+            {
+                title: "UFR Odontologie",
+                elus: [
+                    {
+                        firstName: "Swann",
+                        lastName: "BOURNICHE",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Carla",
+                        lastName: "RICHARD",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Charles",
+                        lastName: "GUERIN",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Maelle",
+                        lastName: "VERGNON",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Guillaume",
+                        lastName: "DOSSEH",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Liz-Marie",
+                        lastName: "PRAUD",
+                        position: "Suppléante"
+                    },
+                    {
+                        firstName: "Ugo",
+                        lastName: "DANJOU",
+                        position: "Suppléant"
+                    },
+                    {
+                        firstName: "Malou",
+                        lastName: "JAOUEN",
+                        position: "Suppléante"
+                    },
+                    {
+                        firstName: "Matthieu",
+                        lastName: "ROGER VALENCE",
+                        position: "Suppléant"
+                    },
+                    {
+                        firstName: "Emma",
+                        lastName: "BAYART",
+                        position: "Suppléante"
+                    }
+                ]
+            },
+            {
+                title: "UFR Faculté des Sciences",
+                elus: [
+                    {
+                        firstName: "Etienne",
+                        lastName: "PINEL",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Astrid",
+                        lastName: "MATHIOTTE",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Florian",
+                        lastName: "TESSIER",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Anaelle",
+                        lastName: "RICHARD",
+                        position: "Supplétante"
+                    },
+                    {
+                        firstName: "Pierre",
+                        lastName: "MATHIOTTE",
+                        position: "Supplétant"
+                    },
+                    {
+                        firstName: "Myria",
+                        lastName: "JOAO",
+                        position: "Supplétante"
+                    }
+                ]
+            },
+            {
+                title: "UFR Droit & Sciences politiques",
+                elus: [
+                    {
+                        firstName: "Raphaël",
+                        lastName: "ABONCKELET",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Diane",
+                        lastName: "HOUSSIN",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Timéo",
+                        lastName: "GALLACIER",
+                        position: "Supplétant"
+                    },
+                    {
+                        firstName: "Lisa",
+                        lastName: "GONCALVES",
+                        position: "Supplétante"
+                    }
+                ]
+            }
+        ]
     }
 }
 

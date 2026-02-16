@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
+import { Fragment } from "react/jsx-runtime"
 import logoEHESP from "#public/elues/ehesp/ehesp.png"
 import logoBougeTonCampus from "#public/elues/logo-Bouge-Ton-Campus.png"
 import logoBougeTonCrous from "#public/elues/logo-Bouge-Ton-Crous.png"
@@ -265,9 +266,21 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                        {elusUnivRennes.UFR.map((elu, index) => (
-                            <EluCard key={index} elu={elu} />
+                    <div className="space-y-8">
+                        {elusUnivRennes.UFR.map((cat, index) => (
+                            <Fragment key={index}>
+                                <h3 className="mb-2 font-semibold text-lg">
+                                    {cat.title}
+                                </h3>
+                                <div
+                                    key={index}
+                                    className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                                >
+                                    {cat.elus.map((elu, index) => (
+                                        <EluCard key={index} elu={elu} />
+                                    ))}
+                                </div>
+                            </Fragment>
                         ))}
                     </div>
 
