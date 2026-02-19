@@ -24,3 +24,4 @@ pnpm dev
 - ne pas afficher d'erreur si mail fail to sends
 - ajouter une page partenariats
 - séparer commité territorial: CdV + formateurs
+- MAJ logos BTC gif sur `/representation`
