@@ -439,9 +439,6 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                         <Field data-invalid={isInvalid}>
                                             <FieldLabel htmlFor={field.name}>
                                                 Téléphone du référent
-                                                <span className="text-gray-500">
-                                                    (optionnel)
-                                                </span>
                                             </FieldLabel>
                                             <Input
                                                 id={field.name}
@@ -869,6 +866,60 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                 </AlertDescription>
                             </Alert>
                         )}
+
+                        <form.Subscribe
+                            selector={(state) => ({
+                                submissionAttempts: state.submissionAttempts,
+                                isValid: state.isValid,
+                                fieldMeta: state.fieldMeta
+                            })}
+                            children={({
+                                submissionAttempts,
+                                isValid,
+                                fieldMeta
+                            }) => {
+                                if (submissionAttempts === 0 || isValid)
+                                    return null
+
+                                const fieldLabels: Record<string, string> = {
+                                    associationName: "Nom de l'association",
+                                    associationEmail: "Email de l'association",
+                                    referentLastName: "Nom du référent",
+                                    referentFirstName: "Prénom du référent",
+                                    referentPosition:
+                                        "Poste dans l'association",
+                                    referentEmail: "Email du référent",
+                                    referentPhone: "Numéro de téléphone",
+                                    eventName: "Nom de l'évènement",
+                                    eventType: "Type de l'évènement",
+                                    eventDate: "Date de l'évènement",
+                                    eventAddress: "Adresse de l'évènement",
+                                    eventParticipants: "Nombre de participants",
+                                    equipment: "Matériel",
+                                    termsAccepted: "Conditions d'utilisation",
+                                    captchaToken: "Captcha"
+                                }
+
+                                const invalidFields = Object.entries(fieldMeta)
+                                    .filter(([, meta]) => !meta.isValid)
+                                    .map(([name]) => fieldLabels[name] ?? name)
+
+                                return (
+                                    <Alert variant="destructive">
+                                        <AlertTitle>
+                                            Merci de vérifier tous les champs
+                                            obligatoires
+                                        </AlertTitle>
+                                        {invalidFields.length > 0 && (
+                                            <AlertDescription>
+                                                Champs invalides :{" "}
+                                                {invalidFields.join(", ")}
+                                            </AlertDescription>
+                                        )}
+                                    </Alert>
+                                )
+                            }}
+                        />
 
                         <div className="flex justify-end gap-4 pt-4">
                             <Button

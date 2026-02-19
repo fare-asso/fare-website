@@ -28,12 +28,12 @@ const baseFields = {
     referentPhone: z
         .string()
         .refine(
-            (val) => /^\d*$/.test(val),
+            (val) => /^\d+$/.test(val),
             "Le numéro de téléphone ne doit contenir que des chiffres."
         )
         .refine(
-            (val) => val.length === 0 || val.length >= 10,
-            "Le numéro de téléphone doit contenir au moins 10 chiffres."
+            (val) => val.length === 10,
+            "Le numéro de téléphone doit contenir 10 chiffres."
         ),
     eventName: z.string().min(1, "Le nom de l'évènement est requis."),
     eventType: z.string().min(1, "Le type de l'évènement est requis."),
