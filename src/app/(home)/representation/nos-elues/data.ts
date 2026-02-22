@@ -8,38 +8,38 @@ export type Elu = {
 export function useElusCROUS(): Elu[] {
     return [
         {
-            firstName: "Zoée",
-            lastName: "PEROCHON-DE-JAMETEL",
+            firstName: "Laure",
+            lastName: "CHABOT",
             position: "Titulaire",
-            details: "Étudiante en Psychologie"
+            details: "Étudiante en LLCER Chinois"
         },
         {
-            firstName: "Gurvan",
-            lastName: "MORVAN",
+            firstName: "Aurélien",
+            lastName: "AYME",
             position: "Titulaire",
-            details: "Étudiant en Soins infirmiers"
+            details: "Étudiant en Géomatique"
         },
         {
-            firstName: "Agathe",
-            lastName: "LEMU",
+            firstName: "Danaé",
+            lastName: "LE MATELOT",
             position: "Titulaire",
-            details: "Étudiante en Langues"
-        },
-        {
-            firstName: "Yoann",
-            lastName: "ZARAGOSA",
-            position: "Suppléant",
-            details: "Étudiant en Informatique"
-        },
-        {
-            firstName: "Ninon",
-            lastName: "BRIAND",
-            position: "Suppléante",
             details: "Étudiante en Pharmacie"
         },
         {
-            firstName: "Robin",
-            lastName: "HUET",
+            firstName: "Timéo",
+            lastName: "GALLACIER",
+            position: "Suppléant",
+            details: "Étudiant en Droit et Sciences Politiques"
+        },
+        {
+            firstName: "Sterenn",
+            lastName: "LESAUX-COUGARD",
+            position: "Suppléante",
+            details: "Étudiante en Maïeutique"
+        },
+        {
+            firstName: "Pol",
+            lastName: "BLANCHARD",
             position: "Suppléant",
             details: "Étudiant en AES"
         }
@@ -50,7 +50,7 @@ export function useElusUnivRennes(): {
     VPE: Elu[]
     CA: Elu[]
     CFVE: Elu[]
-    UFR: Elu[]
+    UFR: { title: string; elus: Elu[] }[]
 } {
     return {
         VPE: [
@@ -203,21 +203,137 @@ export function useElusUnivRennes(): {
                 details: "Étudiante en Santé Publique (EHESP)"
             }
         ],
-        UFR: []
+        UFR: [
+            {
+                title: "UFR Odontologie",
+                elus: [
+                    {
+                        firstName: "Swann",
+                        lastName: "BOURNICHE",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Carla",
+                        lastName: "RICHARD",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Charles",
+                        lastName: "GUERIN",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Maelle",
+                        lastName: "VERGNON",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Guillaume",
+                        lastName: "DOSSEH",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Liz-Marie",
+                        lastName: "PRAUD",
+                        position: "Suppléante"
+                    },
+                    {
+                        firstName: "Ugo",
+                        lastName: "DANJOU",
+                        position: "Suppléant"
+                    },
+                    {
+                        firstName: "Malou",
+                        lastName: "JAOUEN",
+                        position: "Suppléante"
+                    },
+                    {
+                        firstName: "Matthieu",
+                        lastName: "ROGER VALENCE",
+                        position: "Suppléant"
+                    },
+                    {
+                        firstName: "Emma",
+                        lastName: "BAYART",
+                        position: "Suppléante"
+                    }
+                ]
+            },
+            {
+                title: "UFR Faculté des Sciences",
+                elus: [
+                    {
+                        firstName: "Etienne",
+                        lastName: "PINEL",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Astrid",
+                        lastName: "MATHIOTTE",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Florian",
+                        lastName: "TESSIER",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Anaelle",
+                        lastName: "RICHARD",
+                        position: "Supplétante"
+                    },
+                    {
+                        firstName: "Pierre",
+                        lastName: "MATHIOTTE",
+                        position: "Supplétant"
+                    },
+                    {
+                        firstName: "Myria",
+                        lastName: "JOAO",
+                        position: "Supplétante"
+                    }
+                ]
+            },
+            {
+                title: "UFR Droit & Sciences politiques",
+                elus: [
+                    {
+                        firstName: "Raphaël",
+                        lastName: "ABONCKELET",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Diane",
+                        lastName: "HOUSSIN",
+                        position: "Titulaire"
+                    },
+                    {
+                        firstName: "Timéo",
+                        lastName: "GALLACIER",
+                        position: "Supplétant"
+                    },
+                    {
+                        firstName: "Lisa",
+                        lastName: "GONCALVES",
+                        position: "Supplétante"
+                    }
+                ]
+            }
+        ]
     }
 }
 
 export function useElusEHESP(): Elu[] {
     return [
         {
-            firstName: "Clémence",
-            lastName: "GAIGNEUX",
+            firstName: "Flavie",
+            lastName: "POULET",
             position: "Titulaire",
             details: "Étudiante en Santé Publique"
         },
         {
-            firstName: "Emma",
-            lastName: "PELTAIS",
+            firstName: "Grave",
+            lastName: "KOBOKOLA",
             position: "Suppléante",
             details: "Étudiante en Santé Publique"
         }
@@ -225,61 +341,11 @@ export function useElusEHESP(): Elu[] {
 }
 
 export function useElusRennes2(): {
-    CA: Elu[]
-    CFVU: Elu[]
+    CA?: Elu[]
+    CFVU?: Elu[]
     UFR: Elu[]
 } {
     return {
-        CA: [
-            {
-                firstName: "Robin",
-                lastName: "HUET",
-                position: "Titulaire",
-                details: "Étudiant en AES"
-            },
-            {
-                firstName: "Orane",
-                lastName: "MÉNAGER",
-                position: "Suppléante",
-                details: "Étudiante en STAPS"
-            }
-        ],
-        CFVU: [
-            {
-                firstName: "Eliott",
-                lastName: "LESUEUR",
-                position: "Titulaire",
-                details: "Étudiant en Information-Communication"
-            },
-            {
-                firstName: "Elisa",
-                lastName: "BOINET",
-                position: "Titulaire",
-                details: "Étudiante en STAPS"
-            },
-            {
-                firstName: "Lysia",
-                lastName: "LE COENT",
-                position: "Titulaire",
-                details: "Étudiante en STAPS"
-            },
-            {
-                firstName: "Alexis",
-                lastName: "WALTER",
-                position: "Suppléant",
-                details: "Étudiant en AES"
-            },
-            {
-                firstName: "Alexandre",
-                lastName: "JOUGLA",
-                position: "Suppléant"
-            },
-            {
-                firstName: "Elouan",
-                lastName: "DANIEL",
-                position: "Suppléant"
-            }
-        ],
         UFR: [
             {
                 firstName: "Manaël",

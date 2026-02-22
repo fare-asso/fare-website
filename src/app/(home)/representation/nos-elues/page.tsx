@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
+import { Fragment } from "react/jsx-runtime"
 import logoEHESP from "#public/elues/ehesp/ehesp.png"
 import logoBougeTonCampus from "#public/elues/logo-Bouge-Ton-Campus.png"
 import logoBougeTonCrous from "#public/elues/logo-Bouge-Ton-Crous.png"
@@ -265,9 +266,21 @@ export default function Elues() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                        {elusUnivRennes.UFR.map((elu, index) => (
-                            <EluCard key={index} elu={elu} />
+                    <div className="space-y-8">
+                        {elusUnivRennes.UFR.map((cat, index) => (
+                            <Fragment key={index}>
+                                <h3 className="mb-2 font-semibold text-lg">
+                                    {cat.title}
+                                </h3>
+                                <div
+                                    key={index}
+                                    className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                                >
+                                    {cat.elus.map((elu, index) => (
+                                        <EluCard key={index} elu={elu} />
+                                    ))}
+                                </div>
+                            </Fragment>
                         ))}
                     </div>
 
@@ -339,60 +352,74 @@ export default function Elues() {
                     </div>
 
                     {/* CA */}
-                    <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 font-semibold text-xl">
-                            Conseil d'Administration (CA)
-                        </h3>
-                        <p>
-                            Le Conseil d'Administration (CA) au sein de
-                            l'Université de Rennes 2 est l'organe décisionnel
-                            central chargé de la gestion administrative et
-                            financière de l'établissement. Il est composé de
-                            représentants du personnel, des étudiants, des
-                            partenaires extérieurs et des autorités académiques.
-                            Le CA prend des décisions stratégiques concernant
-                            les orientations générales, l'allocation des
-                            ressources, les budgets, et les projets de
-                            développement. Il veille également à l'application
-                            des politiques de l'université et à son bon
-                            fonctionnement dans l'intérêt de l'ensemble de la
-                            communauté universitaire.
-                        </p>
-                    </div>
+                    {elusRennes2.CA && (
+                        <>
+                            <div className="prose mb-4 max-w-none">
+                                <h3 className="mb-4 font-semibold text-xl">
+                                    Conseil d'Administration (CA)
+                                </h3>
+                                <p>
+                                    Le Conseil d'Administration (CA) au sein de
+                                    l'Université de Rennes 2 est l'organe
+                                    décisionnel central chargé de la gestion
+                                    administrative et financière de
+                                    l'établissement. Il est composé de
+                                    représentants du personnel, des étudiants,
+                                    des partenaires extérieurs et des autorités
+                                    académiques. Le CA prend des décisions
+                                    stratégiques concernant les orientations
+                                    générales, l'allocation des ressources, les
+                                    budgets, et les projets de développement. Il
+                                    veille également à l'application des
+                                    politiques de l'université et à son bon
+                                    fonctionnement dans l'intérêt de l'ensemble
+                                    de la communauté universitaire.
+                                </p>
+                            </div>
 
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                        {elusRennes2.CA.map((elu, index) => (
-                            <EluCard key={index} elu={elu} />
-                        ))}
-                    </div>
+                            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                {elusRennes2.CA.map((elu, index) => (
+                                    <EluCard key={index} elu={elu} />
+                                ))}
+                            </div>
+                        </>
+                    )}
 
                     {/* CFVU */}
-                    <div className="prose mb-4 max-w-none">
-                        <h3 className="mb-4 font-semibold text-xl">
-                            Conseil de Formation & Vie Universitaire (CFVU)
-                        </h3>
-                        <p>
-                            Le Conseil des Formations et de la Vie Universitaire
-                            (CFVU) est une instance universitaire qui traite des
-                            questions liées à l'organisation des formations, aux
-                            modalités des examens, ainsi qu'à la vie étudiante.
-                            Composé de représentants des enseignants, des
-                            étudiants et du personnel administratif, le CFVU
-                            prend des décisions sur l'offre de formation, les
-                            règlements pédagogiques, les conditions
-                            d'évaluation, et les actions pour améliorer la vie
-                            étudiante. Il veille à ce que les parcours de
-                            formation répondent aux besoins des étudiants tout
-                            en contribuant à l'amélioration de leurs conditions
-                            d'études et de vie sur le campus.
-                        </p>
-                    </div>
+                    {elusRennes2.CFVU && (
+                        <>
+                            <div className="prose mb-4 max-w-none">
+                                <h3 className="mb-4 font-semibold text-xl">
+                                    Conseil de Formation & Vie Universitaire
+                                    (CFVU)
+                                </h3>
+                                <p>
+                                    Le Conseil des Formations et de la Vie
+                                    Universitaire (CFVU) est une instance
+                                    universitaire qui traite des questions liées
+                                    à l'organisation des formations, aux
+                                    modalités des examens, ainsi qu'à la vie
+                                    étudiante. Composé de représentants des
+                                    enseignants, des étudiants et du personnel
+                                    administratif, le CFVU prend des décisions
+                                    sur l'offre de formation, les règlements
+                                    pédagogiques, les conditions d'évaluation,
+                                    et les actions pour améliorer la vie
+                                    étudiante. Il veille à ce que les parcours
+                                    de formation répondent aux besoins des
+                                    étudiants tout en contribuant à
+                                    l'amélioration de leurs conditions d'études
+                                    et de vie sur le campus.
+                                </p>
+                            </div>
 
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                        {elusRennes2.CFVU.map((elu, index) => (
-                            <EluCard key={index} elu={elu} />
-                        ))}
-                    </div>
+                            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                {elusRennes2.CFVU.map((elu, index) => (
+                                    <EluCard key={index} elu={elu} />
+                                ))}
+                            </div>
+                        </>
+                    )}
 
                     {/* Conseil d’Unité de Formation & de Recherche (UFR) */}
                     <div className="prose mb-4 max-w-none">
