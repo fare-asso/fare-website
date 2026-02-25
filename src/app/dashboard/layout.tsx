@@ -38,7 +38,12 @@ export default async function RootLayout({
         <SidebarProvider>
             <div className="flex h-svh w-screen overflow-hidden">
                 {/* Sidebar à gauche */}
-                <SideBarApp permissions={permissions} email={user.email} />
+                <SideBarApp
+                    permissions={permissions}
+                    email={user.email}
+                    name={user.name}
+                    image={user.image}
+                />
 
                 {/* Contenu principal */}
                 <div className="flex h-full w-full flex-col bg-sidebar">

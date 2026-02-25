@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import { useRef, useState } from "react"
-import SignOutButton from "../dashboard/signOutButton"
 
 export default function AssociationAccountDropdown({
     associationName,
@@ -43,9 +42,7 @@ export default function AssociationAccountDropdown({
                             ? "scale-100 opacity-100"
                             : "scale-0 opacity-0"
                     }`}
-                >
-                    <SignOutButton />
-                </div>
+                ></div>
             </button>
         </div>
     )

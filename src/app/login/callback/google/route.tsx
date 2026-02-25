@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import { isDevelopment } from "std-env"
 import NewGoogleUserTemplate from "@/../emails/new-google-user"
 import { env } from "@/env"
+import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { createClient } from "@/helpers/supabase/server"
 
@@ -25,6 +26,9 @@ export async function GET(request: Request) {
         if (!error) {
             console.log("User logged in successfully")
 
+            // Update user profile picture from Google if available
+            await updateUserProfilePicture(supabase)
+
             // Check if this is a new user and send notification
             await handleNewUserNotification(supabase)
 
@@ -44,9 +48,63 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${host}/login?error=true`)
 }
 
+async function updateUserProfilePicture(
+    supabase: Awaited<ReturnType<typeof createClient>>
+): Promise<void> {
+    try {
+        const {
+            data: { user }
+        } = await supabase.auth.getUser()
+
+        if (!user?.id) return
+
+        // Get profile data from Google OAuth metadata
+        const avatarUrl = user.user_metadata?.avatar_url as string | undefined
+        const pictureUrl = user.user_metadata?.picture as string | undefined
+        const profilePicture = avatarUrl || pictureUrl
+        const fullName = user.user_metadata?.full_name as string | undefined
+
+        // Check current user data in database
+        const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { image: true, name: true }
+        })
+
+        if (!dbUser) return
+
+        // Prepare update data
+        const updateData: { image?: string; name?: string } = {}
+
+        // Only update if the image has changed or is not set
+        if (profilePicture && dbUser.image !== profilePicture) {
+            updateData.image = profilePicture
+        }
+
+        // Only update name if it has changed or is not set
+        if (fullName && dbUser.name !== fullName) {
+            updateData.name = fullName
+        }
+
+        // Only update if there are changes
+        if (Object.keys(updateData).length > 0) {
+            await prisma.user.update({
+                where: { id: user.id },
+                data: updateData
+            })
+            console.log(
+                `Updated user profile for ${user.id}:`,
+                Object.keys(updateData)
+            )
+        }
+    } catch (error) {
+        // Don't fail the login if profile picture update fails
+        console.error("Error updating user profile:", error)
+    }
+}
+
 async function handleNewUserNotification(
     supabase: Awaited<ReturnType<typeof createClient>>
-) {
+): Promise<void> {
     try {
         const {
             data: { user }
