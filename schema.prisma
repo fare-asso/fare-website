@@ -34,7 +34,7 @@ model User {
   image           String?
   createdAt       DateTime     @default(now())
   deletedAt       DateTime?
-  role            Role         @default(MEMBER)
+  role            Role         @default(ADMIN)
   writtenArticles Article[]
   association     Association?
   createdEvents   Event[]

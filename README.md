@@ -25,3 +25,4 @@ pnpm dev
 - ajouter une page partenariats
 - séparer commité territorial: CdV + formateurs
 - MAJ logos BTC gif sur `/representation`
+- Remplacer inclusif avec points par majuscules
