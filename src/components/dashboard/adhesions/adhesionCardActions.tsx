@@ -46,11 +46,17 @@ function downloadBase64Zip(zipData: string, filename: string) {
     document.body.removeChild(a)
 }
 
-export default function AdhesionCardActions({
-    adhesion
-}: {
+interface AdhesionCardActionsProps {
     adhesion: Adhesion
-}) {
+    canEdit: boolean
+    canDownload: boolean
+}
+
+export default function AdhesionCardActions({
+    adhesion,
+    canEdit,
+    canDownload
+}: AdhesionCardActionsProps) {
     const [isDownloading, setIsDownloading] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
     const { toast } = useToast()
@@ -119,97 +125,109 @@ export default function AdhesionCardActions({
     return (
         <div className="flex shrink-0 gap-1">
             {/* Download button */}
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="text-muted-foreground hover:text-foreground"
-                        disabled={isDownloading}
-                        onClick={handleDownload}
-                    >
-                        {isDownloading ? (
-                            <LoadingRing className="m-0!" />
-                        ) : (
-                            <DownloadIcon className="h-4 w-4" />
-                        )}
-                        <span className="sr-only">Télécharger le dossier</span>
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>Télécharger le dossier (.zip)</TooltipContent>
-            </Tooltip>
-
-            {/* Archive / Unarchive button */}
-            <AlertDialog>
+            {canDownload ? (
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <AlertDialogTrigger asChild>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className={
-                                    isArchived
-                                        ? "text-primary hover:bg-primary/10 hover:text-primary"
-                                        : "text-muted-foreground hover:text-foreground"
-                                }
-                                disabled={isArchiving}
-                            >
-                                {isArchiving ? (
-                                    <LoadingRing className="m-0!" />
-                                ) : isArchived ? (
-                                    <ArchiveRestoreIcon className="h-4 w-4" />
-                                ) : (
-                                    <ArchiveIcon className="h-4 w-4" />
-                                )}
-                                <span className="sr-only">
-                                    {isArchived ? "Désarchiver" : "Archiver"}
-                                </span>
-                            </Button>
-                        </AlertDialogTrigger>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="text-muted-foreground hover:text-foreground"
+                            disabled={isDownloading}
+                            onClick={handleDownload}
+                        >
+                            {isDownloading ? (
+                                <LoadingRing className="m-0!" />
+                            ) : (
+                                <DownloadIcon className="h-4 w-4" />
+                            )}
+                            <span className="sr-only">
+                                Télécharger le dossier
+                            </span>
+                        </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                        {isArchived ? "Désarchiver" : "Archiver"}
+                        Télécharger le dossier (.zip)
                     </TooltipContent>
                 </Tooltip>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            {isArchived
-                                ? "Désarchiver la demande ?"
-                                : "Archiver la demande ?"}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription asChild>
-                            <div>
-                                {isArchived ? (
-                                    <p>
-                                        La demande d'adhésion de "{displayName}"
-                                        sera restaurée et réapparaîtra dans la
-                                        liste des demandes actives.
-                                    </p>
-                                ) : (
-                                    <>
+            ) : null}
+
+            {/* Archive / Unarchive button */}
+            {canEdit ? (
+                <AlertDialog>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className={
+                                        isArchived
+                                            ? "text-primary hover:bg-primary/10 hover:text-primary"
+                                            : "text-muted-foreground hover:text-foreground"
+                                    }
+                                    disabled={isArchiving}
+                                >
+                                    {isArchiving ? (
+                                        <LoadingRing className="m-0!" />
+                                    ) : isArchived ? (
+                                        <ArchiveRestoreIcon className="h-4 w-4" />
+                                    ) : (
+                                        <ArchiveIcon className="h-4 w-4" />
+                                    )}
+                                    <span className="sr-only">
+                                        {isArchived
+                                            ? "Désarchiver"
+                                            : "Archiver"}
+                                    </span>
+                                </Button>
+                            </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            {isArchived ? "Désarchiver" : "Archiver"}
+                        </TooltipContent>
+                    </Tooltip>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {isArchived
+                                    ? "Désarchiver la demande ?"
+                                    : "Archiver la demande ?"}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription asChild>
+                                <div>
+                                    {isArchived ? (
                                         <p>
                                             La demande d'adhésion de "
-                                            {displayName}" sera marquée comme
-                                            traitée et masquée de la liste.
+                                            {displayName}" sera restaurée et
+                                            réapparaîtra dans la liste des
+                                            demandes actives.
                                         </p>
-                                        <p className="mt-1">
-                                            Elle pourra être restaurée si
-                                            besoin.
-                                        </p>
-                                    </>
-                                )}
-                            </div>
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleArchiveToggle}>
-                            {isArchived ? "Désarchiver" : "Archiver"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+                                    ) : (
+                                        <>
+                                            <p>
+                                                La demande d'adhésion de "
+                                                {displayName}" sera marquée
+                                                comme traitée et masquée de la
+                                                liste.
+                                            </p>
+                                            <p className="mt-1">
+                                                Elle pourra être restaurée si
+                                                besoin.
+                                            </p>
+                                        </>
+                                    )}
+                                </div>
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleArchiveToggle}>
+                                {isArchived ? "Désarchiver" : "Archiver"}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            ) : null}
         </div>
     )
 }

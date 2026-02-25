@@ -11,6 +11,8 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
 export const metadata: Metadata = {
     title: "Communiques de presse"
@@ -42,7 +44,11 @@ function CDPListSkeleton() {
     )
 }
 
-export default function CommuDePresse() {
+export default async function CommuDePresse() {
+    const user = await getCurrentUserWithPermissions()
+    const canCreate = !!user && hasPermission(user, "create:cdp")
+    const canDelete = !!user && hasPermission(user, "delete:cdp")
+
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">
@@ -53,12 +59,14 @@ export default function CommuDePresse() {
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto p-0">
                 <Suspense fallback={<CDPListSkeleton />}>
-                    <CDPList />
+                    <CDPList canDelete={canDelete} />
                 </Suspense>
             </CardContent>
-            <CardFooter className="p-0">
-                <AddNewCDPButton />
-            </CardFooter>
+            {canCreate ? (
+                <CardFooter className="p-0">
+                    <AddNewCDPButton />
+                </CardFooter>
+            ) : null}
         </Card>
     )
 }

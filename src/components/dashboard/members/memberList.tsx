@@ -3,7 +3,15 @@ import { createClient } from "@/helpers/supabase/server"
 
 import SortableMemberList from "./sortableMemberList"
 
-export default async function MemberList() {
+interface MemberListProps {
+    canEdit: boolean
+    canDelete: boolean
+}
+
+export default async function MemberList({
+    canEdit,
+    canDelete
+}: MemberListProps) {
     // create supabase client
     const supabase = await createClient()
 
@@ -31,5 +39,11 @@ export default async function MemberList() {
             .getPublicUrl(member.picturePath).data.publicUrl
     }))
 
-    return <SortableMemberList initialMembers={membersWithPictures} />
+    return (
+        <SortableMemberList
+            initialMembers={membersWithPictures}
+            canEdit={canEdit}
+            canDelete={canDelete}
+        />
+    )
 }

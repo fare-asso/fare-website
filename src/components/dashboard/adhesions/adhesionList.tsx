@@ -4,7 +4,17 @@ import type { Adhesion } from "@prisma/client"
 import { FileTextIcon } from "lucide-react"
 import AdhesionCard from "./adhesionCard"
 
-export default function AdhesionList({ adhesions }: { adhesions: Adhesion[] }) {
+interface AdhesionListProps {
+    adhesions: Adhesion[]
+    canEdit: boolean
+    canDownload: boolean
+}
+
+export default function AdhesionList({
+    adhesions,
+    canEdit,
+    canDownload
+}: AdhesionListProps) {
     return (
         <div className="@container flex h-full flex-col">
             <div className="flex-1 overflow-y-auto">
@@ -14,6 +24,8 @@ export default function AdhesionList({ adhesions }: { adhesions: Adhesion[] }) {
                             <AdhesionCard
                                 key={adhesion.id}
                                 adhesion={adhesion}
+                                canEdit={canEdit}
+                                canDownload={canDownload}
                             />
                         ))}
                     </div>

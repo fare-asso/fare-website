@@ -9,6 +9,8 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { columns, type UserWithPermissionsRow } from "./columns"
 import { DataTable } from "./data-table"
 import { ShowDeletedToggle } from "./showDeletedToggle"
@@ -37,6 +39,10 @@ export default async function UsersPage({ searchParams }: Props) {
         orderBy: { createdAt: "desc" }
     })
 
+    const currentUser = await getCurrentUserWithPermissions()
+    const canEdit = !!currentUser && hasPermission(currentUser, "edit:user")
+    const canDelete = !!currentUser && hasPermission(currentUser, "delete:user")
+
     // Cast users to match the expected type
     const typedUsers = users as unknown as UserWithPermissionsRow[]
 
@@ -58,6 +64,8 @@ export default async function UsersPage({ searchParams }: Props) {
                     columns={columns}
                     data={typedUsers}
                     showDeleted={showDeleted}
+                    canEdit={canEdit}
+                    canDelete={canDelete}
                 />
             </CardContent>
             <CardFooter className="p-0"></CardFooter>

@@ -38,15 +38,14 @@ function downloadFile(url: string) {
     document.body.removeChild(a)
 }
 
-export default function CdpCard({
-    cdp,
-    url,
-    dlUrl
-}: {
+interface CdpCardProps {
     cdp: CommuniqueDePresse
     url: string
     dlUrl: string
-}) {
+    canDelete: boolean
+}
+
+export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
     const { toast } = useToast()
     const [isDeleting, setIsDeleting] = useState(false)
 
@@ -144,48 +143,52 @@ export default function CdpCard({
                         <TooltipContent>Telecharger</TooltipContent>
                     </Tooltip>
 
-                    <AlertDialog>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                        disabled={isDeleting}
+                    {canDelete ? (
+                        <AlertDialog>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                            disabled={isDeleting}
+                                        >
+                                            {isDeleting ? (
+                                                <LoadingRing />
+                                            ) : (
+                                                <MdDelete size={18} />
+                                            )}
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                </TooltipTrigger>
+                                <TooltipContent>Supprimer</TooltipContent>
+                            </Tooltip>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                        Supprimer ce document ?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Le document &laquo; {cdp.name} &raquo;
+                                        sera definitivement supprime. Cette
+                                        action est irreversible.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        Annuler
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={handleDelete}
+                                        className="bg-destructive text-white hover:bg-destructive/90"
                                     >
-                                        {isDeleting ? (
-                                            <LoadingRing />
-                                        ) : (
-                                            <MdDelete size={18} />
-                                        )}
-                                    </Button>
-                                </AlertDialogTrigger>
-                            </TooltipTrigger>
-                            <TooltipContent>Supprimer</TooltipContent>
-                        </Tooltip>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    Supprimer ce document ?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Le document &laquo; {cdp.name} &raquo; sera
-                                    definitivement supprime. Cette action est
-                                    irreversible.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                <AlertDialogAction
-                                    onClick={handleDelete}
-                                    className="bg-destructive text-white hover:bg-destructive/90"
-                                >
-                                    Supprimer
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                                        Supprimer
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    ) : null}
                 </div>
             </div>
         </div>

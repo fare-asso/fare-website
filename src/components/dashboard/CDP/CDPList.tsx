@@ -3,7 +3,11 @@ import prisma from "@/helpers/db"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import CdpCard from "./CDPCard"
 
-export default async function CDPList() {
+interface CDPListProps {
+    canDelete: boolean
+}
+
+export default async function CDPList({ canDelete }: CDPListProps) {
     const su = new StorageUtils()
 
     const communiques = await prisma.communiqueDePresse.findMany({
@@ -54,6 +58,7 @@ export default async function CDPList() {
                         dlUrl={su
                             .from("communique-de-presse")
                             .getPublicUrl(cdp.filePath, true)}
+                        canDelete={canDelete}
                     />
                 ))}
             </div>

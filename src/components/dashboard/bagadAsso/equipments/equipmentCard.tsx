@@ -7,11 +7,17 @@ import { createClient } from "@/helpers/supabase/server"
 import DeleteEquipmentButton from "./deleteEquipmentButton"
 import EditEquipmentDialog from "./editEquipmentDialog"
 
-export default async function EquipmentCard({
-    equipment
-}: {
+interface EquipmentCardProps {
     equipment: BagadAssoEquipment
-}) {
+    canEdit: boolean
+    canDelete: boolean
+}
+
+export default async function EquipmentCard({
+    equipment,
+    canEdit,
+    canDelete
+}: EquipmentCardProps) {
     const supabase = await createClient()
 
     const imageUrl = equipment.imagePath
@@ -63,13 +69,19 @@ export default async function EquipmentCard({
             </CardContent>
 
             {/* Actions */}
-            <CardFooter className="flex gap-1.5 border-t bg-muted/30 px-2 py-0 pt-2! pb-2!">
-                <EditEquipmentDialog
-                    equipment={equipment}
-                    currentImageUrl={imageUrl}
-                />
-                <DeleteEquipmentButton equipmentId={equipment.id} />
-            </CardFooter>
+            {canEdit || canDelete ? (
+                <CardFooter className="flex gap-1.5 border-t bg-muted/30 px-2 py-0 pt-2! pb-2!">
+                    {canEdit ? (
+                        <EditEquipmentDialog
+                            equipment={equipment}
+                            currentImageUrl={imageUrl}
+                        />
+                    ) : null}
+                    {canDelete ? (
+                        <DeleteEquipmentButton equipmentId={equipment.id} />
+                    ) : null}
+                </CardFooter>
+            ) : null}
         </Card>
     )
 }

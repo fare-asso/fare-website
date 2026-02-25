@@ -2,7 +2,17 @@ import prisma from "@/helpers/db"
 
 import ArticleCard from "./articleCard"
 
-export default async function ArticleList() {
+interface ArticleListProps {
+    canEdit: boolean
+    canDelete: boolean
+    canPublish: boolean
+}
+
+export default async function ArticleList({
+    canEdit,
+    canDelete,
+    canPublish
+}: ArticleListProps) {
     // fetch all members from DB
     const articles = await prisma.article.findMany({
         orderBy: {
@@ -18,7 +28,13 @@ export default async function ArticleList() {
         )
     } else {
         const articleCards = articles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
+            <ArticleCard
+                key={article.id}
+                article={article}
+                canEdit={canEdit}
+                canDelete={canDelete}
+                canPublish={canPublish}
+            />
         ))
 
         return (

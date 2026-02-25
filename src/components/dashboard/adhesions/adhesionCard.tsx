@@ -20,7 +20,17 @@ import {
 } from "@/components/ui/card"
 import AdhesionCardActions from "./adhesionCardActions"
 
-export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
+interface AdhesionCardProps {
+    adhesion: Adhesion
+    canEdit: boolean
+    canDownload: boolean
+}
+
+export default function AdhesionCard({
+    adhesion,
+    canEdit,
+    canDownload
+}: AdhesionCardProps) {
     const isArchived = adhesion.archived !== null
 
     return (
@@ -67,7 +77,13 @@ export default function AdhesionCard({ adhesion }: { adhesion: Adhesion }) {
                             )}
                     </div>
 
-                    <AdhesionCardActions adhesion={adhesion} />
+                    {canEdit || canDownload ? (
+                        <AdhesionCardActions
+                            adhesion={adhesion}
+                            canEdit={canEdit}
+                            canDownload={canDownload}
+                        />
+                    ) : null}
                 </div>
             </CardHeader>
 

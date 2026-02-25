@@ -10,12 +10,20 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
 export const metadata: Metadata = {
     title: "Associations"
 }
 
-export default function Associations() {
+export default async function Associations() {
+    const user = await getCurrentUserWithPermissions()
+    const canCreate = !!user && hasPermission(user, "create:association")
+    const canEdit = !!user && hasPermission(user, "edit:association")
+    const canDelete = !!user && hasPermission(user, "delete:association")
+    const canInvite = !!user && hasPermission(user, "invite:representative")
+
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">
@@ -26,12 +34,18 @@ export default function Associations() {
             </CardHeader>
             <CardContent className="h-1/2 flex-1 p-0">
                 <Suspense fallback={<p>Chargements...</p>}>
-                    <AssociationList />
+                    <AssociationList
+                        canEdit={canEdit}
+                        canDelete={canDelete}
+                        canInvite={canInvite}
+                    />
                 </Suspense>
             </CardContent>
-            <CardFooter className="p-0">
-                <AddAssociationButton />
-            </CardFooter>
+            {canCreate ? (
+                <CardFooter className="p-0">
+                    <AddAssociationButton />
+                </CardFooter>
+            ) : null}
         </Card>
     )
 }
