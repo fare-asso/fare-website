@@ -1,7 +1,15 @@
 import AdhesionList from "@/components/dashboard/adhesions/adhesionList"
 import prisma from "@/helpers/db"
 
-export default async function ActiveAdhesions() {
+interface ActiveAdhesionsProps {
+    canEdit: boolean
+    canDownload: boolean
+}
+
+export default async function ActiveAdhesions({
+    canEdit,
+    canDownload
+}: ActiveAdhesionsProps) {
     const adhesions = await prisma.adhesion.findMany({
         where: {
             archived: null
@@ -19,7 +27,11 @@ export default async function ActiveAdhesions() {
                 </span>{" "}
                 d'adhésion en attente de traitement.
             </p>
-            <AdhesionList adhesions={adhesions} />
+            <AdhesionList
+                adhesions={adhesions}
+                canEdit={canEdit}
+                canDownload={canDownload}
+            />
         </div>
     )
 }

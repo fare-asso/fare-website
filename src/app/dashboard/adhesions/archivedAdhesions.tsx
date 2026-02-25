@@ -1,7 +1,15 @@
 import AdhesionList from "@/components/dashboard/adhesions/adhesionList"
 import prisma from "@/helpers/db"
 
-export default async function ArchivedAdhesions() {
+interface ArchivedAdhesionsProps {
+    canEdit: boolean
+    canDownload: boolean
+}
+
+export default async function ArchivedAdhesions({
+    canEdit,
+    canDownload
+}: ArchivedAdhesionsProps) {
     const adhesions = await prisma.adhesion.findMany({
         where: {
             archived: {
@@ -21,7 +29,11 @@ export default async function ArchivedAdhesions() {
                 </span>{" "}
                 d'adhésion archivée{adhesions.length > 1 ? "s" : ""}.
             </p>
-            <AdhesionList adhesions={adhesions} />
+            <AdhesionList
+                adhesions={adhesions}
+                canEdit={canEdit}
+                canDownload={canDownload}
+            />
         </div>
     )
 }

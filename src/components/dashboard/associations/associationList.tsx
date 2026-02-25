@@ -2,7 +2,17 @@ import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 import AssociationCard from "./associationCard"
 
-export default async function AssociationList() {
+interface AssociationListProps {
+    canEdit: boolean
+    canDelete: boolean
+    canInvite: boolean
+}
+
+export default async function AssociationList({
+    canEdit,
+    canDelete,
+    canInvite
+}: AssociationListProps) {
     // create supabase client
     const supabase = await createClient()
 
@@ -29,6 +39,9 @@ export default async function AssociationList() {
                         .from("association-pictures")
                         .getPublicUrl(asso.logoPath).data.publicUrl
                 }
+                canEdit={canEdit}
+                canDelete={canDelete}
+                canInvite={canInvite}
             />
         ))
 

@@ -5,6 +5,8 @@ import type { Metadata } from "next"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { DeleteUserButton } from "./deleteUserButton"
 import { RestoreUserButton } from "./restoreUserButton"
 import { UserInfoForm } from "./userInfoForm"
@@ -43,6 +45,12 @@ export default async function UserPage({
         return <div>Utilisateur introuvable</div>
     }
 
+    const currentUser = await getCurrentUserWithPermissions()
+    const canEdit = !!currentUser && hasPermission(currentUser, "edit:user")
+    const canDelete = !!currentUser && hasPermission(currentUser, "delete:user")
+    const canEditPermissions =
+        !!currentUser && hasPermission(currentUser, "edit:user-permissions")
+
     const allPermissions = await prisma.permission.findMany()
     const isDeleted = user.deletedAt !== null
 
@@ -64,35 +72,53 @@ export default async function UserPage({
             )}
 
             {/* User Info Section */}
-            <section>
-                <h2 className="mb-4 font-bold text-lg">Informations</h2>
-                <UserInfoForm user={user} />
-            </section>
+            {canEdit ? (
+                <>
+                    <section>
+                        <h2 className="mb-4 font-bold text-lg">Informations</h2>
+                        <UserInfoForm user={user} />
+                    </section>
 
-            <Separator />
+                    <Separator />
+                </>
+            ) : null}
 
             {/* Permissions Section */}
-            <section>
-                <h2 className="mb-4 font-bold text-lg">Permissions</h2>
-                <UserPermissionsForm
-                    userId={user.id}
-                    userPermissions={user.permissions.map(
-                        (p) => p.permission.id
-                    )}
-                    allPermissions={allPermissions}
-                />
-            </section>
+            {canEditPermissions ? (
+                <>
+                    <section>
+                        <h2 className="mb-4 font-bold text-lg">Permissions</h2>
+                        <UserPermissionsForm
+                            userId={user.id}
+                            userPermissions={user.permissions.map(
+                                (p) => p.permission.id
+                            )}
+                            allPermissions={allPermissions}
+                        />
+                    </section>
 
-            <Separator />
+                    <Separator />
+                </>
+            ) : null}
 
             {/* Danger Zone */}
-            <section>
-                {isDeleted ? (
-                    <RestoreUserButton userId={user.id} userName={user.name} />
-                ) : (
-                    <DeleteUserButton userId={user.id} userName={user.name} />
-                )}
-            </section>
+            {canEdit || canDelete ? (
+                <section>
+                    {isDeleted ? (
+                        canEdit ? (
+                            <RestoreUserButton
+                                userId={user.id}
+                                userName={user.name}
+                            />
+                        ) : null
+                    ) : canDelete ? (
+                        <DeleteUserButton
+                            userId={user.id}
+                            userName={user.name}
+                        />
+                    ) : null}
+                </section>
+            ) : null}
         </div>
     )
 }

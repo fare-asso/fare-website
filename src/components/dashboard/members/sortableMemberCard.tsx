@@ -25,13 +25,19 @@ interface Member {
     order: number
 }
 
-export default function SortableMemberCard({
-    member,
-    pictureUrl
-}: {
+interface SortableMemberCardProps {
     member: Member
     pictureUrl: string
-}) {
+    canEdit: boolean
+    canDelete: boolean
+}
+
+export default function SortableMemberCard({
+    member,
+    pictureUrl,
+    canEdit,
+    canDelete
+}: SortableMemberCardProps) {
     const { toast } = useToast()
     const [hidden, setIsHidden] = useState<boolean>(false)
 
@@ -80,38 +86,51 @@ export default function SortableMemberCard({
             )}
         >
             {/* Toolbar with drag handle and action buttons */}
-            <div
-                className={clsx(
-                    "absolute top-0 right-0 left-0 z-10 flex items-center justify-between rounded-t-lg bg-muted/80 opacity-0 transition-opacity group-hover:opacity-100",
-                    isDragging && "opacity-100"
-                )}
-            >
-                {/* Drag handle */}
+            {canEdit || canDelete ? (
                 <div
-                    {...attributes}
-                    {...listeners}
                     className={clsx(
-                        "flex h-8 w-8 cursor-grab items-center justify-center text-muted-foreground hover:bg-muted",
-                        isDragging && "cursor-grabbing"
+                        "absolute top-0 right-0 left-0 z-10 flex items-center justify-between rounded-t-lg bg-muted/80 opacity-0 transition-opacity group-hover:opacity-100",
+                        isDragging && "opacity-100"
                     )}
                 >
-                    <MdDragIndicator size={18} />
-                </div>
+                    {/* Drag handle */}
+                    {canEdit ? (
+                        <div
+                            {...attributes}
+                            {...listeners}
+                            className={clsx(
+                                "flex h-8 w-8 cursor-grab items-center justify-center text-muted-foreground hover:bg-muted",
+                                isDragging && "cursor-grabbing"
+                            )}
+                        >
+                            <MdDragIndicator size={18} />
+                        </div>
+                    ) : (
+                        <div className="h-8 w-8" />
+                    )}
 
-                {/* Action buttons */}
-                <div className="flex items-center gap-1 pr-1">
-                    <EditMemberButton member={member} pictureUrl={pictureUrl} />
-                    <Button
-                        id="deleteButton"
-                        onClick={handleDelete}
-                        className="h-7 w-7 p-0"
-                        variant="destructive"
-                        size="sm"
-                    >
-                        <MdDelete size={14} />
-                    </Button>
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-1 pr-1">
+                        {canEdit ? (
+                            <EditMemberButton
+                                member={member}
+                                pictureUrl={pictureUrl}
+                            />
+                        ) : null}
+                        {canDelete ? (
+                            <Button
+                                id="deleteButton"
+                                onClick={handleDelete}
+                                className="h-7 w-7 p-0"
+                                variant="destructive"
+                                size="sm"
+                            >
+                                <MdDelete size={14} />
+                            </Button>
+                        ) : null}
+                    </div>
                 </div>
-            </div>
+            ) : null}
 
             <div className="flex flex-1 flex-col p-3">
                 {/* Profile picture */}

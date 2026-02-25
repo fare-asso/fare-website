@@ -2,22 +2,25 @@
 
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
-
+import { hasPermission } from "@/helpers/permissions"
 import { validateEmail } from "@/helpers/string"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient } from "@/helpers/supabase/server"
-import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function inviteRepresentativeAction(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
-    /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole()
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role !== "ADMIN")
+    // Auth and permission verifications
+    const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        return { error: "Authentification requise" }
+    }
+    if (!hasPermission(user, "invite:representative")) {
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+            error: "Vous n'avez pas la permission d'inviter des représentants"
         }
+    }
 
     // supabase Admin client
     const supabase = await createAdminClient()

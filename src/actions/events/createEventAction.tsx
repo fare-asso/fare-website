@@ -3,10 +3,11 @@
 import { randomUUID } from "node:crypto"
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserId from "@/helpers/user/id"
-import getCurrentUserRole from "@/helpers/user/role"
 
 interface Event {
     name?: string
@@ -24,13 +25,16 @@ export default async function createEventAction(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
-    /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole()
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role !== "ADMIN")
+    // Auth and permission verifications
+    const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        return { error: "Authentification requise" }
+    }
+    if (!hasPermission(user, "create:event")) {
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+            error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
+    }
 
     // instantiate supabase client
     const supabase = await createClient()

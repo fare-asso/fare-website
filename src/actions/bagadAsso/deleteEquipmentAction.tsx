@@ -2,20 +2,24 @@
 
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function deleteEquipmentAction(
     _prevState: { error?: string; success?: boolean } | undefined,
     equipmentId: number
 ) {
-    /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole()
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role !== "ADMIN")
+    // Auth and permission verifications
+    const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        return { error: "Authentification requise" }
+    }
+    if (!hasPermission(user, "delete:bagad-equipment")) {
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+            error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
+    }
 
     // create supabase client
     const supabase = await createClient()

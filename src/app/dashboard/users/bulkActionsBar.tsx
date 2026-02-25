@@ -16,11 +16,15 @@ type UserRow = {
 type Props<TData extends UserRow> = {
     table: Table<TData>
     showDeleted: boolean
+    canEdit: boolean
+    canDelete: boolean
 }
 
 export function BulkActionsBar<TData extends UserRow>({
     table,
-    showDeleted
+    showDeleted,
+    canEdit,
+    canDelete
 }: Props<TData>) {
     const selectedRows = table.getFilteredSelectedRowModel().rows
     const selectedCount = selectedRows.length
@@ -67,7 +71,7 @@ export function BulkActionsBar<TData extends UserRow>({
 
                 <div className="flex items-center gap-2">
                     {/* Role change - only for active users */}
-                    {hasActiveUsers && (
+                    {canEdit && hasActiveUsers && (
                         <Button
                             variant="outline"
                             size="sm"
@@ -80,7 +84,7 @@ export function BulkActionsBar<TData extends UserRow>({
                     )}
 
                     {/* Restore - only for deleted users */}
-                    {showDeleted && hasDeletedUsers && (
+                    {canEdit && showDeleted && hasDeletedUsers && (
                         <Button
                             variant="outline"
                             size="sm"
@@ -93,7 +97,7 @@ export function BulkActionsBar<TData extends UserRow>({
                     )}
 
                     {/* Delete - only for active users */}
-                    {hasActiveUsers && (
+                    {canDelete && hasActiveUsers && (
                         <Button
                             variant="destructive"
                             size="sm"

@@ -21,12 +21,20 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     showDeleted: boolean
+    canEdit: boolean
+    canDelete: boolean
 }
 
 export function DataTable<
     TData extends { id: string; deletedAt: Date | null },
     TValue
->({ columns, data, showDeleted }: DataTableProps<TData, TValue>) {
+>({
+    columns,
+    data,
+    showDeleted,
+    canEdit,
+    canDelete
+}: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data,
         columns,
@@ -91,7 +99,12 @@ export function DataTable<
                 </Table>
             </div>
 
-            <BulkActionsBar table={table} showDeleted={showDeleted} />
+            <BulkActionsBar
+                table={table}
+                showDeleted={showDeleted}
+                canEdit={canEdit}
+                canDelete={canDelete}
+            />
         </div>
     )
 }
