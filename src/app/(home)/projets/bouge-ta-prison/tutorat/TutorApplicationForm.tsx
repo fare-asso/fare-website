@@ -1,9 +1,10 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
+import { memo, useState } from "react"
 import { useForm } from "react-hook-form"
 import submitTutorApplication from "@/actions/bouge-ta-prison/submitTutorApplication"
+import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -30,6 +31,14 @@ import {
     BTPTutorApplicationSchema
 } from "@/schemas/bougeTaPrison"
 
+const CaptchaWidget = memo(function CaptchaWidget({
+    onTokenChange
+}: {
+    onTokenChange: (token: string) => void
+}) {
+    return <Captcha onComplete={onTokenChange} />
+})
+
 export default function TutorApplicationForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [success, setSuccess] = useState<boolean | undefined>(undefined)
@@ -43,7 +52,8 @@ export default function TutorApplicationForm() {
             major: "",
             studyYear: "L3",
             cv: undefined,
-            motivationLetter: undefined
+            motivationLetter: undefined,
+            captchaToken: ""
         }
     })
 
@@ -265,6 +275,26 @@ export default function TutorApplicationForm() {
                                         {
                                             form.formState.errors
                                                 .motivationLetter?.message
+                                        }
+                                    </FormMessage>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            name="captchaToken"
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Vérification CAPTCHA</FormLabel>
+                                    <FormControl>
+                                        <CaptchaWidget
+                                            onTokenChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <FormMessage>
+                                        {
+                                            form.formState.errors.captchaToken
+                                                ?.message
                                         }
                                     </FormMessage>
                                 </FormItem>

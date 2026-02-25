@@ -12,7 +12,10 @@ import React from "react"
 import type { BTPTutorQuestion } from "@/schemas/bougeTaPrison"
 import BaseTemplate, { APP_URL } from "./base"
 
-type BtpContactProps = Omit<BTPTutorQuestion, "major" | "studyYear"> & {
+type BtpContactProps = Omit<
+    BTPTutorQuestion,
+    "major" | "studyYear" | "captchaToken"
+> & {
     id: number
 }
 
