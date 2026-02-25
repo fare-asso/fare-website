@@ -1,45 +1,76 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
+import { isDevelopment } from "std-env"
 import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
+import { type BugReport, BugReportSchema } from "@/schemas/bugReport"
+
+export type FormState = {
+    error?: string
+    success?: boolean
+    fieldErrors?: Partial<Record<keyof BugReport, string[]>>
+}
 
 export default async function bugReportAction(
-    _prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: FormState | undefined,
     formData: FormData
-) {
-    // Retrieve CAPTCHA value
-    const captchaValue = formData.get("frc-captcha-response")?.toString()
-
-    // Verify CAPTCHA
-    if (!captchaValue) {
-        return { error: "Veuillez compléter le CAPTCHA." }
+): Promise<FormState> {
+    // Extract form data
+    const data = {
+        email: formData.get("email")?.toString() || "",
+        bugType: formData.get("bug-type")?.toString() || "",
+        description: formData.get("description")?.toString() || "",
+        captchaToken: formData.get("frc-captcha-response")?.toString() || ""
     }
 
-    const isCaptchaValid = await verifyCaptcha(captchaValue)
-    if (!isCaptchaValid) {
+    // Validate with Zod
+    const parsed = BugReportSchema.safeParse(data)
+
+    if (!parsed.success) {
+        const fieldErrors: Partial<Record<keyof BugReport, string[]>> = {}
+        for (const issue of parsed.error.issues) {
+            const field = issue.path[0] as keyof BugReport
+            if (!fieldErrors[field]) {
+                fieldErrors[field] = []
+            }
+            fieldErrors[field].push(issue.message)
+        }
+
         return {
-            error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
+            error: "Un ou plusieurs champs sont invalides.",
+            fieldErrors
         }
     }
 
-    // retrieve form data fields
-    const email = formData.get("email")?.toString()
-    const bugType = formData.get("bug-type")?.toString()
-    const description = formData.get("description")?.toString()
+    const validatedData = parsed.data
 
-    // data validation
-    if (!email || !bugType || !description) {
-        return { error: "Un ou plusieurs champs ne sont pas remplis." }
+    // Verify CAPTCHA in production
+    if (!isDevelopment) {
+        if (!validatedData.captchaToken) {
+            return { error: "Veuillez compléter le CAPTCHA." }
+        }
+
+        const isCaptchaValid = await verifyCaptcha(validatedData.captchaToken)
+        if (!isCaptchaValid) {
+            return {
+                error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
+            }
+        }
     }
 
+    // Create bug report
     try {
-        const _createdRecord = await prisma.bugReport.create({
+        await prisma.bugReport.create({
             data: {
-                email,
-                type: bugType,
-                description
+                email: validatedData.email,
+                type: validatedData.bugType,
+                description: validatedData.description
             }
         })
+
+        // Revalidate dashboard page
+        revalidatePath("/dashboard/bug-reports")
 
         return { success: true }
     } catch (e) {
