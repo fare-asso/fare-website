@@ -604,7 +604,7 @@ function FileUpload(props: FileUploadProps) {
 
                 if (propsRef.current.onUpload) {
                     requestAnimationFrame(() => {
-                        onFilesUpload(acceptedFiles)
+                        void onFilesUpload(acceptedFiles)
                     })
                 }
             }
