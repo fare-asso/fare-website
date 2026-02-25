@@ -1,7 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useFormState } from "react-dom"
+import { useActionState } from "react"
 import createPasswordForRepresentativeAction from "@/actions/espace-asso/createPasswordForRepresentativeAction"
 import LoadingRing from "../dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
@@ -18,26 +17,10 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 
 export default function CreatePasswordForm({ email }: { email: string }) {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction, isPending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         FormData
     >(createPasswordForRepresentativeAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        setIsLoading(false)
-    }, [])
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        const formData = new FormData(event.currentTarget)
-
-        setIsLoading(true)
-
-        formAction(formData)
-    }
 
     return (
         <div className="w-full md:w-[50%] lg:w-[30%]">
@@ -51,7 +34,7 @@ export default function CreatePasswordForm({ email }: { email: string }) {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit} id="createPasswordForm">
+                    <form action={formAction} id="createPasswordForm">
                         <div>
                             <Label htmlFor="email">Email</Label>
                             <Input
@@ -89,8 +72,12 @@ export default function CreatePasswordForm({ email }: { email: string }) {
                     </form>
                 </CardContent>
                 <CardFooter>
-                    <Button type="submit" form="createPasswordForm">
-                        {isLoading ? <LoadingRing /> : null} Valider
+                    <Button
+                        type="submit"
+                        form="createPasswordForm"
+                        disabled={isPending}
+                    >
+                        {isPending ? <LoadingRing /> : null} Valider
                     </Button>
                 </CardFooter>
             </Card>

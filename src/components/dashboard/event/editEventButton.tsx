@@ -1,8 +1,13 @@
 "use client"
 
 import Image from "next/image"
-import { type ChangeEvent, useCallback, useEffect, useState } from "react"
-import { useFormState } from "react-dom"
+import {
+    type ChangeEvent,
+    useActionState,
+    useCallback,
+    useEffect,
+    useState
+} from "react"
 import editEventAction from "@/actions/events/editEventAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -44,7 +49,7 @@ export default function EditEventButtonClient({
 }: {
     eventInfo: EventInfo
 }) {
-    const [formState, formAction] = useFormState<
+    const [formState, formAction, _isPending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         FormData
     >(editEventAction, undefined)
