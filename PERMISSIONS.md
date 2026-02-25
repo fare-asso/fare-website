@@ -82,7 +82,19 @@ Permissions follow the pattern: `<action>:<resource>`
 
 ## Database Seeding
 
-To add these permissions to your database, run the following SQL (or create a Prisma migration):
+### Recommended Method: Prisma Seed Script
+
+The easiest way to seed all permissions is to use the Prisma seed script:
+
+```bash
+pnpm prisma db seed
+```
+
+This will automatically create or update all permissions defined in `prisma/seed.ts`. The script uses `upsert` to avoid duplicate entries and updates existing permissions if their details have changed.
+
+### Alternative Method: Direct SQL
+
+Alternatively, you can add these permissions directly to your database using SQL:
 
 ```sql
 INSERT INTO "Permission" (name, title, category, description) VALUES
