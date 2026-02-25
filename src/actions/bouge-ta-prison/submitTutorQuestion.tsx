@@ -10,39 +10,41 @@ import {
     type BTPTutorQuestion,
     BTPTutorQuestionSchema
 } from "@/schemas/bougeTaPrison"
+import type { ActionResponse } from "@/types/actions"
 import { BtpContact } from "../../../emails/btp-contact"
 
 export default async function submitTutorQuestion(
     data: BTPTutorQuestion
-): Promise<{ errors?: { [x: string]: string }[]; success?: boolean }> {
+): Promise<ActionResponse> {
     const parsedData = BTPTutorQuestionSchema.safeParse(data)
 
     if (!parsedData.success) {
-        const issues = parsedData.error.issues.map((issue) => ({
-            [issue.path[0]]: issue.message
-        }))
-        return { success: false, errors: issues }
+        const fieldErrors: Record<string, string[]> = {}
+        for (const issue of parsedData.error.issues) {
+            const field = String(issue.path[0])
+            if (!fieldErrors[field]) {
+                fieldErrors[field] = []
+            }
+            fieldErrors[field].push(issue.message)
+        }
+        return {
+            error: "Un ou plusieurs champs sont invalides.",
+            fieldErrors
+        }
     }
 
     // Verify CAPTCHA in production
     if (!isDevelopment) {
         if (!parsedData.data.captchaToken) {
             return {
-                success: false,
-                errors: [{ captchaToken: "Veuillez compléter le CAPTCHA." }]
+                error: "Veuillez compléter le CAPTCHA."
             }
         }
 
         const isCaptchaValid = await verifyCaptcha(parsedData.data.captchaToken)
         if (!isCaptchaValid) {
             return {
-                success: false,
-                errors: [
-                    {
-                        captchaToken:
-                            "La vérification CAPTCHA a échoué. Veuillez réessayer."
-                    }
-                ]
+                error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
             }
         }
     }

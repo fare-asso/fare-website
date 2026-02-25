@@ -8,12 +8,14 @@ import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
+import type { BTPTutorApplication } from "@/schemas/bougeTaPrison"
 import { BTPTutorApplicationSchema } from "@/schemas/bougeTaPrison"
+import type { ActionResponse } from "@/types/actions"
 import BtpApplication from "../../../emails/btp-application"
 
 export default async function submitTutorApplication(
     formData: FormData
-): Promise<{ success: boolean; errors?: { [x: string]: string }[] }> {
+): Promise<ActionResponse> {
     const data: { [key: string]: FormDataEntryValue } = {}
 
     formData.forEach((value, key) => {
@@ -23,31 +25,32 @@ export default async function submitTutorApplication(
     const parsedData = BTPTutorApplicationSchema.safeParse(data)
 
     if (!parsedData.success) {
-        const issues = parsedData.error.issues.map((issue) => ({
-            [issue.path[0]]: issue.message
-        }))
-        return { success: false, errors: issues }
+        const fieldErrors: Record<string, string[]> = {}
+        for (const issue of parsedData.error.issues) {
+            const field = String(issue.path[0])
+            if (!fieldErrors[field]) {
+                fieldErrors[field] = []
+            }
+            fieldErrors[field].push(issue.message)
+        }
+        return {
+            error: "Un ou plusieurs champs sont invalides.",
+            fieldErrors
+        }
     }
 
     // Verify CAPTCHA in production
     if (!isDevelopment) {
         if (!parsedData.data.captchaToken) {
             return {
-                success: false,
-                errors: [{ captchaToken: "Veuillez compléter le CAPTCHA." }]
+                error: "Veuillez compléter le CAPTCHA."
             }
         }
 
         const isCaptchaValid = await verifyCaptcha(parsedData.data.captchaToken)
         if (!isCaptchaValid) {
             return {
-                success: false,
-                errors: [
-                    {
-                        captchaToken:
-                            "La vérification CAPTCHA a échoué. Veuillez réessayer."
-                    }
-                ]
+                error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
             }
         }
     }
@@ -68,8 +71,7 @@ export default async function submitTutorApplication(
         .upload(`${folderName}/cv-${sanitizedName}.pdf`, parsedData.data.cv)
     if (cvUploadError) {
         return {
-            success: false,
-            errors: [{ cv: "Echec de l'upload du fichier" }]
+            error: "Echec de l'upload du CV"
         }
     }
 
@@ -80,9 +82,12 @@ export default async function submitTutorApplication(
             parsedData.data.motivationLetter
         )
     if (lmUploadError) {
+        // Clean up uploaded CV
+        await supabase.storage
+            .from("btp-tutor-application")
+            .remove([cvUploadData.path])
         return {
-            success: false,
-            errors: [{ motivationLetter: "Echec de l'upload du fichier" }]
+            error: "Echec de l'upload de la lettre de motivation"
         }
     }
 
@@ -101,7 +106,13 @@ export default async function submitTutorApplication(
         })
     } catch (e) {
         console.error(e)
-        return { success: false }
+        // Clean up uploaded files
+        await supabase.storage
+            .from("btp-tutor-application")
+            .remove([cvUploadData.path, lmUploadData.path])
+        return {
+            error: "Echec de la création de la candidature. Veuillez réessayer."
+        }
     }
 
     // Send email to the btp team
