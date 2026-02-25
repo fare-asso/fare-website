@@ -2,6 +2,8 @@
 
 import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
+import { isDevelopment } from "std-env"
+import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
@@ -25,6 +27,29 @@ export default async function submitTutorApplication(
             [issue.path[0]]: issue.message
         }))
         return { success: false, errors: issues }
+    }
+
+    // Verify CAPTCHA in production
+    if (!isDevelopment) {
+        if (!parsedData.data.captchaToken) {
+            return {
+                success: false,
+                errors: [{ captchaToken: "Veuillez compléter le CAPTCHA." }]
+            }
+        }
+
+        const isCaptchaValid = await verifyCaptcha(parsedData.data.captchaToken)
+        if (!isCaptchaValid) {
+            return {
+                success: false,
+                errors: [
+                    {
+                        captchaToken:
+                            "La vérification CAPTCHA a échoué. Veuillez réessayer."
+                    }
+                ]
+            }
+        }
     }
 
     // Generate a random folder name for the storage

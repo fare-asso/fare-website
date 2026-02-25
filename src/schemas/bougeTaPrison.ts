@@ -1,3 +1,4 @@
+import { isDevelopment } from "std-env"
 import { z } from "zod"
 
 /* BTP Tutor Application */
@@ -25,7 +26,10 @@ export const BTPTutorApplicationSchema = z.object({
         })
         .refine((file) => file.size < 5 * 1024 * 1024, {
             message: "La taille du fichier doit être inférieure à 5Mo"
-        })
+        }),
+    captchaToken: z.string().refine((val) => isDevelopment || val !== "", {
+        message: "Veuillez valider le captcha"
+    })
 })
 
 export type BTPTutorApplication = z.infer<typeof BTPTutorApplicationSchema>
@@ -45,7 +49,10 @@ export const BTPTutorQuestionSchema = z.object({
         .min(1, { message: "Le message est obligatoire" })
         .max(1000, {
             message: "Le message doit faire moins de 1000 caractères"
-        })
+        }),
+    captchaToken: z.string().refine((val) => isDevelopment || val !== "", {
+        message: "Veuillez valider le captcha"
+    })
 })
 
 export type BTPTutorQuestion = z.infer<typeof BTPTutorQuestionSchema>
