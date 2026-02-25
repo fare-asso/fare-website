@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useEffect, useState } from "react"
+import { useActionState } from "react"
 import createPasswordForRepresentativeAction from "@/actions/espace-asso/createPasswordForRepresentativeAction"
 import LoadingRing from "../dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
@@ -21,10 +21,6 @@ export default function CreatePasswordForm({ email }: { email: string }) {
         { error?: string; success?: boolean } | undefined,
         FormData
     >(createPasswordForRepresentativeAction, undefined)
-    // Reset loading state when form state changes
-    useEffect(() => {
-        // isPending is handled by useActionState
-    }, [formState])
 
     return (
         <div className="w-full md:w-[50%] lg:w-[30%]">

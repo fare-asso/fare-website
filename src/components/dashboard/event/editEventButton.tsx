@@ -49,7 +49,7 @@ export default function EditEventButtonClient({
 }: {
     eventInfo: EventInfo
 }) {
-    const [formState, formAction, isPending] = useActionState<
+    const [formState, formAction, _isPending] = useActionState<
         { error?: string; success?: boolean } | undefined,
         FormData
     >(editEventAction, undefined)
