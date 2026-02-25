@@ -1,31 +1,11 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { z } from "zod"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-
-const MemberSchema = z.object({
-    lastName: z.string().min(1, "Le nom de famille est obligatoire"),
-    firstName: z.string().min(1, "Le prénom est obligatoire"),
-    position: z.string().min(1, "Le poste est obligatoire"),
-    picturePath: z.string().min(1, "Le chemin de l'image est obligatoire"),
-    email: z.email("L'email doit être valide"),
-    facebook: z
-        .url("L'URL Facebook doit être valide")
-        .optional()
-        .or(z.literal("")),
-    instagram: z
-        .url("L'URL Instagram doit être valide")
-        .optional()
-        .or(z.literal("")),
-    twitter: z
-        .url("L'URL Twitter doit être valide")
-        .optional()
-        .or(z.literal(""))
-})
+import { MemberServerSchema } from "@/schemas/members"
 
 export default async function editMemberAction(formData: FormData, id: number) {
     // Auth and permission verifications
@@ -54,7 +34,7 @@ export default async function editMemberAction(formData: FormData, id: number) {
     }
 
     // Validation des données avec Zod
-    const parsed = MemberSchema.safeParse(memberData)
+    const parsed = MemberServerSchema.safeParse(memberData)
     if (!parsed.success) {
         return {
             success: false,
