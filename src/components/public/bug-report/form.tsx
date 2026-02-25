@@ -11,7 +11,6 @@ export default function BugReportForm() {
         { error?: string; success?: boolean } | undefined,
         FormData
     >(bugReportAction, undefined)
-    const [_captchaValue, setCaptchaValue] = useState<string | null>(null)
     const [charactersLength, setCharactersLength] = useState<number>(0)
 
     const maxCharactersLength: number = 500
@@ -152,7 +151,7 @@ export default function BugReportForm() {
 
             {/* ReCaptcha Input */}
             <div>
-                <Captcha onComplete={setCaptchaValue} />
+                <Captcha />
             </div>
 
             {formState?.error ? (
