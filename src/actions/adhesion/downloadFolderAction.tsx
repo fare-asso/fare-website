@@ -1,8 +1,9 @@
 "use server"
 
 import archiver from "archiver"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import getCurrentUserRole from "@/helpers/user/role"
 
 type ActionState = {
     error?: string
@@ -15,13 +16,16 @@ export async function downloadFolderAction(
     _prevState: ActionState | undefined,
     folderPath: string
 ): Promise<ActionState> {
-    const { role, error: roleError } = await getCurrentUserRole()
-    if (roleError)
-        return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role !== "ADMIN")
+    // Auth and permission verifications
+    const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        return { error: "Authentification requise" }
+    }
+    if (!hasPermission(user, "access:adhesions")) {
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+            error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
+    }
 
     const supabase = await createClient()
 

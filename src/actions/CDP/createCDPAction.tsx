@@ -3,8 +3,9 @@
 import type { PresseType } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import getCurrentUserRole from "@/helpers/user/role"
 
 function isPresseType(value: string): value is PresseType {
     return value === "CDP" || value === "DDP"
@@ -24,13 +25,16 @@ export default async function createCDPAction(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
-    /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole()
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role !== "ADMIN")
+    // Auth and permission verifications
+    const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        return { error: "Authentification requise" }
+    }
+    if (!hasPermission(user, "create:cdp")) {
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+            error: "Vous n'avez pas la permission de créer des communiqués de presse"
         }
+    }
 
     // create supabase client
     const supabase = await createClient()

@@ -2,16 +2,22 @@
 
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
-import getCurrentUserRole from "@/helpers/user/role"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
-export default async function switchVisibilityAction(articleId: number) {
-    /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole()
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role !== "ADMIN")
+export default async function switchVisibilityAction(
+    articleId: number
+): Promise<{ error?: string }> {
+    // Auth and permission verifications
+    const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        return { error: "Authentification requise" }
+    }
+    if (!hasPermission(user, "publish:article")) {
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+            error: "Vous n'avez pas la permission de publier des articles"
         }
+    }
 
     // Fetch current article
     const article = await prisma.article.findUnique({
@@ -24,7 +30,7 @@ export default async function switchVisibilityAction(articleId: number) {
     })
 
     if (!article) {
-        throw new Error("Article not found")
+        return { error: "Article non trouvé" }
     }
 
     await prisma.article.update({
@@ -38,4 +44,6 @@ export default async function switchVisibilityAction(articleId: number) {
 
     revalidatePath("/actualites")
     revalidatePath("/dashboard/articles")
+
+    return {}
 }

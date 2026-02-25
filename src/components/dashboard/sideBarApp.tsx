@@ -65,27 +65,31 @@ export default function SideBarApp({
             href: "/dashboard/events",
             title: "Evènements",
             icon: <FaRegCalendarAlt />,
-            hidden: true
+            hidden: !permissions?.find((p) => p.name === "access:events")
         },
         {
             href: "/dashboard/associations",
             title: "Associations",
-            icon: <LuNetwork />
+            icon: <LuNetwork />,
+            hidden: !permissions?.find((p) => p.name === "access:associations")
         },
         {
             href: "/dashboard/articles",
             title: "Articles",
-            icon: <FaPen />
+            icon: <FaPen />,
+            hidden: !permissions?.find((p) => p.name === "access:articles")
         },
         {
             href: "/dashboard/communiques-de-presse",
             title: "Presse",
-            icon: <NewspaperIcon />
+            icon: <NewspaperIcon />,
+            hidden: !permissions?.find((p) => p.name === "access:presse")
         },
         {
             href: "/dashboard/membres",
             title: "Membres",
-            icon: <FaPeopleGroup />
+            icon: <FaPeopleGroup />,
+            hidden: !permissions?.find((p) => p.name === "access:members")
         },
         {
             href: "/dashboard/bagadAsso",

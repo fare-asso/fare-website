@@ -152,12 +152,74 @@ src/
 
 ## Security & Authentication
 
-### RBAC & Permissions
+### Permission-Based Access Control (PBAC)
 
+The application uses **granular permission-based access control** instead of role-based checks.
+
+**Core Principles:**
 - All sensitive operations must check permissions via `src/helpers/permissions.ts`
-- User roles: `User`, `Member`, `Admin`, `Moderator` (define in schema)
-- **Never trust client-side role checks** — always validate on server (in actions)
-- Supabase Auth handles authentication; check `user.id` and `user.email` after auth
+- **Never use role checks for authorization** — roles are reserved for future Espace Asso features
+- **Never trust client-side permission checks** — always validate on server (in actions)
+- Supabase Auth handles authentication; check `user.id` after auth
+
+**Permission Checking Pattern (Server Actions):**
+```typescript
+"use server"
+
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+
+export async function someAction() {
+    // REQUIRED: Check authentication first
+    const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        return { error: "Authentification requise" }
+    }
+    
+    // REQUIRED: Check specific permission
+    if (!hasPermission(user, "create:article")) {
+        return { error: "Vous n'avez pas la permission de créer des articles" }
+    }
+    
+    // Proceed with action...
+}
+```
+
+**UI Visibility (Client Components):**
+```typescript
+// Sidebar navigation automatically hides items based on permissions
+{
+    href: "/dashboard/articles",
+    title: "Articles",
+    hidden: !permissions?.find((p) => p.name === "access:articles")
+}
+```
+
+**Available Permissions:**
+See `PERMISSIONS.md` for the complete list of all permissions, their naming convention, and database seeding instructions.
+
+**Permission Helpers:**
+- `hasPermission(user, permissionName)` - Check if user has specific permission
+- `getCurrentUserWithPermissions()` - Fetch authenticated user with all permissions loaded
+
+**Database Schema:**
+```typescript
+model User {
+  permissions  UserPermission[]  // Many-to-many with Permission
+}
+
+model Permission {
+  name         String @unique    // e.g., "create:article", "access:presse"
+  title        String            // Display name
+  category     String            // Grouping (e.g., "Articles", "Presse")
+  description  String?           // What the permission allows
+}
+```
+
+**Important Notes:**
+- Roles (`ADMIN`, `MEMBER`, `ASSO_OWNER`) exist in the schema but are **not used for authorization**
+- Roles will be used later for Espace Asso dashboard (association member portal)
+- All authorization must use permissions, not roles
 
 ### Environment Variables
 
