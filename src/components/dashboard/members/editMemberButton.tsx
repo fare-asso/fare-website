@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { MdEdit } from "react-icons/md"
-import { z } from "zod"
 import editMemberAction from "@/actions/members/editMemberAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -22,6 +21,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { formDataToString, zodFieldValuesToFormData } from "@/helpers/formData"
 import { uploadFile } from "@/helpers/supabase/upload"
+import {
+    type MemberEditClient,
+    MemberEditClientSchema,
+    maxUploadSizeInMb
+} from "@/schemas/members"
 import LoadingRing from "../loadingRing"
 
 type Member = {
@@ -35,52 +39,6 @@ type Member = {
     instagramUrl: string | null
     twitterUrl: string | null
 }
-
-const memberSchema = z.object({
-    id: z.string().min(0, "L'id est obligatoire"),
-    lastName: z.string().min(1, "Le nom de famille est obligatoire"),
-    firstName: z.string().min(1, "Le prénom est obligatoire"),
-    position: z.string().min(1, "Le poste est obligatoire"),
-    picture:
-        typeof window === "undefined"
-            ? z.any()
-            : z
-                  .instanceof(FileList)
-                  .optional()
-                  .transform((fl) => {
-                      if (!fl || fl.length === 0) return undefined
-                      return fl[0]
-                  })
-                  .refine(
-                      (file) => !file || file.type.split("/")[0] === "image",
-                      "Le format de l'image n'est pas valide"
-                  )
-                  .refine(
-                      (file) =>
-                          !file || file.size <= 1024 * 1024 * maxUploadSizeInMb,
-                      "La taille de l'image est trop grande"
-                  ),
-    email: z.string().email("L'email doit être valide"),
-    facebook: z
-        .string()
-        .url("L'URL Facebook doit être valide")
-        .optional()
-        .or(z.literal("")),
-    instagram: z
-        .string()
-        .url("L'URL Instagram doit être valide")
-        .optional()
-        .or(z.literal("")),
-    twitter: z
-        .string()
-        .url("L'URL Twitter doit être valide")
-        .optional()
-        .or(z.literal(""))
-})
-
-type TMemberSchema = z.infer<typeof memberSchema>
-
-const maxUploadSizeInMb = 10
 
 export default function EditMemberButton({
     member,
@@ -97,8 +55,8 @@ export default function EditMemberButton({
         handleSubmit,
         formState: { errors },
         reset
-    } = useForm<TMemberSchema>({
-        resolver: zodResolver(memberSchema)
+    } = useForm<MemberEditClient>({
+        resolver: zodResolver(MemberEditClientSchema)
     })
 
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
@@ -125,18 +83,21 @@ export default function EditMemberButton({
     }, [success, handleOpenChange])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
-    const onSubmit = async (data: TMemberSchema) => {
+    const onSubmit = async (data: MemberEditClient) => {
         setIsLoading(true)
 
         let newPicturePath: string | undefined
 
         // If a picture is provided, upload it and get the path
-        if (data.picture) {
+        if (data.picture && data.picture.length > 0) {
+            // Extract File from FileList
+            const pictureFile = data.picture[0]
+
             // Upload picture
             const uploadResponse = await uploadFile(
                 "member-pictures",
                 undefined,
-                data.picture,
+                pictureFile,
                 undefined,
                 maxUploadSizeInMb,
                 ["png", "jpeg", "jpg", "webp", "gif"]
@@ -152,15 +113,15 @@ export default function EditMemberButton({
             newPicturePath = uploadResponse.path ?? ""
         }
 
-        // Build the formData with data values
-        const formData = zodFieldValuesToFormData(data, {
-            excludeFields: ["picture"]
-        })
+        // Build the formData with data values (exclude picture as it's already uploaded)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { picture, ...dataWithoutPicture } = data
+        const formData = zodFieldValuesToFormData(dataWithoutPicture)
 
         // Add the picture to the formData
         formData.append(
             "picturePath",
-            data.picture ? (newPicturePath ?? "") : member.picturePath
+            newPicturePath ? newPicturePath : member.picturePath
         )
 
         console.log(formDataToString(formData))

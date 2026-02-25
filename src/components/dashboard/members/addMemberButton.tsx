@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
 import addMemberAction from "@/actions/members/addMemberAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -21,46 +20,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { formDataToString, zodFieldValuesToFormData } from "@/helpers/formData"
 import { uploadFile } from "@/helpers/supabase/upload"
+import {
+    type MemberClient,
+    MemberClientSchema,
+    maxUploadSizeInMb
+} from "@/schemas/members"
 import LoadingRing from "../loadingRing"
-
-const maxUploadSizeInMb = 10
-
-const memberSchema = z.object({
-    lastName: z.string().min(1, "Le nom de famille est obligatoire"),
-    firstName: z.string().min(1, "Le prénom est obligatoire"),
-    position: z.string().min(1, "Le poste est obligatoire"),
-    picture:
-        typeof window === "undefined"
-            ? z.any()
-            : z
-                  .instanceof(FileList)
-                  .refine((fl) => fl.length > 0, {
-                      message: "Pas de fichier selectionné"
-                  })
-                  .refine((fl) => fl[0].type.split("/")[0] === "image", {
-                      message: "Le format de l'image n'est pas valide"
-                  })
-                  .refine((fl) => fl[0].size <= 1024 * 1024 * maxUploadSizeInMb)
-                  .transform((fl) => fl[0]),
-    email: z.string().email("L'email doit être valide"),
-    facebook: z
-        .string()
-        .url("L'URL Facebook doit être valide")
-        .optional()
-        .or(z.literal("")),
-    instagram: z
-        .string()
-        .url("L'URL Instagram doit être valide")
-        .optional()
-        .or(z.literal("")),
-    twitter: z
-        .string()
-        .url("L'URL Twitter doit être valide")
-        .optional()
-        .or(z.literal(""))
-})
-
-export type TMemberSchema = z.infer<typeof memberSchema>
 
 export default function AddMemberButton() {
     const [error, setError] = useState<string | undefined>(undefined)
@@ -71,8 +36,8 @@ export default function AddMemberButton() {
         handleSubmit,
         formState: { errors },
         reset
-    } = useForm<TMemberSchema>({
-        resolver: zodResolver(memberSchema)
+    } = useForm<MemberClient>({
+        resolver: zodResolver(MemberClientSchema)
     })
 
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
@@ -100,13 +65,21 @@ export default function AddMemberButton() {
     }, [success, handleOpenChange])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
-    const onSubmit = async (data: TMemberSchema) => {
+    const onSubmit = async (data: MemberClient) => {
         setIsLoading(true)
+
+        // Extract File from FileList
+        const pictureFile = data.picture[0]
+        if (!pictureFile) {
+            setError("Aucun fichier sélectionné")
+            setIsLoading(false)
+            return
+        }
 
         const uploadResponse = await uploadFile(
             "member-pictures",
             undefined,
-            data.picture,
+            pictureFile,
             undefined,
             maxUploadSizeInMb,
             ["png", "jpeg", "jpg", "webp", "gif"]
@@ -118,10 +91,10 @@ export default function AddMemberButton() {
             return
         }
 
-        // Build the formData with data values
-        const formData = zodFieldValuesToFormData(data, {
-            excludeFields: ["picture"]
-        })
+        // Build the formData with data values (exclude picture as it's already uploaded)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { picture, ...dataWithoutPicture } = data
+        const formData = zodFieldValuesToFormData(dataWithoutPicture)
 
         // Add the previously uploaded picture path to the formData
         formData.append("picturePath", uploadResponse.path ?? "")
