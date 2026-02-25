@@ -1,18 +1,17 @@
 "use client"
 
 import type { Permission } from "@prisma/client"
-import { FileUserIcon, MessageCircleQuestionMarkIcon } from "lucide-react"
+import {
+    FileUserIcon,
+    MessageCircleQuestionMarkIcon,
+    NewspaperIcon
+} from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
-import {
-    FaHandcuffs,
-    FaPeopleGroup,
-    FaRegNewspaper,
-    FaUsers
-} from "react-icons/fa6" // Bouge Ta Prison
+import { FaHandcuffs, FaPeopleGroup, FaUsers } from "react-icons/fa6" // Bouge Ta Prison
 // Link icons
 import {
     LuBox,
@@ -38,7 +37,7 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem
 } from "../ui/sidebar"
-import SignOutButton from "./signOutButton"
+import AccountButton from "./AccountButton"
 
 type SidebarLink = {
     href: string
@@ -50,10 +49,14 @@ type SidebarLink = {
 
 export default function SideBarApp({
     permissions,
-    email
+    email,
+    name,
+    image
 }: {
     permissions?: Permission[]
-    email?: string
+    email: string
+    name?: string | null
+    image?: string | null
 }) {
     const pathname = usePathname()
 
@@ -77,7 +80,7 @@ export default function SideBarApp({
         {
             href: "/dashboard/communiques-de-presse",
             title: "Presse",
-            icon: <FaRegNewspaper />
+            icon: <NewspaperIcon />
         },
         {
             href: "/dashboard/membres",
@@ -217,11 +220,7 @@ export default function SideBarApp({
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
-                <div className="flex flex-col items-center text-black text-sm">
-                    Connecté en tant que
-                    <div className="font-semibold">{email}</div>
-                </div>
-                <SignOutButton />
+                <AccountButton name={name} email={email} image={image} />
             </SidebarFooter>
         </Sidebar>
     )
