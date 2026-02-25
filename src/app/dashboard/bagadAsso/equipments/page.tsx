@@ -2,11 +2,18 @@ import { PackageIcon } from "lucide-react"
 import AddEquipmentButton from "@/components/dashboard/bagadAsso/equipments/addEquipmentButton"
 import EquipmentCard from "@/components/dashboard/bagadAsso/equipments/equipmentCard"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
 export default async function Equipments() {
     const equipments = await prisma.bagadAssoEquipment.findMany({
         orderBy: { name: "asc" }
     })
+
+    const user = await getCurrentUserWithPermissions()
+    const canCreate = !!user && hasPermission(user, "create:bagad-equipment")
+    const canEdit = !!user && hasPermission(user, "edit:bagad-equipment")
+    const canDelete = !!user && hasPermission(user, "delete:bagad-equipment")
 
     return (
         <div className="@container flex h-full w-full flex-col gap-4">
@@ -20,7 +27,7 @@ export default async function Equipments() {
                         Gérez le matériel disponible à la location
                     </p>
                 </div>
-                <AddEquipmentButton />
+                {canCreate ? <AddEquipmentButton /> : null}
             </div>
 
             {/* Equipment Grid */}
@@ -30,6 +37,8 @@ export default async function Equipments() {
                         <EquipmentCard
                             key={equipment.id}
                             equipment={equipment}
+                            canEdit={canEdit}
+                            canDelete={canDelete}
                         />
                     ))}
                 </div>

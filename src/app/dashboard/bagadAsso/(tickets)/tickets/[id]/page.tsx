@@ -32,6 +32,8 @@ import {
     joinTicketAndEquipment
 } from "@/helpers/bagadAsso"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import TicketActions from "./ticketActions"
 
 export async function generateMetadata({
@@ -51,6 +53,10 @@ export default async function Page({
     params: Promise<{ id: string }>
 }) {
     const ticketId = Number((await params).id)
+
+    const user = await getCurrentUserWithPermissions()
+    const canEditTicket = !!user && hasPermission(user, "edit:bagad-ticket")
+    const canDeleteTicket = !!user && hasPermission(user, "delete:bagad-ticket")
 
     if (Number.isNaN(ticketId)) {
         return (
@@ -324,11 +330,15 @@ export default async function Page({
                     </Card>
 
                     {/* Ticket Actions */}
-                    <TicketActions
-                        ticketId={ticket.id}
-                        ticketName={ticket.assocation}
-                        isArchived={ticket.deleted !== null}
-                    />
+                    {canEditTicket || canDeleteTicket ? (
+                        <TicketActions
+                            ticketId={ticket.id}
+                            ticketName={ticket.assocation}
+                            isArchived={ticket.deleted !== null}
+                            canEdit={canEditTicket}
+                            canDelete={canDeleteTicket}
+                        />
+                    ) : null}
                 </div>
             </div>
         </div>

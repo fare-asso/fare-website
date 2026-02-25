@@ -9,6 +9,8 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import ActiveAdhesions from "./activeAdhesions"
 import ArchivedAdhesions from "./archivedAdhesions"
 import AdhesionTabSwitcher from "./tabSwitcher"
@@ -38,7 +40,12 @@ function SummarySkeleton() {
     )
 }
 
-export default function Adhesions() {
+export default async function Adhesions() {
+    const user = await getCurrentUserWithPermissions()
+    const canEdit = !!user && hasPermission(user, "edit:adhesion")
+    const canDownload =
+        !!user && hasPermission(user, "download:adhesion-folder")
+
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="p-0">
@@ -53,10 +60,16 @@ export default function Adhesions() {
                 </Suspense>
                 <AdhesionTabSwitcher>
                     <Suspense fallback={<p>Chargement...</p>}>
-                        <ActiveAdhesions />
+                        <ActiveAdhesions
+                            canEdit={canEdit}
+                            canDownload={canDownload}
+                        />
                     </Suspense>
                     <Suspense fallback={<p>Chargement...</p>}>
-                        <ArchivedAdhesions />
+                        <ArchivedAdhesions
+                            canEdit={canEdit}
+                            canDownload={canDownload}
+                        />
                     </Suspense>
                 </AdhesionTabSwitcher>
             </CardContent>

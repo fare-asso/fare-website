@@ -1,4 +1,4 @@
-import { columns, type Event } from "@/app/dashboard/events/columns"
+import { type Event, getColumns } from "@/app/dashboard/events/columns"
 import { DataTable } from "@/app/dashboard/events/data-table"
 
 import prisma from "@/helpers/db"
@@ -33,8 +33,17 @@ async function getData(): Promise<Event[]> {
     return events
 }
 
-export default async function EventDataTable() {
+interface EventDataTableProps {
+    canEdit: boolean
+    canDelete: boolean
+}
+
+export default async function EventDataTable({
+    canEdit,
+    canDelete
+}: EventDataTableProps) {
     const data: Event[] = await getData()
+    const columns = getColumns(canEdit, canDelete)
 
     return <DataTable columns={columns} data={data} />
 }

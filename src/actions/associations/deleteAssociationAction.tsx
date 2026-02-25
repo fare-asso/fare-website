@@ -2,20 +2,24 @@
 
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient, createClient } from "@/helpers/supabase/server"
-import getCurrentUserRole from "@/helpers/user/role"
 
 export default async function deleteAssociationAction(
     _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ) {
-    /* SUPER IMPORTANT : Auth and role verifications */
-    const { role, error } = await getCurrentUserRole()
-    if (error) return { error: "Echec de l'authentification de l'utilisateur" }
-    if (role !== "ADMIN")
+    // Auth and permission verifications
+    const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        return { error: "Authentification requise" }
+    }
+    if (!hasPermission(user, "delete:association")) {
         return {
-            error: "Vous devez avoir les droits administrateur pour effectuer cette opération."
+            error: "Vous n'avez pas la permission de supprimer des associations"
         }
+    }
 
     // create supabase client
     const supabase = await createClient()

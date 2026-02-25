@@ -7,26 +7,48 @@ import DeleteRepresentativeButton from "./deleteRepresentativeButton"
 import EditAssociationButton from "./editAssociationButton"
 import SendInvitationLinkButton from "./sendInvitationLinkButton"
 
-export default function AssociationCard({
-    association,
-    logoUrl
-}: {
+interface AssociationCardProps {
     association: Association
     logoUrl: string
-}) {
+    canEdit: boolean
+    canDelete: boolean
+    canInvite: boolean
+}
+
+export default function AssociationCard({
+    association,
+    logoUrl,
+    canEdit,
+    canDelete,
+    canInvite
+}: AssociationCardProps) {
     return (
         <div className="flex h-full w-full flex-col items-start rounded-lg border bg-card p-3 text-card-foreground shadow-xs">
             <div className="relative">
                 {/* Hover buttons */}
-                <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 lg:opacity-0 lg:hover:opacity-100">
-                    <DeleteAssociationButton association={association} />
-                    <EditAssociationButton association={association} />
-                    {association.representativeId ? (
-                        <DeleteRepresentativeButton association={association} />
-                    ) : (
-                        <SendInvitationLinkButton association={association} />
-                    )}
-                </div>
+                {canDelete || canEdit || canInvite ? (
+                    <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 lg:opacity-0 lg:hover:opacity-100">
+                        {canDelete ? (
+                            <DeleteAssociationButton
+                                association={association}
+                            />
+                        ) : null}
+                        {canEdit ? (
+                            <EditAssociationButton association={association} />
+                        ) : null}
+                        {canInvite ? (
+                            association.representativeId ? (
+                                <DeleteRepresentativeButton
+                                    association={association}
+                                />
+                            ) : (
+                                <SendInvitationLinkButton
+                                    association={association}
+                                />
+                            )
+                        ) : null}
+                    </div>
+                ) : null}
                 <Image
                     src={logoUrl}
                     width={500}

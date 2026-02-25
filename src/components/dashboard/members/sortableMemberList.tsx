@@ -38,11 +38,17 @@ interface MemberWithPicture {
     pictureUrl: string
 }
 
-export default function SortableMemberList({
-    initialMembers
-}: {
+interface SortableMemberListProps {
     initialMembers: MemberWithPicture[]
-}) {
+    canEdit: boolean
+    canDelete: boolean
+}
+
+export default function SortableMemberList({
+    initialMembers,
+    canEdit,
+    canDelete
+}: SortableMemberListProps) {
     const { toast } = useToast()
     const [members, setMembers] = useState(initialMembers)
     const [, startTransition] = useTransition()
@@ -93,13 +99,14 @@ export default function SortableMemberList({
     return (
         <div className="h-full w-full overflow-y-auto rounded-lg border bg-card p-6 text-card-foreground shadow-xs">
             <DndContext
-                sensors={sensors}
+                sensors={canEdit ? sensors : []}
                 collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
+                onDragEnd={canEdit ? handleDragEnd : undefined}
             >
                 <SortableContext
                     items={members.map((m) => m.member.id)}
                     strategy={rectSortingStrategy}
+                    disabled={!canEdit}
                 >
                     <div className="grid h-auto w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
                         {members.map((item) => (
@@ -107,6 +114,8 @@ export default function SortableMemberList({
                                 key={item.member.id}
                                 member={item.member}
                                 pictureUrl={item.pictureUrl}
+                                canEdit={canEdit}
+                                canDelete={canDelete}
                             />
                         ))}
                     </div>
