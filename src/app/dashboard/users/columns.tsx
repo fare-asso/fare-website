@@ -5,6 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { MoreHorizontal } from "lucide-react"
 import Link from "next/link"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -16,8 +17,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import CopyButton from "./copyButton"
-import { PermissionBadges } from "./permissionBadges"
 
 export type UserWithPermissionsRow = User & {
     permissions: (UserPermission & { permission: Permission })[]
@@ -50,25 +49,34 @@ export const columns: ColumnDef<UserWithPermissionsRow>[] = [
         enableHiding: false
     },
     {
-        accessorKey: "id",
-        cell: ({ row }) => <CopyButton value={row.getValue("id")} />,
-        header: "ID"
-    },
-    {
         header: "Nom",
         accessorKey: "name",
         cell: ({ row }) => {
             const isDeleted = row.original.deletedAt !== null
+            const getInitials = (): string => {
+                if (row.original.name) {
+                    const nameParts = row.original.name.trim().split(" ")
+                    if (nameParts.length >= 2) {
+                        return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+                    }
+                    return row.original.name.substring(0, 2).toUpperCase()
+                }
+                return row.original.email.substring(0, 2).toUpperCase()
+            }
             return (
                 <div className="flex items-center gap-2">
-                    <Link
-                        href={`/dashboard/users/${row.getValue("id")}`}
-                        className="hover:underline"
-                    >
+                    <div className="flex items-center justify-between gap-2">
+                        <Avatar className="size-8">
+                            <AvatarImage
+                                src={row.original.image || undefined}
+                                alt={row.original.name || row.original.email}
+                            />
+                            <AvatarFallback>{getInitials()}</AvatarFallback>
+                        </Avatar>
                         {row.getValue("name") ?? (
                             <span className="opacity-60">NULL</span>
                         )}
-                    </Link>
+                    </div>
                     {isDeleted && (
                         <Badge variant="destructive" className="text-xs">
                             Supprime
@@ -105,9 +113,7 @@ export const columns: ColumnDef<UserWithPermissionsRow>[] = [
     {
         id: "permissions",
         header: "Permissions",
-        cell: ({ row }) => (
-            <PermissionBadges permissions={row.original.permissions} />
-        )
+        cell: ({ row }) => <span>{row.original.permissions.length}</span>
     },
     {
         accessorKey: "createdAt",

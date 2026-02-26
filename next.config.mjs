@@ -29,6 +29,12 @@ export default {
                 hostname: "supabase.fare.finxol.io",
                 port: "",
                 pathname: "/storage/v1/object/public/**"
+            },
+            {
+                protocol: "https",
+                hostname: "lh3.googleusercontent.com",
+                port: "",
+                pathname: "/a/**"
             }
         ]
     },

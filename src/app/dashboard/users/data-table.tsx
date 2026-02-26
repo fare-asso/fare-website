@@ -7,6 +7,7 @@ import {
     getFilteredRowModel,
     useReactTable
 } from "@tanstack/react-table"
+import { useRouter } from "next/navigation"
 import {
     Table,
     TableBody,
@@ -35,6 +36,7 @@ export function DataTable<
     canEdit,
     canDelete
 }: DataTableProps<TData, TValue>) {
+    const router = useRouter()
     const table = useReactTable({
         data,
         columns,
@@ -42,6 +44,23 @@ export function DataTable<
         getFilteredRowModel: getFilteredRowModel(),
         enableRowSelection: true
     })
+
+    const handleRowClick = (
+        e: React.MouseEvent<HTMLTableRowElement>,
+        userId: string
+    ): void => {
+        // Don't navigate if clicking on interactive elements
+        const target = e.target as HTMLElement
+        const isInteractive =
+            target.closest("button") ||
+            target.closest("a") ||
+            target.closest('input[type="checkbox"]') ||
+            target.closest("[role='menuitem']")
+
+        if (!isInteractive) {
+            router.push(`/dashboard/users/${userId}`)
+        }
+    }
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
@@ -74,6 +93,10 @@ export function DataTable<
                                     data-state={
                                         row.getIsSelected() && "selected"
                                     }
+                                    onClick={(e) =>
+                                        handleRowClick(e, row.original.id)
+                                    }
+                                    className="cursor-pointer"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>

@@ -32,12 +32,12 @@ export function ShowDeletedToggle() {
             {showDeleted ? (
                 <>
                     <EyeOff className="h-4 w-4" />
-                    Masquer les supprimes
+                    Masquer les supprimés
                 </>
             ) : (
                 <>
                     <Eye className="h-4 w-4" />
-                    Afficher les supprimes
+                    Afficher les supprimés
                 </>
             )}
         </Button>
