@@ -1,12 +1,10 @@
 "use client"
 
 import {
-    type ColumnDef,
     flexRender,
     getCoreRowModel,
     useReactTable
 } from "@tanstack/react-table"
-
 import {
     Table,
     TableBody,
@@ -15,16 +13,17 @@ import {
     TableHeader,
     TableRow
 } from "@/components/ui/table"
+import { type Event, getColumns } from "./columns"
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
+interface DataTableProps<TData> {
     data: TData[]
+    canEdit: boolean
+    canDelete: boolean
 }
 
-export function DataTable<TData, TValue>({
-    columns,
-    data
-}: DataTableProps<TData, TValue>) {
+export function DataTable({ data, canEdit, canDelete }: DataTableProps<Event>) {
+    const columns = getColumns(canEdit, canDelete)
+
     const table = useReactTable({
         data,
         columns,

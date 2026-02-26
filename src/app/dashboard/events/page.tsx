@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+import type { Event } from "@/app/dashboard/events/columns"
 import CreateEventButton from "@/components/dashboard/event/createEventButton"
-import EventDataTable from "@/components/dashboard/event/eventDataTable"
+import { getData } from "@/components/dashboard/event/eventDataTable"
 import {
     Card,
     CardContent,
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/card"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { DataTable } from "./data-table"
 
 export const metadata: Metadata = {
     title: "Évènements"
@@ -22,6 +24,7 @@ export default async function EventsPage() {
     const canCreate = !!user && hasPermission(user, "create:event")
     const canEdit = !!user && hasPermission(user, "edit:event")
     const canDelete = !!user && hasPermission(user, "delete:event")
+    const data: Event[] = await getData()
 
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
@@ -33,7 +36,11 @@ export default async function EventsPage() {
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto p-0">
                 <Suspense fallback={<p>Chargements...</p>}>
-                    <EventDataTable canEdit={canEdit} canDelete={canDelete} />
+                    <DataTable
+                        data={data}
+                        canEdit={canEdit}
+                        canDelete={canDelete}
+                    />
                 </Suspense>
             </CardContent>
             {canCreate ? (
