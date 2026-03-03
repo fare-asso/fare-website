@@ -1,8 +1,8 @@
 "use client"
 
 import type { Association } from "@prisma/client"
+import { MailPlusIcon } from "lucide-react"
 import { useActionState, useCallback, useEffect, useState } from "react"
-import { TbMailPlus } from "react-icons/tb"
 import inviteRepresentativeAction from "@/actions/associations/inviteRepresentativeAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -17,6 +17,11 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger
+} from "@/components/ui/tooltip"
 import LoadingRing from "../loadingRing"
 
 export default function SendInvitationLinkButton({
@@ -61,11 +66,16 @@ export default function SendInvitationLinkButton({
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
-            <DialogTrigger asChild>
-                <Button className="aspect-square" variant="outline">
-                    <TbMailPlus size={18} />
-                </Button>
-            </DialogTrigger>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MailPlusIcon size={18} />
+                        </Button>
+                    </DialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Inviter un representant</TooltipContent>
+            </Tooltip>
 
             {/* Content */}
             <DialogContent className="h-auto max-h-[90%] w-full md:w-[50%] lg:w-[30%]">

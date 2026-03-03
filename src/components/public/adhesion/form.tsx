@@ -1,15 +1,16 @@
 "use client"
 
 import { useForm } from "@tanstack/react-form"
-import { Trash2, Upload, UserPlus, X } from "lucide-react"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import { CalendarIcon, Trash2, Upload, UserPlus, X } from "lucide-react"
 import {
     memo,
     type ReactNode,
-    startTransition,
-    useActionState,
     useCallback,
     useRef,
-    useState
+    useState,
+    useTransition
 } from "react"
 import {
     type FormState,
@@ -19,6 +20,7 @@ import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
 import {
     Card,
     CardContent,
@@ -46,12 +48,18 @@ import {
 } from "@/components/ui/file-upload"
 import { Input } from "@/components/ui/input"
 import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger
+} from "@/components/ui/popover"
+import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 import {
     AdhesionClientFormSchema,
     type AdhesionFormData,
@@ -114,6 +122,7 @@ const adhesionDefaultValues = {
     sigle: "",
     nomComplet: "",
     college: "" as "A" | "B" | "",
+    filiere: "",
     objetPrincipal: "",
     adresseAdministrative: "",
     siegeSocial: "",
@@ -131,6 +140,13 @@ const adhesionDefaultValues = {
 
 // --- File upload field component ---
 
+/** Max file size constant: 2 MB per file (in bytes) */
+const MAX_FILE_SIZE = 2 * 1024 * 1024
+
+function formatMaxSize(bytes: number): string {
+    return `${(bytes / (1024 * 1024)).toFixed(0)} Mo`
+}
+
 function FileUploadField({
     name,
     label,
@@ -138,9 +154,11 @@ function FileUploadField({
     accept,
     required,
     onFilesChange,
-    max
+    max,
+    maxSize = MAX_FILE_SIZE
 }: {
     max?: number
+    maxSize?: number
     name: string
     label: ReactNode
     description?: ReactNode
@@ -149,16 +167,27 @@ function FileUploadField({
     onFilesChange: (name: string) => (files: File[]) => void
 }) {
     const [files, setFiles] = useState<File[]>([])
+    const [sizeError, setSizeError] = useState<string | null>(null)
 
     const handleValueChange = useCallback(
         (newFiles: File[]) => {
             setFiles(newFiles)
+            setSizeError(null)
             onFilesChange(name)(newFiles)
         },
         [name, onFilesChange]
     )
 
-    console.log(files.length)
+    const handleFileReject = useCallback(
+        (_file: File, message: string) => {
+            if (message === "File too large") {
+                setSizeError(
+                    `Le fichier dépasse la taille maximale de ${formatMaxSize(maxSize)}.`
+                )
+            }
+        },
+        [maxSize]
+    )
 
     return (
         <Field>
@@ -166,17 +195,24 @@ function FileUploadField({
             {description && <FieldDescription>{description}</FieldDescription>}
             <FileUpload
                 maxFiles={max}
+                maxSize={maxSize}
                 accept={accept}
                 required={required}
                 value={files}
                 onValueChange={handleValueChange}
+                onFileReject={handleFileReject}
             >
                 {(!max || files.length < max) && (
                     <FileUploadDropzone className="flex-row gap-4 p-4">
                         <Upload className="size-5 text-muted-foreground" />
-                        <p className="text-muted-foreground text-sm">
-                            Glissez-déposez ou cliquez pour sélectionner
-                        </p>
+                        <div className="text-center">
+                            <p className="text-muted-foreground text-sm">
+                                Glissez-déposez ou cliquez pour sélectionner
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                                Max. {formatMaxSize(maxSize)}
+                            </p>
+                        </div>
                     </FileUploadDropzone>
                 )}
                 <FileUploadList>
@@ -198,6 +234,9 @@ function FileUploadField({
                     ))}
                 </FileUploadList>
             </FileUpload>
+            {sizeError && (
+                <p className="text-destructive text-sm">{sizeError}</p>
+            )}
         </Field>
     )
 }
@@ -205,10 +244,8 @@ function FileUploadField({
 // --- Main form component ---
 
 export default function AdhesionForm() {
-    const [formState, formAction, pending] = useActionState<
-        FormState | undefined,
-        FormData
-    >(processAdhesionForm, undefined)
+    const [formState, setFormState] = useState<FormState | undefined>(undefined)
+    const [pending, startTransition] = useTransition()
 
     const form = useForm({
         defaultValues: { ...adhesionDefaultValues },
@@ -226,6 +263,7 @@ export default function AdhesionForm() {
                 sigle: value.sigle,
                 nomComplet: value.nomComplet,
                 college: value.college as "A" | "B",
+                filiere: value.filiere,
                 objetPrincipal: value.objetPrincipal,
                 adresseAdministrative: value.adresseAdministrative,
                 siegeSocial: value.siegeSocial,
@@ -250,8 +288,19 @@ export default function AdhesionForm() {
                 }
             }
 
-            startTransition(() => {
-                formAction(submitFormData)
+            startTransition(async () => {
+                try {
+                    const result = await processAdhesionForm(
+                        formState,
+                        submitFormData
+                    )
+                    setFormState(result)
+                } catch (e) {
+                    console.error("Erreur lors de la soumission :", e)
+                    setFormState({
+                        error: "Une erreur réseau ou de serveur est survenue. Assurez-vous que vos fichiers ne sont pas trop volumineux."
+                    })
+                }
             })
         }
     })
@@ -312,6 +361,13 @@ export default function AdhesionForm() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
+                {formState?.error && (
+                    <Alert variant="destructive" className="mb-6">
+                        <AlertTitle>Erreur lors de l'envoi</AlertTitle>
+                        <AlertDescription>{formState.error}</AlertDescription>
+                    </Alert>
+                )}
+
                 <form
                     id="adhesion-form"
                     onSubmit={(e) => {
@@ -335,26 +391,72 @@ export default function AdhesionForm() {
                                     return (
                                         <Field data-invalid={isInvalid}>
                                             <FieldLabel htmlFor={field.name}>
-                                                Date de la demande
-                                                d&apos;adhésion
+                                                Date de la demande d'adhésion
                                             </FieldLabel>
                                             <FieldDescription>
                                                 Sélectionnez la date à laquelle
                                                 vous faites cette demande.
                                             </FieldDescription>
-                                            <Input
-                                                id={field.name}
-                                                name={field.name}
-                                                type="date"
-                                                value={field.state.value}
-                                                onBlur={field.handleBlur}
-                                                onChange={(e) =>
-                                                    field.handleChange(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                aria-invalid={isInvalid}
-                                            />
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        id={field.name}
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal",
+                                                            !field.state
+                                                                .value &&
+                                                                "text-muted-foreground",
+                                                            isInvalid &&
+                                                                "border-destructive focus-visible:ring-destructive"
+                                                        )}
+                                                        aria-invalid={isInvalid}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.state.value ? (
+                                                            format(
+                                                                new Date(
+                                                                    field.state
+                                                                        .value
+                                                                ),
+                                                                "PPP",
+                                                                { locale: fr }
+                                                            )
+                                                        ) : (
+                                                            <span>
+                                                                Sélectionnez une
+                                                                date
+                                                            </span>
+                                                        )}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-auto p-0"
+                                                    align="start"
+                                                >
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={
+                                                            field.state.value
+                                                                ? new Date(
+                                                                      field
+                                                                          .state
+                                                                          .value
+                                                                  )
+                                                                : undefined
+                                                        }
+                                                        onSelect={(date) => {
+                                                            field.handleChange(
+                                                                date
+                                                                    ? date.toISOString()
+                                                                    : ""
+                                                            )
+                                                            field.handleBlur()
+                                                        }}
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
                                             {isInvalid && (
                                                 <FieldError
                                                     errors={
@@ -511,6 +613,46 @@ export default function AdhesionForm() {
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
+                                            {isInvalid && (
+                                                <FieldError
+                                                    errors={
+                                                        field.state.meta.errors
+                                                    }
+                                                />
+                                            )}
+                                        </Field>
+                                    )
+                                }}
+                            />
+
+                            <form.Field
+                                name="filiere"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched &&
+                                        !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>
+                                                Filière représentée
+                                            </FieldLabel>
+                                            <FieldDescription>
+                                                Indiquez la filière principale
+                                                de votre association.
+                                            </FieldDescription>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) =>
+                                                    field.handleChange(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                aria-invalid={isInvalid}
+                                                placeholder="Ex: Droit, Médecine..."
+                                            />
                                             {isInvalid && (
                                                 <FieldError
                                                     errors={
@@ -694,19 +836,66 @@ export default function AdhesionForm() {
                                                 Date de la dernière Assemblée
                                                 Générale
                                             </FieldLabel>
-                                            <Input
-                                                id={field.name}
-                                                name={field.name}
-                                                type="date"
-                                                value={field.state.value}
-                                                onBlur={field.handleBlur}
-                                                onChange={(e) =>
-                                                    field.handleChange(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                aria-invalid={isInvalid}
-                                            />
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        id={field.name}
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal",
+                                                            !field.state
+                                                                .value &&
+                                                                "text-muted-foreground",
+                                                            isInvalid &&
+                                                                "border-destructive focus-visible:ring-destructive"
+                                                        )}
+                                                        aria-invalid={isInvalid}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.state.value ? (
+                                                            format(
+                                                                new Date(
+                                                                    field.state
+                                                                        .value
+                                                                ),
+                                                                "PPP",
+                                                                { locale: fr }
+                                                            )
+                                                        ) : (
+                                                            <span>
+                                                                Sélectionnez une
+                                                                date
+                                                            </span>
+                                                        )}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-auto p-0"
+                                                    align="start"
+                                                >
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={
+                                                            field.state.value
+                                                                ? new Date(
+                                                                      field
+                                                                          .state
+                                                                          .value
+                                                                  )
+                                                                : undefined
+                                                        }
+                                                        onSelect={(date) => {
+                                                            field.handleChange(
+                                                                date
+                                                                    ? date.toISOString()
+                                                                    : ""
+                                                            )
+                                                            field.handleBlur()
+                                                        }}
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
                                             {isInvalid && (
                                                 <FieldError
                                                     errors={

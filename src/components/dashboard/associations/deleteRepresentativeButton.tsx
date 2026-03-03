@@ -1,17 +1,31 @@
 "use client"
 
 import type { Association } from "@prisma/client"
-import { FaUserSlash } from "react-icons/fa"
+import { UserXIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger
+} from "@/components/ui/tooltip"
 
 export default function DeleteRepresentativeButton({
     association: _association
 }: {
     association: Association
-}) {
+}): React.JSX.Element {
     return (
-        <Button className="aspect-square" variant="destructive">
-            <FaUserSlash size={20} />
-        </Button>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                >
+                    <UserXIcon size={18} />
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent>Retirer le representant</TooltipContent>
+        </Tooltip>
     )
 }

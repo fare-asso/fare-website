@@ -1,9 +1,9 @@
 "use client"
 
 import type { Association } from "@prisma/client"
-import { Trash2Icon, TrashIcon } from "lucide-react"
+import { CheckCircleIcon } from "lucide-react"
 import { startTransition, useActionState, useEffect, useState } from "react"
-import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
+import approveAssociationAction from "@/actions/associations/approveAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,19 +23,18 @@ import {
 } from "@/components/ui/tooltip"
 import LoadingRing from "../loadingRing"
 
-export default function DeleteAssociationButton({
+export default function ApproveAssociationButton({
     association
 }: {
     association: Association
-}) {
+}): React.JSX.Element {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         number
-    >(deleteAssociationAction, undefined)
+    >(approveAssociationAction, undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
             setIsLoading(false)
@@ -45,13 +44,11 @@ export default function DeleteAssociationButton({
         setIsLoading(false)
     }, [formState])
 
-    const handleDelete = (
+    const handleApprove = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
+    ): void => {
         event.preventDefault()
-
         setIsLoading(true)
-
         startTransition(() => {
             formAction(association.id)
         })
@@ -65,31 +62,30 @@ export default function DeleteAssociationButton({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            className="h-8 w-8 text-green-600 hover:bg-green-100 hover:text-green-700 dark:text-green-500 dark:hover:bg-green-950 dark:hover:text-green-400"
                         >
-                            <Trash2Icon size={18} />
+                            <CheckCircleIcon size={18} />
                         </Button>
                     </AlertDialogTrigger>
                 </TooltipTrigger>
-                <TooltipContent>Supprimer</TooltipContent>
+                <TooltipContent>Approuver</TooltipContent>
             </Tooltip>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        Voulez-vous vraiment supprimer l'association{" "}
+                        Approuver l&apos;association{" "}
                         <span className="font-bold">{association.name}</span> ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Cette action est permanente et les données de
-                        l'association ne peuvent être récupérées. Le
-                        représentant de l'association perdra ses accès à
-                        l'espace association.
+                        L&apos;association sera visible publiquement sur le
+                        site. La demande d&apos;adhesion liee sera
+                        automatiquement archivee.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                        {isLoading ? <LoadingRing /> : null} Supprimer
+                    <AlertDialogAction onClick={handleApprove}>
+                        {isLoading ? <LoadingRing /> : null} Approuver
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

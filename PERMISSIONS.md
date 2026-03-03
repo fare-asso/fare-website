@@ -5,6 +5,7 @@ This document lists all permissions required for the FARE Website application. T
 ## Permission Categories
 
 ### Articles
+
 - `access:articles` - View articles dashboard page
 - `create:article` - Create new articles
 - `edit:article` - Edit existing articles
@@ -12,30 +13,35 @@ This document lists all permissions required for the FARE Website application. T
 - `publish:article` - Publish/unpublish articles (toggle visibility)
 
 ### Presse / Communiqués de Presse (CDP)
+
 - `access:presse` - View presse/communiques de presse dashboard page
 - `create:cdp` - Upload new communiqués de presse or dossiers de presse
 - `delete:cdp` - Delete communiqués de presse
 
 ### Members (Bureau)
+
 - `access:members` - View members dashboard page
 - `create:member` - Add new bureau members
 - `edit:member` - Edit member information and reorder members
 - `delete:member` - Remove bureau members
 
 ### Associations
-- `access:associations` - View associations dashboard page
+
 - `create:association` - Add new associations to the network
 - `edit:association` - Edit association information
 - `delete:association` - Delete associations
 - `invite:representative` - Invite association representatives (creates ASSO_OWNER accounts)
+- `approve:association` - Approve or decline pending association membership applications
 
 ### Events
+
 - `access:events` - View events dashboard page
 - `create:event` - Create new events
 - `edit:event` - Edit existing events
 - `delete:event` - Delete events
 
 ### Bagad'Asso
+
 - `access:bagad-asso` - View Bagad'Asso dashboard pages (tickets & equipment)
 - `create:bagad-equipment` - Add new equipment to the catalog
 - `edit:bagad-equipment` - Edit equipment details
@@ -44,15 +50,18 @@ This document lists all permissions required for the FARE Website application. T
 - `delete:bagad-ticket` - Soft delete and hard delete tickets
 
 ### Adhésions (Membership Applications)
+
 - `access:adhesions` - View adhesions dashboard page
 - `edit:adhesion` - Archive/unarchive adhesion requests
 - `download:adhesion-folder` - Download adhesion folders (may contain sensitive information)
 
 ### Bouge Ta Prison
+
 - `access:btp` - View Bouge Ta Prison dashboard pages (candidatures & questions)
 - Note: Submitting tutor applications and questions are public actions (no permission required)
 
 ### Users
+
 - `access:users` - View users dashboard page
 - `create:user` - Create new users (currently not implemented)
 - `edit:user` - Edit user information
@@ -60,6 +69,7 @@ This document lists all permissions required for the FARE Website application. T
 - `edit:user-permissions` - Manage user permissions
 
 ### Espace Asso (Association Portal)
+
 - `access:espace-asso` - Access the association member portal
 - `create:representative-password` - Create password for invited representatives
 
@@ -68,6 +78,7 @@ This document lists all permissions required for the FARE Website application. T
 Permissions follow the pattern: `<action>:<resource>`
 
 **Actions:**
+
 - `access` - View/read access to a section or resource
 - `create` - Create new instances
 - `edit` - Modify existing instances
@@ -77,6 +88,7 @@ Permissions follow the pattern: `<action>:<resource>`
 - `invite` - Invite new users
 
 **Resources:**
+
 - Singular form (e.g., `article`, `member`, `event`)
 - Hyphenated compound names (e.g., `bagad-equipment`, `user-permissions`)
 
@@ -117,11 +129,11 @@ INSERT INTO "Permission" (name, title, category, description) VALUES
 ('delete:member', 'Supprimer Membre', 'Membres', 'Retirer des membres du bureau'),
 
 -- Associations
-('access:associations', 'Accès Associations', 'Associations', 'Voir la page de gestion des associations'),
 ('create:association', 'Créer Association', 'Associations', 'Ajouter de nouvelles associations'),
 ('edit:association', 'Modifier Association', 'Associations', 'Modifier les informations des associations'),
 ('delete:association', 'Supprimer Association', 'Associations', 'Supprimer des associations'),
 ('invite:representative', 'Inviter Représentant', 'Associations', 'Inviter des représentants d''associations'),
+('approve:association', 'Approuver Association', 'Associations', 'Approuver ou refuser les demandes d''adhésion d''associations'),
 
 -- Events
 ('access:events', 'Accès Événements', 'Événements', 'Voir la page de gestion des événements'),
@@ -160,14 +172,19 @@ ON CONFLICT (name) DO NOTHING;
 ## Role-to-Permission Mapping (Recommended Defaults)
 
 ### ADMIN Role
+
 Admins should have ALL permissions by default.
 
 ### MEMBER Role
+
 Limited read-only access:
+
 - `access:articles` (view only, for content review)
 
 ### ASSO_OWNER Role
+
 Association representatives (created via invite):
+
 - `access:espace-asso`
 - `edit:association` (own association only - implement in future)
 

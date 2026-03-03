@@ -35,6 +35,7 @@ const baseFields = {
     college: z.enum(["A", "B"], {
         error: "Veuillez sélectionner un collège."
     }),
+    filiere: z.string().min(1, "La filière de l'association est requise."),
     objetPrincipal: z
         .string()
         .min(1, "L'objet principal de l'association est requis."),

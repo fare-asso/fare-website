@@ -87,12 +87,6 @@ async function main() {
 
         // Associations
         {
-            name: "access:associations",
-            title: "Accès Associations",
-            category: "Associations",
-            description: "Voir la page de gestion des associations"
-        },
-        {
             name: "create:association",
             title: "Créer Association",
             category: "Associations",
@@ -115,6 +109,13 @@ async function main() {
             title: "Inviter Représentant",
             category: "Associations",
             description: "Inviter des représentants d'associations"
+        },
+        {
+            name: "approve:association",
+            title: "Approuver Association",
+            category: "Associations",
+            description:
+                "Approuver ou refuser les demandes d'adhésion d'associations"
         },
 
         // Events

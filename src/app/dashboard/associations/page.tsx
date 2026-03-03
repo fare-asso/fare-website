@@ -23,6 +23,7 @@ export default async function Associations() {
     const canEdit = !!user && hasPermission(user, "edit:association")
     const canDelete = !!user && hasPermission(user, "delete:association")
     const canInvite = !!user && hasPermission(user, "invite:representative")
+    const canApprove = !!user && hasPermission(user, "approve:association")
 
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
@@ -38,6 +39,7 @@ export default async function Associations() {
                         canEdit={canEdit}
                         canDelete={canDelete}
                         canInvite={canInvite}
+                        canApprove={canApprove}
                     />
                 </Suspense>
             </CardContent>

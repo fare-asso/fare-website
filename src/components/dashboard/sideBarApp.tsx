@@ -70,8 +70,7 @@ export default function SideBarApp({
         {
             href: "/dashboard/associations",
             title: "Associations",
-            icon: <LuNetwork />,
-            hidden: !permissions?.find((p) => p.name === "access:associations")
+            icon: <LuNetwork />
         },
         {
             href: "/dashboard/articles",

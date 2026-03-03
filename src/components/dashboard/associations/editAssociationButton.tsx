@@ -32,6 +32,11 @@ import DatePicker from "@/components/ui/input/datePicker"
 import { Label } from "@/components/ui/label"
 import LocationPicker from "@/components/ui/location/locationPicker"
 import { Textarea } from "@/components/ui/textarea"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger
+} from "@/components/ui/tooltip"
 import LoadingRing from "../loadingRing"
 
 export default function EditAssociationButton({
@@ -78,11 +83,16 @@ export default function EditAssociationButton({
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
-            <DialogTrigger asChild>
-                <Button className="aspect-square" variant="outline">
-                    <MdEdit size={18} />
-                </Button>
-            </DialogTrigger>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MdEdit size={18} />
+                        </Button>
+                    </DialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Modifier</TooltipContent>
+            </Tooltip>
 
             {/* Content */}
             <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[60%] lg:max-w-[40%]">

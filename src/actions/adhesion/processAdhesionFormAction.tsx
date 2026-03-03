@@ -1,5 +1,6 @@
 "use server"
 
+import { randomUUID } from "node:crypto"
 import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
 import { isDevelopment } from "std-env"
@@ -57,8 +58,22 @@ async function uploadFile(
  * - "data" field contains JSON-serialized AdhesionFormData
  * - File fields (logo, statuts, recepisse, extraitPV, etc.) are attached directly
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: inherently complex — validates data, files, generates PDF, uploads, saves, emails
 export async function processAdhesionForm(
+    prevState: FormState | undefined,
+    formData: FormData
+): Promise<FormState> {
+    try {
+        return await processAdhesionFormInner(prevState, formData)
+    } catch (error) {
+        console.error("[ERROR] Unexpected error in processAdhesionForm:", error)
+        return {
+            error: "Une erreur inattendue est survenue. Veuillez vérifier la taille de vos fichiers (max 50Mo au total) et réessayer."
+        }
+    }
+}
+
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: inherently complex — validates data, files, generates PDF, uploads, saves, emails
+async function processAdhesionFormInner(
     _prevState: FormState | undefined,
     formData: FormData
 ): Promise<FormState> {
@@ -147,6 +162,26 @@ export async function processAdhesionForm(
         if (file && file.size > 0 && file.type !== "application/pdf") {
             return {
                 error: `Le fichier optionnel "${name}" doit être au format PDF.`
+            }
+        }
+    }
+
+    // Validate file sizes (max 2 MB per file)
+    const maxFileSize = 2 * 1024 * 1024
+    const allFiles = {
+        logo,
+        statuts,
+        recepisse,
+        extraitPV,
+        reglementInterieur,
+        bilanFinancier,
+        lettreEngagement
+    }
+    for (const [name, file] of Object.entries(allFiles)) {
+        if (file && file.size > maxFileSize) {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(1)
+            return {
+                error: `Le fichier "${name}" est trop volumineux (${sizeMb} Mo). La taille maximale est de 2 Mo par fichier.`
             }
         }
     }
@@ -300,7 +335,39 @@ export async function processAdhesionForm(
         }
     }
 
-    // --- 7. Send email notification (non-blocking) ---
+    // --- 7. Create pending Association from adhesion data ---
+    try {
+        // Upload logo to association-pictures bucket for the association record
+        const logoFile = logo as File
+        const assoLogoPath = randomUUID()
+        const { error: assoLogoError } = await supabase.storage
+            .from("association-pictures")
+            .upload(assoLogoPath, logoFile)
+
+        if (assoLogoError) {
+            console.error(
+                "[WARN] Failed to upload logo to association-pictures:",
+                assoLogoError.message
+            )
+        } else {
+            await prisma.association.create({
+                data: {
+                    name: validatedData.nomComplet,
+                    major: validatedData.filiere,
+                    desc: validatedData.objetPrincipal,
+                    location: validatedData.adresseAdministrative,
+                    email: validatedData.emailAssociation,
+                    logoPath: assoLogoPath,
+                    adhesionId: record.id
+                }
+            })
+        }
+    } catch (error) {
+        // Non-blocking: log but don't fail the adhesion submission
+        console.error("[WARN] Failed to create pending association:", error)
+    }
+
+    // --- 8. Send email notification (non-blocking) ---
     try {
         const emailResponse = await sendEmail({
             to: "secretariat@fare-asso.fr",
@@ -321,5 +388,6 @@ export async function processAdhesionForm(
     }
 
     revalidatePath("/dashboard/adhesions")
+    revalidatePath("/dashboard/associations")
     return { success: true }
 }
