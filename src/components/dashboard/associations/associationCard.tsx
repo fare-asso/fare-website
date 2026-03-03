@@ -1,42 +1,192 @@
 "use client"
 
 import type { Association } from "@prisma/client"
+import {
+    ClockIcon,
+    GraduationCapIcon,
+    MailIcon,
+    MapPinIcon,
+    UserCheckIcon,
+    UserXIcon
+} from "lucide-react"
 import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger
+} from "@/components/ui/tooltip"
+import ApproveAssociationButton from "./approveAssociationButton"
+import DeclineAssociationButton from "./declineAssociationButton"
 import DeleteAssociationButton from "./deleteAssociationButton"
 import DeleteRepresentativeButton from "./deleteRepresentativeButton"
 import EditAssociationButton from "./editAssociationButton"
 import SendInvitationLinkButton from "./sendInvitationLinkButton"
 
+/**
+ * Parse a location string that may be either a plain string
+ * or a JSON object with `displayName` and `coordinates`.
+ * Returns a short display label and the full address.
+ */
+function parseLocation(raw: string): {
+    short: string
+    full: string
+} {
+    try {
+        const parsed: unknown = JSON.parse(raw)
+        if (
+            typeof parsed === "object" &&
+            parsed !== null &&
+            "displayName" in parsed &&
+            typeof (parsed as { displayName: unknown }).displayName === "string"
+        ) {
+            const full = (parsed as { displayName: string }).displayName
+            // The displayName is a long comma-separated geocoder
+            // string. Take the first two meaningful segments
+            // for a compact label.
+            const parts = full.split(",").map((s) => s.trim())
+            const short = parts.length > 3 ? `${parts[0]}, ${parts[1]}` : full
+            return { short, full }
+        }
+    } catch {
+        // Not JSON — treat as plain string
+    }
+    return { short: raw, full: raw }
+}
+
 interface AssociationCardProps {
     association: Association
     logoUrl: string
+    hasRepresentative: boolean
     canEdit: boolean
     canDelete: boolean
     canInvite: boolean
+    canApprove: boolean
 }
 
 export default function AssociationCard({
     association,
     logoUrl,
+    hasRepresentative,
     canEdit,
     canDelete,
-    canInvite
-}: AssociationCardProps) {
+    canInvite,
+    canApprove
+}: AssociationCardProps): React.JSX.Element {
+    const location = association.location
+        ? parseLocation(association.location)
+        : null
+    const isPending = association.approved === null
+
     return (
-        <div className="flex h-full w-full flex-col items-start rounded-lg border bg-card p-3 text-card-foreground shadow-xs">
-            <div className="relative">
-                {/* Hover buttons */}
-                {canDelete || canEdit || canInvite ? (
-                    <div className="absolute flex h-full w-full flex-row items-start justify-end space-x-1 p-2 opacity-100 lg:opacity-0 lg:hover:opacity-100">
-                        {canDelete ? (
-                            <DeleteAssociationButton
-                                association={association}
-                            />
+        <div
+            className={`group flex flex-col rounded-lg border bg-card shadow-xs transition-shadow hover:shadow-md ${isPending ? "border-amber-300 dark:border-amber-700" : ""}`}
+        >
+            {/* Logo area */}
+            <div className="relative flex items-center justify-center rounded-t-lg bg-muted/50 transition-colors group-hover:bg-muted">
+                <Image
+                    src={logoUrl}
+                    width={220}
+                    height={220}
+                    alt={`Logo de ${association.name}`}
+                    className="aspect-square w-full rounded-md object-contain"
+                />
+                {isPending ? (
+                    <Badge
+                        variant="outline"
+                        className="absolute top-2 right-2 border-amber-300 bg-amber-50 text-[10px] text-amber-700 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-400"
+                    >
+                        <ClockIcon className="mr-1 h-3 w-3" />
+                        En attente
+                    </Badge>
+                ) : null}
+            </div>
+
+            {/* Content area */}
+            <div className="flex flex-1 flex-col gap-2 p-3">
+                {/* Name with tooltip */}
+                <h3 className="line-clamp-1 font-medium text-sm leading-tight">
+                    {association.name}
+                </h3>
+
+                {/* Metadata badges */}
+                <div className="flex flex-wrap items-center gap-1.5">
+                    <Badge
+                        variant="secondary"
+                        className="max-w-full truncate text-[10px]"
+                    >
+                        <GraduationCapIcon className="mr-1 h-3 w-3 shrink-0" />
+                        <span className="truncate">{association.major}</span>
+                    </Badge>
+                    {/*<Tooltip>
+                        <TooltipTrigger asChild>
+                            <Badge
+                                variant="outline"
+                                className={`text-[10px] ${
+                                    hasRepresentative
+                                        ? "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400"
+                                        : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400"
+                                }`}
+                            >
+                                {hasRepresentative ? (
+                                    <UserCheckIcon className="mr-1 h-3 w-3" />
+                                ) : (
+                                    <UserXIcon className="mr-1 h-3 w-3" />
+                                )}
+                                {hasRepresentative
+                                    ? "Representant"
+                                    : "Sans representant"}
+                            </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            {hasRepresentative
+                                ? "Un representant est associe"
+                                : "Aucun representant associe"}
+                        </TooltipContent>
+                    </Tooltip>*/}
+                </div>
+
+                {/* Contact info */}
+                <div className="flex flex-col gap-1 text-xs">
+                    {association.email ? (
+                        <a
+                            href={`mailto:${association.email}`}
+                            className="flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-primary"
+                        >
+                            <MailIcon className="h-3 w-3 shrink-0" />
+                            <span className="truncate">
+                                {association.email}
+                            </span>
+                        </a>
+                    ) : null}
+                    {location ? (
+                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <MapPinIcon className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{location.short}</span>
+                        </div>
+                    ) : null}
+                </div>
+
+                {/* Actions footer */}
+                {canDelete ||
+                canEdit ||
+                canInvite ||
+                (isPending && canApprove) ? (
+                    <div className="mt-auto flex items-center gap-1 border-t pt-2">
+                        {isPending && canApprove ? (
+                            <>
+                                <ApproveAssociationButton
+                                    association={association}
+                                />
+                                <DeclineAssociationButton
+                                    association={association}
+                                />
+                            </>
                         ) : null}
-                        {canEdit ? (
+                        {!isPending && canEdit ? (
                             <EditAssociationButton association={association} />
                         ) : null}
-                        {canInvite ? (
+                        {!isPending && canInvite ? (
                             association.representativeId ? (
                                 <DeleteRepresentativeButton
                                     association={association}
@@ -47,22 +197,15 @@ export default function AssociationCard({
                                 />
                             )
                         ) : null}
+                        {canDelete ? (
+                            <div className="ml-auto">
+                                <DeleteAssociationButton
+                                    association={association}
+                                />
+                            </div>
+                        ) : null}
                     </div>
                 ) : null}
-                <Image
-                    src={logoUrl}
-                    width={500}
-                    height={500}
-                    alt={`Logo de l'association ${association.name}`}
-                    className="mb-1 aspect-square rounded-md object-cover shadow-xs"
-                />
-            </div>
-
-            <div className="flex w-full flex-row space-x-1 overflow-hidden text-ellipsis text-nowrap font-medium text-card-foreground">
-                {association.name}
-            </div>
-            <div className="text-foreground/70 text-sm">
-                {association.major}
             </div>
         </div>
     )

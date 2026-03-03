@@ -114,6 +114,7 @@ const adhesionDefaultValues = {
     sigle: "",
     nomComplet: "",
     college: "" as "A" | "B" | "",
+    filiere: "",
     objetPrincipal: "",
     adresseAdministrative: "",
     siegeSocial: "",
@@ -226,6 +227,7 @@ export default function AdhesionForm() {
                 sigle: value.sigle,
                 nomComplet: value.nomComplet,
                 college: value.college as "A" | "B",
+                filiere: value.filiere,
                 objetPrincipal: value.objetPrincipal,
                 adresseAdministrative: value.adresseAdministrative,
                 siegeSocial: value.siegeSocial,
@@ -335,8 +337,7 @@ export default function AdhesionForm() {
                                     return (
                                         <Field data-invalid={isInvalid}>
                                             <FieldLabel htmlFor={field.name}>
-                                                Date de la demande
-                                                d&apos;adhésion
+                                                Date de la demande d'adhésion
                                             </FieldLabel>
                                             <FieldDescription>
                                                 Sélectionnez la date à laquelle
@@ -511,6 +512,46 @@ export default function AdhesionForm() {
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
+                                            {isInvalid && (
+                                                <FieldError
+                                                    errors={
+                                                        field.state.meta.errors
+                                                    }
+                                                />
+                                            )}
+                                        </Field>
+                                    )
+                                }}
+                            />
+
+                            <form.Field
+                                name="filiere"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched &&
+                                        !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>
+                                                Filière représentée
+                                            </FieldLabel>
+                                            <FieldDescription>
+                                                Indiquez la filière principale
+                                                de votre association.
+                                            </FieldDescription>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) =>
+                                                    field.handleChange(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                aria-invalid={isInvalid}
+                                                placeholder="Ex: Droit, Médecine..."
+                                            />
                                             {isInvalid && (
                                                 <FieldError
                                                     errors={

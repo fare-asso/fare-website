@@ -11,6 +11,9 @@ export const metadata: Metadata = {
 
 export default async function Reseau() {
     const assos = await prisma.association.findMany({
+        where: {
+            approved: { not: null }
+        },
         orderBy: {
             name: "asc"
         }

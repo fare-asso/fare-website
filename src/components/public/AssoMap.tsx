@@ -6,7 +6,11 @@ export default async function AssoMap() {
     let associations: Association[] | undefined
 
     try {
-        associations = await prisma.association.findMany()
+        associations = await prisma.association.findMany({
+            where: {
+                approved: { not: null }
+            }
+        })
     } catch (_e) {
         console.error("Failed to fetch associations")
     }

@@ -116,6 +116,13 @@ async function main() {
             category: "Associations",
             description: "Inviter des représentants d'associations"
         },
+        {
+            name: "approve:association",
+            title: "Approuver Association",
+            category: "Associations",
+            description:
+                "Approuver ou refuser les demandes d'adhésion d'associations"
+        },
 
         // Events
         {

@@ -1,5 +1,6 @@
 "use server"
 
+import { randomUUID } from "node:crypto"
 import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
 import { isDevelopment } from "std-env"
@@ -300,7 +301,40 @@ export async function processAdhesionForm(
         }
     }
 
-    // --- 7. Send email notification (non-blocking) ---
+    // --- 7. Create pending Association from adhesion data ---
+    try {
+        // Upload logo to association-pictures bucket for the association record
+        const logoFile = logo as File
+        const assoLogoPath = randomUUID()
+        const { error: assoLogoError } = await supabase.storage
+            .from("association-pictures")
+            .upload(assoLogoPath, logoFile)
+
+        if (assoLogoError) {
+            console.error(
+                "[WARN] Failed to upload logo to association-pictures:",
+                assoLogoError.message
+            )
+        } else {
+            await prisma.association.create({
+                data: {
+                    name: validatedData.nomComplet,
+                    major: validatedData.filiere,
+                    desc: validatedData.objetPrincipal,
+                    location: validatedData.adresseAdministrative,
+                    email: validatedData.emailAssociation,
+                    logoPath: assoLogoPath,
+                    approved: null,
+                    adhesionId: record.id
+                }
+            })
+        }
+    } catch (error) {
+        // Non-blocking: log but don't fail the adhesion submission
+        console.error("[WARN] Failed to create pending association:", error)
+    }
+
+    // --- 8. Send email notification (non-blocking) ---
     try {
         const emailResponse = await sendEmail({
             to: "secretariat@fare-asso.fr",
@@ -321,5 +355,6 @@ export async function processAdhesionForm(
     }
 
     revalidatePath("/dashboard/adhesions")
+    revalidatePath("/dashboard/associations")
     return { success: true }
 }

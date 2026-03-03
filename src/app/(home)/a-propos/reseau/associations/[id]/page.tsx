@@ -56,7 +56,8 @@ export default async function Page({
 
     const associationRecord = await prisma.association.findUnique({
         where: {
-            id: Number(id)
+            id: Number(id),
+            approved: { not: null }
         }
     })
 

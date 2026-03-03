@@ -104,7 +104,8 @@ export default async function addAssociationAction(
                 facebook,
                 instagram,
                 twitter,
-                discord
+                discord,
+                approved: new Date()
             }
         })
 

@@ -1,9 +1,9 @@
 "use client"
 
 import type { Association } from "@prisma/client"
-import { Trash2Icon, TrashIcon } from "lucide-react"
+import { XCircleIcon } from "lucide-react"
 import { startTransition, useActionState, useEffect, useState } from "react"
-import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
+import declineAssociationAction from "@/actions/associations/declineAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,19 +23,18 @@ import {
 } from "@/components/ui/tooltip"
 import LoadingRing from "../loadingRing"
 
-export default function DeleteAssociationButton({
+export default function DeclineAssociationButton({
     association
 }: {
     association: Association
-}) {
+}): React.JSX.Element {
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         number
-    >(deleteAssociationAction, undefined)
+    >(declineAssociationAction, undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState?.success) {
             setIsLoading(false)
@@ -45,13 +44,11 @@ export default function DeleteAssociationButton({
         setIsLoading(false)
     }, [formState])
 
-    const handleDelete = (
+    const handleDecline = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
+    ): void => {
         event.preventDefault()
-
         setIsLoading(true)
-
         startTransition(() => {
             formAction(association.id)
         })
@@ -67,29 +64,30 @@ export default function DeleteAssociationButton({
                             size="icon"
                             className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
                         >
-                            <Trash2Icon size={18} />
+                            <XCircleIcon size={18} />
                         </Button>
                     </AlertDialogTrigger>
                 </TooltipTrigger>
-                <TooltipContent>Supprimer</TooltipContent>
+                <TooltipContent>Refuser</TooltipContent>
             </Tooltip>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        Voulez-vous vraiment supprimer l'association{" "}
+                        Refuser l&apos;association{" "}
                         <span className="font-bold">{association.name}</span> ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Cette action est permanente et les données de
-                        l'association ne peuvent être récupérées. Le
-                        représentant de l'association perdra ses accès à
-                        l'espace association.
+                        L&apos;association sera supprimee ainsi que son logo. La
+                        demande d&apos;adhesion restera disponible.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                        {isLoading ? <LoadingRing /> : null} Supprimer
+                    <AlertDialogAction
+                        onClick={handleDecline}
+                        className="bg-destructive text-white hover:bg-destructive/90"
+                    >
+                        {isLoading ? <LoadingRing /> : null} Refuser
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

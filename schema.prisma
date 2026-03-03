@@ -56,7 +56,7 @@ model Member {
 }
 
 model Association {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   name             String
   major            String
   desc             String
@@ -67,11 +67,14 @@ model Association {
   logoPath         String
   twitter          String?
   website          String?
-  birthdate        DateTime @default(now())
-  representativeId String?  @unique
-  email            String   @default("")
+  birthdate        DateTime  @default(now())
+  representativeId String?   @unique
+  email            String    @default("")
   officePath       String?
-  representative   User?    @relation(fields: [representativeId], references: [id])
+  approved         DateTime?
+  adhesionId       Int?      @unique
+  representative   User?     @relation(fields: [representativeId], references: [id])
+  adhesion         Adhesion? @relation(fields: [adhesionId], references: [id])
 }
 
 model Event {
@@ -149,23 +152,24 @@ model BagadAssoTicket {
 }
 
 model Adhesion {
-  id                          Int       @id @default(autoincrement())
-  createdAt                   DateTime  @default(now())
+  id                          Int          @id @default(autoincrement())
+  createdAt                   DateTime     @default(now())
   archived                    DateTime?
   association                 String
   folderPath                  String
-  nomComplet                  String    @default("")
-  sigle                       String    @default("")
-  email                       String    @default("")
-  telephonePortable           String    @default("")
+  nomComplet                  String       @default("")
+  sigle                       String       @default("")
+  email                       String       @default("")
+  telephonePortable           String       @default("")
   telephoneFixe               String?
-  college                     String    @default("")
-  objetPrincipal              String    @default("")
-  adresseAdministrative       String    @default("")
+  college                     String       @default("")
+  objetPrincipal              String       @default("")
+  adresseAdministrative       String       @default("")
   dateAG                      DateTime?
-  nombreAdherents             Int       @default(0)
-  nombreEtudiantsRepresentes  Int       @default(0)
+  nombreAdherents             Int          @default(0)
+  nombreEtudiantsRepresentes  Int          @default(0)
   bureau                      Json?
+  linkedAssociation           Association?
 }
 
 model BTPTutorApplication {
