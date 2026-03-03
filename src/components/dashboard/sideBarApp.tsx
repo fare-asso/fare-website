@@ -60,89 +60,117 @@ export default function SideBarApp({
 }) {
     const pathname = usePathname()
 
-    const links: SidebarLink[] = [
+    const menuGroups: { title?: string; links: SidebarLink[] }[] = [
         {
-            href: "/dashboard/events",
-            title: "Evènements",
-            icon: <FaRegCalendarAlt />,
-            hidden: !permissions?.find((p) => p.name === "access:events")
+            title: "Contenu",
+            links: [
+                {
+                    href: "/dashboard/associations",
+                    title: "Associations",
+                    icon: <LuNetwork />
+                },
+                {
+                    href: "/dashboard/membres",
+                    title: "Membres",
+                    icon: <FaPeopleGroup />,
+                    hidden: !permissions?.find(
+                        (p) => p.name === "access:members"
+                    )
+                },
+                {
+                    href: "/dashboard/articles",
+                    title: "Articles",
+                    icon: <FaPen />,
+                    hidden: !permissions?.find(
+                        (p) => p.name === "access:articles"
+                    )
+                },
+                {
+                    href: "/dashboard/communiques-de-presse",
+                    title: "Presse",
+                    icon: <NewspaperIcon />,
+                    hidden: !permissions?.find(
+                        (p) => p.name === "access:presse"
+                    )
+                },
+                {
+                    href: "/dashboard/events",
+                    title: "Evènements",
+                    icon: <FaRegCalendarAlt />,
+                    hidden: !permissions?.find(
+                        (p) => p.name === "access:events"
+                    )
+                }
+            ]
         },
         {
-            href: "/dashboard/associations",
-            title: "Associations",
-            icon: <LuNetwork />
-        },
-        {
-            href: "/dashboard/articles",
-            title: "Articles",
-            icon: <FaPen />,
-            hidden: !permissions?.find((p) => p.name === "access:articles")
-        },
-        {
-            href: "/dashboard/communiques-de-presse",
-            title: "Presse",
-            icon: <NewspaperIcon />,
-            hidden: !permissions?.find((p) => p.name === "access:presse")
-        },
-        {
-            href: "/dashboard/membres",
-            title: "Membres",
-            icon: <FaPeopleGroup />,
-            hidden: !permissions?.find((p) => p.name === "access:members")
-        },
-        {
-            href: "/dashboard/bagadAsso",
-            title: "Bagad'Asso",
-            hidden: !permissions?.find((p) => p.name === "access:bagad-asso"),
-            icon: <LuPartyPopper />,
-            children: [
+            title: "Projets",
+            links: [
                 {
                     href: "/dashboard/bagadAsso",
-                    title: "Tickets",
-                    icon: <LuTicket />
+                    title: "Bagad'Asso",
+                    hidden: !permissions?.find(
+                        (p) => p.name === "access:bagad-asso"
+                    ),
+                    icon: <LuPartyPopper />,
+                    children: [
+                        {
+                            href: "/dashboard/bagadAsso",
+                            title: "Tickets",
+                            icon: <LuTicket />
+                        },
+                        {
+                            href: "/dashboard/bagadAsso/equipments",
+                            title: "Matériel",
+                            icon: <LuBox />
+                        }
+                    ]
                 },
-                {
-                    href: "/dashboard/bagadAsso/equipments",
-                    title: "Matériel",
-                    icon: <LuBox />
-                }
-            ]
-        },
-        {
-            href: "/dashboard/adhesions",
-            title: "Adhésions",
-            icon: <FaUsers />,
-            hidden: !permissions?.find((p) => p.name === "access:adhesions")
-        },
-        {
-            href: "/dashboard/bouge-ta-prison",
-            title: "Bouge Ta Prison",
-            icon: <FaHandcuffs />,
-            hidden: !permissions?.find((p) => p.name === "access:btp"),
-            children: [
                 {
                     href: "/dashboard/bouge-ta-prison",
-                    title: "Candidatures",
-                    icon: <FileUserIcon />
-                },
-                {
-                    href: "/dashboard/bouge-ta-prison/questions",
-                    title: "Questions",
-                    icon: <MessageCircleQuestionMarkIcon />
+                    title: "Bouge Ta Prison",
+                    icon: <FaHandcuffs />,
+                    hidden: !permissions?.find((p) => p.name === "access:btp"),
+                    children: [
+                        {
+                            href: "/dashboard/bouge-ta-prison",
+                            title: "Candidatures",
+                            icon: <FileUserIcon />
+                        },
+                        {
+                            href: "/dashboard/bouge-ta-prison/questions",
+                            title: "Questions",
+                            icon: <MessageCircleQuestionMarkIcon />
+                        }
+                    ]
                 }
             ]
         },
         {
-            href: "/dashboard/users",
-            title: "Utilisateurs",
-            icon: <LuUser />,
-            hidden: !permissions?.find((p) => p.name === "access:users")
+            title: "Gestion",
+            links: [
+                {
+                    href: "/dashboard/adhesions",
+                    title: "Adhésions",
+                    icon: <FaUsers />,
+                    hidden: !permissions?.find(
+                        (p) => p.name === "access:adhesions"
+                    )
+                },
+
+                {
+                    href: "/dashboard/users",
+                    title: "Utilisateurs",
+                    icon: <LuUser />,
+                    hidden: !permissions?.find((p) => p.name === "access:users")
+                }
+            ]
         }
     ]
 
     return (
         <Sidebar variant="inset" collapsible="offcanvas">
-            <SidebarHeader className="flex items-center justify-center py-4">
+            <SidebarHeader className="flex flex-row items-center justify-start gap-6 py-4">
                 <Link href="/dashboard" className="flex items-center gap-2">
                     <Image
                         src={LogoFARE}
@@ -152,75 +180,99 @@ export default function SideBarApp({
                         placeholder="empty"
                     ></Image>
                 </Link>
-                <b>Dashboard</b>
+                <b className="text-left">
+                    Dashboard <br /> Administrateur
+                </b>
             </SidebarHeader>
             <SidebarContent>
-                <SidebarGroup>
-                    <SidebarGroupLabel>
-                        Dashboard Administrateur
-                    </SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {links
-                                .filter((link) => !link.hidden)
-                                .map((link) =>
-                                    link.children ? (
-                                        <SidebarMenuItem key={link.href}>
-                                            <SidebarMenuButton asChild>
-                                                <a href={link.href}>
-                                                    {link.icon && link.icon}
-                                                    <span>{link.title}</span>
-                                                </a>
-                                            </SidebarMenuButton>
-                                            <SidebarMenuSub>
-                                                {link.children.map((child) => (
-                                                    <SidebarMenuSubItem
-                                                        key={child.href}
+                {menuGroups.map((group) => {
+                    if (group.links.some((link) => !link.hidden))
+                        return (
+                            <SidebarGroup key={group.title}>
+                                <SidebarGroupLabel>
+                                    {group.title}
+                                </SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    <SidebarMenu>
+                                        {group.links
+                                            .filter((link) => !link.hidden)
+                                            .map((link) =>
+                                                link.children ? (
+                                                    <SidebarMenuItem
+                                                        key={link.href}
                                                     >
-                                                        <SidebarMenuSubButton
+                                                        <SidebarMenuButton
                                                             asChild
-                                                            isActive={
-                                                                pathname ===
-                                                                child.href
-                                                            }
                                                         >
-                                                            <a
-                                                                href={
-                                                                    child.href
-                                                                }
-                                                            >
-                                                                {child.icon &&
-                                                                    child.icon}
+                                                            <a href={link.href}>
+                                                                {link.icon &&
+                                                                    link.icon}
                                                                 <span>
-                                                                    {
-                                                                        child.title
-                                                                    }
+                                                                    {link.title}
                                                                 </span>
                                                             </a>
-                                                        </SidebarMenuSubButton>
-                                                    </SidebarMenuSubItem>
-                                                ))}
-                                            </SidebarMenuSub>
-                                        </SidebarMenuItem>
-                                    ) : (
-                                        <SidebarMenuItem key={link.href}>
-                                            <SidebarMenuButton
-                                                asChild
-                                                isActive={pathname.startsWith(
-                                                    link.href
-                                                )}
-                                            >
-                                                <a href={link.href}>
-                                                    {link.icon && link.icon}
-                                                    <span>{link.title}</span>
-                                                </a>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
-                                    )
-                                )}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                                                        </SidebarMenuButton>
+                                                        <SidebarMenuSub>
+                                                            {link.children.map(
+                                                                (child) => (
+                                                                    <SidebarMenuSubItem
+                                                                        key={
+                                                                            child.href
+                                                                        }
+                                                                    >
+                                                                        <SidebarMenuSubButton
+                                                                            asChild
+                                                                            isActive={
+                                                                                pathname ===
+                                                                                child.href
+                                                                            }
+                                                                        >
+                                                                            <a
+                                                                                href={
+                                                                                    child.href
+                                                                                }
+                                                                            >
+                                                                                {child.icon &&
+                                                                                    child.icon}
+                                                                                <span>
+                                                                                    {
+                                                                                        child.title
+                                                                                    }
+                                                                                </span>
+                                                                            </a>
+                                                                        </SidebarMenuSubButton>
+                                                                    </SidebarMenuSubItem>
+                                                                )
+                                                            )}
+                                                        </SidebarMenuSub>
+                                                    </SidebarMenuItem>
+                                                ) : (
+                                                    <SidebarMenuItem
+                                                        key={link.href}
+                                                    >
+                                                        <SidebarMenuButton
+                                                            asChild
+                                                            isActive={pathname.startsWith(
+                                                                link.href
+                                                            )}
+                                                        >
+                                                            <a href={link.href}>
+                                                                {link.icon &&
+                                                                    link.icon}
+                                                                <span>
+                                                                    {link.title}
+                                                                </span>
+                                                            </a>
+                                                        </SidebarMenuButton>
+                                                    </SidebarMenuItem>
+                                                )
+                                            )}
+                                    </SidebarMenu>
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                        )
+                    return undefined
+                })}
             </SidebarContent>
             <SidebarFooter>
                 <AccountButton name={name} email={email} image={image} />
