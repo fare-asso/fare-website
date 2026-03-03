@@ -64,6 +64,9 @@ export default async function AssociationList({
 
     return (
         <div className="h-full w-full overflow-y-auto rounded-lg border bg-card p-4 text-card-foreground shadow-xs md:p-6">
+            <p className="mb-4 text-muted-foreground text-sm">
+                {assos.length} association{assos.length > 1 ? "s" : ""}
+            </p>
             <div className="grid h-auto w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {assos.map((asso) => (
                     <AssociationCard
