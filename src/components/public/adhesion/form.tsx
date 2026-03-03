@@ -1,7 +1,9 @@
 "use client"
 
 import { useForm } from "@tanstack/react-form"
-import { Trash2, Upload, UserPlus, X } from "lucide-react"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import { CalendarIcon, Trash2, Upload, UserPlus, X } from "lucide-react"
 import {
     memo,
     type ReactNode,
@@ -19,6 +21,7 @@ import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
 import {
     Card,
     CardContent,
@@ -46,12 +49,18 @@ import {
 } from "@/components/ui/file-upload"
 import { Input } from "@/components/ui/input"
 import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger
+} from "@/components/ui/popover"
+import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 import {
     AdhesionClientFormSchema,
     type AdhesionFormData,
@@ -343,19 +352,66 @@ export default function AdhesionForm() {
                                                 Sélectionnez la date à laquelle
                                                 vous faites cette demande.
                                             </FieldDescription>
-                                            <Input
-                                                id={field.name}
-                                                name={field.name}
-                                                type="date"
-                                                value={field.state.value}
-                                                onBlur={field.handleBlur}
-                                                onChange={(e) =>
-                                                    field.handleChange(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                aria-invalid={isInvalid}
-                                            />
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        id={field.name}
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal",
+                                                            !field.state
+                                                                .value &&
+                                                                "text-muted-foreground",
+                                                            isInvalid &&
+                                                                "border-destructive focus-visible:ring-destructive"
+                                                        )}
+                                                        aria-invalid={isInvalid}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.state.value ? (
+                                                            format(
+                                                                new Date(
+                                                                    field.state
+                                                                        .value
+                                                                ),
+                                                                "PPP",
+                                                                { locale: fr }
+                                                            )
+                                                        ) : (
+                                                            <span>
+                                                                Sélectionnez une
+                                                                date
+                                                            </span>
+                                                        )}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-auto p-0"
+                                                    align="start"
+                                                >
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={
+                                                            field.state.value
+                                                                ? new Date(
+                                                                      field
+                                                                          .state
+                                                                          .value
+                                                                  )
+                                                                : undefined
+                                                        }
+                                                        onSelect={(date) => {
+                                                            field.handleChange(
+                                                                date
+                                                                    ? date.toISOString()
+                                                                    : ""
+                                                            )
+                                                            field.handleBlur()
+                                                        }}
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
                                             {isInvalid && (
                                                 <FieldError
                                                     errors={
@@ -735,19 +791,66 @@ export default function AdhesionForm() {
                                                 Date de la dernière Assemblée
                                                 Générale
                                             </FieldLabel>
-                                            <Input
-                                                id={field.name}
-                                                name={field.name}
-                                                type="date"
-                                                value={field.state.value}
-                                                onBlur={field.handleBlur}
-                                                onChange={(e) =>
-                                                    field.handleChange(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                aria-invalid={isInvalid}
-                                            />
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        id={field.name}
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal",
+                                                            !field.state
+                                                                .value &&
+                                                                "text-muted-foreground",
+                                                            isInvalid &&
+                                                                "border-destructive focus-visible:ring-destructive"
+                                                        )}
+                                                        aria-invalid={isInvalid}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.state.value ? (
+                                                            format(
+                                                                new Date(
+                                                                    field.state
+                                                                        .value
+                                                                ),
+                                                                "PPP",
+                                                                { locale: fr }
+                                                            )
+                                                        ) : (
+                                                            <span>
+                                                                Sélectionnez une
+                                                                date
+                                                            </span>
+                                                        )}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-auto p-0"
+                                                    align="start"
+                                                >
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={
+                                                            field.state.value
+                                                                ? new Date(
+                                                                      field
+                                                                          .state
+                                                                          .value
+                                                                  )
+                                                                : undefined
+                                                        }
+                                                        onSelect={(date) => {
+                                                            field.handleChange(
+                                                                date
+                                                                    ? date.toISOString()
+                                                                    : ""
+                                                            )
+                                                            field.handleBlur()
+                                                        }}
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
                                             {isInvalid && (
                                                 <FieldError
                                                     errors={
