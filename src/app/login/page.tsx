@@ -1,9 +1,9 @@
 "use client"
 
-import { LoaderIcon } from "lucide-react"
+import { LoaderIcon, MailIcon } from "lucide-react"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
-import { Suspense, useActionState, useTransition } from "react"
+import { Suspense, useActionState, useState, useTransition } from "react"
 import { FcGoogle } from "react-icons/fc"
 import { MdAdminPanelSettings } from "react-icons/md"
 import FARELogo from "#public/logo_fare.png"
@@ -45,6 +45,7 @@ function LoginPageSkeleton() {
 function LoginPageContent() {
     const searchParams = useSearchParams()
     const error = searchParams.get("error")
+    const [showPasswordLogin, setShowPasswordLogin] = useState(false)
 
     const [passwordError, loginWithPassword, passwordPending] = useActionState<
         { emailError?: string; passwordError?: string } | undefined,
@@ -111,33 +112,51 @@ function LoginPageContent() {
                     <span className="px-4 text-gray-500 text-sm">ou</span>
                     <div className="flex-1 border-gray-300 border-t"></div>
                 </div>
-                <form action={loginWithPassword} className="space-y-3">
-                    <Label htmlFor="email">Email</Label>
-                    <Input type="email" name="email" id="email" />
-                    {passwordError?.emailError ? (
-                        <div className="font-medium text-destructive text-sm">
-                            {passwordError.emailError}
-                        </div>
-                    ) : null}
 
-                    <Label htmlFor="password">Password</Label>
-                    <Input type="password" name="password" id="password" />
-                    {passwordError?.passwordError ? (
-                        <div className="font-medium text-destructive text-sm">
-                            {passwordError.passwordError}
+                {showPasswordLogin ? (
+                    <form action={loginWithPassword} className="space-y-3">
+                        <Label htmlFor="email">Email</Label>
+                        <Input type="email" name="email" id="email" />
+                        {passwordError?.emailError ? (
+                            <div className="font-medium text-destructive text-sm">
+                                {passwordError.emailError}
+                            </div>
+                        ) : null}
+
+                        <Label htmlFor="password">Password</Label>
+                        <Input type="password" name="password" id="password" />
+                        {passwordError?.passwordError ? (
+                            <div className="font-medium text-destructive text-sm">
+                                {passwordError.passwordError}
+                            </div>
+                        ) : null}
+                        <Button disabled={passwordPending} type="submit">
+                            {passwordPending ? (
+                                <>
+                                    <LoaderIcon className="animation-duration-1500ms] animate-spin" />
+                                    Connexion en cours
+                                </>
+                            ) : (
+                                "Connexion"
+                            )}
+                        </Button>
+                    </form>
+                ) : (
+                    <>
+                        <Button
+                            type="button"
+                            className="h-12 w-full max-w-full"
+                            variant="outline"
+                            onClick={() => setShowPasswordLogin(true)}
+                        >
+                            <MailIcon />
+                            Email et mot de passe
+                        </Button>
+                        <div className="mt-2 text-balance text-center text-gray-500 text-xs">
+                            Pour vous connecter avec un email et mot de passe.
                         </div>
-                    ) : null}
-                    <Button disabled={passwordPending} type="submit">
-                        {passwordPending ? (
-                            <>
-                                <LoaderIcon className="animation-duration-1500ms] animate-spin" />
-                                Connexion en cours
-                            </>
-                        ) : (
-                            "Connexion"
-                        )}
-                    </Button>
-                </form>
+                    </>
+                )}
             </CardContent>
         </Card>
     )
