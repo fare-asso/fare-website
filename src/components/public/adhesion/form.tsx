@@ -7,11 +7,10 @@ import { CalendarIcon, Trash2, Upload, UserPlus, X } from "lucide-react"
 import {
     memo,
     type ReactNode,
-    startTransition,
-    useActionState,
     useCallback,
     useRef,
-    useState
+    useState,
+    useTransition
 } from "react"
 import {
     type FormState,
@@ -141,6 +140,13 @@ const adhesionDefaultValues = {
 
 // --- File upload field component ---
 
+/** Max file size constant: 2 MB per file (in bytes) */
+const MAX_FILE_SIZE = 2 * 1024 * 1024
+
+function formatMaxSize(bytes: number): string {
+    return `${(bytes / (1024 * 1024)).toFixed(0)} Mo`
+}
+
 function FileUploadField({
     name,
     label,
@@ -148,9 +154,11 @@ function FileUploadField({
     accept,
     required,
     onFilesChange,
-    max
+    max,
+    maxSize = MAX_FILE_SIZE
 }: {
     max?: number
+    maxSize?: number
     name: string
     label: ReactNode
     description?: ReactNode
@@ -159,16 +167,27 @@ function FileUploadField({
     onFilesChange: (name: string) => (files: File[]) => void
 }) {
     const [files, setFiles] = useState<File[]>([])
+    const [sizeError, setSizeError] = useState<string | null>(null)
 
     const handleValueChange = useCallback(
         (newFiles: File[]) => {
             setFiles(newFiles)
+            setSizeError(null)
             onFilesChange(name)(newFiles)
         },
         [name, onFilesChange]
     )
 
-    console.log(files.length)
+    const handleFileReject = useCallback(
+        (_file: File, message: string) => {
+            if (message === "File too large") {
+                setSizeError(
+                    `Le fichier dépasse la taille maximale de ${formatMaxSize(maxSize)}.`
+                )
+            }
+        },
+        [maxSize]
+    )
 
     return (
         <Field>
@@ -176,17 +195,24 @@ function FileUploadField({
             {description && <FieldDescription>{description}</FieldDescription>}
             <FileUpload
                 maxFiles={max}
+                maxSize={maxSize}
                 accept={accept}
                 required={required}
                 value={files}
                 onValueChange={handleValueChange}
+                onFileReject={handleFileReject}
             >
                 {(!max || files.length < max) && (
                     <FileUploadDropzone className="flex-row gap-4 p-4">
                         <Upload className="size-5 text-muted-foreground" />
-                        <p className="text-muted-foreground text-sm">
-                            Glissez-déposez ou cliquez pour sélectionner
-                        </p>
+                        <div className="text-center">
+                            <p className="text-muted-foreground text-sm">
+                                Glissez-déposez ou cliquez pour sélectionner
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                                Max. {formatMaxSize(maxSize)}
+                            </p>
+                        </div>
                     </FileUploadDropzone>
                 )}
                 <FileUploadList>
@@ -208,6 +234,9 @@ function FileUploadField({
                     ))}
                 </FileUploadList>
             </FileUpload>
+            {sizeError && (
+                <p className="text-destructive text-sm">{sizeError}</p>
+            )}
         </Field>
     )
 }
@@ -215,10 +244,8 @@ function FileUploadField({
 // --- Main form component ---
 
 export default function AdhesionForm() {
-    const [formState, formAction, pending] = useActionState<
-        FormState | undefined,
-        FormData
-    >(processAdhesionForm, undefined)
+    const [formState, setFormState] = useState<FormState | undefined>(undefined)
+    const [pending, startTransition] = useTransition()
 
     const form = useForm({
         defaultValues: { ...adhesionDefaultValues },
@@ -261,8 +288,19 @@ export default function AdhesionForm() {
                 }
             }
 
-            startTransition(() => {
-                formAction(submitFormData)
+            startTransition(async () => {
+                try {
+                    const result = await processAdhesionForm(
+                        formState,
+                        submitFormData
+                    )
+                    setFormState(result)
+                } catch (e) {
+                    console.error("Erreur lors de la soumission :", e)
+                    setFormState({
+                        error: "Une erreur réseau ou de serveur est survenue. Assurez-vous que vos fichiers ne sont pas trop volumineux."
+                    })
+                }
             })
         }
     })
@@ -323,6 +361,13 @@ export default function AdhesionForm() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
+                {formState?.error && (
+                    <Alert variant="destructive" className="mb-6">
+                        <AlertTitle>Erreur lors de l'envoi</AlertTitle>
+                        <AlertDescription>{formState.error}</AlertDescription>
+                    </Alert>
+                )}
+
                 <form
                     id="adhesion-form"
                     onSubmit={(e) => {

@@ -58,8 +58,22 @@ async function uploadFile(
  * - "data" field contains JSON-serialized AdhesionFormData
  * - File fields (logo, statuts, recepisse, extraitPV, etc.) are attached directly
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: inherently complex — validates data, files, generates PDF, uploads, saves, emails
 export async function processAdhesionForm(
+    prevState: FormState | undefined,
+    formData: FormData
+): Promise<FormState> {
+    try {
+        return await processAdhesionFormInner(prevState, formData)
+    } catch (error) {
+        console.error("[ERROR] Unexpected error in processAdhesionForm:", error)
+        return {
+            error: "Une erreur inattendue est survenue. Veuillez vérifier la taille de vos fichiers (max 50Mo au total) et réessayer."
+        }
+    }
+}
+
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: inherently complex — validates data, files, generates PDF, uploads, saves, emails
+async function processAdhesionFormInner(
     _prevState: FormState | undefined,
     formData: FormData
 ): Promise<FormState> {
@@ -148,6 +162,26 @@ export async function processAdhesionForm(
         if (file && file.size > 0 && file.type !== "application/pdf") {
             return {
                 error: `Le fichier optionnel "${name}" doit être au format PDF.`
+            }
+        }
+    }
+
+    // Validate file sizes (max 2 MB per file)
+    const maxFileSize = 2 * 1024 * 1024
+    const allFiles = {
+        logo,
+        statuts,
+        recepisse,
+        extraitPV,
+        reglementInterieur,
+        bilanFinancier,
+        lettreEngagement
+    }
+    for (const [name, file] of Object.entries(allFiles)) {
+        if (file && file.size > maxFileSize) {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(1)
+            return {
+                error: `Le fichier "${name}" est trop volumineux (${sizeMb} Mo). La taille maximale est de 2 Mo par fichier.`
             }
         }
     }
@@ -324,7 +358,6 @@ export async function processAdhesionForm(
                     location: validatedData.adresseAdministrative,
                     email: validatedData.emailAssociation,
                     logoPath: assoLogoPath,
-                    approved: null,
                     adhesionId: record.id
                 }
             })
