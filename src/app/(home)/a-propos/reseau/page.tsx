@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     description: "Page des associations du réseau FARE"
 }
 
+export const dynamic = "force-dynamic"
+
 export default async function Reseau() {
     const assos = await prisma.association.findMany({
         where: {
