@@ -19,8 +19,6 @@ export const metadata: Metadata = {
     title: "Adhésions"
 }
 
-export const dynamic = "force-dynamic"
-
 function SummarySkeleton() {
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
