@@ -27,7 +27,6 @@ This document lists all permissions required for the FARE Website application. T
 
 ### Associations
 
-- `access:associations` - View associations dashboard page
 - `create:association` - Add new associations to the network
 - `edit:association` - Edit association information
 - `delete:association` - Delete associations
@@ -130,7 +129,6 @@ INSERT INTO "Permission" (name, title, category, description) VALUES
 ('delete:member', 'Supprimer Membre', 'Membres', 'Retirer des membres du bureau'),
 
 -- Associations
-('access:associations', 'Accès Associations', 'Associations', 'Voir la page de gestion des associations'),
 ('create:association', 'Créer Association', 'Associations', 'Ajouter de nouvelles associations'),
 ('edit:association', 'Modifier Association', 'Associations', 'Modifier les informations des associations'),
 ('delete:association', 'Supprimer Association', 'Associations', 'Supprimer des associations'),

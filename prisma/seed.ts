@@ -87,12 +87,6 @@ async function main() {
 
         // Associations
         {
-            name: "access:associations",
-            title: "Accès Associations",
-            category: "Associations",
-            description: "Voir la page de gestion des associations"
-        },
-        {
             name: "create:association",
             title: "Créer Association",
             category: "Associations",
