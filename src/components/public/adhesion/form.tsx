@@ -297,7 +297,7 @@ export default function AdhesionForm() {
     }
 
     return (
-        <Card className="mx-auto w-full max-w-4xl">
+        <Card id="form" className="mx-auto w-full max-w-4xl">
             <CardHeader>
                 <CardTitle>Formulaire d&apos;adhésion</CardTitle>
                 <CardDescription>
