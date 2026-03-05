@@ -114,8 +114,7 @@ export default function EditMemberButton({
         }
 
         // Build the formData with data values (exclude picture as it's already uploaded)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { picture, ...dataWithoutPicture } = data
+        const { picture: _p, ...dataWithoutPicture } = data
         const formData = zodFieldValuesToFormData(dataWithoutPicture)
 
         // Add the picture to the formData
@@ -152,7 +151,7 @@ export default function EditMemberButton({
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[425px]">
+            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-106.25">
                 <DialogHeader>
                     <DialogTitle>Modification du membre</DialogTitle>
                     <DialogDescription>

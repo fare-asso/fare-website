@@ -92,8 +92,7 @@ export default function AddMemberButton() {
         }
 
         // Build the formData with data values (exclude picture as it's already uploaded)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { picture, ...dataWithoutPicture } = data
+        const { picture: _p, ...dataWithoutPicture } = data
         const formData = zodFieldValuesToFormData(dataWithoutPicture)
 
         // Add the previously uploaded picture path to the formData
@@ -125,7 +124,7 @@ export default function AddMemberButton() {
             </DialogTrigger>
 
             {/* Content */}
-            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[425px]">
+            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-106.25">
                 <DialogHeader>
                     <DialogTitle>Nouveau Membre</DialogTitle>
                     <DialogDescription>

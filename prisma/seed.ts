@@ -249,6 +249,7 @@ async function main() {
     let updatedCount = 0
 
     for (const permission of permissions) {
+        // biome-ignore lint/performance/noAwaitInLoops: it's fine
         const existing = await prisma.permission.findUnique({
             where: { name: permission.name }
         })

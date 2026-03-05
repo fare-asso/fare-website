@@ -5,17 +5,10 @@ import {
     ClockIcon,
     GraduationCapIcon,
     MailIcon,
-    MapPinIcon,
-    UserCheckIcon,
-    UserXIcon
+    MapPinIcon
 } from "lucide-react"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger
-} from "@/components/ui/tooltip"
 import ApproveAssociationButton from "./approveAssociationButton"
 import DeclineAssociationButton from "./declineAssociationButton"
 import DeleteAssociationButton from "./deleteAssociationButton"
@@ -67,7 +60,6 @@ interface AssociationCardProps {
 export default function AssociationCard({
     association,
     logoUrl,
-    hasRepresentative,
     canEdit,
     canDelete,
     canInvite,

@@ -1,7 +1,7 @@
 "use client"
 
 import type { Association } from "@prisma/client"
-import { Trash2Icon, TrashIcon } from "lucide-react"
+import { Trash2Icon } from "lucide-react"
 import { startTransition, useActionState, useEffect, useState } from "react"
 import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
 import {
