@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import AdhesionDescription from "@/components/public/adhesion/adhesionDescription"
 import AdhesionForm from "@/components/public/adhesion/form"
+import { AdhesionFormNew } from "./form"
 
 export const metadata: Metadata = {
     title: "Formulaire d'adhésion"
@@ -13,6 +14,7 @@ export default function Adhesion() {
                 Rejoindre la FARE
             </h1>
             <AdhesionDescription />
+            <AdhesionFormNew />
             <AdhesionForm />
         </div>
     )
