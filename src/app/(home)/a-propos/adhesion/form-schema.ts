@@ -2,7 +2,7 @@ import { type } from "arktype"
 import { z } from "zod/mini"
 
 const frenchPhone = type("string").narrow((s) =>
-    /^0[1-9]([.\s]?\d{2}){4}$/.test(s)
+    /^((0[1-9]([.\s]?\d{2}){4})|)$/.test(s)
 )
 
 export const bureauMemberSchema = type({
@@ -17,11 +17,25 @@ export const bureauMemberSchema = type({
     adresse: "string >= 1"
 })
 
+const pdfFile = z.file({ error: "Veuillez fournir un fichier." }).check(
+    z.mime(["application/pdf"], {
+        error: "Le fichier doit être au format PDF."
+    })
+)
+
 export const AdhesionFormSchema = type({
     // Basic info
-    sigle: "string",
+    sigle: "string >= 2",
     nomComplet: "string >= 3",
-    logo: z.file(),
+    logo: z
+        .file({
+            error: "Veuillez fournir le logo de l'association."
+        })
+        .check(
+            z.mime(["image/png", "image/jpeg", "image/webp", "image/svg+xml"], {
+                error: "Le logo doit être au format PNG, JPG, WebP ou SVG."
+            })
+        ),
 
     // Administrative
     college: "'A' | 'B'",
@@ -43,8 +57,16 @@ export const AdhesionFormSchema = type({
     // Bureau
     bureau: bureauMemberSchema.array().atLeastLength(1),
 
+    // Documents
+    statuts: pdfFile,
+    recepisse: pdfFile,
+    extraitPV: pdfFile,
+    "lettreEngagement?": z.optional(pdfFile),
+    "reglementInterieur?": z.optional(pdfFile),
+    "bilanFinancier?": z.optional(pdfFile),
+
     // Captcha
-    captchaToken: "string"
+    captchaToken: "string >= 1"
 })
 
 export type BureauMember = typeof bureauMemberSchema.infer
