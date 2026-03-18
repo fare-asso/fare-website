@@ -73,13 +73,12 @@ export default function ApproveAssociationButton({
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        Approuver l&apos;association{" "}
+                        Approuver l'association{" "}
                         <span className="font-bold">{association.name}</span> ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        L&apos;association sera visible publiquement sur le
-                        site. La demande d&apos;adhesion liee sera
-                        automatiquement archivee.
+                        L'association sera visible publiquement sur le site. La
+                        demande d'adhesion liee sera automatiquement archivee.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

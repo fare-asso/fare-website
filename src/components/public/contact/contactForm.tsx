@@ -116,7 +116,7 @@ export default function ContactForm() {
             <CardHeader>
                 <CardTitle>Vous avez une question ?</CardTitle>
                 <CardDescription>
-                    N&apos;hésitez pas à nous contacter. Notre équipe se fera un
+                    N'hésitez pas à nous contacter. Notre équipe se fera un
                     plaisir de vous répondre dans les plus brefs délais.
                 </CardDescription>
             </CardHeader>
