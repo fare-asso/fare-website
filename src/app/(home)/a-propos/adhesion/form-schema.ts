@@ -1,9 +1,7 @@
 import { type } from "arktype"
 import { z } from "zod/mini"
 
-const frenchPhone = type("string").narrow((s) =>
-    /^((0[1-9]([.\s]?\d{2}){4})|)$/.test(s)
-)
+const frenchPhone = type("/^((0[1-9]([.\\s]?\\d{2}){4})|)$/")
 
 export const bureauMemberSchema = type({
     isAdmin: "boolean",
@@ -12,7 +10,7 @@ export const bureauMemberSchema = type({
     prenom: "string >= 1",
     filiere: "string >= 1",
     annee: "string >= 1",
-    "telephone?": frenchPhone,
+    telephone: frenchPhone,
     email: "string.email >= 1",
     adresse: "string >= 1"
 })

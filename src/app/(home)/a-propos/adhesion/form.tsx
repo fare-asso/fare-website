@@ -60,6 +60,33 @@ const emptyBureauMember: BureauMember = {
     adresse: ""
 }
 
+const emptyForm = {
+    sigle: "",
+    nomComplet: "",
+    logo: undefined as File | undefined,
+    college: "" as "A" | "B" | "",
+    filiere: "",
+    objetPrincipal: "",
+    adresseAdministrative: "",
+    siegeSocial: "",
+    numeroSalle: "",
+    dateAG: undefined as Date | undefined,
+    nombreEtudiantsRepresentes: 0,
+    nombreAdherents: 0,
+    engagementCotisation: false as boolean,
+    emailAssociation: "",
+    telephonePortable: "",
+    telephoneFixe: "",
+    bureau: [{ ...emptyBureauMember }] as BureauMember[],
+    statuts: undefined as File | undefined,
+    recepisse: undefined as File | undefined,
+    extraitPV: undefined as File | undefined,
+    lettreEngagement: undefined as File | undefined,
+    reglementInterieur: undefined as File | undefined,
+    bilanFinancier: undefined as File | undefined,
+    captchaToken: ""
+}
+
 // --- Captcha widget (memoized to avoid re-renders) ---
 
 interface CaptchaFieldProps {
@@ -72,76 +99,11 @@ const CaptchaWidget = memo(function CaptchaWidget({
     return <Captcha onComplete={onTokenChange} />
 })
 
-// --- Form type helper ---
-
-function _createAdhesionForm() {
-    return useForm({
-        defaultValues: {
-            sigle: "",
-            nomComplet: "",
-            logo: undefined as File | undefined,
-            college: "" as "A" | "B" | "",
-            filiere: "",
-            objetPrincipal: "",
-            adresseAdministrative: "",
-            siegeSocial: "",
-            numeroSalle: "",
-            dateAG: undefined as Date | undefined,
-            nombreEtudiantsRepresentes: 0,
-            nombreAdherents: 0,
-            engagementCotisation: false as boolean,
-            emailAssociation: "",
-            telephonePortable: "",
-            telephoneFixe: "",
-            bureau: [{ ...emptyBureauMember }] as BureauMember[],
-            statuts: undefined as File | undefined,
-            recepisse: undefined as File | undefined,
-            extraitPV: undefined as File | undefined,
-            lettreEngagement: undefined as File | undefined,
-            reglementInterieur: undefined as File | undefined,
-            bilanFinancier: undefined as File | undefined,
-            captchaToken: ""
-        },
-        validators: {
-            onSubmit: AdhesionFormSchema
-        },
-        // noop — type extraction only
-        onSubmit: () => undefined
-    })
-}
-type AdhesionFormInstance = ReturnType<typeof _createAdhesionForm>
-
-// --- Main form component ---
-
 export function AdhesionForm(): React.ReactNode {
     const form = useForm({
-        defaultValues: {
-            sigle: "",
-            nomComplet: "",
-            logo: undefined as File | undefined,
-            college: "" as "A" | "B" | "",
-            filiere: "",
-            objetPrincipal: "",
-            adresseAdministrative: "",
-            siegeSocial: "",
-            numeroSalle: "",
-            dateAG: undefined as Date | undefined,
-            nombreEtudiantsRepresentes: 0,
-            nombreAdherents: 0,
-            engagementCotisation: false as boolean,
-            emailAssociation: "",
-            telephonePortable: "",
-            telephoneFixe: "",
-            bureau: [{ ...emptyBureauMember }] as BureauMember[],
-            statuts: undefined as File | undefined,
-            recepisse: undefined as File | undefined,
-            extraitPV: undefined as File | undefined,
-            lettreEngagement: undefined as File | undefined,
-            reglementInterieur: undefined as File | undefined,
-            bilanFinancier: undefined as File | undefined,
-            captchaToken: ""
-        },
+        defaultValues: emptyForm,
         validators: {
+            onChange: AdhesionFormSchema,
             onSubmit: AdhesionFormSchema
         },
         // biome-ignore lint/suspicious/useAwait: TODO implement submission
@@ -161,6 +123,313 @@ export function AdhesionForm(): React.ReactNode {
         },
         [form]
     )
+
+    // --- Bureau member sub-form ---
+
+    function BureauMemberFields({
+        index,
+        canDelete,
+        onDelete
+    }: {
+        index: number
+        canDelete: boolean
+        onDelete: () => void
+    }): React.ReactNode {
+        return (
+            <div className="rounded-lg border p-4">
+                <div className="mb-4 flex items-center justify-between">
+                    <h4 className="font-medium text-sm">Membre {index + 1}</h4>
+                    <div className="flex items-center gap-3">
+                        <form.Field
+                            name={`bureau[${index}].isAdmin`}
+                            children={(field) => (
+                                <Field orientation="horizontal">
+                                    <Checkbox
+                                        id={field.name}
+                                        checked={field.state.value as boolean}
+                                        onCheckedChange={(checked) => {
+                                            field.handleChange(checked === true)
+                                            field.handleBlur()
+                                        }}
+                                    />
+                                    <FieldLabel
+                                        htmlFor={field.name}
+                                        className="font-normal text-sm"
+                                    >
+                                        Administrateur
+                                    </FieldLabel>
+                                </Field>
+                            )}
+                        />
+                        {canDelete && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={onDelete}
+                            >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                        )}
+                    </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <form.Field
+                        name={`bureau[${index}].poste`}
+                        children={(field) => {
+                            const isInvalid =
+                                field.state.meta.isTouched &&
+                                !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>
+                                        Poste
+                                    </FieldLabel>
+                                    <Input
+                                        id={field.name}
+                                        value={field.state.value as string}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        aria-invalid={isInvalid}
+                                        placeholder="Président.e"
+                                    />
+                                    {isInvalid && (
+                                        <FieldError>
+                                            Le poste est requis.
+                                        </FieldError>
+                                    )}
+                                </Field>
+                            )
+                        }}
+                    />
+
+                    <form.Field
+                        name={`bureau[${index}].nom`}
+                        children={(field) => {
+                            const isInvalid =
+                                field.state.meta.isTouched &&
+                                !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>
+                                        Nom
+                                    </FieldLabel>
+                                    <Input
+                                        id={field.name}
+                                        value={field.state.value as string}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        aria-invalid={isInvalid}
+                                        placeholder="Dupont"
+                                    />
+                                    {isInvalid && (
+                                        <FieldError>
+                                            Le nom est requis.
+                                        </FieldError>
+                                    )}
+                                </Field>
+                            )
+                        }}
+                    />
+
+                    <form.Field
+                        name={`bureau[${index}].prenom`}
+                        children={(field) => {
+                            const isInvalid =
+                                field.state.meta.isTouched &&
+                                !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>
+                                        Prénom
+                                    </FieldLabel>
+                                    <Input
+                                        id={field.name}
+                                        value={field.state.value as string}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        aria-invalid={isInvalid}
+                                        placeholder="Jean"
+                                    />
+                                    {isInvalid && (
+                                        <FieldError>
+                                            Le prénom est requis.
+                                        </FieldError>
+                                    )}
+                                </Field>
+                            )
+                        }}
+                    />
+
+                    <form.Field
+                        name={`bureau[${index}].filiere`}
+                        children={(field) => {
+                            const isInvalid =
+                                field.state.meta.isTouched &&
+                                !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>
+                                        Filière
+                                    </FieldLabel>
+                                    <Input
+                                        id={field.name}
+                                        value={field.state.value as string}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        aria-invalid={isInvalid}
+                                        placeholder="Informatique"
+                                    />
+                                    {isInvalid && (
+                                        <FieldError>
+                                            La filière est requise.
+                                        </FieldError>
+                                    )}
+                                </Field>
+                            )
+                        }}
+                    />
+
+                    <form.Field
+                        name={`bureau[${index}].annee`}
+                        children={(field) => {
+                            const isInvalid =
+                                field.state.meta.isTouched &&
+                                !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>
+                                        Année d'études
+                                    </FieldLabel>
+                                    <Input
+                                        id={field.name}
+                                        value={field.state.value as string}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        aria-invalid={isInvalid}
+                                        placeholder="L3"
+                                    />
+                                    {isInvalid && (
+                                        <FieldError>
+                                            L'année d'études est requise.
+                                        </FieldError>
+                                    )}
+                                </Field>
+                            )
+                        }}
+                    />
+
+                    <form.Field
+                        name={`bureau[${index}].telephone`}
+                        children={(field) => {
+                            const isInvalid =
+                                field.state.meta.isTouched &&
+                                !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>
+                                        Téléphone
+                                    </FieldLabel>
+                                    <Input
+                                        id={field.name}
+                                        type="tel"
+                                        value={field.state.value as string}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) => {
+                                            // @ts-expect-error TanStack Form has strict typing for nested array fields
+                                            field.handleChange(e.target.value)
+                                        }}
+                                        aria-invalid={isInvalid}
+                                        placeholder="06 12 34 56 78"
+                                    />
+                                    {isInvalid && (
+                                        <FieldError>
+                                            Le numéro de téléphone n'est pas
+                                            valide.
+                                        </FieldError>
+                                    )}
+                                </Field>
+                            )
+                        }}
+                    />
+
+                    <form.Field
+                        name={`bureau[${index}].email`}
+                        children={(field) => {
+                            const isInvalid =
+                                field.state.meta.isTouched &&
+                                !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>
+                                        Email
+                                    </FieldLabel>
+                                    <Input
+                                        id={field.name}
+                                        type="email"
+                                        value={field.state.value as string}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        aria-invalid={isInvalid}
+                                        placeholder="jean@email.fr"
+                                    />
+                                    {isInvalid && (
+                                        <FieldError>
+                                            L'adresse email n'est pas valide.
+                                        </FieldError>
+                                    )}
+                                </Field>
+                            )
+                        }}
+                    />
+
+                    <form.Field
+                        name={`bureau[${index}].adresse`}
+                        children={(field) => {
+                            const isInvalid =
+                                field.state.meta.isTouched &&
+                                !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>
+                                        Adresse postale
+                                    </FieldLabel>
+                                    <Input
+                                        id={field.name}
+                                        value={field.state.value as string}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        aria-invalid={isInvalid}
+                                        placeholder="1 Rue de la Paix, 35000 Rennes"
+                                    />
+                                    {isInvalid && (
+                                        <FieldError>
+                                            L'adresse postale est requise.
+                                        </FieldError>
+                                    )}
+                                </Field>
+                            )
+                        }}
+                    />
+                </div>
+            </div>
+        )
+    }
 
     return (
         <Card className="w-full sm:max-w-3xl" variant="ghost">
@@ -566,7 +835,7 @@ export function AdhesionForm(): React.ReactNode {
                                                 </FieldLabel>
                                                 <Input
                                                     id={field.name}
-                                                    name={field.name}
+                                                    type="number"
                                                     value={field.state.value}
                                                     onBlur={field.handleBlur}
                                                     onChange={(e) =>
@@ -1225,7 +1494,6 @@ export function AdhesionForm(): React.ReactNode {
                                         {field.state.value.map((_, index) => (
                                             <BureauMemberFields
                                                 key={`bureau-member-${index}`}
-                                                form={form}
                                                 index={index}
                                                 canDelete={
                                                     field.state.value.length > 1
@@ -1298,310 +1566,5 @@ export function AdhesionForm(): React.ReactNode {
                 </form>
             </CardContent>
         </Card>
-    )
-}
-
-// --- Bureau member sub-form ---
-
-function BureauMemberFields({
-    form,
-    index,
-    canDelete,
-    onDelete
-}: {
-    form: AdhesionFormInstance
-    index: number
-    canDelete: boolean
-    onDelete: () => void
-}): React.ReactNode {
-    return (
-        <div className="rounded-lg border p-4">
-            <div className="mb-4 flex items-center justify-between">
-                <h4 className="font-medium text-sm">Membre {index + 1}</h4>
-                <div className="flex items-center gap-3">
-                    <form.Field
-                        name={`bureau[${index}].isAdmin`}
-                        children={(field) => (
-                            <Field orientation="horizontal">
-                                <Checkbox
-                                    id={field.name}
-                                    checked={field.state.value as boolean}
-                                    onCheckedChange={(checked) => {
-                                        field.handleChange(checked === true)
-                                        field.handleBlur()
-                                    }}
-                                />
-                                <FieldLabel
-                                    htmlFor={field.name}
-                                    className="font-normal text-sm"
-                                >
-                                    Administrateur
-                                </FieldLabel>
-                            </Field>
-                        )}
-                    />
-                    {canDelete && (
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={onDelete}
-                        >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                    )}
-                </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <form.Field
-                    name={`bureau[${index}].poste`}
-                    children={(field) => {
-                        const isInvalid =
-                            field.state.meta.isTouched &&
-                            !field.state.meta.isValid
-                        return (
-                            <Field data-invalid={isInvalid}>
-                                <FieldLabel htmlFor={field.name}>
-                                    Poste
-                                </FieldLabel>
-                                <Input
-                                    id={field.name}
-                                    value={field.state.value as string}
-                                    onBlur={field.handleBlur}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                    aria-invalid={isInvalid}
-                                    placeholder="Président.e"
-                                />
-                                {isInvalid && (
-                                    <FieldError>
-                                        Le poste est requis.
-                                    </FieldError>
-                                )}
-                            </Field>
-                        )
-                    }}
-                />
-
-                <form.Field
-                    name={`bureau[${index}].nom`}
-                    children={(field) => {
-                        const isInvalid =
-                            field.state.meta.isTouched &&
-                            !field.state.meta.isValid
-                        return (
-                            <Field data-invalid={isInvalid}>
-                                <FieldLabel htmlFor={field.name}>
-                                    Nom
-                                </FieldLabel>
-                                <Input
-                                    id={field.name}
-                                    value={field.state.value as string}
-                                    onBlur={field.handleBlur}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                    aria-invalid={isInvalid}
-                                    placeholder="Dupont"
-                                />
-                                {isInvalid && (
-                                    <FieldError>Le nom est requis.</FieldError>
-                                )}
-                            </Field>
-                        )
-                    }}
-                />
-
-                <form.Field
-                    name={`bureau[${index}].prenom`}
-                    children={(field) => {
-                        const isInvalid =
-                            field.state.meta.isTouched &&
-                            !field.state.meta.isValid
-                        return (
-                            <Field data-invalid={isInvalid}>
-                                <FieldLabel htmlFor={field.name}>
-                                    Prénom
-                                </FieldLabel>
-                                <Input
-                                    id={field.name}
-                                    value={field.state.value as string}
-                                    onBlur={field.handleBlur}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                    aria-invalid={isInvalid}
-                                    placeholder="Jean"
-                                />
-                                {isInvalid && (
-                                    <FieldError>
-                                        Le prénom est requis.
-                                    </FieldError>
-                                )}
-                            </Field>
-                        )
-                    }}
-                />
-
-                <form.Field
-                    name={`bureau[${index}].filiere`}
-                    children={(field) => {
-                        const isInvalid =
-                            field.state.meta.isTouched &&
-                            !field.state.meta.isValid
-                        return (
-                            <Field data-invalid={isInvalid}>
-                                <FieldLabel htmlFor={field.name}>
-                                    Filière
-                                </FieldLabel>
-                                <Input
-                                    id={field.name}
-                                    value={field.state.value as string}
-                                    onBlur={field.handleBlur}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                    aria-invalid={isInvalid}
-                                    placeholder="Informatique"
-                                />
-                                {isInvalid && (
-                                    <FieldError>
-                                        La filière est requise.
-                                    </FieldError>
-                                )}
-                            </Field>
-                        )
-                    }}
-                />
-
-                <form.Field
-                    name={`bureau[${index}].annee`}
-                    children={(field) => {
-                        const isInvalid =
-                            field.state.meta.isTouched &&
-                            !field.state.meta.isValid
-                        return (
-                            <Field data-invalid={isInvalid}>
-                                <FieldLabel htmlFor={field.name}>
-                                    Année d'études
-                                </FieldLabel>
-                                <Input
-                                    id={field.name}
-                                    value={field.state.value as string}
-                                    onBlur={field.handleBlur}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                    aria-invalid={isInvalid}
-                                    placeholder="L3"
-                                />
-                                {isInvalid && (
-                                    <FieldError>
-                                        L'année d'études est requise.
-                                    </FieldError>
-                                )}
-                            </Field>
-                        )
-                    }}
-                />
-
-                <form.Field
-                    name={`bureau[${index}].telephone`}
-                    children={(field) => {
-                        const isInvalid =
-                            field.state.meta.isTouched &&
-                            !field.state.meta.isValid
-                        return (
-                            <Field data-invalid={isInvalid}>
-                                <FieldLabel htmlFor={field.name}>
-                                    Téléphone
-                                </FieldLabel>
-                                <Input
-                                    id={field.name}
-                                    type="tel"
-                                    value={field.state.value as string}
-                                    onBlur={field.handleBlur}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                    aria-invalid={isInvalid}
-                                    placeholder="06 12 34 56 78"
-                                />
-                                {isInvalid && (
-                                    <FieldError>
-                                        Le numéro de téléphone n'est pas valide.
-                                    </FieldError>
-                                )}
-                            </Field>
-                        )
-                    }}
-                />
-
-                <form.Field
-                    name={`bureau[${index}].email`}
-                    children={(field) => {
-                        const isInvalid =
-                            field.state.meta.isTouched &&
-                            !field.state.meta.isValid
-                        return (
-                            <Field data-invalid={isInvalid}>
-                                <FieldLabel htmlFor={field.name}>
-                                    Email
-                                </FieldLabel>
-                                <Input
-                                    id={field.name}
-                                    type="email"
-                                    value={field.state.value as string}
-                                    onBlur={field.handleBlur}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                    aria-invalid={isInvalid}
-                                    placeholder="jean@email.fr"
-                                />
-                                {isInvalid && (
-                                    <FieldError>
-                                        L'adresse email n'est pas valide.
-                                    </FieldError>
-                                )}
-                            </Field>
-                        )
-                    }}
-                />
-
-                <form.Field
-                    name={`bureau[${index}].adresse`}
-                    children={(field) => {
-                        const isInvalid =
-                            field.state.meta.isTouched &&
-                            !field.state.meta.isValid
-                        return (
-                            <Field data-invalid={isInvalid}>
-                                <FieldLabel htmlFor={field.name}>
-                                    Adresse postale
-                                </FieldLabel>
-                                <Input
-                                    id={field.name}
-                                    value={field.state.value as string}
-                                    onBlur={field.handleBlur}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                    aria-invalid={isInvalid}
-                                    placeholder="1 Rue de la Paix, 35000 Rennes"
-                                />
-                                {isInvalid && (
-                                    <FieldError>
-                                        L'adresse postale est requise.
-                                    </FieldError>
-                                )}
-                            </Field>
-                        )
-                    }}
-                />
-            </div>
-        </div>
     )
 }
