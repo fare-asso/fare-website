@@ -26,3 +26,5 @@ pnpm dev
 - séparer commité territorial: CdV + formateurs
 - MAJ logos BTC gif sur `/representation`
 - Remplacer inclusif avec points par majuscules
+
+- Mentionner fusion fahb feria sur le site
