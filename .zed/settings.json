@@ -6,9 +6,11 @@
     },
     "language_servers": [
         "biome",
-        "!eslint",
-        "!typescript-language-server",
-        "..."
+        "json-language-server",
+        "color-lsp",
+        "tailwindcss-language-server",
+        "vtsls",
+        "prisma-language-server"
     ],
     "languages": {
         "TypeScript": {
