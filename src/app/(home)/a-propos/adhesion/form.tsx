@@ -4,7 +4,7 @@ import { useForm } from "@tanstack/react-form"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon, Trash2, UserPlus } from "lucide-react"
-import { memo, useCallback } from "react"
+import { memo, useCallback, useState, useTransition } from "react"
 import { Captcha } from "@/components/captcha"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -41,7 +41,12 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { AdhesionFormSchema, type BureauMember } from "./form-schema"
+import {
+    type AdhesionForm,
+    AdhesionFormSchema,
+    type BureauMember
+} from "./form-schema"
+import { processAdhesion } from "./process-adhesion"
 
 // --- Constants ---
 
@@ -55,7 +60,7 @@ const emptyBureauMember: BureauMember = {
     prenom: "",
     filiere: "",
     annee: "",
-    telephone: "",
+    telephone: "" as AdhesionForm["bureau"][number]["telephone"],
     email: "",
     adresse: ""
 }
@@ -63,27 +68,27 @@ const emptyBureauMember: BureauMember = {
 const emptyForm = {
     sigle: "",
     nomComplet: "",
-    logo: undefined as File | undefined,
-    college: "" as "A" | "B" | "",
+    logo: undefined as unknown as File,
+    college: "" as "A" | "B",
     filiere: "",
     objetPrincipal: "",
     adresseAdministrative: "",
     siegeSocial: "",
     numeroSalle: "",
-    dateAG: undefined as Date | undefined,
+    dateAG: undefined as unknown as Date,
     nombreEtudiantsRepresentes: 0,
     nombreAdherents: 0,
-    engagementCotisation: false as boolean,
+    engagementCotisation: false as true,
     emailAssociation: "",
-    telephonePortable: "",
-    telephoneFixe: "",
+    telephonePortable: "" as AdhesionForm["telephonePortable"],
+    telephoneFixe: "" as AdhesionForm["telephoneFixe"],
     bureau: [{ ...emptyBureauMember }] as BureauMember[],
-    statuts: undefined as File | undefined,
-    recepisse: undefined as File | undefined,
-    extraitPV: undefined as File | undefined,
-    lettreEngagement: undefined as File | undefined,
-    reglementInterieur: undefined as File | undefined,
-    bilanFinancier: undefined as File | undefined,
+    statuts: undefined as unknown as File,
+    recepisse: undefined as unknown as File,
+    extraitPV: undefined as unknown as File,
+    lettreEngagement: undefined as unknown as File,
+    reglementInterieur: undefined as unknown as File,
+    bilanFinancier: undefined as unknown as File,
     captchaToken: ""
 }
 
@@ -100,6 +105,8 @@ const CaptchaWidget = memo(function CaptchaWidget({
 })
 
 export function AdhesionForm(): React.ReactNode {
+    const [isPending, submitForm] = useTransition()
+    const [isSubmitted, setIsSubmitted] = useState(false)
     const form = useForm({
         defaultValues: emptyForm,
         validators: {
@@ -109,7 +116,14 @@ export function AdhesionForm(): React.ReactNode {
         // biome-ignore lint/suspicious/useAwait: TODO implement submission
         onSubmit: async ({ value }) => {
             // TODO: implement submission
-            console.log(value)
+            submitForm(async () => {
+                const res = await processAdhesion(value)
+                if (res.success) {
+                    setIsSubmitted(true)
+                } else {
+                    // TODO: set the form errors to res.message
+                }
+            })
         }
     })
 
@@ -428,6 +442,31 @@ export function AdhesionForm(): React.ReactNode {
                     />
                 </div>
             </div>
+        )
+    }
+
+    if (!isSubmitted) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Merci pour votre adhésion !</CardTitle>
+                </CardHeader>
+                <CardDescription className="w-full px-4">
+                    <p>
+                        Nous reviendrons vers vous rapidement pour confirmer
+                        votre adhésion.
+                    </p>
+                    <p>
+                        Pour toute question, veuillez envoyer un mail à{" "}
+                        <a
+                            href="mailto:secretariat@fare-asso.fr"
+                            className="underline"
+                        >
+                            secretariat@fare-asso.fr
+                        </a>
+                    </p>
+                </CardDescription>
+            </Card>
         )
     }
 
@@ -922,12 +961,11 @@ export function AdhesionForm(): React.ReactNode {
                                                                 date
                                                             ) => {
                                                                 field.handleChange(
-                                                                    date ??
-                                                                        undefined
+                                                                    date as Date
                                                                 )
                                                                 field.handleBlur()
                                                             }}
-                                                            initialFocus
+                                                            autoFocus
                                                         />
                                                     </PopoverContent>
                                                 </Popover>
@@ -1061,7 +1099,8 @@ export function AdhesionForm(): React.ReactNode {
                                                         checked
                                                     ) => {
                                                         field.handleChange(
-                                                            checked === true
+                                                            (checked ===
+                                                                true) as true
                                                         )
                                                         field.handleBlur()
                                                     }}
@@ -1416,7 +1455,8 @@ export function AdhesionForm(): React.ReactNode {
                                                         }
                                                         onChange={(e) =>
                                                             field.handleChange(
-                                                                e.target.value
+                                                                e.target
+                                                                    .value as AdhesionForm["telephonePortable"]
                                                             )
                                                         }
                                                         aria-invalid={isInvalid}
@@ -1462,7 +1502,8 @@ export function AdhesionForm(): React.ReactNode {
                                                         }
                                                         onChange={(e) =>
                                                             field.handleChange(
-                                                                e.target.value
+                                                                e.target
+                                                                    .value as AdhesionForm["telephoneFixe"]
                                                             )
                                                         }
                                                         aria-invalid={isInvalid}
