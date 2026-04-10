@@ -1,157 +1,20 @@
-import HeaderLinks, { type NavLink } from "./headerLinks"
-import HeaderLogo from "./logo"
-
-const links: NavLink[] = [
-    {
-        title: "A Propos",
-        href: "/a-propos",
-        subLinks: [
-            {
-                title: "Qu'est ce que la FARE ?",
-                href: "/a-propos"
-            },
-            {
-                title: "Le Bureau",
-                href: "/a-propos/bureau"
-            },
-            {
-                title: "Les Associations du réseau",
-                href: "/a-propos/reseau"
-            },
-            {
-                title: "Rejoindre la FARE",
-                href: "/a-propos/adhesion"
-            },
-            {
-                title: "Nos partenaires",
-                href: "/a-propos/partenaires",
-                hidden: true
-            },
-            {
-                title: "Nous contacter",
-                href: "/a-propos/contact",
-                hidden: false
-            }
-        ]
-    },
-    {
-        title: "Actualités",
-        href: "/actualites"
-    },
-    {
-        title: "Presse",
-        href: "/presse",
-        subLinks: [
-            {
-                title: "Dossiers de presse",
-                href: "/presse/dossiers-de-presse"
-            },
-            {
-                title: "Communiqués de presse",
-                href: "/presse/communiques-de-presse"
-            },
-            {
-                title: "Conférence de presse",
-                href: "/presse/conference-de-presse",
-                hidden: true
-            }
-        ]
-    },
-    {
-        title: "Représentation",
-        href: "/representation",
-        subLinks: [
-            {
-                title: "Nos élu·e·s",
-                href: "/representation/nos-elues"
-            },
-            {
-                title: "Haute-Bretagne",
-                href: "/representation/haute-bretagne",
-                hidden: true
-            },
-            {
-                title: "Jeunesse & étudiant.e.s",
-                href: "/representation/jeunesse-et-etudiants",
-                hidden: true
-            },
-            {
-                title: "FAGE",
-                href: "/representation/fage"
-            }
-        ]
-    },
-    {
-        title: "Projets",
-        href: "/projets",
-        subLinks: [
-            {
-                title: "AGORAé",
-                href: "/projets/agorae"
-            },
-            {
-                title: "Bouge Ta Prison",
-                href: "/projets/bouge-ta-prison"
-            },
-            {
-                title: "Bagad'Asso",
-                href: "/projets/bagad-asso"
-            }
-        ]
-    },
-    {
-        title: "Formation",
-        href: "/formation",
-        hidden: true,
-        subLinks: [
-            {
-                title: "Education populaire & politique de formation",
-                href: "/formation/educ-pop-et-politique-de-formation",
-                hidden: true
-            },
-            {
-                title: "Évènements",
-                href: "/formation/evenements",
-                hidden: true
-            },
-            {
-                title: "Catalogue de formation",
-                href: "/formation/catalogue-de-formation",
-                hidden: true
-            },
-            {
-                title: "Demande de formation",
-                href: "/formation/demande-de-formation"
-            }
-        ]
-    },
-    {
-        title: "Défense des droits",
-        href: "defense-des-droits",
-        hidden: true,
-        subLinks: [
-            {
-                title: "Vos droits",
-                href: "/defense-des-droits/vos-droits",
-                hidden: true
-            },
-            {
-                title: "Nous contacter",
-                href: "/defense-des-droits/contact"
-            }
-        ]
-    },
-    {
-        title: "Agenda",
-        href: "/agenda"
-    }
-]
+import Image from "next/image"
+import Link from "next/link"
+import logo from "#public/logo_fare.png"
+import HeaderLinks from "./headerLinks"
 
 export default function Header() {
     return (
-        <div className="flex w-full flex-col-reverse items-center justify-between gap-3 px-8 py-4 lg:flex-col">
-            <HeaderLogo />
-            <HeaderLinks links={links} />
+        <div className="header flex w-full flex-col-reverse items-center justify-between gap-3 px-8 py-4 lg:flex-col">
+            <Link href="/" className="mb-3 flex h-30 w-auto flex-row">
+                <Image
+                    src={logo}
+                    alt="FARE Logo"
+                    className="h-full w-auto"
+                    priority
+                />
+            </Link>
+            <HeaderLinks />
         </div>
     )
 }

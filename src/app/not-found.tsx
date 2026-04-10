@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import FareLoutreSad from "#public/fare_loutre_sad.jpeg"
-import RootLayout from "@/app/(home)/layout"
+import RootLayout from "@/app/(public)/(pages)/layout"
 import "./not-found.css"
 
 export default function NotFoundPage() {

@@ -19,7 +19,153 @@ export interface NavLink {
     subLinks?: NavLink[]
 }
 
-export default function HeaderLinks({ links }: { links: NavLink[] }) {
+const links: NavLink[] = [
+    {
+        title: "A Propos",
+        href: "/a-propos",
+        subLinks: [
+            {
+                title: "Qu'est ce que la FARE ?",
+                href: "/a-propos"
+            },
+            {
+                title: "Le Bureau",
+                href: "/a-propos/bureau"
+            },
+            {
+                title: "Les Associations du réseau",
+                href: "/a-propos/reseau"
+            },
+            {
+                title: "Rejoindre la FARE",
+                href: "/a-propos/adhesion"
+            },
+            {
+                title: "Nos partenaires",
+                href: "/a-propos/partenaires",
+                hidden: true
+            },
+            {
+                title: "Nous contacter",
+                href: "/a-propos/contact",
+                hidden: false
+            }
+        ]
+    },
+    {
+        title: "Actualités",
+        href: "/actualites"
+    },
+    {
+        title: "Presse",
+        href: "/presse",
+        subLinks: [
+            {
+                title: "Dossiers de presse",
+                href: "/presse/dossiers-de-presse"
+            },
+            {
+                title: "Communiqués de presse",
+                href: "/presse/communiques-de-presse"
+            },
+            {
+                title: "Conférence de presse",
+                href: "/presse/conference-de-presse",
+                hidden: true
+            }
+        ]
+    },
+    {
+        title: "Représentation",
+        href: "/representation",
+        subLinks: [
+            {
+                title: "Nos élu·e·s",
+                href: "/representation/nos-elues"
+            },
+            {
+                title: "Haute-Bretagne",
+                href: "/representation/haute-bretagne",
+                hidden: true
+            },
+            {
+                title: "Jeunesse & étudiant.e.s",
+                href: "/representation/jeunesse-et-etudiants",
+                hidden: true
+            },
+            {
+                title: "FAGE",
+                href: "/representation/fage"
+            }
+        ]
+    },
+    {
+        title: "Projets",
+        href: "/projets",
+        subLinks: [
+            {
+                title: "AGORAé",
+                href: "/projets/agorae"
+            },
+            {
+                title: "Bouge Ta Prison",
+                href: "/projets/bouge-ta-prison"
+            },
+            {
+                title: "Bagad'Asso",
+                href: "/projets/bagad-asso"
+            }
+        ]
+    },
+    {
+        title: "Formation",
+        href: "/formation",
+        hidden: true,
+        subLinks: [
+            {
+                title: "Education populaire & politique de formation",
+                href: "/formation/educ-pop-et-politique-de-formation",
+                hidden: true
+            },
+            {
+                title: "Évènements",
+                href: "/formation/evenements",
+                hidden: true
+            },
+            {
+                title: "Catalogue de formation",
+                href: "/formation/catalogue-de-formation",
+                hidden: true
+            },
+            {
+                title: "Demande de formation",
+                href: "/formation/demande-de-formation"
+            }
+        ]
+    },
+    {
+        title: "Défense des droits",
+        href: "defense-des-droits",
+        hidden: true,
+        subLinks: [
+            {
+                title: "Vos droits",
+                href: "/defense-des-droits/vos-droits",
+                hidden: true
+            },
+            {
+                title: "Nous contacter",
+                href: "/defense-des-droits/contact"
+            }
+        ]
+    },
+    {
+        title: "Agenda",
+        href: "/agenda"
+    }
+]
+
+export default function HeaderLinks() {
     const pathname = usePathname()
     const runner = useRef<HTMLDivElement>(null)
     const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false)
