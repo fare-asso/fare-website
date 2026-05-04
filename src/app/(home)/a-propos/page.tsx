@@ -51,9 +51,9 @@ export default function APropos() {
                     <p className="mb-4">
                         Indépendante de tout parti politique, syndicat ou
                         confession, notre fédération regroupe plus d'une
-                        quinzaine d'associations à Rennes, Bruz, Fougères et
-                        Saint-Brieuc, et est présente dans les divers conseils
-                        universitaires et au CROUS Bretagne.
+                        quinzaine d'associations à Rennes, Saint-Malo, Fougères
+                        et Saint-Brieuc, et est présente dans les divers
+                        conseils universitaires et au CROUS Bretagne.
                     </p>
                 </section>
 
