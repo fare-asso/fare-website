@@ -44,3 +44,6 @@ jobs:
 
             - name: Check types
               run: pnpm run check:types
+
+            - name: Knip project
+              run: pnpm run knip
