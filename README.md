@@ -15,16 +15,3 @@ Run the development server:
 ```bash
 pnpm dev
 ```
-
-## TODO
-
-- changer les comptes pour faire avec les mails généraux (secretariat, bougetaprison, bagadasso, etc.)
-- Faire un dashboard pour les élus (comme pour assos)
-- Justifier texte
-- ne pas afficher d'erreur si mail fail to sends
-- ajouter une page partenariats
-- séparer commité territorial: CdV + formateurs
-- MAJ logos BTC gif sur `/representation`
-- Remplacer inclusif avec points par majuscules
-
-- Mentionner fusion fahb feria sur le site
