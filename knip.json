@@ -1,8 +1,19 @@
 {
-    "$schema": "https://unpkg.com/knip@5/schema.json",
+    "$schema": "https://unpkg.com/knip@6/schema.json",
+    "entry": ["taze.config.ts", "prisma/seed.ts"],
     "ignoreExportsUsedInFile": {
         "interface": true,
         "type": true
     },
-    "tags": ["-lintignore"]
+    "tags": ["-lintignore"],
+    "ignoreBinaries": ["only-allow"],
+    "ignoreDependencies": ["postcss-load-config"],
+    "ignoreIssues": {
+        "src/components/ui/**": [
+            "exports",
+            "types",
+            "enumMembers",
+            "namespaceMembers"
+        ]
+    }
 }

@@ -5,7 +5,7 @@ export const maxUploadSizeInMb = 10
 /**
  * Base schema for member data (shared between client and server)
  */
-export const MemberBaseSchema = z.object({
+const MemberBaseSchema = z.object({
     lastName: z.string().min(1, "Le nom de famille est obligatoire"),
     firstName: z.string().min(1, "Le prénom est obligatoire"),
     position: z.string().min(1, "Le poste est obligatoire"),
@@ -78,4 +78,3 @@ export const MemberEditClientSchema = MemberBaseSchema.extend({
 
 export type MemberClient = z.infer<typeof MemberClientSchema>
 export type MemberEditClient = z.infer<typeof MemberEditClientSchema>
-export type MemberServer = z.infer<typeof MemberServerSchema>
