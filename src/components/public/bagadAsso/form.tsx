@@ -191,7 +191,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                         {/* Section: Association Information */}
                         <div className="space-y-4">
                             <h3 className="font-semibold text-lg">
-                                Informations sur l&apos;association
+                                Informations sur l'association
                             </h3>
 
                             <form.Field
@@ -203,7 +203,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                     return (
                                         <Field data-invalid={isInvalid}>
                                             <FieldLabel htmlFor={field.name}>
-                                                Nom de l&apos;association
+                                                Nom de l'association
                                             </FieldLabel>
                                             <Input
                                                 id={field.name}
@@ -239,7 +239,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                     return (
                                         <Field data-invalid={isInvalid}>
                                             <FieldLabel htmlFor={field.name}>
-                                                Email de l&apos;association
+                                                Email de l'association
                                             </FieldLabel>
                                             <Input
                                                 id={field.name}
@@ -472,7 +472,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                         {/* Section: Event Information */}
                         <div className="space-y-4">
                             <h3 className="font-semibold text-lg">
-                                Informations sur l&apos;évènement
+                                Informations sur l'évènement
                             </h3>
 
                             <form.Field
@@ -484,7 +484,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                     return (
                                         <Field data-invalid={isInvalid}>
                                             <FieldLabel htmlFor={field.name}>
-                                                Nom de l&apos;évènement
+                                                Nom de l'évènement
                                             </FieldLabel>
                                             <Input
                                                 id={field.name}
@@ -700,7 +700,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                     return (
                                         <Field data-invalid={isInvalid}>
                                             <FieldLabel htmlFor={field.name}>
-                                                Adresse de l&apos;évènement
+                                                Adresse de l'évènement
                                             </FieldLabel>
                                             <Input
                                                 id={field.name}
@@ -811,15 +811,15 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                     htmlFor={field.name}
                                                     className="font-normal"
                                                 >
-                                                    J&apos;accepte les termes et
+                                                    J'accepte les termes et
                                                     conditions de prêt de
                                                     matériel
                                                 </FieldLabel>
                                                 <FieldDescription>
                                                     En cochant cette case, vous
                                                     acceptez les conditions
-                                                    d&apos;utilisation et de
-                                                    prêt du matériel de la FARE.
+                                                    d'utilisation et de prêt du
+                                                    matériel de la FARE.
                                                 </FieldDescription>
                                                 {isInvalid && (
                                                     <FieldError

@@ -73,12 +73,12 @@ export default function DeclineAssociationButton({
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        Refuser l&apos;association{" "}
+                        Refuser l'association{" "}
                         <span className="font-bold">{association.name}</span> ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        L&apos;association sera supprimee ainsi que son logo. La
-                        demande d&apos;adhesion restera disponible.
+                        L'association sera supprimee ainsi que son logo. La
+                        demande d'adhesion restera disponible.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
