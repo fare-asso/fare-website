@@ -8,13 +8,15 @@ const mimeTypes = {
     pdf: ["application/pdf"]
 }
 
+type MimeKey = "pdf" | "image"
+
 /**
- * Zod schema for a file input. Defaults to required PDF file.
+ * Zod schema for a file input. Defaults to a required PDF file.
+ * `mimeType` accepts a single group or an array to allow several
+ * (e.g. `["image", "pdf"]`).
  *
  * @returns the Zod schema for a file input
  */
-type MimeKey = "pdf" | "image"
-
 export function fileSchema({
     errorMessage,
     typeErrorMessage,

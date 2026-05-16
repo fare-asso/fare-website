@@ -42,12 +42,6 @@ export async function processAssistance(
     const pieces = (data.pieces ?? []).filter(
         (file): file is File => file instanceof File
     )
-    if (pieces.length > 3) {
-        return {
-            success: false,
-            message: "Vous ne pouvez pas joindre plus de 3 fichiers."
-        }
-    }
     if (pieces.some((file) => file.size > MAX_FILE_SIZE)) {
         return {
             success: false,
