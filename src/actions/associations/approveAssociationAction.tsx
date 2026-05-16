@@ -50,7 +50,7 @@ async function approveAssociationActionImpl(
 
         revalidatePath("/dashboard/associations")
         revalidatePath("/reseau")
-        revalidatePath("/(home)")
+        revalidatePath("/")
 
         return { success: true }
     } catch (error) {

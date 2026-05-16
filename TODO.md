@@ -64,8 +64,8 @@ migrated to the preferred TanStack React Form.
     - `src/components/public/contact/contactForm.tsx`
 
 2. **React Hook Form** (legacy, to be migrated):
-    - `src/app/(home)/projets/bouge-ta-prison/tutorat/TutorApplicationForm.tsx`
-    - `src/app/(home)/projets/bouge-ta-prison/tutorat/question/QuestionForm.tsx`
+    - `src/app/(public)/projets/bouge-ta-prison/tutorat/TutorApplicationForm.tsx`
+    - `src/app/(public)/projets/bouge-ta-prison/tutorat/question/QuestionForm.tsx`
     - `src/components/dashboard/members/addMemberButton.tsx`
     - `src/components/dashboard/members/editMemberButton.tsx`
     - `src/app/dashboard/users/[id]/userInfoForm.tsx`

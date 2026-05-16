@@ -110,7 +110,7 @@ Always use `pnpm`, never use `npm`
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── (home)/            # Public pages grouped by route
+│   ├── (public)/            # Public pages grouped by route
 │   ├── dashboard/         # Admin dashboard routes
 │   ├── espace-asso/       # Member portal
 │   ├── api/               # API routes
