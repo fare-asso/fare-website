@@ -1,6 +1,11 @@
 {
     "$schema": "https://unpkg.com/knip@6/schema.json",
-    "entry": ["taze.config.ts", "prisma/seed.ts"],
+    "entry": [
+        "taze.config.ts",
+        "prisma/seed.ts",
+        "src/**/*.test.{ts,tsx}",
+        "emails/**/*.test.tsx"
+    ],
     "ignoreExportsUsedInFile": {
         "interface": true,
         "type": true
