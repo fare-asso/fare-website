@@ -168,6 +168,17 @@ model Adhesion {
   dateAG                      DateTime?
   nombreAdherents             Int          @default(0)
   nombreEtudiantsRepresentes  Int          @default(0)
+  filiere                     String       @default("")
+  siegeSocial                 String       @default("")
+  numeroSalle                 String       @default("")
+  engagementCotisation        Boolean      @default(false)
+  logoPath                    String       @default("")
+  statutsPath                 String       @default("")
+  recepissePath               String       @default("")
+  extraitPVPath               String       @default("")
+  lettreEngagementPath        String?
+  reglementInterieurPath      String?
+  bilanFinancierPath          String?
   bureau                      Json?
   linkedAssociation           Association?
 }

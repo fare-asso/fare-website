@@ -1,9 +1,15 @@
 "use client"
 
 import type { Adhesion } from "@prisma/client"
-import { ArchiveIcon, ArchiveRestoreIcon, DownloadIcon } from "lucide-react"
+import {
+    ArchiveIcon,
+    ArchiveRestoreIcon,
+    DownloadIcon,
+    FileTextIcon
+} from "lucide-react"
 import { useState } from "react"
 import archiveAdhesionAction from "@/actions/adhesion/archiveAdhesionAction"
+import downloadAdhesionPdfAction from "@/actions/adhesion/downloadAdhesionPdfAction"
 import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
 import unarchiveAdhesionAction from "@/actions/adhesion/unarchiveAdhesionAction"
 import {
@@ -46,6 +52,26 @@ function downloadBase64Zip(zipData: string, filename: string) {
     document.body.removeChild(a)
 }
 
+function downloadBase64Pdf(pdfData: string, filename: string) {
+    const byteCharacters = atob(pdfData)
+    const byteNumbers = new Array(byteCharacters.length)
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i)
+    }
+    const byteArray = new Uint8Array(byteNumbers)
+    const blob = new Blob([byteArray], { type: "application/pdf" })
+
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.style.display = "none"
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+}
+
 interface AdhesionCardActionsProps {
     adhesion: Adhesion
     canEdit: boolean
@@ -58,6 +84,7 @@ export default function AdhesionCardActions({
     canDownload
 }: AdhesionCardActionsProps) {
     const [isDownloading, setIsDownloading] = useState(false)
+    const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
     const { toast } = useToast()
 
@@ -99,6 +126,38 @@ export default function AdhesionCardActions({
         }
     }
 
+    const handleGeneratePdf = async () => {
+        setIsGeneratingPdf(true)
+        try {
+            const result = await downloadAdhesionPdfAction(adhesion.id)
+            if (result.error) {
+                toast({
+                    variant: "destructive",
+                    title: "Erreur",
+                    description: result.error
+                })
+            } else if (result.success && result.pdfData) {
+                downloadBase64Pdf(
+                    result.pdfData,
+                    result.filename || "formulaire-adhesion.pdf"
+                )
+                toast({
+                    title: "Téléchargement",
+                    description: `Le formulaire de ${displayName} a été généré.`
+                })
+            }
+        } catch (error) {
+            console.error("Erreur lors de la génération du PDF:", error)
+            toast({
+                variant: "destructive",
+                title: "Erreur",
+                description: "Erreur lors de la génération du formulaire PDF."
+            })
+        } finally {
+            setIsGeneratingPdf(false)
+        }
+    }
+
     const handleArchiveToggle = async () => {
         setIsArchiving(true)
         const action = isArchived
@@ -124,6 +183,33 @@ export default function AdhesionCardActions({
 
     return (
         <div className="flex shrink-0 gap-1">
+            {/* Generate PDF button */}
+            {canDownload ? (
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="text-muted-foreground hover:text-foreground"
+                            disabled={isGeneratingPdf}
+                            onClick={handleGeneratePdf}
+                        >
+                            {isGeneratingPdf ? (
+                                <LoadingRing className="m-0!" />
+                            ) : (
+                                <FileTextIcon className="h-4 w-4" />
+                            )}
+                            <span className="sr-only">
+                                Générer le formulaire PDF
+                            </span>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        Générer le formulaire (.pdf)
+                    </TooltipContent>
+                </Tooltip>
+            ) : null}
+
             {/* Download button */}
             {canDownload ? (
                 <Tooltip>

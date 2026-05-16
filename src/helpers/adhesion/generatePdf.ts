@@ -1,10 +1,15 @@
+import type { Adhesion } from "@prisma/client"
+import { type } from "arktype"
 import { format } from "date-fns"
 import { PDFDocument, type PDFPage, rgb, StandardFonts } from "pdf-lib"
-import type { BureauMember } from "@/components/public/adhesion/form-schema"
+import {
+    type BureauMember,
+    bureauMemberSchema
+} from "@/app/(home)/a-propos/adhesion/form-schema"
 import { env } from "@/env"
 
 interface AdhesionPdfData {
-    dateAdhesion: string
+    dateAdhesion: Date
     sigle: string
     nomComplet: string
     college: string
@@ -12,7 +17,7 @@ interface AdhesionPdfData {
     adresseAdministrative: string
     siegeSocial: string
     numeroSalle: string
-    dateAG: string
+    dateAG: Date | null
     nombreEtudiantsRepresentes: number
     nombreAdherents: number
     engagementCotisation: boolean
@@ -146,7 +151,7 @@ export async function generateAdhesionPdf(
     addField(
         page,
         "Date de la dernière Assemblée Générale",
-        format(data.dateAG, "dd/MM/yyyy")
+        data.dateAG ? format(data.dateAG, "dd/MM/yyyy") : "Non spécifiée"
     )
     addField(
         page,
@@ -197,4 +202,34 @@ export async function generateAdhesionPdf(
     }
 
     return pdfDoc.save()
+}
+
+/**
+ * Builds the adhesion PDF from a stored database record (the PDF is no
+ * longer persisted, it is regenerated on request).
+ */
+export async function generateAdhesionPdfFromRecord(
+    adhesion: Adhesion
+): Promise<Uint8Array> {
+    const parsedBureau = bureauMemberSchema.array()(adhesion.bureau ?? [])
+    const bureau = parsedBureau instanceof type.errors ? [] : parsedBureau
+
+    return await generateAdhesionPdf({
+        dateAdhesion: adhesion.createdAt,
+        sigle: adhesion.sigle,
+        nomComplet: adhesion.nomComplet,
+        college: adhesion.college,
+        objetPrincipal: adhesion.objetPrincipal,
+        adresseAdministrative: adhesion.adresseAdministrative,
+        siegeSocial: adhesion.siegeSocial,
+        numeroSalle: adhesion.numeroSalle,
+        dateAG: adhesion.dateAG,
+        nombreEtudiantsRepresentes: adhesion.nombreEtudiantsRepresentes,
+        nombreAdherents: adhesion.nombreAdherents,
+        engagementCotisation: adhesion.engagementCotisation,
+        emailAssociation: adhesion.email,
+        telephonePortable: adhesion.telephonePortable,
+        telephoneFixe: adhesion.telephoneFixe ?? "",
+        bureau
+    })
 }

@@ -107,21 +107,22 @@ const CaptchaWidget = memo(function CaptchaWidget({
 export function AdhesionForm(): React.ReactNode {
     const [isPending, submitForm] = useTransition()
     const [isSubmitted, setIsSubmitted] = useState(false)
+    const [submitError, setSubmitError] = useState<string | null>(null)
     const form = useForm({
         defaultValues: emptyForm,
         validators: {
             onChange: AdhesionFormSchema,
             onSubmit: AdhesionFormSchema
         },
-        // biome-ignore lint/suspicious/useAwait: TODO implement submission
+        // biome-ignore lint/suspicious/useAwait: submission runs inside a transition
         onSubmit: async ({ value }) => {
-            // TODO: implement submission
+            setSubmitError(null)
             submitForm(async () => {
                 const res = await processAdhesion(value)
                 if (res.success) {
                     setIsSubmitted(true)
                 } else {
-                    // TODO: set the form errors to res.message
+                    setSubmitError(res.message)
                 }
             })
         }
@@ -1598,6 +1599,14 @@ export function AdhesionForm(): React.ReactNode {
                         </div>
 
                         {/* ===== Submit ===== */}
+                        {submitError && (
+                            <p
+                                role="alert"
+                                className="rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-destructive text-sm"
+                            >
+                                {submitError}
+                            </p>
+                        )}
                         <div className="flex justify-end gap-4 pt-4">
                             <Button
                                 type="submit"
