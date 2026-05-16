@@ -1,0 +1,536 @@
+:root {
+    --ink: #0a0a0a;
+    --paper: #faf9f5;
+    --paper-2: #f1efe7;
+    --muted: #6b6963;
+    --red: #e1322d;
+    --blue: #004aad;
+    --radius: 14px;
+    --shadow:
+        0 24px 50px -20px rgba(15, 14, 12, 0.25), 0 8px 18px -10px
+        rgba(15, 14, 12, 0.18);
+    --easing: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* =========================================================
+   DESKTOP — V1 Final
+   ========================================================= */
+
+.v1f {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 22px 56px;
+    border-bottom: 1px solid rgba(10, 10, 10, 0.1);
+    background: var(--paper);
+    position: relative;
+}
+.v1f-logo img {
+    height: 56px;
+    width: auto;
+    display: block;
+}
+
+.v1f-nav {
+    position: relative;
+    display: none;
+    isolation: isolate;
+}
+.v1f-item {
+    position: relative;
+}
+.v1f-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    border-radius: 999px;
+    letter-spacing: -0.005em;
+    position: relative;
+}
+.v1f-caret {
+    opacity: 0.55;
+    transition: transform 0.2s;
+}
+.v1f-item:hover .v1f-caret,
+.v1f-item:focus-within .v1f-caret {
+    transform: rotate(180deg);
+}
+
+/* ---- Fallback (works everywhere, no slide) ---- */
+.v1f-link::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 2px;
+    height: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.25s var(--easing);
+}
+.v1f-item[data-active="true"] .v1f-link::after {
+    transform: scaleX(1);
+}
+.v1f-item:hover .v1f-link::after,
+.v1f-item:focus-within .v1f-link::after {
+    transform: scaleX(1);
+}
+
+.v1f-pop-fallback {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin: 0;
+    padding: 8px;
+    min-width: 280px;
+    background: white;
+    border: 1px solid rgba(10, 10, 10, 0.08);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+    transition:
+        opacity 0.18s,
+        transform 0.18s;
+    z-index: 50;
+    display: grid;
+    gap: 2px;
+}
+.v1f-item:hover .v1f-pop-fallback,
+.v1f-item:focus-within .v1f-pop-fallback {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+.v1f-suba {
+    display: grid;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--ink);
+}
+.v1f-suba:hover,
+.v1f-suba[data-active] {
+    background: var(--paper-2);
+}
+.v1f-suba .t {
+    font-weight: 600;
+    font-size: 14.5px;
+}
+.v1f-suba .d {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+/* Modern-only elements hidden in fallback */
+.v1f-rail,
+.v1f-pop-shared {
+    display: none;
+}
+
+/* ---- Modern: anchor positioning ---- */
+@supports (anchor-name: --x) {
+    .v1f-link::after {
+        display: none;
+    }
+    .v1f-pop-fallback {
+        display: none;
+    }
+    .v1f-rail,
+    .v1f-pop-shared {
+        display: block;
+    }
+
+    .v1f-link {
+        anchor-name: var(--anchor);
+    }
+
+    /* hover-bridge (link side) — keeps the dropdown open across the gap */
+    .v1f-item::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        height: 22px;
+    }
+
+    /* sliding rail */
+    .v1f-rail {
+        position: absolute;
+        height: 2px;
+        background: var(--ink);
+        pointer-events: none;
+        opacity: 0;
+        bottom: 4px;
+        transition:
+            left 0.32s var(--easing),
+            width 0.32s var(--easing),
+            opacity 0.15s;
+    }
+
+    /* default rest position: under active link */
+    .v1f-nav:has(.v1f-item[data-active="true"]) .v1f-rail {
+        left: anchor(--n-active left);
+        width: anchor-size(--n-active width);
+        opacity: 1;
+    }
+
+    /* persistent underline on the active page link — mirrors the
+       hover rail so the current section stays marked even while
+       another item is hovered (the rail has slid away) */
+    .v1f-item[data-active="true"] .v1f-link::after {
+        content: "";
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 4px;
+        height: 2px;
+        background: var(--ink);
+        transform: none;
+        opacity: 1;
+    }
+
+    /* hovered/focused overrides — and stay-open while pane is hovered */
+    .v1f-nav:has(.v1f-item:nth-child(1):is(:hover, :focus-within)) .v1f-rail,
+    .v1f-nav:has(.v1f-pane[data-i="0"]:hover) .v1f-rail {
+        left: anchor(--n0 left);
+        width: anchor-size(--n0 width);
+        opacity: 1;
+    }
+    .v1f-nav:has(.v1f-item:nth-child(2):is(:hover, :focus-within)) .v1f-rail {
+        left: anchor(--n1 left);
+        width: anchor-size(--n1 width);
+        opacity: 1;
+    }
+    .v1f-nav:has(.v1f-item:nth-child(3):is(:hover, :focus-within)) .v1f-rail,
+    .v1f-nav:has(.v1f-pane[data-i="2"]:hover) .v1f-rail {
+        left: anchor(--n2 left);
+        width: anchor-size(--n2 width);
+        opacity: 1;
+    }
+    .v1f-nav:has(.v1f-item:nth-child(4):is(:hover, :focus-within)) .v1f-rail,
+    .v1f-nav:has(.v1f-pane[data-i="3"]:hover) .v1f-rail {
+        left: anchor(--n3 left);
+        width: anchor-size(--n3 width);
+        opacity: 1;
+    }
+    .v1f-nav:has(.v1f-item:nth-child(5):is(:hover, :focus-within)) .v1f-rail,
+    .v1f-nav:has(.v1f-pane[data-i="4"]:hover) .v1f-rail {
+        left: anchor(--n4 left);
+        width: anchor-size(--n4 width);
+        opacity: 1;
+    }
+    .v1f-nav:has(.v1f-item:nth-child(6):is(:hover, :focus-within)) .v1f-rail {
+        left: anchor(--n5 left);
+        width: anchor-size(--n5 width);
+        opacity: 1;
+    }
+
+    /* sliding dropdown */
+    .v1f-pop-shared {
+        position: absolute;
+        top: calc(100% + 6px);
+        margin: 0;
+        padding: 8px;
+        width: max-content;
+        min-width: 220px;
+        max-width: 360px;
+        background: white;
+        border: 1px solid rgba(10, 10, 10, 0.08);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        transform: translateY(-4px);
+        pointer-events: none;
+        z-index: 60;
+        display: grid;
+        grid-template-columns: 1fr;
+        /* Closed: don't slide back — snap left/width only AFTER the
+           fade-out has finished, so the box fades out in place. */
+        transition:
+            left 0s linear 0.2s,
+            width 0s linear 0.2s,
+            opacity 0.18s,
+            transform 0.18s;
+    }
+
+    .v1f-nav:has(.v1f-item:nth-child(1):is(:hover, :focus-within))
+        .v1f-pop-shared,
+    .v1f-nav:has(.v1f-pane[data-i="0"]:hover) .v1f-pop-shared {
+        left: anchor(--n0 left);
+        transition:
+            left 0.32s var(--easing),
+            width 0.2s var(--easing),
+            opacity 0.18s,
+            transform 0.18s;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .v1f-nav:has(.v1f-item:nth-child(3):is(:hover, :focus-within))
+        .v1f-pop-shared,
+    .v1f-nav:has(.v1f-pane[data-i="2"]:hover) .v1f-pop-shared {
+        left: anchor(--n2 left);
+        transition:
+            left 0.32s var(--easing),
+            width 0.2s var(--easing),
+            opacity 0.18s,
+            transform 0.18s;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .v1f-nav:has(.v1f-item:nth-child(4):is(:hover, :focus-within))
+        .v1f-pop-shared,
+    .v1f-nav:has(.v1f-pane[data-i="3"]:hover) .v1f-pop-shared {
+        left: anchor(--n3 left);
+        transition:
+            left 0.32s var(--easing),
+            width 0.2s var(--easing),
+            opacity 0.18s,
+            transform 0.18s;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .v1f-nav:has(.v1f-item:nth-child(5):is(:hover, :focus-within))
+        .v1f-pop-shared,
+    .v1f-nav:has(.v1f-pane[data-i="4"]:hover) .v1f-pop-shared {
+        right: anchor(--n4 right);
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .v1f-pane {
+        grid-area: 1 / 1;
+        position: relative;
+        display: none;
+        gap: 2px;
+    }
+    /* hover-bridge (box side) — spans the full dropdown width so the
+       cursor never crosses a dead zone between the link and the box */
+    .v1f-pane::before {
+        content: "";
+        position: absolute;
+        left: -8px;
+        right: -8px;
+        bottom: 100%;
+        height: 14px;
+    }
+
+    .v1f-nav:has(.v1f-item:nth-child(1):is(:hover, :focus-within))
+        .v1f-pane[data-i="0"],
+    .v1f-nav:has(.v1f-pane[data-i="0"]:hover) .v1f-pane[data-i="0"],
+    .v1f-nav:has(.v1f-item:nth-child(3):is(:hover, :focus-within))
+        .v1f-pane[data-i="2"],
+    .v1f-nav:has(.v1f-pane[data-i="2"]:hover) .v1f-pane[data-i="2"],
+    .v1f-nav:has(.v1f-item:nth-child(4):is(:hover, :focus-within))
+        .v1f-pane[data-i="3"],
+    .v1f-nav:has(.v1f-pane[data-i="3"]:hover) .v1f-pane[data-i="3"],
+    .v1f-nav:has(.v1f-item:nth-child(5):is(:hover, :focus-within))
+        .v1f-pane[data-i="4"],
+    .v1f-nav:has(.v1f-pane[data-i="4"]:hover) .v1f-pane[data-i="4"] {
+        display: grid;
+    }
+}
+
+/* =========================================================
+   MOBILE — burger + M1 slide-in drawer
+   ========================================================= */
+
+.m-burger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid rgba(10, 10, 10, 0.12);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+}
+.m-burger svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* shared sub-link rendering inside the drawer */
+.m-sub a {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: inherit;
+    text-decoration: none;
+    font-size: 14.5px;
+    opacity: 0.82;
+}
+.m-sub a:hover {
+    opacity: 1;
+    background: rgba(10, 10, 10, 0.04);
+}
+.m-sub a[data-active="true"] {
+    font-weight: 600;
+    opacity: 1;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+.m-link {
+    display: block;
+    padding: 14px 6px;
+    color: inherit;
+    text-decoration: none;
+    font-size: 19px;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(10, 10, 10, 0.07);
+}
+.m-link[data-active="true"] {
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+
+/* ---- shared details summary chrome ---- */
+.m-acc {
+    border-bottom: 1px solid rgba(10, 10, 10, 0.07);
+}
+.m-acc summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 6px;
+    font-size: 19px;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+}
+.m-acc summary::-webkit-details-marker {
+    display: none;
+}
+.m-acc summary .chev {
+    width: 16px;
+    height: 16px;
+    opacity: 0.55;
+    transition: transform 0.2s;
+}
+.m-acc[open] summary .chev {
+    transform: rotate(180deg);
+}
+.m-acc .m-sub {
+    padding: 2px 10px 12px 16px;
+    display: grid;
+    gap: 2px;
+}
+
+/* ---- M1 — slide-in drawer (right) — HTML popover + details ---- */
+
+.m1-drawer {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: 84%;
+    max-width: 340px;
+    height: 100dvh;
+    max-height: 100dvh;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: -24px 0 50px -10px rgba(0, 0, 0, 0.25);
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateX(20px);
+    transition:
+        opacity 0.25s var(--easing),
+        transform 0.3s var(--easing),
+        display 0.3s allow-discrete,
+        overlay 0.3s allow-discrete;
+}
+.m1-drawer:popover-open {
+    display: flex;
+    opacity: 1;
+    transform: translateX(0);
+}
+@starting-style {
+    .m1-drawer:popover-open {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+}
+.m1-drawer::backdrop {
+    background: rgba(10, 10, 10, 0.25);
+}
+
+.m1-head {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: right;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(10, 10, 10, 0.08);
+}
+.m1-head img {
+    height: 36px;
+    width: auto;
+    display: block;
+}
+.m1-close {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(10, 10, 10, 0.12);
+    background: transparent;
+    color: var(--ink);
+    border-radius: 10px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+.m1-close svg {
+    width: 16px;
+    height: 16px;
+}
+.m1-nav {
+    flex: 1;
+    min-height: 0;
+    padding: 8px 18px 24px;
+    overflow-y: auto;
+}
+
+/* =========================================================
+   Responsive — desktop nav vs. mobile burger (lg = 1024px).
+   header.css owns this so it never fights Tailwind specificity.
+   ========================================================= */
+
+@media (max-width: 1023px) {
+    .v1f {
+        padding: 14px 20px;
+    }
+    .v1f-logo img {
+        height: 38px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .v1f-nav {
+        display: flex;
+    }
+    .m-burger {
+        display: none;
+    }
+}

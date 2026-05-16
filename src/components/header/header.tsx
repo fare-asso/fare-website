@@ -2,19 +2,15 @@ import Image from "next/image"
 import Link from "next/link"
 import logo from "#public/logo_fare.png"
 import HeaderLinks from "./headerLinks"
+import "./header.css"
 
 export default function Header() {
     return (
-        <div className="header flex w-full flex-col-reverse items-center justify-between gap-3 px-8 py-4 lg:flex-col">
-            <Link href="/" className="mb-3 flex h-30 w-auto flex-row">
-                <Image
-                    src={logo}
-                    alt="FARE Logo"
-                    className="h-full w-auto"
-                    priority
-                />
+        <header className="v1f">
+            <Link href="/" className="v1f-logo" aria-label="Accueil">
+                <Image src={logo} alt="FARE de Haute-Bretagne" priority />
             </Link>
             <HeaderLinks />
-        </div>
+        </header>
     )
 }
