@@ -9,7 +9,7 @@ export default function DefenseDroits() {
                     className="v1f-cta-icon"
                     aria-hidden="true"
                 />
-                <span>Contactez vos élus étudiants</span>
+                <span>Contactez vos éluEs étudiantEs</span>
             </span>
         </Link>
     )
