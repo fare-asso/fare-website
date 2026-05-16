@@ -7,7 +7,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import prisma from "@/helpers/db"
+import { getAssistanceConfig } from "@/helpers/assistanceConfig"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import ConfigForm from "./configForm"
@@ -25,9 +25,7 @@ export default async function DefenseDroitsPage() {
         redirect("/dashboard/unauthorized")
     }
 
-    const config =
-        (await prisma.assistanceConfig.findFirst()) ??
-        (await prisma.assistanceConfig.create({ data: {} }))
+    const config = await getAssistanceConfig()
 
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">

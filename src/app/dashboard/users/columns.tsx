@@ -57,7 +57,9 @@ export const columns: ColumnDef<UserWithPermissionsRow>[] = [
                 if (row.original.name) {
                     const nameParts = row.original.name.trim().split(" ")
                     if (nameParts.length >= 2) {
-                        return `${nameParts[0][0]}${nameParts.at(-1)[0]}`.toUpperCase()
+                        const first = nameParts[0] ?? ""
+                        const last = nameParts.at(-1) ?? ""
+                        return `${first[0] ?? ""}${last[0] ?? ""}`.toUpperCase()
                     }
                     return row.original.name.substring(0, 2).toUpperCase()
                 }

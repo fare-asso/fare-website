@@ -6,7 +6,7 @@ import { isDevelopment } from "std-env"
 import { AssistanceTemplate } from "@/../emails/assistance"
 import AssistanceAck from "@/../emails/assistance-acknowledgement"
 import { verifyCaptcha } from "@/components/captcha/verify"
-import prisma from "@/helpers/db"
+import { getAssistanceConfig } from "@/helpers/assistanceConfig"
 import { sendEmail } from "@/helpers/email"
 import {
     AssistanceFormSchema,
@@ -18,18 +18,6 @@ import {
 const MAX_FILE_SIZE = 2 * 1024 * 1024
 
 type Result = { success: true } | { success: false; message: string }
-
-async function getConfig(): Promise<{ recipientEmail: string; delay: string }> {
-    const existing = await prisma.assistanceConfig.findFirst()
-    if (existing) {
-        return {
-            recipientEmail: existing.recipientEmail,
-            delay: existing.delay
-        }
-    }
-    const created = await prisma.assistanceConfig.create({ data: {} })
-    return { recipientEmail: created.recipientEmail, delay: created.delay }
-}
 
 export async function processAssistance(
     formData: TAssistanceForm
@@ -75,7 +63,7 @@ export async function processAssistance(
         }))
     )
 
-    const config = await getConfig()
+    const config = await getAssistanceConfig()
     const situationLabel = SITUATIONS[data.situation].label
     const moyenContactLabel = MOYEN_CONTACT[data.moyenContact]
 

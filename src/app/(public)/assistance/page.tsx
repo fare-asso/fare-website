@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import prisma from "@/helpers/db"
+import { getAssistanceConfig } from "@/helpers/assistanceConfig"
 import { AssistanceForm } from "./form"
 
 export const metadata: Metadata = {
@@ -10,9 +10,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Assistance() {
-    const config =
-        (await prisma.assistanceConfig.findFirst()) ??
-        (await prisma.assistanceConfig.create({ data: {} }))
+    const config = await getAssistanceConfig()
 
     return (
         <div className="flex w-full flex-col items-center justify-start">
