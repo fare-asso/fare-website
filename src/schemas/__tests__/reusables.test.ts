@@ -73,3 +73,47 @@ describe("fileSchema", () => {
         }
     })
 })
+
+describe("fileSchema combined mime types", () => {
+    const svg = new File([new Uint8Array([1])], "v.svg", {
+        type: "image/svg+xml"
+    })
+    const txt = new File([new Uint8Array([1])], "t.txt", {
+        type: "text/plain"
+    })
+
+    it("accepts both PDF and image when given an array of keys", () => {
+        const schema = fileSchema({ mimeType: ["image", "pdf"] })
+        expect(z.safeParse(schema, pdf).success).toBe(true)
+        expect(z.safeParse(schema, png).success).toBe(true)
+        expect(z.safeParse(schema, svg).success).toBe(true)
+    })
+
+    it("rejects a type outside the combined set", () => {
+        const schema = fileSchema({ mimeType: ["image", "pdf"] })
+        expect(z.safeParse(schema, txt).success).toBe(false)
+    })
+
+    it("uses a combined default type-error message", () => {
+        const schema = fileSchema({ mimeType: ["image", "pdf"] })
+        const result = z.safeParse(schema, txt)
+        expect(result.success).toBe(false)
+        if (!result.success) {
+            expect(result.error.issues[0]?.message).toContain("PDF")
+        }
+    })
+
+    it("treats a single-element array like the scalar form", () => {
+        const schema = fileSchema({ mimeType: ["image"] })
+        expect(z.safeParse(schema, png).success).toBe(true)
+        expect(z.safeParse(schema, pdf).success).toBe(false)
+    })
+
+    it("still supports the optional flag with arrays", () => {
+        const schema = fileSchema({
+            mimeType: ["image", "pdf"],
+            optional: true
+        })
+        expect(z.safeParse(schema, undefined).success).toBe(true)
+    })
+})
