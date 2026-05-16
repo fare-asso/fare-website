@@ -1,5 +1,5 @@
 import { type } from "arktype"
-import { z } from "zod/mini"
+import { fileSchema } from "@/schemas/reusables"
 
 const frenchPhone = type("/^((0[1-9]([.\\s]?\\d{2}){4})|)$/")
 
@@ -15,25 +15,15 @@ export const bureauMemberSchema = type({
     adresse: "string >= 1"
 })
 
-const pdfFile = z.file({ error: "Veuillez fournir un fichier." }).check(
-    z.mime(["application/pdf"], {
-        error: "Le fichier doit être au format PDF."
-    })
-)
-
 export const AdhesionFormSchema = type({
     // Basic info
     sigle: "string >= 2",
     nomComplet: "string >= 3",
-    logo: z
-        .file({
-            error: "Veuillez fournir le logo de l'association."
-        })
-        .check(
-            z.mime(["image/png", "image/jpeg", "image/webp", "image/svg+xml"], {
-                error: "Le logo doit être au format PNG, JPG, WebP ou SVG."
-            })
-        ),
+    logo: fileSchema({
+        errorMessage: "Veuillez fournir un logo.",
+        typeErrorMessage: "Le logo doit être au format PNG, JPG, WebP ou SVG.",
+        mimeType: "image"
+    }),
 
     // Administrative
     college: "'A' | 'B'",
@@ -56,12 +46,12 @@ export const AdhesionFormSchema = type({
     bureau: bureauMemberSchema.array().atLeastLength(1),
 
     // Documents
-    statuts: pdfFile,
-    recepisse: pdfFile,
-    extraitPV: pdfFile,
-    "lettreEngagement?": z.optional(pdfFile),
-    "reglementInterieur?": z.optional(pdfFile),
-    "bilanFinancier?": z.optional(pdfFile),
+    statuts: fileSchema(),
+    recepisse: fileSchema(),
+    extraitPV: fileSchema(),
+    "lettreEngagement?": fileSchema({ optional: true }),
+    "reglementInterieur?": fileSchema({ optional: true }),
+    "bilanFinancier?": fileSchema({ optional: true }),
 
     // Captcha
     captchaToken: "string >= 1"
