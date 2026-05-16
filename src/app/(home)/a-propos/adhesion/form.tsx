@@ -3,7 +3,7 @@
 import { useForm } from "@tanstack/react-form"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { CalendarIcon, Trash2, UserPlus } from "lucide-react"
+import { CalendarIcon, Loader2Icon, Trash2, UserPlus } from "lucide-react"
 import { memo, useCallback, useState, useTransition } from "react"
 import { Captcha } from "@/components/captcha"
 import { Button } from "@/components/ui/button"
@@ -42,9 +42,9 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import {
-    type AdhesionForm,
     AdhesionFormSchema,
-    type BureauMember
+    type BureauMember,
+    type TAdhesionForm
 } from "./form-schema"
 import { processAdhesion } from "./process-adhesion"
 
@@ -60,7 +60,7 @@ const emptyBureauMember: BureauMember = {
     prenom: "",
     filiere: "",
     annee: "",
-    telephone: "" as AdhesionForm["bureau"][number]["telephone"],
+    telephone: "" as TAdhesionForm["bureau"][number]["telephone"],
     email: "",
     adresse: ""
 }
@@ -80,8 +80,8 @@ const emptyForm = {
     nombreAdherents: 0,
     engagementCotisation: false as true,
     emailAssociation: "",
-    telephonePortable: "" as AdhesionForm["telephonePortable"],
-    telephoneFixe: "" as AdhesionForm["telephoneFixe"],
+    telephonePortable: "" as TAdhesionForm["telephonePortable"],
+    telephoneFixe: "" as TAdhesionForm["telephoneFixe"],
     bureau: [{ ...emptyBureauMember }] as BureauMember[],
     statuts: undefined as unknown as File,
     recepisse: undefined as unknown as File,
@@ -445,9 +445,9 @@ export function AdhesionForm(): React.ReactNode {
         )
     }
 
-    if (!isSubmitted) {
+    if (isSubmitted) {
         return (
-            <Card>
+            <Card className="w-full sm:max-w-3xl" variant="ghost">
                 <CardHeader>
                     <CardTitle>Merci pour votre adhésion !</CardTitle>
                 </CardHeader>
@@ -1456,7 +1456,7 @@ export function AdhesionForm(): React.ReactNode {
                                                         onChange={(e) =>
                                                             field.handleChange(
                                                                 e.target
-                                                                    .value as AdhesionForm["telephonePortable"]
+                                                                    .value as TAdhesionForm["telephonePortable"]
                                                             )
                                                         }
                                                         aria-invalid={isInvalid}
@@ -1503,7 +1503,7 @@ export function AdhesionForm(): React.ReactNode {
                                                         onChange={(e) =>
                                                             field.handleChange(
                                                                 e.target
-                                                                    .value as AdhesionForm["telephoneFixe"]
+                                                                    .value as TAdhesionForm["telephoneFixe"]
                                                             )
                                                         }
                                                         aria-invalid={isInvalid}
@@ -1599,8 +1599,16 @@ export function AdhesionForm(): React.ReactNode {
 
                         {/* ===== Submit ===== */}
                         <div className="flex justify-end gap-4 pt-4">
-                            <Button type="submit" className="min-w-32">
-                                Envoyer le formulaire d'adhésion
+                            <Button
+                                type="submit"
+                                className="min-w-32"
+                                disabled={isPending}
+                            >
+                                {isPending ? (
+                                    <Loader2Icon className="animate-spin" />
+                                ) : (
+                                    "Envoyer le formulaire d'adhésion"
+                                )}
                             </Button>
                         </div>
                     </FieldGroup>

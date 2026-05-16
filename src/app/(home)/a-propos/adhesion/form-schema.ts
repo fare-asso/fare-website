@@ -58,4 +58,4 @@ export const AdhesionFormSchema = type({
 })
 
 export type BureauMember = typeof bureauMemberSchema.infer
-export type AdhesionForm = typeof AdhesionFormSchema.infer
+export type TAdhesionForm = typeof AdhesionFormSchema.infer
