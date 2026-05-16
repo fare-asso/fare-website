@@ -1,11 +1,32 @@
+import { type } from "arktype"
 import { describe, expect, it } from "vitest"
 import * as z from "zod/mini"
-import { fileSchema } from "../reusables"
+import { fileSchema, frenchPhone } from "../reusables"
 
 const pdf = new File([new Uint8Array([1])], "d.pdf", {
     type: "application/pdf"
 })
 const png = new File([new Uint8Array([1])], "i.png", { type: "image/png" })
+
+const isErrors = (out: unknown): boolean => out instanceof type.errors
+
+describe("frenchPhone (telephonePortable)", () => {
+    it("accepts a valid french phone without separators", () => {
+        expect(isErrors(frenchPhone("0612345678"))).toBe(false)
+    })
+
+    it("accepts a valid french phone with spaces", () => {
+        expect(isErrors(frenchPhone("06 12 34 56 78"))).toBe(false)
+    })
+
+    it("accepts an empty string (optional)", () => {
+        expect(isErrors(frenchPhone(""))).toBe(false)
+    })
+
+    it("rejects a non-phone value", () => {
+        expect(isErrors(frenchPhone("abc"))).toBe(true)
+    })
+})
 
 describe("fileSchema", () => {
     it("accepts a PDF file by default", () => {

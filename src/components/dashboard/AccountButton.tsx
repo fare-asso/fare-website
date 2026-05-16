@@ -42,7 +42,7 @@ export default function AccountButton({
         if (name) {
             const nameParts = name.trim().split(" ")
             if (nameParts.length >= 2) {
-                return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+                return `${nameParts[0][0]}${nameParts.at(-1)[0]}`.toUpperCase()
             }
             return name.substring(0, 2).toUpperCase()
         }

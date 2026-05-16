@@ -39,31 +39,6 @@ describe("AdhesionFormSchema", () => {
     })
 })
 
-describe("frenchPhone (telephonePortable)", () => {
-    it("accepts a valid french phone without separators", () => {
-        const input = validAdhesionForm({ telephonePortable: "0612345678" })
-        expect(isErrors(AdhesionFormSchema(input))).toBe(false)
-    })
-
-    it("accepts a valid french phone with spaces", () => {
-        const input = {
-            ...validAdhesionForm(),
-            telephonePortable: "06 12 34 56 78"
-        }
-        expect(isErrors(AdhesionFormSchema(input))).toBe(false)
-    })
-
-    it("accepts an empty string (optional)", () => {
-        const input = validAdhesionForm({ telephonePortable: "" })
-        expect(isErrors(AdhesionFormSchema(input))).toBe(false)
-    })
-
-    it("rejects a non-phone value", () => {
-        const input = { ...validAdhesionForm(), telephonePortable: "abc" }
-        expect(isErrors(AdhesionFormSchema(input))).toBe(true)
-    })
-})
-
 describe("bureauMemberSchema", () => {
     it("accepts a valid member", () => {
         expect(
