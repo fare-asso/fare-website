@@ -47,3 +47,33 @@ jobs:
 
             - name: Knip project
               run: pnpm run knip
+
+    test:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                  persist-credentials: false
+
+            - uses: pnpm/action-setup@v4
+              name: Install pnpm
+              with:
+                  run_install: false
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Generate Prisma Client
+              run: pnpm exec prisma generate
+
+            - name: Run tests
+              run: pnpm test
