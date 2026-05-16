@@ -18,18 +18,56 @@
 
 .v1f {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    row-gap: 4px;
     width: 100%;
     padding: 22px 56px;
     border-bottom: 1px solid rgba(10, 10, 10, 0.1);
     background: var(--paper);
     position: relative;
 }
+/* logo stays left; pushes the CTA + nav (or the burger) to the right */
+.v1f-logo {
+    margin-right: auto;
+}
 .v1f-logo img {
     height: 56px;
     width: auto;
     display: block;
+}
+
+/* "Défense des droits" CTA — always visible. Compact pill next to
+   the nav on desktop; its own centred row on mobile. Same visual
+   language as the bar (pill radius, accent colour, dashed border). */
+.v1f-cta {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 20px;
+    text-decoration: none;
+}
+.v1f-cta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border: 1.5px dashed var(--blue);
+    border-radius: 999px;
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.15;
+    white-space: nowrap;
+    transition: background 0.15s var(--easing);
+}
+.v1f-cta:hover .v1f-cta-pill,
+.v1f-cta:focus-visible .v1f-cta-pill {
+    background: rgba(0, 74, 173, 0.08);
+}
+.v1f-cta-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }
 
 .v1f-nav {
@@ -51,6 +89,7 @@
     text-decoration: none;
     border-radius: 999px;
     letter-spacing: -0.005em;
+    white-space: nowrap;
     position: relative;
 }
 .v1f-caret {
@@ -517,7 +556,7 @@
    header.css owns this so it never fights Tailwind specificity.
    ========================================================= */
 
-@media (max-width: 1023px) {
+@media (max-width: 1179px) {
     .v1f {
         padding: 14px 20px;
     }
@@ -526,7 +565,18 @@
     }
 }
 
-@media (min-width: 1024px) {
+/* Only when logo + CTA + burger can't share a line does the CTA
+   drop to its own full-width, centred row under the bar. */
+@media (max-width: 440px) {
+    .v1f-cta {
+        order: 10;
+        flex-basis: 100%;
+        justify-content: center;
+        margin: 14px 0 0;
+    }
+}
+
+@media (min-width: 1180px) {
     .v1f-nav {
         display: flex;
     }
