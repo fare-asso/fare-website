@@ -25,7 +25,7 @@ describe("verifyCaptcha", () => {
         let apiKey: string | null = null
         server.use(
             http.post(captchaUrl, async ({ request }) => {
-                body = await request.json()
+                body = (await request.json()) as typeof body
                 apiKey = request.headers.get("X-API-Key")
                 return HttpResponse.json({ success: true })
             })

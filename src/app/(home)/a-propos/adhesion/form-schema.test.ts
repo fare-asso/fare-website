@@ -45,9 +45,10 @@ describe("frenchPhone (telephonePortable)", () => {
     })
 
     it("accepts a valid french phone with spaces", () => {
-        const input = validAdhesionForm({
+        const input = {
+            ...validAdhesionForm(),
             telephonePortable: "06 12 34 56 78"
-        })
+        }
         expect(isErrors(AdhesionFormSchema(input))).toBe(false)
     })
 
@@ -57,7 +58,7 @@ describe("frenchPhone (telephonePortable)", () => {
     })
 
     it("rejects a non-phone value", () => {
-        const input = validAdhesionForm({ telephonePortable: "abc" })
+        const input = { ...validAdhesionForm(), telephonePortable: "abc" }
         expect(isErrors(AdhesionFormSchema(input))).toBe(true)
     })
 })

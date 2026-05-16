@@ -1,5 +1,8 @@
 import type { Adhesion } from "@prisma/client"
-import type { TAdhesionForm } from "@/app/(home)/a-propos/adhesion/form-schema"
+import type {
+    BureauMember,
+    TAdhesionForm
+} from "@/app/(home)/a-propos/adhesion/form-schema"
 import type { UserWithPermissions } from "@/helpers/supabase/auth"
 
 export function pdfFile(name = "doc.pdf"): File {
@@ -12,7 +15,7 @@ export function imageFile(name = "logo.png", type = "image/png"): File {
     return new File([new Uint8Array([1, 2, 3])], name, { type })
 }
 
-const bureauMember = {
+const bureauMember: BureauMember = {
     isAdmin: true,
     poste: "President",
     nom: "Dupont",
