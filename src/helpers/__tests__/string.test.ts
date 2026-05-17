@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { sanitizeString } from "./string"
+import { sanitizeString } from "../string"
 
 describe("sanitizeString", () => {
     it("removes diacritics and lowercases", () => {

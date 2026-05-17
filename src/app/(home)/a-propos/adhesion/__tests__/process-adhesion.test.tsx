@@ -33,7 +33,7 @@ vi.mock("@react-email/render", () => ({
     render: vi.fn(async () => "<html></html>")
 }))
 
-import { processAdhesion } from "./process-adhesion"
+import { processAdhesion } from "../process-adhesion"
 
 const uuid = "11111111-1111-1111-1111-111111111111"
 

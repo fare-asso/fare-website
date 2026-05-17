@@ -1,7 +1,7 @@
 import { type } from "arktype"
 import { describe, expect, it } from "vitest"
 import { imageFile, pdfFile, validAdhesionForm } from "@/test/factories"
-import { AdhesionFormSchema, bureauMemberSchema } from "./form-schema"
+import { AdhesionFormSchema, bureauMemberSchema } from "../form-schema"
 
 const isErrors = (out: object): boolean => out instanceof type.errors
 

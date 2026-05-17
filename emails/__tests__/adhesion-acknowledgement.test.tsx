@@ -1,6 +1,6 @@
 import { render } from "@react-email/render"
 import { describe, expect, it } from "vitest"
-import AdhesionAck from "./adhesion-acknowledgement"
+import AdhesionAck from "../adhesion-acknowledgement"
 
 describe("AdhesionAck email", () => {
     it("renders the association name and contact address", async () => {

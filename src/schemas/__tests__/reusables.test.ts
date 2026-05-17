@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import * as z from "zod/mini"
-import { fileSchema } from "./reusables"
+import { fileSchema } from "../reusables"
 
 const pdf = new File([new Uint8Array([1])], "d.pdf", {
     type: "application/pdf"

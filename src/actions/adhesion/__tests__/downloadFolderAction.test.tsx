@@ -24,7 +24,7 @@ vi.mock("@/helpers/adhesion/generatePdf", () => ({
     generateAdhesionPdfFromRecord: pdf.generateAdhesionPdfFromRecord
 }))
 
-import { downloadFolderAction } from "./downloadFolderAction"
+import { downloadFolderAction } from "../downloadFolderAction"
 
 const isZip = (b64: string): boolean => {
     const buf = Buffer.from(b64, "base64")
