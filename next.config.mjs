@@ -1,11 +1,13 @@
+import { withSentryConfig } from "@sentry/nextjs"
 import { createJiti } from "jiti"
+import { env } from "std-env"
 
 // Validate env at build time. Required because of Next.js pre-rendering
 const jiti = createJiti(import.meta.url)
 await jiti.import("./src/env")
 
 /** @type {import('next').NextConfig} */
-export default {
+const nextConfig = {
     output: "standalone",
     transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
 
@@ -64,3 +66,10 @@ export default {
 
     devIndicators: false
 }
+
+export default withSentryConfig(nextConfig, {
+    org: "fare-m2",
+    project: "javascript-nextjs",
+    // Only print logs for uploading source maps in CI
+    silent: !env.CI
+})

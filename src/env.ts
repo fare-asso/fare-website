@@ -22,7 +22,8 @@ export const env = createEnv({
         NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
 
         NEXT_PUBLIC_SITE_URL: z.url().default("http://localhost:3000"),
-        NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: z.string().min(1)
+        NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: z.string().min(1),
+        NEXT_PUBLIC_SENTRY_DSN: z.string()
     },
     // biome-ignore lint/style/useNamingConvention: it's a lib
     experimental__runtimeEnv: {
@@ -32,7 +33,8 @@ export const env = createEnv({
 
         NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
         NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY:
-            process.env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
+            process.env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY,
+        NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN
     },
 
     emptyStringAsUndefined: true
