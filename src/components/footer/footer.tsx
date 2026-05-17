@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { MdAdminPanelSettings, MdOutlineWarning } from "react-icons/md"
+import { MdAdminPanelSettings } from "react-icons/md"
 import SocialLinks from "./socialLinks"
 
 export default function Footer() {
@@ -11,12 +11,6 @@ export default function Footer() {
                     <span>
                         © {new Date().getFullYear()} FARE. Tous droits réservés.
                     </span>
-                    <Link
-                        className="hidden flex-row items-center space-x-1 md:flex"
-                        href="/bug-report"
-                    >
-                        <MdOutlineWarning /> <span>Signaler un bug</span>
-                    </Link>
                     <Link
                         className="hidden flex-row items-center space-x-1 md:flex"
                         href="/login"
