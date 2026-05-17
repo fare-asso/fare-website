@@ -2,6 +2,7 @@ import type { JSONContent } from "@tiptap/react"
 import { format } from "date-fns"
 import type { Metadata } from "next"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 import MoreArticles from "@/components/public/articles/moreArticles"
 import ContentHTML from "@/components/ui/rich-text-editor/contentHTML"
 import prisma from "@/helpers/db"
@@ -26,7 +27,7 @@ export async function generateMetadata({
         }
     })
 
-    if (!articleMetadata) {
+    if (!articleMetadata || !articleMetadata.published) {
         return {
             title: "Article non trouvé",
             description: "Erreur..."
@@ -50,11 +51,7 @@ export default async function Page({
     const { id } = await params
     // check if the parameter is correct
     if (Number.isNaN(Number(id))) {
-        return (
-            <div>
-                <span>{"L'article recherché n'existe pas"}</span>
-            </div>
-        )
+        notFound()
     }
 
     const articleRecord = await prisma.article.findUnique({
@@ -63,12 +60,9 @@ export default async function Page({
         }
     })
 
-    if (!articleRecord) {
-        return (
-            <div>
-                <span>{"L'article recherché n'existe pas ou plus"}</span>
-            </div>
-        )
+    // Drafts/unpublished articles must not be reachable by direct URL
+    if (!articleRecord || !articleRecord.published) {
+        notFound()
     }
 
     const articleContent: JSONContent = JSON.parse(
