@@ -2,9 +2,9 @@ import { type } from "arktype"
 import { describe, expect, it } from "vitest"
 import { validAssistanceForm } from "@/test/factories/assistance"
 import { imageFile, pdfFile } from "@/test/factories/files"
-import { AssistanceFormSchema, MOYEN_CONTACT, SITUATIONS } from "./form-schema"
+import { AssistanceFormSchema, MOYEN_CONTACT, SITUATIONS } from "../form-schema"
 
-const isErrors = (out: unknown): boolean => out instanceof type.errors
+const isErrors = (out: object): boolean => out instanceof type.errors
 
 describe("AssistanceFormSchema — required fields", () => {
     it("accepts a fully valid payload", () => {
@@ -134,7 +134,7 @@ describe("AssistanceFormSchema — attachments", () => {
 
     it("accepts an omitted pieces field", () => {
         const input = validAssistanceForm()
-        delete (input as { pieces?: unknown }).pieces
+        delete (input as { pieces?: File[] }).pieces
         expect(isErrors(AssistanceFormSchema(input))).toBe(false)
     })
 })

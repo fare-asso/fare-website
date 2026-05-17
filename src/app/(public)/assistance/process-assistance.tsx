@@ -93,8 +93,7 @@ async function processAssistanceImpl(
         try {
             await sendEmail({
                 to: data.email,
-                subject:
-                    "Votre demande de défense des droits a bien été reçue",
+                subject: "Votre demande de défense des droits a bien été reçue",
                 html: await render(
                     <AssistanceAck
                         situationLabel={situationLabel}

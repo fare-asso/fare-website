@@ -1,27 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { assistanceConfigRecord } from "@/test/factories/assistance"
+import { dbModule } from "@/test/mocks"
 
-const db = vi.hoisted(() => ({
+const h = vi.hoisted(() => ({
     findFirst: vi.fn(),
     create: vi.fn()
 }))
 
-vi.mock("@/helpers/db", () => ({
-    default: {
-        assistanceConfig: { findFirst: db.findFirst, create: db.create }
-    }
-}))
+vi.mock("@/helpers/db", () =>
+    dbModule({
+        assistanceConfig: { findFirst: h.findFirst, create: h.create }
+    })
+)
 
-import { getAssistanceConfig } from "./assistanceConfig"
+import { getAssistanceConfig } from "../assistanceConfig"
 
 beforeEach(() => {
-    db.findFirst.mockReset()
-    db.create.mockReset()
+    h.findFirst.mockReset()
+    h.create.mockReset()
 })
 
 describe("getAssistanceConfig", () => {
     it("returns the existing config without creating one", async () => {
-        db.findFirst.mockResolvedValue(
+        h.findFirst.mockResolvedValue(
             assistanceConfigRecord({
                 recipientEmail: "team@fare-asso.fr",
                 delay: "24h"
@@ -34,16 +35,16 @@ describe("getAssistanceConfig", () => {
             recipientEmail: "team@fare-asso.fr",
             delay: "24h"
         })
-        expect(db.create).not.toHaveBeenCalled()
+        expect(h.create).not.toHaveBeenCalled()
     })
 
     it("creates a default config when none exists", async () => {
-        db.findFirst.mockResolvedValue(null)
-        db.create.mockResolvedValue(assistanceConfigRecord())
+        h.findFirst.mockResolvedValue(null)
+        h.create.mockResolvedValue(assistanceConfigRecord())
 
         const config = await getAssistanceConfig()
 
-        expect(db.create).toHaveBeenCalledWith({ data: {} })
+        expect(h.create).toHaveBeenCalledWith({ data: {} })
         expect(config).toEqual({
             recipientEmail: "defense-des-droits@fare-asso.fr",
             delay: "48h"
