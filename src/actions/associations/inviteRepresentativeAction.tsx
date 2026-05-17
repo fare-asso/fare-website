@@ -6,8 +6,9 @@ import { hasPermission } from "@/helpers/permissions"
 import { validateEmail } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function inviteRepresentativeAction(
+async function inviteRepresentativeActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
@@ -82,8 +83,14 @@ export default async function inviteRepresentativeAction(
                 success: true
             }
         }
-    } catch (error: unknown) {
-        console.error(error)
+    } catch (error) {
+        captureActionError(error)
         return { error: "Echec de l'invitation du représentant" }
     }
 }
+
+export default withServerAction(
+    "inviteRepresentativeAction",
+    inviteRepresentativeActionImpl,
+    { attachFormData: true }
+)

@@ -5,8 +5,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function deleteArticleAction(
+async function deleteArticleActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ) {
@@ -24,34 +25,34 @@ export default async function deleteArticleAction(
     // create supabase client
     const supabase = await createClient()
 
-    // fetch article to delete
-    const article = await prisma.article.findUnique({
-        where: {
-            id: id
-        }
-    })
-
-    if (article == null) {
-        return { error: "Echec de la suppression de l'article" }
-    }
-
-    /* Remove pictures from storage if there is some */
-    if (article.imagesPath.length > 0) {
-        const { error } = await supabase.storage
-            .from("article-pictures")
-            .remove(article.imagesPath)
-
-        if (error) {
-            console.log(error.message)
-            return {
-                error: "Echec de la suppression des images dans la base de données"
-            }
-        } // else success
-    }
-
-    // delete record
     try {
-        const _deletedRecord = await prisma.article.delete({
+        // fetch article to delete
+        const article = await prisma.article.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        if (article == null) {
+            return { error: "Echec de la suppression de l'article" }
+        }
+
+        /* Remove pictures from storage if there is some */
+        if (article.imagesPath.length > 0) {
+            const { error } = await supabase.storage
+                .from("article-pictures")
+                .remove(article.imagesPath)
+
+            if (error) {
+                console.error(error.message)
+                return {
+                    error: "Echec de la suppression des images dans la base de données"
+                }
+            } // else success
+        }
+
+        // delete record
+        await prisma.article.delete({
             where: {
                 id: id
             }
@@ -59,9 +60,12 @@ export default async function deleteArticleAction(
         revalidatePath("/dashboard/articles")
         revalidatePath("/actualites")
         return { success: true }
-    } catch (_error) {
+    } catch (error) {
+        captureActionError(error)
         return {
             error: "Echec de la suppression de l'article"
         }
     }
 }
+
+export default withServerAction("deleteArticleAction", deleteArticleActionImpl)

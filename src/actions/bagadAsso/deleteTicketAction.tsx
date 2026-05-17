@@ -4,10 +4,9 @@ import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function deleteBagadAssoTicketAction(
-    ticketId: number
-): Promise<{
+async function deleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
     success?: boolean
     error?: string
 }> {
@@ -35,8 +34,13 @@ export default async function deleteBagadAssoTicketAction(
         revalidatePath("/dashboard/bagadAsso")
 
         return { success: true }
-    } catch (error: unknown) {
-        console.error(error instanceof Error ? error.message : error)
+    } catch (error) {
+        captureActionError(error)
         return { error: "Echec de la suppression du ticket" }
     }
 }
+
+export default withServerAction(
+    "deleteBagadAssoTicketAction",
+    deleteBagadAssoTicketActionImpl
+)

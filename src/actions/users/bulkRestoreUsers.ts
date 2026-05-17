@@ -4,8 +4,9 @@ import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function bulkRestoreUsers(userIds: string[]) {
+async function bulkRestoreUsersImpl(userIds: string[]) {
     const currentUser = await getCurrentUserWithPermissions()
     if (!currentUser) {
         return { success: false, error: "Non authentifié" }
@@ -33,10 +34,12 @@ export default async function bulkRestoreUsers(userIds: string[]) {
         revalidatePath("/dashboard/users")
         return { success: true, restoredCount: userIds.length }
     } catch (error) {
-        console.error("Failed to bulk restore users:", error)
+        captureActionError(error)
         return {
             success: false,
             error: "Une erreur s'est produite lors de la restauration"
         }
     }
 }
+
+export default withServerAction("bulkRestoreUsers", bulkRestoreUsersImpl)

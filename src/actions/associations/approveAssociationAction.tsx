@@ -4,8 +4,9 @@ import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function approveAssociationAction(
+async function approveAssociationActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ): Promise<{ error?: string; success?: boolean }> {
@@ -52,11 +53,13 @@ export default async function approveAssociationAction(
         revalidatePath("/(home)")
 
         return { success: true }
-    } catch (error: unknown) {
-        console.error(
-            "Failed to approve association:",
-            error instanceof Error ? error.message : error
-        )
+    } catch (error) {
+        captureActionError(error)
         return { error: "Échec de l'approbation de l'association" }
     }
 }
+
+export default withServerAction(
+    "approveAssociationAction",
+    approveAssociationActionImpl
+)

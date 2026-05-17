@@ -4,8 +4,9 @@ import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function updateUserPermissions(
+async function updateUserPermissionsImpl(
     userId: string,
     permissions: number[]
 ) {
@@ -48,10 +49,15 @@ export default async function updateUserPermissions(
 
         return { success: true }
     } catch (error) {
-        console.error("Failed to update permissions:", error)
+        captureActionError(error)
         return {
             success: false,
             error: "An error occurred while updating permissions."
         }
     }
 }
+
+export default withServerAction(
+    "updateUserPermissions",
+    updateUserPermissionsImpl
+)

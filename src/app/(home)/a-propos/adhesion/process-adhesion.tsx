@@ -11,6 +11,7 @@ import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 import { AdhesionFormSchema, type TAdhesionForm } from "./form-schema"
 
 const BUCKET = "adhesion"
@@ -24,9 +25,7 @@ const logoExtensionByMime: Record<string, string> = {
 
 type Result = { success: true } | { success: false; message: string }
 
-export async function processAdhesion(
-    formData: TAdhesionForm
-): Promise<Result> {
+async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
     const data = AdhesionFormSchema(formData)
 
     if (data instanceof type.errors) {
@@ -160,7 +159,7 @@ export async function processAdhesion(
             }
         })
     } catch (e) {
-        console.error(e)
+        captureActionError(e)
         await cleanup()
         return {
             success: false,
@@ -184,9 +183,14 @@ export async function processAdhesion(
             html: await render(<AdhesionAck associationName={data.sigle} />)
         })
     } catch (e) {
-        console.error("Failed to send adhesion emails", e)
+        captureActionError(e)
     }
 
     revalidatePath("/dashboard/adhesions")
     return { success: true }
 }
+
+export const processAdhesion = withServerAction(
+    "processAdhesion",
+    processAdhesionImpl
+)

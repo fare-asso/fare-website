@@ -5,8 +5,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function deleteCDPAction({ id }: { id: number }) {
+async function deleteCDPActionImpl({ id }: { id: number }) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -22,11 +23,21 @@ export default async function deleteCDPAction({ id }: { id: number }) {
     const supabase = await createClient()
 
     // Delete Record from DB
-    const deletedCdpRecord = await prisma.communiqueDePresse.delete({
-        where: {
-            id: id
+    let deletedCdpRecord: Awaited<
+        ReturnType<typeof prisma.communiqueDePresse.delete>
+    >
+    try {
+        deletedCdpRecord = await prisma.communiqueDePresse.delete({
+            where: {
+                id: id
+            }
+        })
+    } catch (error) {
+        captureActionError(error)
+        return {
+            error: "Echec de la suppression du communiqué de presse"
         }
-    })
+    }
 
     if (deletedCdpRecord == null) {
         return {
@@ -57,3 +68,5 @@ export default async function deleteCDPAction({ id }: { id: number }) {
         }
     }
 }
+
+export default withServerAction("deleteCDPAction", deleteCDPActionImpl)

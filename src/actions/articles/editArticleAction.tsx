@@ -6,8 +6,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function editArticleAction(
+async function editArticleActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
@@ -40,69 +41,78 @@ export default async function editArticleAction(
         return { error: "Veuillez remplir tous les champs obligatoires." }
     }
 
-    // Fetch current article
-    const article = await prisma.article.findUnique({
-        where: {
-            id: articleId
-        },
-        select: {
-            id: true,
-            imagesPath: true
+    try {
+        // Fetch current article
+        const article = await prisma.article.findUnique({
+            where: {
+                id: articleId
+            },
+            select: {
+                id: true,
+                imagesPath: true
+            }
+        })
+
+        if (!article) {
+            return { error: "Article not found" }
         }
-    })
 
-    if (!article) {
-        return { error: "Article not found" }
-    }
+        // Delete previous images from storage
+        await supabase.storage
+            .from("article-pictures")
+            .remove(article?.imagesPath)
 
-    // Delete previous images from storage
-    const _deleteResponses = await supabase.storage
-        .from("article-pictures")
-        .remove(article?.imagesPath)
+        // Images
+        const images = formData.getAll("images") as File[]
+        for (const image of images) {
+            console.log(image)
+        }
 
-    // Images
-    const images = formData.getAll("images") as File[]
-    for (const image of images) {
-        console.log(image)
-    }
-
-    // upload images to storage
-    const responses = await Promise.all(
-        images.map(
-            async (file) =>
-                await supabase.storage
-                    .from("article-pictures")
-                    .upload(file.name, file)
+        // upload images to storage
+        const responses = await Promise.all(
+            images.map(
+                async (file) =>
+                    await supabase.storage
+                        .from("article-pictures")
+                        .upload(file.name, file)
+            )
         )
-    )
 
-    // check for errors
-    for (const response of responses) {
-        if (response.error) {
-            return {
-                error: "L'upload des images a échoué. Veuillez réessayer"
+        // check for errors
+        for (const response of responses) {
+            if (response.error) {
+                return {
+                    error: "L'upload des images a échoué. Veuillez réessayer"
+                }
             }
         }
+
+        const contentDelta: JSONContent = JSON.parse(content)
+
+        // insert article to database
+        await prisma.article.update({
+            where: {
+                id: articleId
+            },
+            data: {
+                title: title,
+                content: contentDelta,
+                imagesPath: responses
+                    .map((response) => response.data?.path)
+                    .filter((path): path is string => path !== undefined)
+            }
+        })
+    } catch (error) {
+        captureActionError(error)
+        return { error: "Echec de la modification de l'article" }
     }
-
-    const contentDelta: JSONContent = JSON.parse(content)
-
-    // insert article to database
-    const _record = await prisma.article.update({
-        where: {
-            id: articleId
-        },
-        data: {
-            title: title,
-            content: contentDelta,
-            imagesPath: responses
-                .map((response) => response.data?.path)
-                .filter((path): path is string => path !== undefined)
-        }
-    })
 
     revalidatePath("/actualites")
     revalidatePath("/dashboard/articles")
 
     return { success: true }
 }
+
+export default withServerAction("editArticleAction", editArticleActionImpl, {
+    attachFormData: true
+})

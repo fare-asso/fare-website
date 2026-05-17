@@ -6,8 +6,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function createArticleAction(
+async function createArticleActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ): Promise<{ error?: string; success?: boolean }> {
@@ -40,41 +41,52 @@ export default async function createArticleAction(
         console.log(image)
     }
 
-    // upload images to storage
-    const responses = await Promise.all(
-        images.map(
-            async (file) =>
-                await supabase.storage
-                    .from("article-pictures")
-                    .upload(file.name, file)
+    try {
+        // upload images to storage
+        const responses = await Promise.all(
+            images.map(
+                async (file) =>
+                    await supabase.storage
+                        .from("article-pictures")
+                        .upload(file.name, file)
+            )
         )
-    )
 
-    // check for errors
-    for (const response of responses) {
-        if (response.error) {
-            return {
-                error: "L'upload des images a échoué. Veuillez réessayer"
+        // check for errors
+        for (const response of responses) {
+            if (response.error) {
+                return {
+                    error: "L'upload des images a échoué. Veuillez réessayer"
+                }
             }
         }
+
+        const contentDelta: JSONContent = JSON.parse(content)
+
+        // insert article to database
+        await prisma.article.create({
+            data: {
+                title: title,
+                content: contentDelta,
+                imagesPath: responses
+                    .map((response) => response.data?.path)
+                    .filter((path): path is string => path !== undefined),
+                authorId: user.id
+            }
+        })
+    } catch (error) {
+        captureActionError(error)
+        return { error: "Echec de la création de l'article" }
     }
-
-    const contentDelta: JSONContent = JSON.parse(content)
-
-    // insert article to database
-    const _record = await prisma.article.create({
-        data: {
-            title: title,
-            content: contentDelta,
-            imagesPath: responses
-                .map((response) => response.data?.path)
-                .filter((path): path is string => path !== undefined),
-            authorId: user.id
-        }
-    })
 
     revalidatePath("/actualites")
     revalidatePath("/dashboard/articles")
 
     return { success: true }
 }
+
+export default withServerAction(
+    "createArticleAction",
+    createArticleActionImpl,
+    { attachFormData: true }
+)

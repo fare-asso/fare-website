@@ -5,8 +5,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function deleteEquipmentAction(
+async function deleteEquipmentActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     equipmentId: number
 ) {
@@ -59,9 +60,15 @@ export default async function deleteEquipmentAction(
         revalidatePath("/dashboard/bagadAsso")
         revalidatePath("/projets/bagad-asso")
         return { success: true }
-    } catch (_) {
+    } catch (error) {
+        captureActionError(error)
         return {
             error: "Echec de la suppression de l'équipement"
         }
     }
 }
+
+export default withServerAction(
+    "deleteEquipmentAction",
+    deleteEquipmentActionImpl
+)

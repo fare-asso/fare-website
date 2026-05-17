@@ -5,8 +5,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function declineAssociationAction(
+async function declineAssociationActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ): Promise<{ error?: string; success?: boolean }> {
@@ -60,11 +61,13 @@ export default async function declineAssociationAction(
         revalidatePath("/(home)")
 
         return { success: true }
-    } catch (error: unknown) {
-        console.error(
-            "Failed to decline association:",
-            error instanceof Error ? error.message : error
-        )
+    } catch (error) {
+        captureActionError(error)
         return { error: "Échec du refus de l'association" }
     }
 }
+
+export default withServerAction(
+    "declineAssociationAction",
+    declineAssociationActionImpl
+)

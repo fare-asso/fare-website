@@ -7,8 +7,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function editEquipmentAction(
+async function editEquipmentActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
@@ -140,10 +141,16 @@ export default async function editEquipmentAction(
         revalidatePath("/dashboard/bagadAsso")
         revalidatePath("/projets/bagad-asso")
         return { success: true }
-    } catch (_error) {
-        // Failed
+    } catch (error) {
+        captureActionError(error)
         return {
             error: "Echec de la modification de l'équipement. Veuillez réessayer."
         }
     }
 }
+
+export default withServerAction(
+    "editEquipmentAction",
+    editEquipmentActionImpl,
+    { attachFormData: true }
+)

@@ -7,6 +7,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
 type ActionState = {
     error?: string
@@ -15,7 +16,7 @@ type ActionState = {
     filename?: string
 }
 
-export async function downloadFolderAction(
+async function downloadFolderActionImpl(
     _prevState: ActionState | undefined,
     folderPath: string
 ): Promise<ActionState> {
@@ -95,7 +96,12 @@ export async function downloadFolderAction(
             filename: `${folderPath}.zip`
         }
     } catch (error) {
-        console.error("Error creating zip:", error)
+        captureActionError(error)
         return { error: "Erreur lors de la création du fichier zip" }
     }
 }
+
+export const downloadFolderAction = withServerAction(
+    "downloadFolderAction",
+    downloadFolderActionImpl
+)

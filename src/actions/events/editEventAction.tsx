@@ -7,6 +7,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserId from "@/helpers/user/id"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
 interface Event {
     id?: number
@@ -21,7 +22,7 @@ interface Event {
     visibility?: boolean
 }
 
-export default async function editEventAction(
+async function editEventActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
@@ -193,7 +194,7 @@ export default async function editEventAction(
                     error: `La catégorie ${categoryStr} n'existe pas`
                 }
             } else {
-                console.error(error)
+                captureActionError(error)
                 return {
                     error: "Une erreur à eu lieu lors de la récupération de la catégorie"
                 }
@@ -318,10 +319,14 @@ export default async function editEventAction(
         return {
             success: true
         }
-    } catch (error: unknown) {
-        console.log(error)
+    } catch (error) {
+        captureActionError(error)
         return {
             error: "La modification de l'évènement à échoué, veuillez réessayer"
         }
     }
 }
+
+export default withServerAction("editEventAction", editEventActionImpl, {
+    attachFormData: true
+})

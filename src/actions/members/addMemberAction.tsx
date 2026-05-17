@@ -5,9 +5,10 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 import { MemberServerSchema } from "@/schemas/members"
 
-export default async function addMemberAction(
+async function addMemberActionImpl(
     formData: FormData
 ): Promise<{ success?: boolean; error?: string }> {
     // Auth and permission verifications
@@ -78,10 +79,15 @@ export default async function addMemberAction(
         revalidatePath("/a-propos/bureau")
 
         return { success: true }
-    } catch {
+    } catch (error) {
+        captureActionError(error)
         return {
             success: false,
             error: "La création du membre dans la base de données a échoué... Veuillez contacter un administrateur"
         }
     }
 }
+
+export default withServerAction("addMemberAction", addMemberActionImpl, {
+    attachFormData: true
+})

@@ -5,8 +5,9 @@ import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function bulkUpdateRole(userIds: string[], newRole: Role) {
+async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
     const currentUser = await getCurrentUserWithPermissions()
     if (!currentUser) {
         return { success: false, error: "Non authentifié" }
@@ -43,10 +44,12 @@ export default async function bulkUpdateRole(userIds: string[], newRole: Role) {
             skippedSelf: userIds.length !== filteredIds.length
         }
     } catch (error) {
-        console.error("Failed to bulk update roles:", error)
+        captureActionError(error)
         return {
             success: false,
             error: "Une erreur s'est produite lors de la modification des rôles"
         }
     }
 }
+
+export default withServerAction("bulkUpdateRole", bulkUpdateRoleImpl)

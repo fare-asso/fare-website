@@ -4,6 +4,7 @@ import { render } from "@react-email/render"
 import { isDevelopment } from "std-env"
 import { verifyCaptcha } from "@/components/captcha/verify"
 import { sendEmail } from "@/helpers/email"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 import { type Contact, ContactSchema } from "@/schemas/contact"
 import ContactTemplate from "../../../emails/contact"
 
@@ -13,7 +14,7 @@ export type FormState = {
     fieldErrors?: Partial<Record<keyof Contact, string[]>>
 }
 
-export default async function submitContactFormAction(
+async function submitContactFormActionImpl(
     _prevState: FormState | undefined,
     data: Contact
 ): Promise<FormState> {
@@ -51,20 +52,27 @@ export default async function submitContactFormAction(
         }
     }
 
-    const emailTransporterRes = await sendEmail({
-        to: "contact@fare-asso.fr",
-        subject: `${validatedData.firstName} ${validatedData.lastName} veut vous contacter`,
-        html: await render(
-            <ContactTemplate
-                firstName={validatedData.firstName}
-                lastName={validatedData.lastName}
-                message={validatedData.message}
-                email={validatedData.email}
-            />
-        )
-    })
+    try {
+        const emailTransporterRes = await sendEmail({
+            to: "contact@fare-asso.fr",
+            subject: `${validatedData.firstName} ${validatedData.lastName} veut vous contacter`,
+            html: await render(
+                <ContactTemplate
+                    firstName={validatedData.firstName}
+                    lastName={validatedData.lastName}
+                    message={validatedData.message}
+                    email={validatedData.email}
+                />
+            )
+        })
 
-    if (emailTransporterRes.error) {
+        if (emailTransporterRes.error) {
+            return {
+                error: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer."
+            }
+        }
+    } catch (error) {
+        captureActionError(error)
         return {
             error: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer."
         }
@@ -72,3 +80,8 @@ export default async function submitContactFormAction(
 
     return { success: true }
 }
+
+export default withServerAction(
+    "submitContactFormAction",
+    submitContactFormActionImpl
+)

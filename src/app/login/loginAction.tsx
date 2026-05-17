@@ -6,8 +6,9 @@ import { isDevelopment } from "std-env"
 import { env } from "@/env"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export async function loginWithGoogleAction() {
+async function loginWithGoogleActionImpl() {
     const supabase = await createClient()
 
     // Get the origin from the request headers (works for both dev and preview deployments)
@@ -40,7 +41,7 @@ export async function loginWithGoogleAction() {
     throw new Error("Unexpected error")
 }
 
-export async function loginWithPasswordAction(
+async function loginWithPasswordActionImpl(
     _currentState: { emailError?: string; passwordError?: string } | undefined,
     formData: FormData
 ) {
@@ -62,23 +63,31 @@ export async function loginWithPasswordAction(
         }
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-    })
+    try {
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        })
 
-    // Check if the user is authenticated and handle errors
-    if (error) {
-        console.error(error.code)
-        switch (error.code) {
-            case "invalid_credentials":
-                return {
-                    passwordError: "Mot de passe ou nom d'utilisateur invalide"
-                }
-            default:
-                return {
-                    passwordError: "Une erreur inattendue est survenue"
-                }
+        // Check if the user is authenticated and handle errors
+        if (error) {
+            console.error(error.code)
+            switch (error.code) {
+                case "invalid_credentials":
+                    return {
+                        passwordError:
+                            "Mot de passe ou nom d'utilisateur invalide"
+                    }
+                default:
+                    return {
+                        passwordError: "Une erreur inattendue est survenue"
+                    }
+            }
+        }
+    } catch (error) {
+        captureActionError(error)
+        return {
+            passwordError: "Une erreur inattendue est survenue"
         }
     }
 
@@ -108,3 +117,13 @@ export async function loginWithPasswordAction(
             break
     }
 }
+
+export const loginWithGoogleAction = withServerAction(
+    "loginWithGoogleAction",
+    loginWithGoogleActionImpl
+)
+
+export const loginWithPasswordAction = withServerAction(
+    "loginWithPasswordAction",
+    loginWithPasswordActionImpl
+)

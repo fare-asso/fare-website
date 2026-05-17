@@ -6,6 +6,7 @@ import { isDevelopment } from "std-env"
 import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 import {
     type BTPTutorQuestion,
     BTPTutorQuestionSchema
@@ -13,7 +14,7 @@ import {
 import type { ActionResponse } from "@/types/actions"
 import { BtpContact } from "../../../emails/btp-contact"
 
-export default async function submitTutorQuestion(
+async function submitTutorQuestionImpl(
     data: BTPTutorQuestion
 ): Promise<ActionResponse> {
     const parsedData = BTPTutorQuestionSchema.safeParse(data)
@@ -50,33 +51,50 @@ export default async function submitTutorQuestion(
     }
 
     // Insert the data into the database
-    const BTPTutorQuestion = await prisma.bTPTutorQuestion.create({
-        data: {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            major: data.major,
-            studyYear: data.studyYear,
-            question: data.message
-        }
-    })
-
-    if (!isDevelopment) {
-        await sendEmail({
-            to: "intervention-carceral@fare-asso.fr",
-            subject: "Nouvelle question tutorat Bouge Ta Prison",
-            html: await render(
-                <BtpContact
-                    firstName={data.firstName}
-                    lastName={data.lastName}
-                    email={data.email}
-                    message={data.message}
-                    id={BTPTutorQuestion.id}
-                />
-            )
+    let createdQuestion: Awaited<
+        ReturnType<typeof prisma.bTPTutorQuestion.create>
+    >
+    try {
+        createdQuestion = await prisma.bTPTutorQuestion.create({
+            data: {
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                major: data.major,
+                studyYear: data.studyYear,
+                question: data.message
+            }
         })
+    } catch (error) {
+        captureActionError(error)
+        return {
+            error: "Echec de l'enregistrement de la question. Veuillez réessayer."
+        }
+    }
+
+    // Email is best-effort: the question has already been persisted.
+    if (!isDevelopment) {
+        try {
+            await sendEmail({
+                to: "intervention-carceral@fare-asso.fr",
+                subject: "Nouvelle question tutorat Bouge Ta Prison",
+                html: await render(
+                    <BtpContact
+                        firstName={data.firstName}
+                        lastName={data.lastName}
+                        email={data.email}
+                        message={data.message}
+                        id={createdQuestion.id}
+                    />
+                )
+            })
+        } catch (error) {
+            captureActionError(error)
+        }
     }
 
     revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
+
+export default withServerAction("submitTutorQuestion", submitTutorQuestionImpl)

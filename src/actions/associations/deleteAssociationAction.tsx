@@ -5,8 +5,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient, createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function deleteAssociationAction(
+async function deleteAssociationActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ) {
@@ -46,7 +47,7 @@ export default async function deleteAssociationAction(
                     association.representativeId
                 )
         } catch (error) {
-            console.error(error)
+            captureActionError(error)
             return {
                 error: "Echec de la suppression du compte représentant"
             }
@@ -78,9 +79,15 @@ export default async function deleteAssociationAction(
         revalidatePath("/reseau")
         revalidatePath("/(home)")
         return { success: true }
-    } catch (_) {
+    } catch (error) {
+        captureActionError(error)
         return {
             error: "Echec de la suppression de l'association"
         }
     }
 }
+
+export default withServerAction(
+    "deleteAssociationAction",
+    deleteAssociationActionImpl
+)

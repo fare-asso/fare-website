@@ -5,8 +5,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function editAssociationAction(
+async function editAssociationActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
@@ -137,9 +138,16 @@ export default async function editAssociationAction(
                 error: "La modification de l'association dans la base de données a échoué... Veuillez contacter un administrateur."
             }
         }
-    } catch (error: unknown) {
+    } catch (error) {
+        captureActionError(error)
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error"
         return { error: errorMessage }
     }
 }
+
+export default withServerAction(
+    "editAssociationAction",
+    editAssociationActionImpl,
+    { attachFormData: true }
+)

@@ -8,6 +8,7 @@ import { sanitizeString } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserId from "@/helpers/user/id"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
 interface Event {
     name?: string
@@ -21,7 +22,7 @@ interface Event {
     visibility?: boolean
 }
 
-export default async function createEventAction(
+async function createEventActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
@@ -131,7 +132,7 @@ export default async function createEventAction(
                     error: `La catégorie ${categoryStr} n'existe pas`
                 }
             } else {
-                console.error(error)
+                captureActionError(error)
                 return {
                     error: "Une erreur à eu lieu lors de la récupération de la catégorie"
                 }
@@ -290,7 +291,8 @@ export default async function createEventAction(
         return {
             success: true
         }
-    } catch (_error: unknown) {
+    } catch (error) {
+        captureActionError(error)
         const res = await supabase.storage
             .from("EventPictures")
             .remove([data.image])
@@ -305,3 +307,7 @@ export default async function createEventAction(
         }
     }
 }
+
+export default withServerAction("createEventAction", createEventActionImpl, {
+    attachFormData: true
+})

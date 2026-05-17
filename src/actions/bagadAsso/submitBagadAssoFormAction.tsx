@@ -10,6 +10,7 @@ import {
 } from "@/components/public/bagadAsso/form-schema"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 import NewBagadAssoTicket from "../../../emails/badagasso-ticket"
 
 export type FormState = {
@@ -18,7 +19,7 @@ export type FormState = {
     fieldErrors?: Partial<Record<keyof BagadAssoFormData, string[]>>
 }
 
-export default async function submitBagadAssoFormAction(
+async function submitBagadAssoFormActionImpl(
     _prevState: FormState | undefined,
     data: BagadAssoFormData
 ): Promise<FormState> {
@@ -80,23 +81,32 @@ export default async function submitBagadAssoFormAction(
             }
         })
     } catch (error) {
-        console.error("Failed to create Bagad'Asso ticket:", error)
+        captureActionError(error)
         return {
             error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
         }
     }
 
-    // Send email notification
-    const emailTransporterResponse = await sendEmail({
-        to: "evenement@fare-asso.fr",
-        subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
-        html: await render(<NewBagadAssoTicket data={ticketRecord} />)
-    })
+    // Email is best-effort: the ticket has already been persisted.
+    try {
+        const emailTransporterResponse = await sendEmail({
+            to: "evenement@fare-asso.fr",
+            subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
+            html: await render(<NewBagadAssoTicket data={ticketRecord} />)
+        })
 
-    if (emailTransporterResponse.error) {
-        console.error("[ERROR] Failed to send email notification")
+        if (emailTransporterResponse.error) {
+            console.error("[ERROR] Failed to send email notification")
+        }
+    } catch (error) {
+        captureActionError(error)
     }
 
     revalidatePath("/dashboard/bagadAsso")
     return { success: true }
 }
+
+export default withServerAction(
+    "submitBagadAssoFormAction",
+    submitBagadAssoFormActionImpl
+)
