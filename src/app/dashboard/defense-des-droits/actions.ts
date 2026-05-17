@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
 const ConfigInput = type({
     recipientEmail: "string.email >= 1",
@@ -13,7 +14,7 @@ const ConfigInput = type({
 
 type Result = { success: true } | { success: false; error: string }
 
-export async function updateAssistanceConfig(input: {
+async function updateAssistanceConfigImpl(input: {
     recipientEmail: string
     delay: string
 }): Promise<Result> {
@@ -33,18 +34,37 @@ export async function updateAssistanceConfig(input: {
         return { success: false, error: data.summary }
     }
 
-    const existing = await prisma.assistanceConfig.findFirst()
-    if (existing) {
-        await prisma.assistanceConfig.update({
-            where: { id: existing.id },
-            data: { recipientEmail: data.recipientEmail, delay: data.delay }
-        })
-    } else {
-        await prisma.assistanceConfig.create({
-            data: { recipientEmail: data.recipientEmail, delay: data.delay }
-        })
+    try {
+        const existing = await prisma.assistanceConfig.findFirst()
+        if (existing) {
+            await prisma.assistanceConfig.update({
+                where: { id: existing.id },
+                data: {
+                    recipientEmail: data.recipientEmail,
+                    delay: data.delay
+                }
+            })
+        } else {
+            await prisma.assistanceConfig.create({
+                data: {
+                    recipientEmail: data.recipientEmail,
+                    delay: data.delay
+                }
+            })
+        }
+    } catch (error) {
+        captureActionError(error)
+        return {
+            success: false,
+            error: "Échec de l'enregistrement de la configuration."
+        }
     }
 
     revalidatePath("/dashboard/defense-des-droits")
     return { success: true }
 }
+
+export const updateAssistanceConfig = withServerAction(
+    "updateAssistanceConfig",
+    updateAssistanceConfigImpl
+)

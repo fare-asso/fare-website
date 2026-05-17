@@ -175,7 +175,7 @@ export function AssistanceForm(): React.ReactNode {
                 }
                 setIsSubmitted(true)
             } else {
-                setSubmitError(res.message)
+                setSubmitError(res.error)
             }
         })
     }, [])
