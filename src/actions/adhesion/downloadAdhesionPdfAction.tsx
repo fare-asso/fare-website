@@ -5,10 +5,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function downloadAdhesionPdfAction(
-    adhesionId: number
-): Promise<{
+async function downloadAdhesionPdfActionImpl(adhesionId: number): Promise<{
     success?: boolean
     error?: string
     pdfData?: string
@@ -43,7 +42,12 @@ export default async function downloadAdhesionPdfAction(
             filename: `formulaire-adhesion-${slug}.pdf`
         }
     } catch (error) {
-        console.error(error instanceof Error ? error.message : error)
+        captureActionError(error)
         return { error: "Erreur lors de la génération du PDF" }
     }
 }
+
+export default withServerAction(
+    "downloadAdhesionPdfAction",
+    downloadAdhesionPdfActionImpl
+)

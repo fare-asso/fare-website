@@ -7,8 +7,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function addEquipmentAction(
+async function addEquipmentActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
@@ -99,10 +100,14 @@ export default async function addEquipmentAction(
         revalidatePath("/dashboard/bagadAsso")
         revalidatePath("/projets/bagad-asso")
         return { success: true }
-    } catch (_error) {
-        // Failed
+    } catch (error) {
+        captureActionError(error)
         return {
             error: "Echec de l'ajout de l'équipement. Veuillez réessayer."
         }
     }
 }
+
+export default withServerAction("addEquipmentAction", addEquipmentActionImpl, {
+    attachFormData: true
+})

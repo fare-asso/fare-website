@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function archiveTutorQuestion(
+async function archiveTutorQuestionImpl(
     id: number
 ): Promise<{ success?: boolean; error?: string }> {
     try {
@@ -15,10 +16,16 @@ export default async function archiveTutorQuestion(
                 archived: new Date()
             }
         })
-    } catch (_error) {
+    } catch (error) {
+        captureActionError(error)
         return { error: "Echec de l'archivage de la question" }
     }
 
     revalidatePath("/dashboard/bouge-ta-prison/questions")
     return { success: true }
 }
+
+export default withServerAction(
+    "archiveTutorQuestion",
+    archiveTutorQuestionImpl
+)

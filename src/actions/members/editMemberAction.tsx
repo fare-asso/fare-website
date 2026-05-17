@@ -5,9 +5,10 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 import { MemberServerSchema } from "@/schemas/members"
 
-export default async function editMemberAction(formData: FormData, id: number) {
+async function editMemberActionImpl(formData: FormData, id: number) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -90,11 +91,15 @@ export default async function editMemberAction(formData: FormData, id: number) {
         revalidatePath("/a-propos/bureau")
 
         return { success: true }
-    } catch (err) {
-        console.error("Erreur lors de la mise à jour :", err)
+    } catch (error) {
+        captureActionError(error)
         return {
             success: false,
             error: "La modification du membre dans la base de données a échoué. Veuillez contacter un administrateur."
         }
     }
 }
+
+export default withServerAction("editMemberAction", editMemberActionImpl, {
+    attachFormData: true
+})

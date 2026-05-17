@@ -4,8 +4,9 @@ import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function bulkDeleteUsers(userIds: string[]) {
+async function bulkDeleteUsersImpl(userIds: string[]) {
     const currentUser = await getCurrentUserWithPermissions()
     if (!currentUser) {
         return { success: false, error: "Non authentifié" }
@@ -43,10 +44,12 @@ export default async function bulkDeleteUsers(userIds: string[]) {
             skippedSelf: userIds.length !== filteredIds.length
         }
     } catch (error) {
-        console.error("Failed to bulk delete users:", error)
+        captureActionError(error)
         return {
             success: false,
             error: "Une erreur s'est produite lors de la suppression"
         }
     }
 }
+
+export default withServerAction("bulkDeleteUsers", bulkDeleteUsersImpl)

@@ -5,8 +5,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function deleteMemberAction({ id }: { id: number }) {
+async function deleteMemberActionImpl({ id }: { id: number }) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -21,9 +22,15 @@ export default async function deleteMemberAction({ id }: { id: number }) {
     // create supabase client
     const supabase = await createClient()
 
-    const res = await prisma.member.delete({
-        where: { id: id }
-    })
+    let res: Awaited<ReturnType<typeof prisma.member.delete>>
+    try {
+        res = await prisma.member.delete({
+            where: { id: id }
+        })
+    } catch (error) {
+        captureActionError(error)
+        return { error: "Echec de la suppression du membre" }
+    }
 
     if (res != null) {
         // successfully deleted
@@ -41,3 +48,5 @@ export default async function deleteMemberAction({ id }: { id: number }) {
         }
     } else return { error: "Failed to delete record" }
 }
+
+export default withServerAction("deleteMemberAction", deleteMemberActionImpl)

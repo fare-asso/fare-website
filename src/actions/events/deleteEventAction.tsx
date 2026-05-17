@@ -5,12 +5,9 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function deleteEventAction({
-    eventId
-}: {
-    eventId: number
-}) {
+async function deleteEventActionImpl({ eventId }: { eventId: number }) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -61,6 +58,8 @@ export default async function deleteEventAction({
         })
         revalidatePath("/dashboard/events")
     } catch (error) {
-        console.error(error)
+        captureActionError(error)
     }
 }
+
+export default withServerAction("deleteEventAction", deleteEventActionImpl)

@@ -3,8 +3,9 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function createPasswordForRepresentativeAction(
+async function createPasswordForRepresentativeActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
@@ -43,9 +44,16 @@ export default async function createPasswordForRepresentativeAction(
     }
 
     // set password
-    const { error } = await supabase.auth.updateUser({ password })
+    try {
+        const { error } = await supabase.auth.updateUser({ password })
 
-    if (error) {
+        if (error) {
+            return {
+                error: "Echec de la création du mot de passe, veuillez contacter un administrateur"
+            }
+        }
+    } catch (error) {
+        captureActionError(error)
         return {
             error: "Echec de la création du mot de passe, veuillez contacter un administrateur"
         }
@@ -53,3 +61,8 @@ export default async function createPasswordForRepresentativeAction(
 
     redirect("/espace-asso")
 }
+
+export default withServerAction(
+    "createPasswordForRepresentativeAction",
+    createPasswordForRepresentativeActionImpl
+)

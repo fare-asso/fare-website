@@ -3,17 +3,25 @@
 import { redirect } from "next/navigation"
 
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export async function signOut(): Promise<{ success: boolean; error?: string }> {
+async function signOutImpl(): Promise<{ success: boolean; error?: string }> {
     const supabase = await createClient()
 
-    const { error } = await supabase.auth.signOut()
+    try {
+        const { error } = await supabase.auth.signOut()
 
-    if (error) {
-        console.error(error.message)
-        return { success: false, error: error.message }
+        if (error) {
+            console.error(error.message)
+            return { success: false, error: error.message }
+        }
+    } catch (error) {
+        captureActionError(error)
+        return { success: false, error: "Echec de la déconnexion" }
     }
 
     console.log("Deconnection réussie")
     redirect("/login")
 }
+
+export const signOut = withServerAction("signOut", signOutImpl)

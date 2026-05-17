@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
 function isPresseType(value: string): value is PresseType {
     return value === "CDP" || value === "DDP"
@@ -21,7 +22,7 @@ function getPresseType(formData: FormData): PresseType | undefined {
     return undefined
 }
 
-export default async function createCDPAction(
+async function createCDPActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ) {
@@ -78,15 +79,29 @@ export default async function createCDPAction(
     }
 
     // Create a record for the new CDP (name, path, date?)
-    const createdCDP = await prisma.communiqueDePresse.create({
-        data: {
-            name: name,
-            filePath: file,
-            size: fileSize,
-            createdAt: date ? new Date(date) : new Date(),
-            type: type
+    let createdCDP: Awaited<ReturnType<typeof prisma.communiqueDePresse.create>>
+    try {
+        createdCDP = await prisma.communiqueDePresse.create({
+            data: {
+                name: name,
+                filePath: file,
+                size: fileSize,
+                createdAt: date ? new Date(date) : new Date(),
+                type: type
+            }
+        })
+    } catch (error) {
+        captureActionError(error)
+        const { error: removeError } = await supabase.storage
+            .from("communique-de-presse")
+            .remove([file])
+        if (removeError) {
+            console.error(removeError.message)
         }
-    })
+        return {
+            error: `Echec de l'ajout du CDP dans la base de données`
+        }
+    }
 
     if (createdCDP != null) {
         // successfully created the record
@@ -119,3 +134,7 @@ export default async function createCDPAction(
         }
     }
 }
+
+export default withServerAction("createCDPAction", createCDPActionImpl, {
+    attachFormData: true
+})

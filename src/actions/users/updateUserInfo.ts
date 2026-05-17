@@ -3,8 +3,9 @@
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
-export default async function updateUserInfo(
+async function updateUserInfoImpl(
     userId: string,
     data: {
         name: string | null
@@ -37,10 +38,12 @@ export default async function updateUserInfo(
 
         return { success: true }
     } catch (error) {
-        console.error("Failed to update user info:", error)
+        captureActionError(error)
         return {
             success: false,
             error: "An error occurred while updating user info."
         }
     }
 }
+
+export default withServerAction("updateUserInfo", updateUserInfoImpl)
