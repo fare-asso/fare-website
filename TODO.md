@@ -71,7 +71,6 @@ Public form actions lack server-side Zod validation, relying only on client-side
 
 1. **`submitTutorApplication.tsx`** (lines 12-91): Manual FormData parsing, no Zod schema validation in action
 2. **`submitTutorQuestion.tsx`**: Same issue as above
-3. **`bugReportAction.tsx`** (lines 30-32): Uses basic string checks instead of Zod schema
 
 This violates AGENTS.md guideline: "All forms must use Zod v4 schemas for validation" and "Server actions validate input before processing"
 
@@ -254,34 +253,7 @@ const schema = z.object({
 
 ---
 
-### 8. Add Missing revalidatePath() to Bug Report Action
-
-**Status:** Todo  
-**Severity:** Medium  
-**Impact:** Cache staleness on bug report dashboard  
-**Effort:** 15 minutes
-
-**Problem:**
-`src/actions/bug-report/bugReportAction.tsx` creates database records but **doesn't call `revalidatePath()`**, unlike all other public form actions:
-
-**Examples of proper revalidatePath calls:**
-
-- `processAdhesionForm.ts` (line 323): `revalidatePath("/(home)")`
-- `submitBagadAssoFormAction.ts` (line 100): `revalidatePath("/dashboard/bagad-asso")`
-- `submitTutorApplication.tsx` (line 89): `revalidatePath("/dashboard/bouge-ta-prison")`
-
-**Required Changes:**
-
-1. Add `import { revalidatePath } from "next/cache"` at top of file
-2. After successful record creation, add: `revalidatePath("/dashboard/bug-reports")`
-
-**Files to Update:**
-
-- `src/actions/bug-report/bugReportAction.tsx`
-
----
-
-### 9. Standardize Server Action Return Types
+### 8. Standardize Server Action Return Types
 
 **Status:** Todo  
 **Severity:** Low-Medium  
@@ -330,30 +302,7 @@ The array-based error format breaks consistency.
 
 ## 🟢 LOW PRIORITY (Nice to have)
 
-### 10. Remove Unused CAPTCHA State in Bug Report Form
-
-**Status:** Todo  
-**Severity:** Low  
-**Impact:** Code cleanliness  
-**Effort:** 15 minutes
-
-**Problem:**
-`src/components/public/bug-report/form.tsx` (line 14) captures CAPTCHA value but doesn't use it:
-
-```typescript
-const [_captchaValue, setCaptchaValue] = useState<string | null>(null);
-// Set but never used in validation
-```
-
-**Required Changes:**
-
-1. Remove unused state variable and setter
-2. Ensure CAPTCHA verification happens in server action (likely already does via formData)
-3. Simplify component
-
----
-
-### 11. Verify and Document RBAC Permission Patterns
+### 9. Verify and Document RBAC Permission Patterns
 
 **Status:** Todo  
 **Severity:** Low  
@@ -382,7 +331,7 @@ Mix-and-match approaches can lead to subtle bugs.
 
 ---
 
-### 12. Migrate Remaining useFormState to useActionState
+### 10. Migrate Remaining useFormState to useActionState
 
 **Status:** Todo  
 **Severity:** Low  
@@ -419,19 +368,17 @@ While functional, Next.js 16 prefers `useActionState` from React.
 
 - [ ] Add HTML sanitization to rich text (#4)
 - [ ] Fix z.any() type safety (#7)
-- [ ] Add missing revalidatePath (#8)
-- [ ] Remove unused CAPTCHA state (#10)
 
 ### Medium Term (Next Month)
 
 - [ ] Standardize form handling to TanStack (#5)
 - [ ] Consolidate Zod schemas (#6)
-- [ ] Standardize server action return types (#9)
-- [ ] Verify RBAC patterns (#11)
+- [ ] Standardize server action return types (#8)
+- [ ] Verify RBAC patterns (#9)
 
 ### Long Term (Next Quarter)
 
-- [ ] Migrate useFormState to useActionState (#12)
+- [ ] Migrate useFormState to useActionState (#10)
 
 ---
 
