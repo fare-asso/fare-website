@@ -96,8 +96,10 @@ Always use `pnpm`, never use `npm`
 
 ### Error Handling
 
-- **Server actions** return typed responses: `{ success: boolean; data?: T; error?: string }`
-- Log errors with `console.error()` before returning error response
+- **Server actions return a discriminated union:** `{ success: true; value: T } | { success: false; error: string }` (omit `value` when there is no payload: `{ success: true } | { success: false; error: string }`). Callers narrow on `success` — never optional `success?`/`error?` fields
+- **Every server action MUST be wrapped with `withServerAction()`** from `@/lib/sentry` (see [Server Actions](#server-actions))
+- **Report genuine exceptions with `captureActionError(error)`** from `@/lib/sentry` inside `catch` blocks — never a bare `console.error()` (it already logs + sends to Sentry, and re-throws Next.js `redirect`/`notFound` control flow)
+- Do NOT `captureActionError` on validation/permission early-returns — only on real thrown exceptions (DB, storage, email, PDF). Keeps Sentry free of expected denials
 - Never expose sensitive data (stack traces, keys) in error messages
 - Use Sonner toasts for client-side error display
 - Throw `Error` instances with descriptive messages (Biome enforces `useThrowOnlyError`)
@@ -157,35 +159,48 @@ src/
 The application uses **granular permission-based access control** instead of role-based checks.
 
 **Core Principles:**
+
 - All sensitive operations must check permissions via `src/helpers/permissions.ts`
 - **Never use role checks for authorization** — roles are reserved for future Espace Asso features
 - **Never trust client-side permission checks** — always validate on server (in actions)
 - Supabase Auth handles authentication; check `user.id` after auth
 
 **Permission Checking Pattern (Server Actions):**
+
 ```typescript
-"use server"
+"use server";
 
-import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { hasPermission } from "@/helpers/permissions";
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth";
+import { withServerAction } from "@/lib/sentry";
 
-export async function someAction() {
+async function someActionImpl(): Promise<
+    { success: true } | { success: false; error: string }
+> {
     // REQUIRED: Check authentication first
-    const user = await getCurrentUserWithPermissions()
+    const user = await getCurrentUserWithPermissions();
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" };
     }
-    
+
     // REQUIRED: Check specific permission
     if (!hasPermission(user, "create:article")) {
-        return { error: "Vous n'avez pas la permission de créer des articles" }
+        return {
+            success: false,
+            error: "Vous n'avez pas la permission de créer des articles",
+        };
     }
-    
+
     // Proceed with action...
+    return { success: true };
 }
+
+// REQUIRED: every action is wrapped and is the single export of its file
+export default withServerAction("someAction", someActionImpl);
 ```
 
 **UI Visibility (Client Components):**
+
 ```typescript
 // Sidebar navigation automatically hides items based on permissions
 {
@@ -199,10 +214,12 @@ export async function someAction() {
 See `PERMISSIONS.md` for the complete list of all permissions, their naming convention, and database seeding instructions.
 
 **Permission Helpers:**
+
 - `hasPermission(user, permissionName)` - Check if user has specific permission
 - `getCurrentUserWithPermissions()` - Fetch authenticated user with all permissions loaded
 
 **Database Schema:**
+
 ```typescript
 model User {
   permissions  UserPermission[]  // Many-to-many with Permission
@@ -217,6 +234,7 @@ model Permission {
 ```
 
 **Important Notes:**
+
 - Roles (`ADMIN`, `MEMBER`, `ASSO_OWNER`) exist in the schema but are **not used for authorization**
 - Roles will be used later for Espace Asso dashboard (association member portal)
 - All authorization must use permissions, not roles
@@ -243,50 +261,94 @@ model Permission {
 
 ### Server Actions
 
-Server actions handle mutations and API calls. Pattern:
+Server actions handle mutations and API calls. **Every server action is a
+private `…Impl` function wrapped by `withServerAction()` and exported as the
+single export of its file.** The wrapper adds a Sentry trace span (linked to
+the client trace) and auto-captures uncaught throws.
 
 ```typescript
-// src/actions/items/create.ts
+// src/actions/items/createItemAction.ts
 "use server";
 
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import prisma from "@/helpers/db";
+import { hasPermission } from "@/helpers/permissions";
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth";
+import { captureActionError, withServerAction } from "@/lib/sentry";
 
 const CreateItemSchema = z.object({
     name: z.string().min(1, "Name required"),
-    description: z.string().optional(),
     email: z.email(),
 });
 
-export async function createItem(formData: z.infer<typeof CreateItemSchema>) {
-    const parsed = CreateItemSchema.safeParse(formData);
+// Discriminated union — callers narrow on `success`, never optional fields
+type CreateItemResult =
+    | { success: true; value: Item }
+    | { success: false; error: string };
 
-    if (!parsed.success) {
-        console.error(parsed.error);
-        return { success: true, error: parsed.error.message };
+async function createItemActionImpl(
+    formData: z.infer<typeof CreateItemSchema>,
+): Promise<CreateItemResult> {
+    // 1. Auth + permission guards (early returns — NOT captured by Sentry)
+    const user = await getCurrentUserWithPermissions();
+    if (!user) return { success: false, error: "Authentification requise" };
+    if (!hasPermission(user, "create:item")) {
+        return { success: false, error: "Vous n'avez pas la permission" };
     }
 
-    // Check permissions
-    const user = await getCurrentUser(); // from auth
-    if (!user) return { success: true, error: "Unauthorized" };
+    // 2. Zod validation (early return — NOT captured)
+    const parsed = CreateItemSchema.safeParse(formData);
+    if (!parsed.success) {
+        return {
+            success: false,
+            error: "Un ou plusieurs champs sont invalides.",
+        };
+    }
 
-    // Execute in database
-    const item = await prisma.item.create({ data: parsed.data });
+    // 3. Risky IO wrapped in targeted try/catch (process-adhesion style)
+    let item: Item;
+    try {
+        item = await prisma.item.create({ data: parsed.data });
+    } catch (error) {
+        captureActionError(error); // logs + sends to Sentry + rethrows redirect/notFound
+        return { success: false, error: "Echec de la création de l'élément" };
+    }
 
-    // Revalidate affected paths
     revalidatePath("/dashboard/items");
-
-    return { success: true, item };
+    return { success: true, value: item };
 }
+
+// Single export. Pass `{ attachFormData: true }` ONLY for internal/dashboard
+// CRUD actions whose arg is a FormData with no secrets. Never for public
+// forms or password-bearing actions.
+export default withServerAction("createItemAction", createItemActionImpl);
 ```
+
+For a named (non-default) export, keep the impl private and export the
+wrapped result under the public name:
+`export const createItemAction = withServerAction("createItemAction", createItemActionImpl)`.
+For files with multiple actions (e.g. `loginAction.tsx`), wrap each one
+individually. Best-effort work (e.g. notification emails after the record is
+persisted) goes in its own try/catch that `captureActionError`s and continues.
 
 **Key patterns:**
 
-- Always validate input with Zod before database operations
-- Check user permissions first
-- Return typed responses: `{ success: boolean; data?: T; error?: string }`
-- Call `revalidatePath()` after mutations to update cached pages
+- Wrap every action with `withServerAction("actionName", impl)` — name = the
+  exported function name
+- Auth/permission/Zod failures are **early returns**, not exceptions — do not
+  `captureActionError` them
+- Wrap genuinely risky IO (DB, storage, email, PDF/zip) in targeted try/catch
+  with `captureActionError(error)` and a hand-written French message in the
+  action's return shape
+- Keep Next.js `redirect()`/`notFound()` OUTSIDE any `captureActionError`
+  try/catch (the wrapper handles them; `captureActionError` rethrows them, so
+  a `redirect` inside a catch still works but never wrap it intentionally)
+- Return a discriminated union `{ success: true; value: T } | { success: false; error: string }` (drop `value` when there is no payload) — every branch sets an explicit `success`; callers narrow on it
+- Call `revalidatePath()` after mutations
 - Never expose sensitive data in responses
+- Exclude internal sub-routines that other actions call (e.g. captcha
+  verification) — only entry-point actions get wrapped
 
 ### Component Structure
 
@@ -316,8 +378,8 @@ export async function createItem(formData: z.infer<typeof CreateItemSchema>) {
                 const result = await createItem({
                     name: formData.get("name") as string,
                 });
-                if (result.error) toast.error(result.error);
-                if (result.success) toast.success("Created!");
+                if (!result.success) toast.error(result.error);
+                else toast.success("Created!");
             });
         }
 
