@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { BureauMember } from "@/app/(home)/a-propos/adhesion/form-schema"
-import { validAdhesionRecord } from "@/test/factories"
+import { validAdhesionRecord } from "@/test/factories/adhesion"
 import {
     generateAdhesionPdf,
     generateAdhesionPdfFromRecord

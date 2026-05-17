@@ -481,20 +481,65 @@ const emailResponse = await sendEmail({
 
 ## Testing Strategy
 
-**Current state:** No unit testing framework configured yet.
+> **Tests are REQUIRED, not optional.** Every new feature, server action,
+> form, schema with non-trivial rules, or behavioural bug fix MUST ship with
+> tests in the **same PR**, using the stack below. A PR that adds or changes
+> behaviour without corresponding tests is incomplete and will not pass review.
 
-**When adding tests:**
+**Stack:**
 
-1. Choose Vitest
-2. Co-locate tests next to source files: `Button.tsx` + `Button.test.tsx`
-3. Test patterns to follow:
-    - **Unit tests:** Pure functions, utilities, helpers
-    - **Integration tests:** Server actions, API routes, database operations
-    - **Component tests:** Interactive components with React Testing Library
-4. CI will automatically run tests before allowing merges
-5. Run locally before commits: `pnpm run test`
+- **Vitest** — test runner for everything (node + browser projects).
+- **MSW** (`msw`) — mocks outbound HTTP for the node project
+  (`src/test/msw.ts`, `setupServer`, `onUnhandledRequest: "error"`). Use it for
+  real external calls (e.g. Friendly Captcha, remote assets). Do NOT let a test
+  hit the network — an unmocked request fails the run by design.
+- **Playwright** (via `@vitest/browser-playwright`) — drives headless Chromium
+  for the browser project; React components render through
+  `vitest-browser-react`.
 
-For now, rely on:
+**What to test for each kind of change:**
+
+| Change | Required tests |
+| --- | --- |
+| New/changed server action | Node test covering the full branch + IO matrix (see convention 4) |
+| New/changed Zod/arktype schema with rules | Schema test in `src/schemas/__tests__/` (convention 5) — only if non-trivial |
+| New/changed form component | Browser test (convention 6) |
+| New/changed helper with logic | Node unit test next to it in `__tests__/` |
+| Behavioural bug fix | A regression test that fails without the fix |
+
+**Framework:** Vitest with two projects (`pnpm test` runs both):
+
+- **node** project — schema, server-action and helper tests. `environment: "node"`,
+  msw `setupServer` (`vitest.setup.ts`), `onUnhandledRequest: "error"`.
+  Run alone: `pnpm run test:node`.
+- **browser** project — React component tests via `vitest-browser-react`
+  (Playwright/chromium, headless). Run alone: `pnpm run test:browser`.
+
+**Conventions:**
+
+1. **Test files live in a `__tests__/` subfolder of the source dir** — NOT
+   colocated as siblings, NOT in a top-level mirror. Source files never move;
+   only tests go in `__tests__/`. e.g. `src/actions/contact/submitContactFormAction.tsx`
+   → `src/actions/contact/__tests__/submitContactFormAction.test.tsx`.
+2. **Component tests use the `.browser.test.tsx` suffix**; node-project tests
+   use `.test.ts` / `.test.tsx`.
+3. Reuse `src/test/mocks.ts` (hoistable mock builders for db, supabase, email,
+   sentry, cache, …) and `src/test/factories/<domain>.ts` (valid-input
+   builders). Do not re-inline `vi.mock` blocks per file.
+4. **Action tests** import the `withServerAction`-wrapped default export (the
+   shared sentry mock makes it a passthrough) and cover the full branch + IO
+   matrix: invalid payload, each auth/permission denial, every external-IO
+   failure branch, partial-failure cleanup, best-effort continuation, happy
+   path with exact payload + `revalidatePath`.
+5. **Schema tests** are added only for schemas with non-trivial rules
+   (enums, refinements, transforms), in `src/schemas/__tests__/`.
+6. **Component tests** mock the form's server-action and captcha modules; assert
+   render, client validation (action NOT called), valid submit payload, and
+   success/error UI.
+7. CI runs node then browser tests before allowing merges. Run locally before
+   commits: `pnpm run test`.
+
+Also rely on:
 
 - TypeScript type checking (`pnpm run check:types`)
 - Biome linting (`pnpm run check:lint`)
@@ -510,12 +555,14 @@ For now, rely on:
 pnpm run check:types      # Ensure no TypeScript errors
 pnpm run check:lint       # Ensure Biome rules pass
 pnpm run knip             # Check for unused code/imports
+pnpm test                 # Run node + browser test suites
 pnpm run build            # Test production build
 ```
 
 **Commit checklist:**
 
-- ✅ No `any` types without justification
+- ✅ Tests added/updated for the change and `pnpm test` is green
+- ✅ No `any`/`unknown` types without justification
 - ✅ Server actions use Zod v4 validation
 - ✅ Permissions checked server-side
 - ✅ Migrations tested locally
@@ -528,10 +575,13 @@ pnpm run build            # Test production build
 
 ## CI/CD Pipeline
 
-**On every push/PR:**
+**On every push/PR (`.github/workflows/checks.yaml`):**
 
-1. Biome linting (before Node.js setup for speed)
-2. TypeScript type checking
+1. `quality` job: Biome linting → TypeScript type checking → Knip
+2. `test` job: `pnpm run test:node`, then install Playwright Chromium and
+   `pnpm run test:browser`
+
+Both jobs must be green to merge.
 
 **Automatic dependency updates:**
 

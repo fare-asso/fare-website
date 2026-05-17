@@ -4,6 +4,7 @@
         "taze.config.ts",
         "prisma/seed.ts",
         "src/**/*.test.{ts,tsx}",
+        "src/test/**",
         "emails/**/*.test.tsx"
     ],
     "ignoreExportsUsedInFile": {
