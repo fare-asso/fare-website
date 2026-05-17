@@ -1,8 +1,11 @@
 onlyBuiltDependencies:
-  - "@prisma/client"
-  - "@prisma/engines"
-  - prisma
-  - sharp
-  - supabase
-  - unrs-resolver
+    - "@prisma/client"
+    - "@prisma/engines"
+    - prisma
+    - sharp
+    - supabase
+    - unrs-resolver
 minimumReleaseAge: 1440
+trustPolicy: no-downgrade
+trustPolicyExclude:
+    - "semver@6.3.1"

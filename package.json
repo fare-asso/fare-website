@@ -28,6 +28,7 @@
         "@radix-ui/react-slot": "^1.2.4",
         "@react-email/components": "1.0.3",
         "@react-email/render": "2.0.1",
+        "@sentry/nextjs": "^10.53.1",
         "@supabase/ssr": "^0.7.0",
         "@supabase/supabase-js": "^2.105.4",
         "@t3-oss/env-nextjs": "^0.13.11",
@@ -110,7 +111,7 @@
         "onlyBuiltDependencies": [
             "@prisma/client",
             "@prisma/engines",
-            "esbuild",
+            "@sentry/cli",
             "prisma",
             "sharp",
             "supabase",
