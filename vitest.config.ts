@@ -23,7 +23,8 @@ export default defineConfig({
             NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321",
             NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
             NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
-            NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key"
+            NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key",
+            NEXT_PUBLIC_SENTRY_DSN: "https://test@test.ingest.sentry.io/0"
         }
     }
 })
