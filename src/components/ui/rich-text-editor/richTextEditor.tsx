@@ -2,11 +2,8 @@
 import "./styles.css"
 import Color from "@tiptap/extension-color"
 import Image from "@tiptap/extension-image"
-import Link from "@tiptap/extension-link"
-import ListKeymap from "@tiptap/extension-list-keymap"
 import TextAlign from "@tiptap/extension-text-align"
 import { TextStyle } from "@tiptap/extension-text-style"
-import Underline from "@tiptap/extension-underline"
 import {
     type Editor,
     EditorContent,
@@ -65,15 +62,19 @@ export default function RichTextEditor({
             StarterKit.configure({
                 heading: {
                     levels: [1, 2, 3]
+                },
+                link: {
+                    protocols: ["http", "https", "mailto"],
+                    isAllowedUri: (url, ctx) =>
+                        /^(https?:\/\/|mailto:|\/|\.\/|#)/i.test(url) &&
+                        ctx.defaultValidate(url)
                 }
             }),
-            Underline,
             Color,
             TextStyle,
             TextAlign.configure({
                 types: ["heading", "paragraph"]
             }),
-            Link,
             // FileHandler.configure({
             //     onPaste(editor, files, pasteContent) {
             //         if (files[0].type.startsWith("image/")) {
@@ -86,8 +87,7 @@ export default function RichTextEditor({
             //         }
             //     },
             // }),
-            Image,
-            ListKeymap
+            Image
         ],
         content: defaultContent ?? "<p>Lorem ispum</p>",
         immediatelyRender: true,
