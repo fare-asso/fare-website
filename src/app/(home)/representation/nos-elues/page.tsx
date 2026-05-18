@@ -63,7 +63,7 @@ export default function Elues() {
 
             <div className="mb-20 w-full max-w-4xl space-y-12">
                 <div className="prose mb-20 max-w-none rounded-lg bg-black p-6 text-white">
-                    <p>
+                    <p className="text-justify">
                         La FARE a parmi ses missions principales de représenter
                         l'ensemble des étudiant.e.s de Haute-Bretagne. Pour ce
                         faire, notre fédération se mobilise au quotidien par des
@@ -97,7 +97,7 @@ export default function Elues() {
                     </div>
 
                     <div className="prose mb-4 max-w-none">
-                        <p>
+                        <p className="text-justify">
                             Le Conseil d'Administration d'un CROUS (Centre
                             Régional des Œuvres Universitaires et Scolaires) est
                             l'organe de gouvernance chargé de définir les
@@ -152,7 +152,7 @@ export default function Elues() {
                         <h3 className="mb-4 font-semibold text-xl">
                             Vice-Présidence Étudiante (VPE)
                         </h3>
-                        <p>
+                        <p className="text-justify">
                             La Vice-Présidence Étudiante (VPE) au sein des
                             instances d'une université est un.e représentant.e
                             étudiant.e, élu.e parmi les élu.e.s, pour siéger
@@ -192,7 +192,7 @@ export default function Elues() {
                         <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Administration (CA)
                         </h3>
-                        <p>
+                        <p className="text-justify">
                             Le Conseil d'Administration (CA) au sein de
                             l'Université de Rennes est l'organe décisionnel
                             central chargé de la gestion administrative et
@@ -220,7 +220,7 @@ export default function Elues() {
                         <h3 className="mb-4 font-semibold text-xl">
                             Conseil de Formation & Vie Étudiante (CFVE)
                         </h3>
-                        <p>
+                        <p className="text-justify">
                             Le Conseil des Formations et de la Vie Étudiante
                             (CFVE) est une instance universitaire qui traite des
                             questions liées à l'organisation des formations, aux
@@ -248,7 +248,7 @@ export default function Elues() {
                         <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Unité de Formation & de Recherche (UFR)
                         </h3>
-                        <p>
+                        <p className="text-justify">
                             Un Conseil d'Unité de Formation et de Recherche
                             (UFR) est un organe décisionnel au sein d'une
                             faculté ou d'un département universitaire. Il
@@ -303,7 +303,7 @@ export default function Elues() {
                     </div>
 
                     <div className="prose mb-4 max-w-none">
-                        <p>
+                        <p className="text-justify">
                             L'EHESP (École des Hautes Études en Santé Publique)
                             est un établissement d'enseignement supérieur et de
                             recherche spécialisé dans les domaines de la santé
@@ -358,7 +358,7 @@ export default function Elues() {
                                 <h3 className="mb-4 font-semibold text-xl">
                                     Conseil d'Administration (CA)
                                 </h3>
-                                <p>
+                                <p className="text-justify">
                                     Le Conseil d'Administration (CA) au sein de
                                     l'Université de Rennes 2 est l'organe
                                     décisionnel central chargé de la gestion
@@ -393,7 +393,7 @@ export default function Elues() {
                                     Conseil de Formation & Vie Universitaire
                                     (CFVU)
                                 </h3>
-                                <p>
+                                <p className="text-justify">
                                     Le Conseil des Formations et de la Vie
                                     Universitaire (CFVU) est une instance
                                     universitaire qui traite des questions liées
@@ -426,7 +426,7 @@ export default function Elues() {
                         <h3 className="mb-4 font-semibold text-xl">
                             Conseil d'Unité de Formation & de Recherche (UFR)
                         </h3>
-                        <p>
+                        <p className="text-justify">
                             Un Conseil d'UFR (Unité de Formation et de
                             Recherche) est un organe décisionnel au sein d'une
                             faculté ou d'un département universitaire. Il

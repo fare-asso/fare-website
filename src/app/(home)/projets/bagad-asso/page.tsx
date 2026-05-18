@@ -25,7 +25,7 @@ export default async function BagadAsso() {
                 <h2 className="mb-4 font-semibold text-xl">
                     Présentation du projet
                 </h2>
-                <p className="mb-4">
+                <p className="mb-4 text-justify">
                     La FARE et son réseau sont aujourd'hui des acteurs
                     primordiaux pour la vie étudiante du territoire de Haute
                     Bretagne. Parmi la vingtaine d'associations du réseau,
@@ -34,19 +34,19 @@ export default async function BagadAsso() {
                     réduire l'isolement social des jeunes, de plus en plus
                     présent durant ces dernières années.
                 </p>
-                <p className="mb-4">
+                <p className="mb-4 text-justify">
                     Dans ce contexte, et afin d'accompagner et de permettre aux
                     associations de son réseau de se développer et de réaliser
                     des projets à hauteur de leurs ambitions, la FARE vous
                     présente le Bagad'Asso.
                 </p>
-                <p className="mb-4 italic">
+                <p className="mb-4 italic text-justify">
                     Mais ça veut dire quoi "Bagad'Asso" ? Un Bagad c'est un
                     orchestre traditionnel breton, alors cette fois-ci on
                     remplace les musiciens par des associatifs et le public par
                     nos étudiant.e.s breton.ne.s !
                 </p>
-                <p className="mb-4">
+                <p className="mb-4 text-justify">
                     Cette malle à disposition des associations du réseau de la
                     FARE a pour objectif de mettre à disposition de manière
                     gratuite du matériel d'événementiel et de prévention pour la
@@ -58,7 +58,7 @@ export default async function BagadAsso() {
                     si c'est tout bon on ne vous demande qu'une caution et hop
                     c'est à vous pour l'évent !
                 </p>
-                <p>
+                <p className="text-justify">
                     Nous avons construit cette malle en 2 volets, inséparables
                     pour le bon déroulement de vos évènements :
                 </p>

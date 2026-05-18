@@ -29,7 +29,7 @@ export default function AGORAe() {
                         L'AGORAé, la lutte contre la pauvreté étudiante sur
                         Saint-Brieuc
                     </h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         L'AGORAé est une{" "}
                         <strong>
                             épicerie sociale et solidaire créée par les
@@ -40,7 +40,7 @@ export default function AGORAe() {
                         étudiante universitaire sur{" "}
                         <strong>Saint-Brieuc</strong> (22).
                     </p>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Elle a pour objectif de permettre aux étudiant·e·s en
                         situation de précarité financière,{" "}
                         <strong>
@@ -52,7 +52,7 @@ export default function AGORAe() {
                         valeur en grande surface, ou distribués{" "}
                         <strong>gratuitement</strong>.
                     </p>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Plus qu'un simple lieu d'aide alimentaire, c'est aussi{" "}
                         <strong>
                             un espace de rencontres, d'échanges et de
@@ -62,7 +62,7 @@ export default function AGORAe() {
                         part les actions mises en place pour lutter contre
                         l'isolement social des étudiant·e·s sur le territoire.
                     </p>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         C'est un projet national créé par la{" "}
                         <Link
                             href="/representation/fage"
@@ -83,7 +83,7 @@ export default function AGORAe() {
                         se composent d'un lieu de vie ouvert à tous·tes et d'une
                         épicerie solidaire accessible sur critères sociaux.
                     </p>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Portées et gérées par des jeunes pour des jeunes, les
                         AGORAé sont des lieux non-stigmatisants œuvrant pour
                         l'égalité des chances d'accès et de réussite dans
@@ -100,7 +100,7 @@ export default function AGORAe() {
                     <h2 className="mb-4 font-semibold text-2xl">
                         Comment devenir bénéficiaire de l'AGORAé ?
                     </h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         L'épicerie est ouverte aux étudiant·e·s, selon le{" "}
                         <strong>Reste à Vivre (RAV) quotidien</strong>. Celui-ci
                         correspond à la somme restante par jour pour se nourrir,
@@ -116,7 +116,7 @@ export default function AGORAe() {
                         />
                     </div>
 
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Grâce à ce RAV, nous pouvons ensuite calculer le montant
                         de panier mensuel à proposer à chaque étudiant·e :
                     </p>
@@ -133,7 +133,7 @@ export default function AGORAe() {
                         <CalculateurBeneficiaire />
                     </div>
 
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         L'inscription à l'AGORAé se fait sur{" "}
                         <a
                             href="https://mon-compte.fage.org/creation-compte"
@@ -146,7 +146,7 @@ export default function AGORAe() {
                         et ne prend que quelques minutes.
                     </p>
 
-                    <p className="mb-0">
+                    <p className="mb-0 text-justify">
                         Si vous êtes en difficulté pour compléter cette
                         démarche, vous pouvez nous contacter à{" "}
                         <a
@@ -169,7 +169,7 @@ export default function AGORAe() {
                     <h2 className="mb-4 font-semibold text-2xl">
                         Envie de participer au projet AGORAé ?
                     </h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Tu as quelques heures ou quelques jours de disponibles
                         pour l'AGORAé et tu souhaite devenir bénévole ? Tu
                         souhaites participer à l'accueil, la gestion des stocks
