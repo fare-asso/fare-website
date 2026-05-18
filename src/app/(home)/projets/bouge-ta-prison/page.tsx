@@ -21,7 +21,7 @@ export default function BougeTaPrison() {
             <div className="w-full max-w-4xl space-y-12">
                 <section>
                     <h2>Qu'est-ce que le projet Bouge Ta Prison ?</h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Le projet Bouge Ta Prison est une initiative qui vise à
                         sensibiliser notamment les étudiant·e·s sur le monde
                         carcéral et à favoriser la réinsertion des personnes
@@ -32,7 +32,7 @@ export default function BougeTaPrison() {
 
                 <section>
                     <h2>Sensibilisation au milieu carcéral</h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Afin de sensibiliser au milieu carcéral, le pôle
                         organise des conférences. C'était le cas en février
                         2024, à l'Université de Rennes 2, deux visiteurs de
@@ -52,7 +52,7 @@ export default function BougeTaPrison() {
                         />
                     </div>
 
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         La FARE fait également partie du{" "}
                         <Link
                             href="https://collectifprisonrennes.fr/"
@@ -78,7 +78,7 @@ export default function BougeTaPrison() {
                     <h2>
                         Réinsertion des personnes placées sous main de justice
                     </h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Le projet Bouge Ta Prison propose l'accompagnement de
                         personnes placées sous main de justice sur les
                         différents campus universitaires lors de permissions de
@@ -89,7 +89,7 @@ export default function BougeTaPrison() {
                         accompagné deux étudiant·e·s placé·e·s sous main de
                         justice.
                     </p>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Le projet organise également, en collaboration avec
                         l'Université Rennes 2 et l'Administration pénitentiaire,
                         du tutorat en détention pour les étudiant·e·s-détenu·e·s
@@ -109,7 +109,7 @@ export default function BougeTaPrison() {
                             <h2 className="mb-2 font-semibold text-lg">
                                 Intéressé pour devenir tuteur?
                             </h2>
-                            <p>
+                            <p className="text-justify">
                                 Le projet Bouge Ta Prison accueille de nouveaux
                                 tuteurs chaque année. <br />
                                 Pour en savoir plus sur le tutorat, les

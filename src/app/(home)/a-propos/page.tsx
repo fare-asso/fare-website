@@ -23,7 +23,7 @@ export default function APropos() {
                     <h2 className="mb-4 font-semibold text-2xl">
                         Qu'est-ce que la FARE ?
                     </h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         La{" "}
                         <strong>
                             Fédération des Associations du Réseau Étudiant de
@@ -48,7 +48,7 @@ export default function APropos() {
                     <h2 className="mb-4 font-semibold text-2xl">
                         Indépendance et représentation
                     </h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Indépendante de tout parti politique, syndicat ou
                         confession, notre fédération regroupe plus d'une
                         quinzaine d'associations à Rennes, Saint-Malo, Fougères
@@ -77,7 +77,7 @@ export default function APropos() {
 
                 <section>
                     <h2 className="mb-4 font-semibold text-2xl">Nos actions</h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         En tant qu'acteur·rice·s associatif·ve·s, nous réalisons
                         des projets d'innovation sociale à destination des
                         étudiant·e·s et plus largement des jeunes :

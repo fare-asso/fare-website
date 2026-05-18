@@ -15,13 +15,13 @@ export default function Adhesion() {
                 <h2 className="mb-4 font-bold text-2xl">
                     Adhésion à la FARE :
                 </h2>
-                <p className="mb-4">
+                <p className="mb-4 text-justify">
                     La Fédération des Associations du Réseau Étudiant de
                     Haute-Bretagne (FARE) étant une organisation représentative
                     asyndicale, les étudiant.e.s ne peuvent pas adhérer à la
                     structure en tant qu'individu.
                 </p>
-                <p className="mb-4">
+                <p className="mb-4 text-justify">
                     Selon le modèle associatif, les étudiant.e.s participent au
                     système en adhérant et administrant leurs associations
                     locales, de filière ou thématique. De cette manière, les
@@ -30,7 +30,7 @@ export default function Adhesion() {
                     travailler sur des projets ou des thématiques qui concernent
                     leurs étudiant.e.s ou adhérent.e.s.
                 </p>
-                <p className="mb-4">
+                <p className="mb-4 text-justify">
                     L'adhésion peut être remplie à n'importe quel moment de
                     l'année universitaire, et est effective jusqu'à la prochaine
                     campagne de ré-adhésion, soit la prochaine Assemblée
@@ -40,11 +40,11 @@ export default function Adhesion() {
                 <h2 className="mt-8 mb-4 font-bold text-2xl">
                     Pourquoi adhérer à la FARE ? :
                 </h2>
-                <p className="mb-4">
+                <p className="mb-4 text-justify">
                     Concrètement, à quoi ça sert d'adhérer à la FARE pour les
                     associations étudiantes ?
                 </p>
-                <ul className="mb-4 list-disc pl-6">
+                <ul className="mb-4 list-disc pl-6 text-justify">
                     <li className="mb-2">
                         <strong>
                             Être membre d'un réseau associatif fort et soudé :
@@ -128,7 +128,7 @@ export default function Adhesion() {
                 <h2 className="mt-8 mb-4 font-bold text-2xl">
                     Comment adhérer à la FARE ? :
                 </h2>
-                <p className="mb-4">
+                <p className="mb-4 text-justify">
                     Pour adhérer à la FARE, quelques éléments sont demandés à
                     une association étudiante :
                 </p>

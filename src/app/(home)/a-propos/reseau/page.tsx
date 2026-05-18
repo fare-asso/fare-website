@@ -32,7 +32,7 @@ export default async function Reseau() {
                 <h2 className="mb-2 font-semibold text-lg">
                     Votre association souhaite intégrer notre réseau ?{" "}
                 </h2>
-                <p>
+                <p className="text-justify">
                     La FARE accueille de nouveaux membres partageant nos
                     objectifs pour la vie étudiante. En nous rejoignant, vous
                     aurez accès à notre réseau, nos ressources et notre soutien.

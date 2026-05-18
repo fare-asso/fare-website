@@ -22,7 +22,7 @@ export default function FAGE() {
                     <h2 className="mb-4 font-semibold text-2xl">
                         Présentation
                     </h2>
-                    <p className="mb-4 italic">
+                    <p className="mb-4 italic text-justify">
                         La{" "}
                         <strong>
                             Fédération des Associations du Réseau Étudiant de
@@ -34,7 +34,7 @@ export default function FAGE() {
                         associations et syndicats, soit environ 300 000
                         étudiantEs.
                     </p>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         La FAGE a pour but de garantir l'égalité des chances de
                         réussite dans le système éducatif. C'est pourquoi elle
                         agit pour l'amélioration constante des conditions de vie
@@ -50,7 +50,7 @@ export default function FAGE() {
                     <h2 className="mb-4 font-semibold text-2xl">
                         Reconnaissance et indépendance
                     </h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         La FAGE est reconnue organisation étudiante
                         représentative par le Ministère chargé de l'enseignement
                         supérieur. Indépendante des partis, des syndicats de
@@ -61,7 +61,7 @@ export default function FAGE() {
                         éducation populaire par le ministère chargé de la
                         jeunesse.
                     </p>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         À travers la FAGE, les jeunes trouvent un formidable
                         outil citoyen pour débattre, entreprendre des projets et
                         prendre des responsabilités dans la société.
@@ -72,7 +72,7 @@ export default function FAGE() {
                     <h2 className="mb-4 font-semibold text-2xl">
                         Rôle et valeurs
                     </h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         La FAGE, en tant qu'organisation de jeunesse
                         représentative des étudiantEs, s'affirme comme un acteur
                         majeur de l'Éducation Populaire. Elle base ses
@@ -87,7 +87,7 @@ export default function FAGE() {
 
                 <section>
                     <h2 className="mb-4 font-semibold text-2xl">Histoire</h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         À la fin des années 80, l'idée de fonder une
                         organisation germe à Lyon. Plusieurs réunions, se
                         déroulant à Paris, mènent par la suite à l'assemblée
@@ -98,7 +98,7 @@ export default function FAGE() {
                         ministère, en réponse à la loi d'orientation sur
                         l'éducation du 10 juillet 1989.
                     </p>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Depuis lors, la FAGE a réalisé d'importantes avancées en
                         faveur des étudiantEs et de la jeunesse, se positionnant
                         comme l'unique héritière des AGE. Forte des membres de
@@ -112,7 +112,7 @@ export default function FAGE() {
                     <h2 className="mb-4 font-semibold text-2xl">
                         Projet éducatif
                     </h2>
-                    <p className="mb-4">
+                    <p className="mb-4 text-justify">
                         Dans une volonté d'émancipation et de développement
                         personnel, le projet éducatif, pour la deuxième fois
                         depuis sa création, offre l'opportunité de découvrir ce
