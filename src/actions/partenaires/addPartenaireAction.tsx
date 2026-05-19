@@ -28,10 +28,7 @@ async function addPartenaireActionImpl(
     const description = formData.get("description")?.toString()
     const logoPicture = formData.get("logo-picture")
 
-    if (
-        !name ||
-        !description ||
-        !logoPicture) {
+    if (!name || !description || !logoPicture) {
         return {
             error: "Veuillez remplir tous les champs obligatoires."
         }

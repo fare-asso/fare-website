@@ -81,9 +81,7 @@ export default function AddPartenaireButton() {
                 <DialogHeader>
                     <DialogTitle>Nouveau Partenaire</DialogTitle>
                     <DialogDescription>
-                        {
-                            "Ceci est le formulaire d'ajout de nouveau partenaire"
-                        }
+                        {"Ceci est le formulaire d'ajout de nouveau partenaire"}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -148,8 +146,6 @@ export default function AddPartenaireButton() {
                             </AccordionItem>
                         </Accordion>
                     </div>
-
-
 
                     {/* Error */}
                     {formState?.error ? (

@@ -8,36 +8,36 @@ import { createAdminClient, createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 
 async function deletePartenaireActionImpl(
-    _prevState: { error?: string;  success?: boolean} | undefined,
+    _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ) {
-  // Auth and permission verifications
-  const user = await getCurrentUserWithPermissions()
-  if (!user) {
-      return { error: "Authentification requise" }
-  }
-  if (!hasPermission(user, "delete:partner")) {
-      return {
-          error: "Vous n'avez pas la permission de supprimer des partenaires"
-      }
-  }
+    // Auth and permission verifications
+    const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        return { error: "Authentification requise" }
+    }
+    if (!hasPermission(user, "delete:partner")) {
+        return {
+            error: "Vous n'avez pas la permission de supprimer des partenaires"
+        }
+    }
 
-  // create supabase client
-  const supabase = await createClient()
+    // create supabase client
+    const supabase = await createClient()
 
-  // create supabase admin client (only on server)
-  const supabaseAdmin = await createAdminClient()
+    // create supabase admin client (only on server)
+    const supabaseAdmin = await createAdminClient()
 
-  // fetch association to delete
-  const partenaire = await prisma.partenaire.findUnique({
-      where: {
-          id: id
-      }
-  })
+    // fetch association to delete
+    const partenaire = await prisma.partenaire.findUnique({
+        where: {
+            id: id
+        }
+    })
 
-  if (partenaire == null) {
-      return { error: "Echec de la suppression du partenaire" }
-  }
+    if (partenaire == null) {
+        return { error: "Echec de la suppression du partenaire" }
+    }
 
     if (partenaire.logoPath.length > 0) {
         const { error } = await supabase.storage

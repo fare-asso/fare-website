@@ -33,10 +33,7 @@ export default async function Partenaires() {
             </CardHeader>
             <CardContent className="h-1/2 flex-1 p-0">
                 <Suspense fallback={<p>Chargements...</p>}>
-                    <PartenaireList
-                        canEdit={canEdit}
-                        canDelete={canDelete}
-                    />
+                    <PartenaireList canEdit={canEdit} canDelete={canDelete} />
                 </Suspense>
             </CardContent>
             {canCreate ? (

@@ -80,8 +80,8 @@ export default function DeletePartenaireButton({
                         <span className="font-bold">{partenaire.name}</span> ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Cette action est permanente et les données du
-                        partenaire ne peuvent être récupérées.
+                        Cette action est permanente et les données du partenaire
+                        ne peuvent être récupérées.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

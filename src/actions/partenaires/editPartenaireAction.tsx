@@ -37,7 +37,7 @@ async function editPartenaireActionImpl(
             id: id
         },
         select: {
-            logoPath: true,
+            logoPath: true
         }
     })
 
@@ -48,12 +48,7 @@ async function editPartenaireActionImpl(
         }
 
     // Fields Validation
-    if (
-        Number.isNaN(id) ||
-        !name ||
-        !description ||
-        !logoPicture
-    ) {
+    if (Number.isNaN(id) || !name || !description || !logoPicture) {
         return { error: "Veuillez remplir tous les champs obligatoires." }
     }
 
@@ -102,7 +97,7 @@ async function editPartenaireActionImpl(
             data: {
                 name,
                 description: description,
-                logoPath,
+                logoPath
             }
         })
 
