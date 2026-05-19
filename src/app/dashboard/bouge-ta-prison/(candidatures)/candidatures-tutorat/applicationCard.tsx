@@ -1,6 +1,5 @@
 "use client"
 
-import type { BTPTutorApplication } from "@prisma/client"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
@@ -35,6 +34,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/use-toast"
+import type { BTPTutorApplication } from "@/generated/prisma/client"
 
 export default function ApplicationCard({
     application

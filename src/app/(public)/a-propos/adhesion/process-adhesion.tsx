@@ -1,8 +1,8 @@
 "use server"
 
-import { render } from "react-email"
 import { type } from "arktype"
 import { revalidatePath } from "next/cache"
+import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
 import AdhesionAck from "@/../emails/adhesion-acknowledgement"

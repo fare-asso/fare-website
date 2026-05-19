@@ -1,8 +1,8 @@
-import type { Article } from "@prisma/client"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
 
+import type { Article } from "@/generated/prisma/client"
 import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml"
 
 export default function ArticleCard({ article }: { article: Article }) {

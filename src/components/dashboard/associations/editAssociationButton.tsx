@@ -1,6 +1,5 @@
 "use client"
 
-import type { Association } from "@prisma/client"
 import {
     startTransition,
     useActionState,
@@ -38,6 +37,7 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+import type { Association } from "@/generated/prisma/client"
 
 import LoadingRing from "../loadingRing"
 

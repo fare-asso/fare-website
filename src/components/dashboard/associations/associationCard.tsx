@@ -1,6 +1,5 @@
 "use client"
 
-import type { Association } from "@prisma/client"
 import {
     ClockIcon,
     GraduationCapIcon,
@@ -10,6 +9,7 @@ import {
 import Image from "next/image"
 
 import { Badge } from "@/components/ui/badge"
+import type { Association } from "@/generated/prisma/client"
 
 import ApproveAssociationButton from "./approveAssociationButton"
 import DeclineAssociationButton from "./declineAssociationButton"

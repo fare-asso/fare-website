@@ -1,6 +1,5 @@
 "use client"
 
-import type { Role } from "@prisma/client"
 import { useState, useTransition } from "react"
 
 import bulkUpdateRole from "@/actions/users/bulkUpdateRole"
@@ -21,6 +20,7 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
+import type { Role } from "@/generated/prisma/client"
 
 type Props = {
     userIds: string[]

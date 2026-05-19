@@ -1,4 +1,8 @@
-import type { Permission, User, UserPermission } from "@prisma/client"
+import type {
+    Permission,
+    User,
+    UserPermission
+} from "@/generated/prisma/client"
 
 import prisma from "../db"
 import { createClient } from "./server"

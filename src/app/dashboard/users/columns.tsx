@@ -1,6 +1,5 @@
 "use client"
 
-import type { Permission, User, UserPermission } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { MoreHorizontal } from "lucide-react"
@@ -18,6 +17,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import type {
+    Permission,
+    User,
+    UserPermission
+} from "@/generated/prisma/client"
 
 export type UserWithPermissionsRow = User & {
     permissions: (UserPermission & { permission: Permission })[]

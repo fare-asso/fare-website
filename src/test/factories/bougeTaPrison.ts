@@ -1,5 +1,4 @@
-import type { BTPTutorApplication } from "@prisma/client"
-
+import type { BTPTutorApplication } from "@/generated/prisma/client"
 import type { BTPTutorQuestion } from "@/schemas/bougeTaPrison"
 
 import { pdfFile } from "./files"

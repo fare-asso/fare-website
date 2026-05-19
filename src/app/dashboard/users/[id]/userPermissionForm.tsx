@@ -1,10 +1,10 @@
 "use client"
 
-import type { Permission } from "@prisma/client"
 import { useOptimistic, useTransition } from "react"
 
 import updateUserPermissions from "@/actions/users/updateUserPermissions"
 import { Button } from "@/components/ui/button"
+import type { Permission } from "@/generated/prisma/client"
 
 import { PermissionCard } from "./permissionCard"
 

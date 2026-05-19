@@ -1,6 +1,5 @@
 "use client"
 
-import type { Association } from "@prisma/client"
 import { UserXIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -9,6 +8,7 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+import type { Association } from "@/generated/prisma/client"
 
 export default function DeleteRepresentativeButton({
     association: _association

@@ -33,6 +33,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# prisma generated client
+/src/generated
+
 # vitest browser-mode failure screenshots
 __screenshots__/
 .vitest-attachments/

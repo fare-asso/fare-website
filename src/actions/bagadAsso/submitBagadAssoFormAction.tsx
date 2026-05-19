@@ -1,7 +1,7 @@
 "use server"
 
-import { render } from "react-email"
 import { revalidatePath } from "next/cache"
+import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
 import { verifyCaptcha } from "@/components/captcha/verify"

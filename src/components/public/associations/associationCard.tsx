@@ -1,7 +1,7 @@
-import type { Association } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
 
+import type { Association } from "@/generated/prisma/client"
 import { createClient } from "@/helpers/supabase/server"
 
 interface JsonLocation {

@@ -1,6 +1,5 @@
 "use client"
 
-import type { CommuniqueDePresse } from "@prisma/client"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
@@ -29,6 +28,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/use-toast"
+import type { CommuniqueDePresse } from "@/generated/prisma/client"
 
 import LoadingRing from "../loadingRing"
 

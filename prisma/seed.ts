@@ -1,8 +1,17 @@
 import process from "node:process"
 
-import { PrismaClient } from "@prisma/client"
+import { PrismaPg } from "@prisma/adapter-pg"
 
-const prisma = new PrismaClient()
+import { PrismaClient } from "../src/generated/prisma/client"
+import { loadDbUrl } from "./loadDbUrl"
+
+const connectionString = loadDbUrl("SUPABASE_POSTGRES_PRISMA_DIRECT_URL")
+if (!connectionString) {
+    throw new Error("SUPABASE_POSTGRES_PRISMA_DIRECT_URL is not set")
+}
+
+const adapter = new PrismaPg({ connectionString })
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
     console.log("🌱 Seeding permissions...")

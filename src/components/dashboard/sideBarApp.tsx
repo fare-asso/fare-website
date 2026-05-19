@@ -1,6 +1,5 @@
 "use client"
 
-import type { Permission } from "@prisma/client"
 import {
     FileUserIcon,
     MessageCircleQuestionMarkIcon,
@@ -23,6 +22,7 @@ import {
 } from "react-icons/lu" // Bagad'Asso
 
 import LogoFARE from "#public/logo_fare.png"
+import type { Permission } from "@/generated/prisma/client"
 
 // UI components
 import {

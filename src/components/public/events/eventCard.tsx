@@ -1,10 +1,11 @@
 "use client"
 
-import type { Event } from "@prisma/client"
 import { format } from "date-fns"
 import Image from "next/image"
 import Link from "next/link"
 import { MdLocationPin } from "react-icons/md"
+
+import type { Event } from "@/generated/prisma/client"
 
 interface JsonLocation {
     displayName: string

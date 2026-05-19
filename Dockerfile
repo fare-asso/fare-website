@@ -23,12 +23,6 @@ RUN corepack enable
 
 # Copy package files first for better caching
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY schema.prisma ./
-
-# Copy migrations to the location Prisma expects (prisma/migrations)
-RUN mkdir -p prisma
-COPY migrations ./prisma/migrations
-RUN cp schema.prisma ./prisma/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -92,7 +86,7 @@ ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 ########################################################################
 
 # Run Prisma migrations
-RUN pnpm exec prisma migrate deploy --schema=./prisma/schema.prisma
+RUN pnpm exec prisma migrate deploy
 
 
 # Build the application

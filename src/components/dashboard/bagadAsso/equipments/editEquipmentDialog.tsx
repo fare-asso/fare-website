@@ -1,6 +1,5 @@
 "use client"
 
-import type { BagadAssoEquipment } from "@prisma/client"
 import { PencilIcon } from "lucide-react"
 import Image from "next/image"
 import {
@@ -31,6 +30,7 @@ import { Input } from "@/components/ui/input"
 import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput"
 import NumberInput from "@/components/ui/input/numberInput"
 import { Label } from "@/components/ui/label"
+import type { BagadAssoEquipment } from "@/generated/prisma/client"
 
 import LoadingRing from "../../loadingRing"
 

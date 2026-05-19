@@ -1,14 +1,14 @@
 "use client"
 
-import type { Association } from "@prisma/client"
+import L from "leaflet"
 
 import "leaflet/dist/leaflet.css"
-import L from "leaflet"
 import { Inter } from "next/font/google"
 import Image from "next/image"
 import { type ChangeEvent, useRef, useState } from "react"
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 
+import type { Association } from "@/generated/prisma/client"
 import { createClient } from "@/helpers/supabase/client"
 
 import AssociationMapSearchBar from "./associationMapSearchBar"

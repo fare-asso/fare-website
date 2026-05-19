@@ -1,4 +1,4 @@
-import type { BagadAssoTicket } from "@prisma/client"
+import type { BagadAssoTicket } from "@/generated/prisma/client"
 
 import prisma from "./db"
 

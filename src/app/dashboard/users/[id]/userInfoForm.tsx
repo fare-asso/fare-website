@@ -1,7 +1,6 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Role, User } from "@prisma/client"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -28,6 +27,7 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
+import type { Role, User } from "@/generated/prisma/client"
 
 const schema = z.object({
     name: z.string().min(1, "Le nom d'utilisateur est requis").nullable(),

@@ -1,6 +1,5 @@
 "use client"
 
-import type { Article } from "@prisma/client"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
@@ -12,6 +11,7 @@ import deleteArticleAction from "@/actions/articles/deleteArticleAction"
 import switchVisibilityAction from "@/actions/articles/switchVisibilityAction"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
+import type { Article } from "@/generated/prisma/client"
 
 import LoadingRing from "../loadingRing"
 import EditArticleButton from "./editArticleButton"

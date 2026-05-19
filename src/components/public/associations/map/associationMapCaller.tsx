@@ -1,7 +1,8 @@
 "use client"
 
-import type { Association } from "@prisma/client"
 import dynamic from "next/dynamic"
+
+import type { Association } from "@/generated/prisma/client"
 
 const LazyMap = dynamic(
     () => import("@/components/public/associations/map/associationsMap"),

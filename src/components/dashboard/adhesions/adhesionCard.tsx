@@ -1,6 +1,5 @@
 "use client"
 
-import type { Adhesion } from "@prisma/client"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
@@ -19,6 +18,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+import type { Adhesion } from "@/generated/prisma/client"
 
 import AdhesionCardActions from "./adhesionCardActions"
 
