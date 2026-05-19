@@ -1,9 +1,8 @@
-import type { Adhesion } from "@prisma/client"
-
 import type {
     BureauMember,
     TAdhesionForm
 } from "@/app/(public)/a-propos/adhesion/form-schema"
+import type { Adhesion } from "@/generated/prisma/client"
 
 import { imageFile, pdfFile } from "./files"
 

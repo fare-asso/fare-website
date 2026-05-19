@@ -1,4 +1,5 @@
 import { defineConfig } from "oxlint"
+import { isCI } from "std-env"
 
 export default defineConfig({
     options: {
@@ -21,10 +22,11 @@ export default defineConfig({
         "jest",
         "promise"
     ],
+    jsPlugins: [{ name: "local", specifier: "./tools/oxlint-rules/index.ts" }],
     categories: {
         correctness: "error"
     },
-    ignorePatterns: ["**/next-env.d.ts", "**/migrations/**"],
+    ignorePatterns: ["**/next-env.d.ts", "**/migrations/**", "**/generated/**"],
     overrides: [
         {
             // Test files & mocks: async mock factories must keep the async
@@ -146,6 +148,15 @@ export default defineConfig({
         "typescript/prefer-function-type": "error",
         "unicorn/throw-new-error": "error",
         "typescript/only-throw-error": "error",
+
+        // local plugin (./tools/oxlint-rules) — nudges towards the
+        // tryCatch helper from @/lib/utils in place of try/catch.
+        // Silence with `// oxlint-disable-next-line local/no-try-catch`
+        // for the rare best-effort case (see AGENTS.md → Error Handling).
+        // Set to "off" in CI (see top of file) until existing call sites
+        // are migrated, because oxlint 1.65 silently ignores CLI `-A` for
+        // jsPlugin rules and there's no narrower mechanism today.
+        "local/no-try-catch": isCI ? "off" : "warn",
 
         // suspicious
         "vitest/no-duplicate-hooks": "error",

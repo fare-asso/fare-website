@@ -1,5 +1,4 @@
-import type { Association } from "@prisma/client"
-
+import type { Association } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 
 import AssociationMapCaller from "./associations/map/associationMapCaller"

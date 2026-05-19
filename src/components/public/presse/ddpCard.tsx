@@ -1,10 +1,10 @@
-import type { CommuniqueDePresse } from "@prisma/client"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
 import { FaRegFolderOpen } from "react-icons/fa6"
 import { FiDownload, FiExternalLink } from "react-icons/fi"
 
+import type { CommuniqueDePresse } from "@/generated/prisma/client"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 export default function DossierDePresseCard({

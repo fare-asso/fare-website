@@ -1,6 +1,5 @@
 "use client"
 
-import type { Permission } from "@prisma/client"
 import { Check, Info } from "lucide-react"
 
 import {
@@ -8,6 +7,7 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+import type { Permission } from "@/generated/prisma/client"
 import { cn } from "@/lib/utils"
 
 export type PermissionCardProps = {

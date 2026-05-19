@@ -1,11 +1,21 @@
-onlyBuiltDependencies:
-    - "@prisma/client"
-    - "@prisma/engines"
-    - prisma
-    - sharp
-    - supabase
-    - unrs-resolver
-minimumReleaseAge: 1440
+minimumReleaseAge: 1440 # 1 day
 trustPolicy: no-downgrade
 trustPolicyExclude:
     - "semver@6.3.1"
+    - "chokidar@4.0.3"
+
+allowBuilds:
+    "@prisma/client": true
+    "@prisma/engines": true
+    "@sentry/cli": true
+    esbuild: true
+    msw: true
+    prisma: true
+    sharp: true
+    supabase: true
+    unrs-resolver: true
+
+overrides:
+    "baseline-browser-mapping": "^2.10.31"
+    "react-is": "^19.2.6"
+    "reselect@5.1.1": "^5.2.0"

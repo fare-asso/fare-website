@@ -121,7 +121,7 @@ export function navigationModule(redirect?: Fn, notFound?: Fn) {
     }
 }
 
-/** `@react-email/render` mock — returns static markup. */
+/** `react-email` mock — returns static markup. */
 export function reactEmailRenderModule(html = "<html></html>") {
     return { render: vi.fn(async () => html) }
 }

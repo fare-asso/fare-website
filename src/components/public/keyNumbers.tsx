@@ -1,6 +1,6 @@
-import type { Association } from "@prisma/client"
 import type { ReactNode } from "react"
 
+import type { Association } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 
 import { AutoAnimatedNumber } from "../ui/animated-number"

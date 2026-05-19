@@ -35,7 +35,7 @@ vi.mock("@/helpers/db", () => dbModule({ adhesion: { create: h.create } }))
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
 vi.mock("@/components/captcha/verify", () => captchaModule(h.verifyCaptcha))
 vi.mock("next/cache", () => cacheModule(h.revalidatePath))
-vi.mock("@react-email/render", () => reactEmailRenderModule())
+vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import { processAdhesion } from "../process-adhesion"

@@ -1,3 +1,5 @@
+import type { JSX } from "react"
+import React from "react"
 import {
     Body,
     Container,
@@ -9,9 +11,7 @@ import {
     pixelBasedPreset,
     Tailwind,
     Text
-} from "@react-email/components"
-import type { JSX } from "react"
-import React from "react"
+} from "react-email"
 
 export const APP_URL = "https://fare-asso.fr"
 export const APPLICATION_NAME = "FARE"

@@ -19,7 +19,7 @@ const h = vi.hoisted(() => ({
 vi.mock("std-env", () => stdEnvModule(stdenv))
 vi.mock("@/components/captcha/verify", () => captchaModule(h.verifyCaptcha))
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
-vi.mock("@react-email/render", () => reactEmailRenderModule())
+vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import submitContactFormAction from "../submitContactFormAction"

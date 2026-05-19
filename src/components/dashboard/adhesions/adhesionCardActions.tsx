@@ -1,6 +1,5 @@
 "use client"
 
-import type { Adhesion } from "@prisma/client"
 import {
     ArchiveIcon,
     ArchiveRestoreIcon,
@@ -31,6 +30,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/use-toast"
+import type { Adhesion } from "@/generated/prisma/client"
 
 import LoadingRing from "../loadingRing"
 

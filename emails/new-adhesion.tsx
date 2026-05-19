@@ -1,5 +1,5 @@
-import { Heading, Link, Text } from "@react-email/components"
 import React from "react"
+import { Heading, Link, Text } from "react-email"
 
 import BaseTemplate, { APP_URL } from "./base"
 

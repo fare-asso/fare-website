@@ -1,6 +1,7 @@
-import type { Permission } from "@prisma/client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render } from "vitest-browser-react"
+
+import type { Permission } from "@/generated/prisma/client"
 
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 

@@ -98,11 +98,12 @@ Always use `pnpm`, never use `npm`
 
 - **Server actions return a discriminated union:** `{ success: true; value: T } | { success: false; error: string }` (omit `value` when there is no payload: `{ success: true } | { success: false; error: string }`). Callers narrow on `success` — never optional `success?`/`error?` fields
 - **Every server action MUST be wrapped with `withServerAction()`** from `@/lib/sentry` (see [Server Actions](#server-actions))
-- **Report genuine exceptions with `captureActionError(error)`** from `@/lib/sentry` inside `catch` blocks — never a bare `console.error()` (it already logs + sends to Sentry, and re-throws Next.js `redirect`/`notFound` control flow)
-- Do NOT `captureActionError` on validation/permission early-returns — only on real thrown exceptions (DB, storage, email, PDF). Keeps Sentry free of expected denials
+- **Wrap risky IO with the `tryCatch` helper from `@/lib/utils`, NOT a `try/catch` block.** `tryCatch(promise)` returns the same Rust-style `{ success: true; value } | { success: false; error }` shape we use everywhere else — narrow on `success`, call `captureActionError(result.error)` on the failure branch, return a French error string. Plain `try/catch` is forbidden in server actions except for the rare best-effort fire-and-forget case below
+- **Report genuine exceptions with `captureActionError(error)`** from `@/lib/sentry` on the `tryCatch` failure branch — never a bare `console.error()` (it already logs + sends to Sentry, and re-throws Next.js `redirect`/`notFound` control flow)
+- Do NOT `captureActionError` on validation/permission/not-found early-returns — only on real thrown exceptions surfaced by `tryCatch` (DB, storage, email, PDF). Keeps Sentry free of expected denials
 - Never expose sensitive data (stack traces, keys) in error messages
 - Use Sonner toasts for client-side error display
-- Throw `Error` instances with descriptive messages (Biome enforces `useThrowOnlyError`)
+- Throw `Error` instances with descriptive messages (oxlint enforces `useThrowOnlyError`)
 - Always validate Zod parse results with `.safeParse()` (never throw from validation)
 
 ### Folder Structure & Organization
@@ -276,6 +277,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 const CreateItemSchema = z.object({
     name: z.string().min(1, "Name required"),
@@ -306,17 +308,17 @@ async function createItemActionImpl(
         }
     }
 
-    // 3. Risky IO wrapped in targeted try/catch (process-adhesion style)
-    let item: Item
-    try {
-        item = await prisma.item.create({ data: parsed.data })
-    } catch (error) {
-        captureActionError(error) // logs + sends to Sentry + rethrows redirect/notFound
+    // 3. Risky IO via tryCatch — same Result shape as the action return.
+    //    Narrow on `success`, capture on failure, return a French error.
+    //    DO NOT use a try/catch block here.
+    const item = await tryCatch(prisma.item.create({ data: parsed.data }))
+    if (!item.success) {
+        captureActionError(item.error) // logs + sends to Sentry + rethrows redirect/notFound
         return { success: false, error: "Echec de la création de l'élément" }
     }
 
     revalidatePath("/dashboard/items")
-    return { success: true, value: item }
+    return { success: true, value: item.value }
 }
 
 // Single export. Pass `{ attachFormData: true }` ONLY for internal/dashboard
@@ -330,7 +332,9 @@ wrapped result under the public name:
 `export const createItemAction = withServerAction("createItemAction", createItemActionImpl)`.
 For files with multiple actions (e.g. `loginAction.tsx`), wrap each one
 individually. Best-effort work (e.g. notification emails after the record is
-persisted) goes in its own try/catch that `captureActionError`s and continues.
+persisted) is the **only** place a bare `try/catch` is acceptable — wrap it,
+`captureActionError(error)` in the catch, and continue. Everything else uses
+`tryCatch`.
 
 **Key patterns:**
 
@@ -338,13 +342,17 @@ persisted) goes in its own try/catch that `captureActionError`s and continues.
   exported function name
 - Auth/permission/Zod failures are **early returns**, not exceptions — do not
   `captureActionError` them
-- Wrap genuinely risky IO (DB, storage, email, PDF/zip) in targeted try/catch
-  with `captureActionError(error)` and a hand-written French message in the
-  action's return shape
-- Keep Next.js `redirect()`/`notFound()` OUTSIDE any `captureActionError`
-  try/catch (the wrapper handles them; `captureActionError` rethrows them, so
-  a `redirect` inside a catch still works but never wrap it intentionally)
-- Return a discriminated union `{ success: true; value: T } | { success: false; error: string }` (drop `value` when there is no payload) — every branch sets an explicit `success`; callers narrow on it
+- Wrap every genuinely risky IO (DB, storage, email, PDF/zip, supabase
+  storage downloads/uploads, anything that can reject) in `tryCatch` from
+  `@/lib/utils` — NOT `try/catch`. Narrow on the returned `success`, call
+  `captureActionError(result.error)` on failure, and return a hand-written
+  French message in the action's return shape. Reserve `try/catch` for
+  fire-and-forget best-effort branches that must not abort the action
+- Keep Next.js `redirect()`/`notFound()` OUTSIDE the failure branch of any
+  `tryCatch` (the wrapper handles them; `captureActionError` rethrows them, so
+  a `redirect` inside a `if (!result.success)` block still works but never
+  funnel control-flow throws through `tryCatch` intentionally)
+- Return a discriminated union `{ success: true; value: T } | { success: false; error: string }` (drop `value` when there is no payload) — every branch sets an explicit `success`; callers narrow on it. This is the same shape `tryCatch` returns, on purpose
 - Call `revalidatePath()` after mutations
 - Never expose sensitive data in responses
 - Exclude internal sub-routines that other actions call (e.g. captcha
@@ -399,7 +407,7 @@ Emails live in `src/emails/` as React components using react-email:
 
 ```typescript
 // src/emails/welcome.tsx
-import { Container, Text } from '@react-email/components';
+import { Container, Text } from 'react-email';
 import React from "react"
 import BaseTemplate from "./base"
 

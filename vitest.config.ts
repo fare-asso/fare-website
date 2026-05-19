@@ -9,6 +9,7 @@ const srcAlias = {
 }
 
 const testEnv = {
+    SUPABASE_POSTGRES_PRISMA_URL: "postgresql://test:test@localhost:5432/test",
     FRIENDLY_CAPTCHA_API_KEY: "test-fc-api-key",
     SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     SMTP_HOST: "smtp.test.local",
@@ -51,12 +52,7 @@ export default defineConfig({
                 resolve: { alias: srcAlias },
                 plugins: [react()],
                 optimizeDeps: {
-                    include: [
-                        "@prisma/client",
-                        "@supabase/ssr",
-                        "lucide-react",
-                        "next/cache"
-                    ]
+                    include: ["@supabase/ssr", "lucide-react", "next/cache"]
                 },
                 test: {
                     name: "browser",

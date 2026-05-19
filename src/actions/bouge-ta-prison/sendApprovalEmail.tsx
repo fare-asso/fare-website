@@ -1,9 +1,9 @@
 "use server"
 
-import type { BTPTutorApplication } from "@prisma/client"
-import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
+import { render } from "react-email"
 
+import type { BTPTutorApplication } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { captureActionError, withServerAction } from "@/lib/sentry"

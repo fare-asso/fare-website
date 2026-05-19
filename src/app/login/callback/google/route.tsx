@@ -1,5 +1,5 @@
-import { render } from "@react-email/render"
 import { NextResponse } from "next/server"
+import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
 import NewGoogleUserTemplate from "@/../emails/new-google-user"

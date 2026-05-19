@@ -1,7 +1,8 @@
 "use client"
 
-import type { Adhesion } from "@prisma/client"
 import { FileTextIcon } from "lucide-react"
+
+import type { Adhesion } from "@/generated/prisma/client"
 
 import AdhesionCard from "./adhesionCard"
 

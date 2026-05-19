@@ -1,6 +1,5 @@
 "use client"
 
-import type { Association } from "@prisma/client"
 import { MailPlusIcon } from "lucide-react"
 import { useActionState, useCallback, useEffect, useState } from "react"
 
@@ -23,6 +22,7 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+import type { Association } from "@/generated/prisma/client"
 
 import LoadingRing from "../loadingRing"
 

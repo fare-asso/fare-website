@@ -1,9 +1,9 @@
-import type { BagadAssoEquipment } from "@prisma/client"
 import { BoxIcon, CoinsIcon } from "lucide-react"
 import Image from "next/image"
 import { MdOutlineHideImage } from "react-icons/md"
 
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import type { BagadAssoEquipment } from "@/generated/prisma/client"
 import { createClient } from "@/helpers/supabase/server"
 
 import DeleteEquipmentButton from "./deleteEquipmentButton"

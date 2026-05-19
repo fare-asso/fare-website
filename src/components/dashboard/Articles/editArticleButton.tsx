@@ -1,6 +1,5 @@
 "use client"
 
-import type { Article } from "@prisma/client"
 import type { JSONContent } from "@tiptap/react"
 import {
     startTransition,
@@ -27,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import RichTextEditor from "@/components/ui/rich-text-editor/richTextEditor"
+import type { Article } from "@/generated/prisma/client"
 import { base64ToFile } from "@/helpers/image"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 

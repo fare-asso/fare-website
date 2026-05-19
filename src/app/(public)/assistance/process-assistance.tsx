@@ -1,7 +1,7 @@
 "use server"
 
-import { render } from "@react-email/render"
 import { type } from "arktype"
+import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
 import { AssistanceTemplate } from "@/../emails/assistance"

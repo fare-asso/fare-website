@@ -25,3 +25,15 @@ pnpm dev
   migration history is reconciled: delete `model BugReport` from
   `schema.prisma`, then run
   `pnpm prisma migrate dev --name remove_bug_report_model`.
+- **Migrate remaining `try/catch` blocks to the `tryCatch` helper, then
+  drop the CI carve-out for `local/no-try-catch`:** the local oxlint rule
+  `local/no-try-catch` (in `tools/oxlint-rules/`) is set to `warn` locally
+  and flags ~90 existing call sites. To keep CI strict on every other
+  warn-level rule, `oxlint.config.ts` flips this specific rule to `"off"`
+  in CI via `isCI` from `std-env` (oxlint 1.65 silently ignores the CLI
+  `-A` flag for jsPlugin rules, so this env-var toggle is the only working
+  per-rule carve-out). To finish the migration: run `pnpm oxlint` locally
+  to list every `local(no-try-catch)` finding, rewrite each with `tryCatch`
+  from `@/lib/utils` (see AGENTS.md → Error Handling), then in
+  `oxlint.config.ts` replace `isCI ? "off" : "warn"` with just `"warn"`
+  and remove the `isCI` import.

@@ -1,6 +1,5 @@
 "use client"
 
-import type { BagadAssoTicket } from "@prisma/client"
 import { format, isBefore } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
@@ -42,6 +41,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/use-toast"
+import type { BagadAssoTicket } from "@/generated/prisma/client"
 
 import LoadingRing from "../../loadingRing"
 

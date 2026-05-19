@@ -1,8 +1,8 @@
 "use server"
 
-import type { PresseType } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
+import type { PresseType } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
