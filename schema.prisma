@@ -83,12 +83,6 @@ model Partenaire {
   logoPath    String
 }
 
-model AssistanceConfig {
-  id             Int    @id @default(autoincrement())
-  recipientEmail String @default("defense-des-droits@fare-asso.fr")
-  delay          String @default("48h")
-}
-
 model Event {
   id         Int      @id @default(autoincrement())
   name       String
@@ -234,12 +228,6 @@ model BugReport {
   email       String
   type        String @default("autre")
   description String
-}
-
-model AssistanceConfig {
-  id             Int    @id @default(autoincrement())
-  recipientEmail String @default("defense-des-droits@fare-asso.fr")
-  delay          String @default("48h")
 }
 
 enum Role {
