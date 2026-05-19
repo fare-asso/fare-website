@@ -1,13 +1,5 @@
-import {
-    Column,
-    Heading,
-    Hr,
-    Link,
-    Row,
-    Section,
-    Text
-} from "react-email"
 import React from "react"
+import { Column, Heading, Hr, Link, Row, Section, Text } from "react-email"
 
 import type { BTPTutorQuestion } from "@/schemas/bougeTaPrison"
 

@@ -1,6 +1,7 @@
-import type { BTPTutorApplication as BTPTutorApplicationPrisma } from "@prisma/client"
-import { Heading, Text } from "react-email"
 import React from "react"
+import { Heading, Text } from "react-email"
+
+import type { BTPTutorApplication as BTPTutorApplicationPrisma } from "@/generated/prisma/client"
 
 import BaseTemplate from "./base"
 

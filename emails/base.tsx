@@ -1,3 +1,5 @@
+import type { JSX } from "react"
+import React from "react"
 import {
     Body,
     Container,
@@ -10,8 +12,6 @@ import {
     Tailwind,
     Text
 } from "react-email"
-import type { JSX } from "react"
-import React from "react"
 
 export const APP_URL = "https://fare-asso.fr"
 export const APPLICATION_NAME = "FARE"
