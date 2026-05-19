@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.10
+
 FROM node:24-alpine AS base
 LABEL maintainer="finxol <contact@finxol.io>"
 LABEL repository="https://github.com/fare-asso/fare-website"
@@ -30,45 +32,10 @@ RUN pnpm install --frozen-lockfile
 # Copy the rest of the application
 COPY . .
 
-# Build-time arguments needed for Next.js static generation
-# Database connection
-ARG SUPABASE_POSTGRES_PRISMA_URL
-ENV SUPABASE_POSTGRES_PRISMA_URL=$SUPABASE_POSTGRES_PRISMA_URL
-
-ARG SUPABASE_POSTGRES_PRISMA_DIRECT_URL
-ENV SUPABASE_POSTGRES_PRISMA_DIRECT_URL=$SUPABASE_POSTGRES_PRISMA_DIRECT_URL
-
-# Generate Prisma client
+# Generate Prisma client (schema only, no DB connection needed)
 RUN pnpm exec prisma generate --no-hints
 
-########################################################################
-# Pass all env vars for env validation at pre-rendering
-# Server-side environment variables
-ARG FRIENDLY_CAPTCHA_API_KEY
-ENV FRIENDLY_CAPTCHA_API_KEY=$FRIENDLY_CAPTCHA_API_KEY
-
-ARG SUPABASE_SERVICE_ROLE_KEY
-ENV SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
-
-ARG SMTP_HOST
-ENV SMTP_HOST=$SMTP_HOST
-
-ARG SMTP_PORT
-ENV SMTP_PORT=$SMTP_PORT
-
-ARG SMTP_SECURE
-ENV SMTP_SECURE=$SMTP_SECURE
-
-ARG SMTP_USER
-ENV SMTP_USER=$SMTP_USER
-
-ARG SMTP_PASS
-ENV SMTP_PASS=$SMTP_PASS
-
-ARG SMTP_FROM_EMAIL
-ENV SMTP_FROM_EMAIL=$SMTP_FROM_EMAIL
-
-# Client-side environment variables
+# Public (NEXT_PUBLIC_*) vars are baked into the client bundle — fine as ARG/ENV
 ARG NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 
@@ -83,14 +50,24 @@ ENV NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY=$NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
 
 ARG NEXT_PUBLIC_SENTRY_DSN
 ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
-########################################################################
 
-# Run Prisma migrations
-RUN pnpm exec prisma migrate deploy
+# Non-sensitive SMTP config (host/port/etc.) — kept as ARG so values flow through
+ARG SMTP_PORT
+ENV SMTP_PORT=$SMTP_PORT
 
+ARG SMTP_SECURE
+ENV SMTP_SECURE=$SMTP_SECURE
 
-# Build the application
-RUN pnpm run build
+# Migrate + build with secrets exposed only for this RUN via BuildKit env-mounted secrets.
+RUN --mount=type=secret,id=SUPABASE_POSTGRES_PRISMA_URL,env=SUPABASE_POSTGRES_PRISMA_URL \
+    --mount=type=secret,id=SUPABASE_POSTGRES_PRISMA_DIRECT_URL,env=SUPABASE_POSTGRES_PRISMA_DIRECT_URL \
+    --mount=type=secret,id=SUPABASE_SERVICE_ROLE_KEY,env=SUPABASE_SERVICE_ROLE_KEY \
+    --mount=type=secret,id=FRIENDLY_CAPTCHA_API_KEY,env=FRIENDLY_CAPTCHA_API_KEY \
+    --mount=type=secret,id=SMTP_HOST,env=SMTP_HOST \
+    --mount=type=secret,id=SMTP_USER,env=SMTP_USER \
+    --mount=type=secret,id=SMTP_PASS,env=SMTP_PASS \
+    --mount=type=secret,id=SMTP_FROM_EMAIL,env=SMTP_FROM_EMAIL \
+    pnpm exec prisma migrate deploy && pnpm run build
 
 ####################
 ### RUNNER STAGE ###
