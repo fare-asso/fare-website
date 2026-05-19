@@ -108,23 +108,5 @@
         "vitest": "^4.1.6",
         "vitest-browser-react": "^2.2.0"
     },
-    "packageManager": "pnpm@10.33.4",
-    "pnpm": {
-        "overrides": {
-            "@types/react": "19.2.7",
-            "@types/react-dom": "19.2.3",
-            "baseline-browser-mapping": "^2.10.31",
-            "react-is": "^19.2.6"
-        },
-        "onlyBuiltDependencies": [
-            "@prisma/client",
-            "@prisma/engines",
-            "esbuild",
-            "msw",
-            "prisma",
-            "sharp",
-            "supabase",
-            "unrs-resolver"
-        ]
-    }
+    "packageManager": "pnpm@11.1.3"
 }
