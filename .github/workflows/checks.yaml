@@ -19,12 +19,6 @@ jobs:
               with:
                   persist-credentials: false
 
-            - name: Setup Biome
-              uses: biomejs/setup-biome@v2
-
-            - name: Run Biome
-              run: biome ci .
-
             - uses: pnpm/action-setup@v4
               name: Install pnpm
               with:
@@ -42,8 +36,14 @@ jobs:
             - name: Generate Prisma Client
               run: pnpm exec prisma generate
 
+            - name: Check linting
+              run: pnpm run check:lint --format=github
+
             - name: Check types
               run: pnpm run check:types
+
+            - name: Check formatting
+              run: pnpm run check:format
 
             - name: Knip project
               run: pnpm run knip
