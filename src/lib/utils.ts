@@ -55,6 +55,7 @@ export async function tryCatch<T, E = Error>(
           error: E
       }
 > {
+    // oxlint-disable-next-line local/no-try-catch
     try {
         const value = await promise
         return { success: true, value, error: null }
