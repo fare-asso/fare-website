@@ -1,6 +1,6 @@
 "use server"
 
-import archiver from "archiver"
+import { zip } from "fflate"
 
 import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf"
 import prisma from "@/helpers/db"
@@ -9,6 +9,7 @@ import { sanitizeString } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 type ActionState = {
     error?: string
@@ -32,73 +33,86 @@ async function downloadFolderActionImpl(
         }
     }
 
-    const supabase = await createClient()
-
     if (!folderPath) {
         return { error: "Le nom du dossier est invalide" }
     }
 
-    try {
-        const { data: files, error } = await supabase.storage
-            .from("adhesion")
-            .list(folderPath)
+    const adhesion = await tryCatch(
+        prisma.adhesion.findFirst({ where: { folderPath } })
+    )
 
-        if (error) throw error
-
-        const archive = archiver("zip", { zlib: { level: 9 } })
-        const chunks: Uint8Array[] = []
-
-        archive.on("data", (chunk: Uint8Array) => chunks.push(chunk))
-        archive.on("warning", (err: Error) => console.warn(err))
-        archive.on("error", (err: Error) => {
-            throw err
-        })
-
-        // Téléchargement parallèle des fichiers
-        const downloadPromises = files.map(async (file) => {
-            const { data: fileData, error: fileError } = await supabase.storage
-                .from("adhesion")
-                .download(`${folderPath}/${file.name}`)
-
-            if (fileError) throw fileError
-
-            return { name: file.name, data: await fileData.arrayBuffer() }
-        })
-
-        const downloadedFiles = await Promise.all(downloadPromises)
-
-        // Ajout des fichiers à l'archive
-        for (const file of downloadedFiles) {
-            archive.append(Buffer.from(file.data), { name: file.name })
-        }
-
-        // Le formulaire PDF n'est plus stocké : on le régénère depuis la
-        // base de données et on l'ajoute au zip.
-        const adhesion = await prisma.adhesion.findFirst({
-            where: { folderPath }
-        })
-        if (adhesion) {
-            const pdf = await generateAdhesionPdfFromRecord(adhesion)
-            const slug =
-                sanitizeString(adhesion.sigle) || `adhesion-${adhesion.id}`
-            archive.append(Buffer.from(pdf), {
-                name: `formulaire-adhesion-${slug}.pdf`
-            })
-        }
-
-        await archive.finalize()
-
-        const zipBuffer = Buffer.concat(chunks)
-        const base64Zip = zipBuffer.toString("base64")
-
-        return {
-            success: true,
-            zipData: base64Zip,
-            filename: `${folderPath}.zip`
-        }
-    } catch (error) {
-        captureActionError(error)
+    if (!adhesion.success) {
+        captureActionError(adhesion.error)
         return { error: "Erreur lors de la création du fichier zip" }
+    }
+
+    if (!adhesion.value) {
+        return { error: "Aucune adhésion ne correspond à ce dossier" }
+    }
+
+    const filePaths = [
+        adhesion.value.logoPath,
+        adhesion.value.statutsPath,
+        adhesion.value.recepissePath,
+        adhesion.value.extraitPVPath,
+        adhesion.value.lettreEngagementPath,
+        adhesion.value.reglementInterieurPath,
+        adhesion.value.bilanFinancierPath
+    ].filter((path): path is string => Boolean(path))
+
+    const supabase = await createClient()
+
+    // Téléchargement parallèle des fichiers référencés en base
+    const downloads = await tryCatch(
+        Promise.all(
+            filePaths.map(async (path) => {
+                const { data, error } = await supabase.storage
+                    .from("adhesion")
+                    .download(path)
+                if (error) throw error
+                const name = path.split("/").pop() ?? path
+                return { name, data: new Uint8Array(await data.arrayBuffer()) }
+            })
+        )
+    )
+    if (!downloads.success) {
+        captureActionError(downloads.error)
+        return { error: "Erreur lors de la création du fichier zip" }
+    }
+
+    console.log("Generating adhesion PDF")
+    const pdf = await tryCatch(generateAdhesionPdfFromRecord(adhesion.value))
+    if (!pdf.success) {
+        console.error("Error generating adhesion PDF")
+        captureActionError(pdf.error)
+        return { error: "Erreur lors de la création du fichier zip" }
+    }
+
+    const entries: Record<string, Uint8Array> = {}
+    for (const file of downloads.value) {
+        entries[file.name] = file.data
+    }
+    const slug =
+        sanitizeString(adhesion.value.sigle) || `adhesion-${adhesion.value.id}`
+    entries[`formulaire-adhesion-${slug}.pdf`] = pdf.value
+
+    const zipBuffer = await tryCatch(
+        new Promise<Uint8Array>((resolve, reject) => {
+            zip(entries, { level: 9 }, (err, data) => {
+                if (err) reject(err)
+                else resolve(data)
+            })
+        })
+    )
+    if (!zipBuffer.success) {
+        captureActionError(zipBuffer.error)
+        return { error: "Erreur lors de la création du fichier zip" }
+    }
+
+    return {
+        success: true,
+        zipData: Buffer.from(zipBuffer.value).toString("base64"),
+        filename: `${folderPath}.zip`
     }
 }
 

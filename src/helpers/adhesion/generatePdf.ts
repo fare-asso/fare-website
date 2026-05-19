@@ -1,4 +1,6 @@
-import type { Adhesion } from "@prisma/client"
+import { readFile } from "node:fs/promises"
+import path from "node:path"
+
 import { type } from "arktype"
 import { format } from "date-fns"
 import { PDFDocument, type PDFPage, rgb, StandardFonts } from "pdf-lib"
@@ -7,7 +9,7 @@ import {
     type BureauMember,
     bureauMemberSchema
 } from "@/app/(public)/a-propos/adhesion/form-schema"
-import { env } from "@/env"
+import type { Adhesion } from "@/generated/prisma/client"
 
 interface AdhesionPdfData {
     dateAdhesion: Date
@@ -39,28 +41,28 @@ export async function generateAdhesionPdf(
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
 
+    const logoBytes = await readFile(
+        path.join(process.cwd(), "public", "logo_fare.png")
+    )
+    const logoImage = await pdfDoc.embedPng(logoBytes)
+
     // Track vertical position across pages
     let yPosition = 0
 
-    const addCornerLabel = async (page: PDFPage) => {
-        const baseUrl = env.NEXT_PUBLIC_SITE_URL
-        const pngImageBytes = await fetch(
-            `${baseUrl}/corner-pdf-FAHB.png`
-        ).then((res) => res.arrayBuffer())
-        const pngImage = await pdfDoc.embedPng(pngImageBytes)
-        const pngDims = pngImage.scale(0.5)
+    const addCornerLabel = (page: PDFPage) => {
+        const logoDims = logoImage.scale(0.075)
         const { height } = page.getSize()
-        page.drawImage(pngImage, {
-            x: 0,
-            y: height - pngDims.height,
-            width: pngDims.width,
-            height: pngDims.height
+        page.drawImage(logoImage, {
+            x: 10,
+            y: -5 + height - logoDims.height,
+            width: logoDims.width,
+            height: logoDims.height
         })
     }
 
-    const createPage = async (): Promise<PDFPage> => {
+    const createPage = (): PDFPage => {
         const page = pdfDoc.addPage()
-        await addCornerLabel(page)
+        addCornerLabel(page)
         const { height } = page.getSize()
         yPosition = height - 75
         return page
@@ -100,7 +102,7 @@ export async function generateAdhesionPdf(
     }
 
     // --- Page 1: General info ---
-    const page = await createPage()
+    const page = createPage()
 
     page.drawText("Formulaire d'adhésion", {
         x: 50,
@@ -174,8 +176,7 @@ export async function generateAdhesionPdf(
     )
 
     // --- Page 2: Bureau members ---
-    const memberPage = await createPage()
-    yPosition -= 0 // already set by createPage
+    const memberPage = createPage()
 
     memberPage.drawText("Membres du bureau:", {
         x: 50,
@@ -206,8 +207,7 @@ export async function generateAdhesionPdf(
 }
 
 /**
- * Builds the adhesion PDF from a stored database record (the PDF is no
- * longer persisted, it is regenerated on request).
+ * Builds the adhesion PDF from a stored database record
  */
 export async function generateAdhesionPdfFromRecord(
     adhesion: Adhesion

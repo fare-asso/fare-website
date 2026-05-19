@@ -13,13 +13,10 @@ const h = vi.hoisted(() => ({
     findFirst: vi.fn(),
     getUser: vi.fn(),
     genPdf: vi.fn(),
-    list: vi.fn(),
     download: vi.fn(),
     captureActionError: vi.fn()
 }))
-const from = vi.hoisted(() =>
-    vi.fn(() => ({ list: h.list, download: h.download }))
-)
+const from = vi.hoisted(() => vi.fn(() => ({ download: h.download })))
 
 vi.mock("@/helpers/db", () =>
     dbModule({ adhesion: { findFirst: h.findFirst } })
@@ -42,10 +39,6 @@ const isZip = (b64: string): boolean => {
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["access:adhesions"]))
-    h.list.mockResolvedValue({
-        data: [{ name: "logo.png" }, { name: "statuts.pdf" }],
-        error: null
-    })
     h.download.mockResolvedValue({
         data: new Blob([new Uint8Array([1, 2, 3])]),
         error: null
@@ -60,14 +53,14 @@ describe("downloadFolderAction", () => {
         expect(await downloadFolderAction(undefined, "f")).toEqual({
             error: "Authentification requise"
         })
-        expect(h.list).not.toHaveBeenCalled()
+        expect(h.findFirst).not.toHaveBeenCalled()
     })
 
     it("requires the access:adhesions permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await downloadFolderAction(undefined, "f")
         expect(res.error).toMatch(/permission/)
-        expect(h.list).not.toHaveBeenCalled()
+        expect(h.findFirst).not.toHaveBeenCalled()
     })
 
     it("rejects an empty folder path", async () => {
@@ -76,12 +69,13 @@ describe("downloadFolderAction", () => {
         })
     })
 
-    it("captures and errors when listing the folder fails", async () => {
-        h.list.mockResolvedValue({ data: null, error: { message: "nope" } })
+    it("captures and errors when fetching the adhesion fails", async () => {
+        h.findFirst.mockRejectedValue(new Error("db down"))
         expect(await downloadFolderAction(undefined, "uuid-fare")).toEqual({
             error: "Erreur lors de la création du fichier zip"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.download).not.toHaveBeenCalled()
     })
 
     it("captures and errors when a file download fails", async () => {
@@ -95,19 +89,23 @@ describe("downloadFolderAction", () => {
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("zips the folder and appends the generated PDF", async () => {
+    it("downloads the files referenced in the db and appends the PDF", async () => {
         const res = await downloadFolderAction(undefined, "uuid-fare")
         expect(res.success).toBe(true)
         expect(res.filename).toBe("uuid-fare.zip")
         expect(res.zipData && isZip(res.zipData)).toBe(true)
+        // 4 required paths in the factory record (optionals are null)
+        expect(h.download).toHaveBeenCalledTimes(4)
+        expect(h.download).toHaveBeenCalledWith("uuid-fare/logo.png")
         expect(h.genPdf).toHaveBeenCalledOnce()
     })
 
-    it("still zips when no adhesion matches the folder", async () => {
+    it("errors when no adhesion matches the folder", async () => {
         h.findFirst.mockResolvedValue(null)
-        const res = await downloadFolderAction(undefined, "uuid-fare")
-        expect(res.success).toBe(true)
-        expect(res.zipData && isZip(res.zipData)).toBe(true)
+        expect(await downloadFolderAction(undefined, "uuid-fare")).toEqual({
+            error: "Aucune adhésion ne correspond à ce dossier"
+        })
+        expect(h.download).not.toHaveBeenCalled()
         expect(h.genPdf).not.toHaveBeenCalled()
     })
 })
