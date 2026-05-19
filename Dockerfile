@@ -88,6 +88,9 @@ ARG NEXT_PUBLIC_SENTRY_DSN
 ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 ########################################################################
 
+# Run Prisma migrations
+RUN pnpm exec prisma migrate deploy --schema=./prisma/schema.prisma
+
 
 # Build the application
 RUN pnpm run build
@@ -126,4 +129,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["./docker-entrypoint.sh"]
+CMD ["node", "server.js"]
