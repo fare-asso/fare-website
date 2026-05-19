@@ -16,5 +16,6 @@ export default defineConfig({
     // disable checking for "overrides" package.json field
     depFields: {
         overrides: false
-    }
+    },
+    maturityPeriod: 1
 })

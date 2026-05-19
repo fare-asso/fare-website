@@ -5,7 +5,7 @@ onlyBuiltDependencies:
     - sharp
     - supabase
     - unrs-resolver
-minimumReleaseAge: 1440
+minimumReleaseAge: 1440 # 1 day
 trustPolicy: no-downgrade
 trustPolicyExclude:
     - "semver@6.3.1"
