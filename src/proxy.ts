@@ -1,6 +1,8 @@
 import type { Role } from "@prisma/client"
 import { type NextRequest, NextResponse } from "next/server"
+
 import { updateSession } from "@/helpers/supabase/middleware"
+
 import { createClient } from "./helpers/supabase/server"
 
 const permissionProtectedRoutes: {

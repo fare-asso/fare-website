@@ -21,7 +21,7 @@ export default async function ActiveAdhesions({
 
     return (
         <div>
-            <p className="my-4 text-gray-500 text-sm">
+            <p className="my-4 text-sm text-gray-500">
                 <span className="font-bold">
                     {adhesions.length} demande{adhesions.length > 1 ? "s" : ""}
                 </span>{" "}

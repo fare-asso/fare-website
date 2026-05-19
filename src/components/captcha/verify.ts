@@ -24,7 +24,6 @@ type FCApiResponse =
               /**
                * Error code, see the table below for possible values
                */
-              // biome-ignore lint/style/useNamingConvention: it's a lib
               error_code:
                   | "auth_required"
                   | "auth_invalid"

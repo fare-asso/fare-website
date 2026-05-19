@@ -5,6 +5,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon, Loader2Icon, Trash2, UserPlus } from "lucide-react"
 import { memo, useCallback, useState, useTransition } from "react"
+
 import { Captcha } from "@/components/captcha"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -41,6 +42,7 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+
 import {
     AdhesionFormSchema,
     type BureauMember,
@@ -114,7 +116,7 @@ export function AdhesionForm(): React.ReactNode {
             onChange: AdhesionFormSchema,
             onSubmit: AdhesionFormSchema
         },
-        // biome-ignore lint/suspicious/useAwait: submission runs inside a transition
+        // oxlint-disable-next-line require-await -- submission runs inside a transition
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submitForm(async () => {
@@ -153,7 +155,7 @@ export function AdhesionForm(): React.ReactNode {
         return (
             <div className="rounded-lg border p-4">
                 <div className="mb-4 flex items-center justify-between">
-                    <h4 className="font-medium text-sm">Membre {index + 1}</h4>
+                    <h4 className="text-sm font-medium">Membre {index + 1}</h4>
                     <div className="flex items-center gap-3">
                         <form.Field
                             name={`bureau[${index}].isAdmin`}
@@ -169,7 +171,7 @@ export function AdhesionForm(): React.ReactNode {
                                     />
                                     <FieldLabel
                                         htmlFor={field.name}
-                                        className="font-normal text-sm"
+                                        className="text-sm font-normal"
                                     >
                                         Administrateur
                                     </FieldLabel>
@@ -183,7 +185,7 @@ export function AdhesionForm(): React.ReactNode {
                                 size="sm"
                                 onClick={onDelete}
                             >
-                                <Trash2 className="h-4 w-4 text-destructive" />
+                                <Trash2 className="text-destructive h-4 w-4" />
                             </Button>
                         )}
                     </div>
@@ -966,7 +968,6 @@ export function AdhesionForm(): React.ReactNode {
                                                                 )
                                                                 field.handleBlur()
                                                             }}
-                                                            autoFocus
                                                         />
                                                     </PopoverContent>
                                                 </Popover>
@@ -1602,7 +1603,7 @@ export function AdhesionForm(): React.ReactNode {
                         {submitError && (
                             <p
                                 role="alert"
-                                className="rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-destructive text-sm"
+                                className="border-destructive bg-destructive/10 text-destructive rounded-md border px-4 py-3 text-sm"
                             >
                                 {submitError}
                             </p>

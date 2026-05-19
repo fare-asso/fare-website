@@ -1,4 +1,5 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest"
+
 import { server } from "./src/test/msw"
 
 // `FileList` is a browser global used by client-side Zod schemas

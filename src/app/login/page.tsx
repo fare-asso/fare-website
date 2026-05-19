@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation"
 import { Suspense, useActionState, useState, useTransition } from "react"
 import { FcGoogle } from "react-icons/fc"
 import { MdAdminPanelSettings } from "react-icons/md"
+
 import FARELogo from "#public/logo_fare.png"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+
 import { loginWithGoogleAction, loginWithPasswordAction } from "./loginAction"
 
 export default function LoginPage() {
@@ -29,7 +31,7 @@ export default function LoginPage() {
 
 function LoginPageSkeleton() {
     return (
-        <Card className="mx-auto mt-20 min-w-1/3 max-w-sm">
+        <Card className="mx-auto mt-20 max-w-sm min-w-1/3">
             <CardHeader className="flex flex-col items-start">
                 <div className="mx-auto mb-6 h-16 w-16 animate-pulse rounded bg-gray-200" />
                 <div className="h-6 w-40 animate-pulse rounded bg-gray-200" />
@@ -61,7 +63,7 @@ function LoginPageContent() {
     }
 
     return (
-        <Card className="mx-auto min-w-1/3 max-w-full">
+        <Card className="mx-auto max-w-full min-w-1/3">
             <CardHeader className="flex flex-col items-start">
                 <Image
                     src={FARELogo}
@@ -102,15 +104,15 @@ function LoginPageContent() {
                         </>
                     )}
                 </Button>
-                <div className="mt-2 text-balance text-center text-gray-500 text-xs">
+                <div className="mt-2 text-center text-xs text-balance text-gray-500">
                     Utilisez votre adresse Google FARE (qui termine par
                     @fare-asso.fr)
                 </div>
 
                 <div className="flex w-96 max-w-full items-center justify-center py-6">
-                    <div className="flex-1 border-gray-300 border-t"></div>
-                    <span className="px-4 text-gray-500 text-sm">ou</span>
-                    <div className="flex-1 border-gray-300 border-t"></div>
+                    <div className="flex-1 border-t border-gray-300"></div>
+                    <span className="px-4 text-sm text-gray-500">ou</span>
+                    <div className="flex-1 border-t border-gray-300"></div>
                 </div>
 
                 {showPasswordLogin ? (
@@ -118,7 +120,7 @@ function LoginPageContent() {
                         <Label htmlFor="email">Email</Label>
                         <Input type="email" name="email" id="email" />
                         {passwordError?.emailError ? (
-                            <div className="font-medium text-destructive text-sm">
+                            <div className="text-destructive text-sm font-medium">
                                 {passwordError.emailError}
                             </div>
                         ) : null}
@@ -126,7 +128,7 @@ function LoginPageContent() {
                         <Label htmlFor="password">Password</Label>
                         <Input type="password" name="password" id="password" />
                         {passwordError?.passwordError ? (
-                            <div className="font-medium text-destructive text-sm">
+                            <div className="text-destructive text-sm font-medium">
                                 {passwordError.passwordError}
                             </div>
                         ) : null}
@@ -152,7 +154,7 @@ function LoginPageContent() {
                             <MailIcon />
                             Email et mot de passe
                         </Button>
-                        <div className="mt-2 text-balance text-center text-gray-500 text-xs">
+                        <div className="mt-2 text-center text-xs text-balance text-gray-500">
                             Pour vous connecter avec un email et mot de passe.
                         </div>
                     </>

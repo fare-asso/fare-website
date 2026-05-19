@@ -2,8 +2,10 @@ import type { BagadAssoEquipment } from "@prisma/client"
 import { BoxIcon, CoinsIcon } from "lucide-react"
 import Image from "next/image"
 import { MdOutlineHideImage } from "react-icons/md"
+
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { createClient } from "@/helpers/supabase/server"
+
 import DeleteEquipmentButton from "./deleteEquipmentButton"
 import EditEquipmentDialog from "./editEquipmentDialog"
 
@@ -30,7 +32,7 @@ export default async function EquipmentCard({
         <Card className="group flex flex-col gap-3 overflow-hidden py-0 transition-shadow hover:shadow-md">
             {/* Image */}
             <CardHeader className="p-0">
-                <div className="relative aspect-4/3 w-full overflow-hidden bg-muted">
+                <div className="bg-muted relative aspect-4/3 w-full overflow-hidden">
                     {imageUrl ? (
                         <Image
                             fill
@@ -40,7 +42,7 @@ export default async function EquipmentCard({
                             src={imageUrl}
                         />
                     ) : (
-                        <div className="flex h-full w-full flex-col items-center justify-center text-muted-foreground">
+                        <div className="text-muted-foreground flex h-full w-full flex-col items-center justify-center">
                             <MdOutlineHideImage className="h-8 w-8 opacity-50" />
                             <span className="mt-1 text-center text-xs">
                                 Pas d'image
@@ -52,11 +54,11 @@ export default async function EquipmentCard({
 
             {/* Content */}
             <CardContent className="flex flex-1 flex-col gap-1 px-3 py-1">
-                <h3 className="line-clamp-3 font-medium text-base leading-tight">
+                <h3 className="line-clamp-3 text-base leading-tight font-medium">
                     {equipment.name}
                 </h3>
 
-                <div className="flex items-center gap-3 text-muted-foreground text-xs">
+                <div className="text-muted-foreground flex items-center gap-3 text-xs">
                     <div className="flex items-center gap-1">
                         <CoinsIcon className="h-3 w-3" />
                         <span>{equipment.deposit}€</span>
@@ -70,7 +72,7 @@ export default async function EquipmentCard({
 
             {/* Actions */}
             {canEdit || canDelete ? (
-                <CardFooter className="flex gap-1.5 border-t bg-muted/30 px-2 py-0 pt-2! pb-2!">
+                <CardFooter className="bg-muted/30 flex gap-1.5 border-t px-2 py-0 pt-2! pb-2!">
                     {canEdit ? (
                         <EditEquipmentDialog
                             equipment={equipment}

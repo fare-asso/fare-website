@@ -12,7 +12,7 @@ export default function ColorPicker({ editor }: { editor: Editor }) {
 
     useEffect(() => {
         setColor(editor.getAttributes("textStyle").color ?? "#000000")
-    }, [editor.getAttributes])
+    }, [editor])
 
     const handleColorChange: ColorChangeHandler = (event) => {
         setColor(event.hex)

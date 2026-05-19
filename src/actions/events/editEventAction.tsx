@@ -1,7 +1,9 @@
 "use server"
 
 import { randomUUID } from "node:crypto"
+
 import { revalidatePath } from "next/cache"
+
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
@@ -70,7 +72,7 @@ async function editEventActionImpl(
     //id
     if (id != null && typeof id === "string") {
         const idStr: string = id.toString()
-        const idNumber: number = Number(idStr)
+        const idNumber = Number(idStr)
         if (Number.isNaN(idNumber)) {
             return {
                 error: "L'identifiant n'est pas un nombre..."

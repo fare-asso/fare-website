@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import EventArchive from "@/components/public/events/archive"
 import CurrentEvents from "@/components/public/events/currentEvents"
 import SoonEvents from "@/components/public/events/soon"
@@ -11,9 +12,7 @@ export const metadata: Metadata = {
 export default function Reseau() {
     return (
         <div className="flex w-full flex-col items-center justify-start">
-            <h1 className="py-44 font-semibold text-3xl">
-                {"L'Agenda du réseau"}
-            </h1>
+            <h1 className="py-44 text-3xl font-semibold">L'Agenda du réseau</h1>
             <div className="flex h-full w-full flex-col items-center">
                 <CurrentEvents />
                 <SoonEvents />

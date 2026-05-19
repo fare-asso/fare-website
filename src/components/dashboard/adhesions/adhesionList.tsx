@@ -2,6 +2,7 @@
 
 import type { Adhesion } from "@prisma/client"
 import { FileTextIcon } from "lucide-react"
+
 import AdhesionCard from "./adhesionCard"
 
 interface AdhesionListProps {
@@ -19,7 +20,7 @@ export default function AdhesionList({
         <div className="@container flex h-full flex-col">
             <div className="flex-1 overflow-y-auto">
                 {adhesions.length > 0 ? (
-                    <div className="grid @min-2xl:grid-cols-2 grid-cols-1 gap-4">
+                    <div className="grid grid-cols-1 gap-4 @min-2xl:grid-cols-2">
                         {adhesions.map((adhesion) => (
                             <AdhesionCard
                                 key={adhesion.id}
@@ -30,12 +31,12 @@ export default function AdhesionList({
                         ))}
                     </div>
                 ) : (
-                    <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30">
-                        <FileTextIcon className="mb-3 h-12 w-12 text-muted-foreground/50" />
-                        <p className="font-medium text-muted-foreground">
+                    <div className="bg-muted/30 flex h-64 flex-col items-center justify-center rounded-lg border border-dashed">
+                        <FileTextIcon className="text-muted-foreground/50 mb-3 h-12 w-12" />
+                        <p className="text-muted-foreground font-medium">
                             Aucune demande d'adhésion
                         </p>
-                        <p className="mt-1 text-muted-foreground/70 text-sm">
+                        <p className="text-muted-foreground/70 mt-1 text-sm">
                             Les demandes d'adhésion apparaîtront ici
                         </p>
                     </div>

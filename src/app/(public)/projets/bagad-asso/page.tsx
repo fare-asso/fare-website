@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
+
 import logoBagadAsso from "#public/Logo_Bagadasso.png"
 import BagadAssoForm from "@/components/public/bagadAsso/form"
 import prisma from "@/helpers/db"
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
     title: "Badag'Asso"
 }
 
-// biome-ignore lint/suspicious/useAwait: Next RSC
+// oxlint-disable-next-line require-await -- Next RSC
 export default async function BagadAsso() {
     const equipmentList = prisma.bagadAssoEquipment.findMany()
 
@@ -22,7 +23,7 @@ export default async function BagadAsso() {
 
             {/* Présentation du projet */}
             <div className="mb-12 max-w-4xl rounded-xl bg-black p-8 text-justify text-white">
-                <h2 className="mb-4 font-semibold text-xl">
+                <h2 className="mb-4 text-xl font-semibold">
                     Présentation du projet
                 </h2>
                 <p className="mb-4 text-justify">
@@ -40,7 +41,7 @@ export default async function BagadAsso() {
                     des projets à hauteur de leurs ambitions, la FARE vous
                     présente le Bagad'Asso.
                 </p>
-                <p className="mb-4 italic text-justify">
+                <p className="mb-4 text-justify italic">
                     Mais ça veut dire quoi "Bagad'Asso" ? Un Bagad c'est un
                     orchestre traditionnel breton, alors cette fois-ci on
                     remplace les musiciens par des associatifs et le public par
@@ -65,10 +66,10 @@ export default async function BagadAsso() {
             </div>
 
             <section className="mb-12 w-full max-w-4xl">
-                <h2 className="mb-4 font-bold text-2xl">Nos services</h2>
+                <h2 className="mb-4 text-2xl font-bold">Nos services</h2>
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                     <div>
-                        <h3 className="mb-2 font-semibold text-xl">
+                        <h3 className="mb-2 text-xl font-semibold">
                             Logistique
                         </h3>
                         <ul className="list-inside list-disc">
@@ -80,7 +81,7 @@ export default async function BagadAsso() {
                         </ul>
                     </div>
                     <div>
-                        <h3 className="mb-2 font-semibold text-xl">
+                        <h3 className="mb-2 text-xl font-semibold">
                             Prévention
                         </h3>
                         <ul className="list-inside list-disc">
@@ -92,7 +93,7 @@ export default async function BagadAsso() {
                         </ul>
                     </div>
                     <div>
-                        <h3 className="mb-2 font-semibold text-xl">Services</h3>
+                        <h3 className="mb-2 text-xl font-semibold">Services</h3>
                         <ul className="list-inside list-disc">
                             <li>Personnes de confiance</li>
                             <li>Tarif réduit sur la SACEM</li>

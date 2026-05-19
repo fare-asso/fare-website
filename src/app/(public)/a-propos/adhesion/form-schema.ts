@@ -1,4 +1,5 @@
 import { type } from "arktype"
+
 import { fileSchema, frenchPhone } from "@/schemas/reusables"
 
 export const bureauMemberSchema = type({

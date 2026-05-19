@@ -3,7 +3,9 @@
 import type { Table } from "@tanstack/react-table"
 import { RotateCcw, Trash2, UserCog, X } from "lucide-react"
 import { useState } from "react"
+
 import { Button } from "@/components/ui/button"
+
 import { BulkDeleteDialog } from "./bulkDeleteDialog"
 import { BulkRestoreDialog } from "./bulkRestoreDialog"
 import { BulkRoleDialog } from "./bulkRoleDialog"
@@ -51,9 +53,9 @@ export function BulkActionsBar<TData extends UserRow>({
 
     return (
         <>
-            <div className="sticky right-0 bottom-0 left-0 z-10 flex items-center justify-between gap-4 rounded-lg border bg-background p-4 shadow-lg">
+            <div className="bg-background sticky right-0 bottom-0 left-0 z-10 flex items-center justify-between gap-4 rounded-lg border p-4 shadow-lg">
                 <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">
+                    <span className="text-sm font-medium">
                         {selectedCount} utilisateur
                         {selectedCount > 1 ? "s" : ""} selectionne
                         {selectedCount > 1 ? "s" : ""}

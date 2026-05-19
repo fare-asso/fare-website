@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { validEventFormData } from "@/test/factories/events"
 import { mockUser } from "@/test/factories/user"
 import {

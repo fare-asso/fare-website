@@ -4,6 +4,7 @@ import { render } from "@react-email/render"
 import { type } from "arktype"
 import { revalidatePath } from "next/cache"
 import { isDevelopment } from "std-env"
+
 import AdhesionAck from "@/../emails/adhesion-acknowledgement"
 import { AdhesionTemplate } from "@/../emails/new-adhesion"
 import { verifyCaptcha } from "@/components/captcha/verify"
@@ -12,6 +13,7 @@ import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+
 import { AdhesionFormSchema, type TAdhesionForm } from "./form-schema"
 
 const BUCKET = "adhesion"

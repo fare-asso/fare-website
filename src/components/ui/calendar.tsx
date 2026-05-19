@@ -10,6 +10,7 @@ import {
     labelPrevious,
     useDayPicker
 } from "react-day-picker"
+
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -91,7 +92,7 @@ function Calendar({
     )
     const _weekdaysClassName = cn("flex flex-row", props.weekdaysClassName)
     const _weekdayClassName = cn(
-        "w-8 font-normal text-muted-foreground text-sm",
+        "text-muted-foreground w-8 text-sm font-normal",
         props.weekdayClassName
     )
     const _monthClassName = cn("w-full", props.monthClassName)
@@ -100,7 +101,7 @@ function Calendar({
         props.captionClassName
     )
     const _captionLabelClassName = cn(
-        "truncate font-medium text-sm",
+        "truncate text-sm font-medium",
         props.captionLabelClassName
     )
     const buttonNavClassName = buttonVariants({
@@ -158,7 +159,7 @@ function Calendar({
         props.todayClassName
     )
     const _outsideClassName = cn(
-        "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+        "day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground opacity-50 aria-selected:opacity-30",
         props.outsideClassName
     )
     const _disabledClassName = cn(
@@ -414,7 +415,7 @@ function CaptionLabel({
     if (!showYearSwitcher) return <span {...props}>{children}</span>
     return (
         <Button
-            className="h-7 w-full truncate font-medium text-sm"
+            className="h-7 w-full truncate text-sm font-medium"
             variant="ghost"
             size="sm"
             onClick={() =>
@@ -506,10 +507,10 @@ function YearGrid({
                         <Button
                             key={i}
                             className={cn(
-                                "h-7 w-full font-normal text-foreground text-sm",
+                                "text-foreground h-7 w-full text-sm font-normal",
                                 displayYears.from + i ===
                                     new Date().getFullYear() &&
-                                    "bg-accent font-medium text-accent-foreground"
+                                    "bg-accent text-accent-foreground font-medium"
                             )}
                             variant="ghost"
                             onClick={() => {

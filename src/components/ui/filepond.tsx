@@ -2,7 +2,6 @@
 
 import "filepond/dist/filepond.min.css"
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
-
 import type { FilePondFile } from "filepond"
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size"
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
@@ -20,8 +19,10 @@ registerPlugin(
     FilePondPluginImagePreview
 )
 
-interface FilePondInputProps
-    extends Omit<ReactFilePondProps, "onupdatefiles" | "files"> {
+interface FilePondInputProps extends Omit<
+    ReactFilePondProps,
+    "onupdatefiles" | "files"
+> {
     /** Called with the first File when files change (single mode), or undefined if cleared. */
     onChange?: (file: File) => void
     /** Called with every selected File (multi mode). */

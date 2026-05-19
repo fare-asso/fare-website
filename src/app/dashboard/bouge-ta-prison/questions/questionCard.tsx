@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+
 import archiveTutorQuestion from "@/actions/bouge-ta-prison/archiveTutorQuestion"
 import unarchiveTutorQuestion from "@/actions/bouge-ta-prison/unarchiveTutorQuestion"
 import LoadingRing from "@/components/dashboard/loadingRing"
@@ -126,12 +127,12 @@ export default function QuestionCard({
 
                 <Link
                     href={`/dashboard/bouge-ta-prison/questions/${question.id}`}
-                    className="font-semibold text-base transition-colors hover:text-primary hover:underline"
+                    className="hover:text-primary text-base font-semibold transition-colors hover:underline"
                 >
                     {question.firstName} {question.lastName}
                 </Link>
 
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-sm">
+                <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm">
                     <div className="flex items-center gap-1.5">
                         <MailIcon className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">{question.email}</span>
@@ -153,7 +154,7 @@ export default function QuestionCard({
                 </div>
 
                 {/* Question preview */}
-                <div className="flex items-start gap-1.5 text-muted-foreground text-sm">
+                <div className="text-muted-foreground flex items-start gap-1.5 text-sm">
                     <MessageSquareTextIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span className="line-clamp-2">{question.question}</span>
                 </div>

@@ -9,6 +9,7 @@ import {
     useState
 } from "react"
 import { v4 as uuidv4 } from "uuid"
+
 import createArticleAction from "@/actions/articles/createArticleAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -25,6 +26,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import RichTextEditor from "@/components/ui/rich-text-editor/richTextEditor"
 import { base64ToFile } from "@/helpers/image"
+
 import LoadingRing from "../loadingRing"
 
 /**
@@ -59,7 +61,7 @@ function extractAndReplaceImages(content: JSONContent): {
         }
 
         if (node.content) {
-            node.content.forEach(traverseNodes)
+            for (const child of node.content) traverseNodes(child)
         }
     }
 

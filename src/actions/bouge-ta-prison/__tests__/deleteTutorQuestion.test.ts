@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { cacheModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({

@@ -12,6 +12,7 @@ import {
     useActionState,
     useCallback
 } from "react"
+
 import submitBagadAssoFormAction, {
     type FormState
 } from "@/actions/bagadAsso/submitBagadAssoFormAction"
@@ -50,6 +51,7 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+
 import EquipmentSelection from "./equipmentSelection"
 import {
     BagadAssoClientFormSchema,
@@ -81,7 +83,7 @@ function CaptchaValidation({
 }: {
     isTouched: boolean
     isValid: boolean
-    errors: Array<{ message?: string } | string | undefined>
+    errors: ({ message?: string } | string | undefined)[]
 }) {
     const isInvalid = isTouched && !isValid
     if (!isInvalid) return null
@@ -190,7 +192,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                     <FieldGroup>
                         {/* Section: Association Information */}
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-lg">
+                            <h3 className="text-lg font-semibold">
                                 Informations sur l'association
                             </h3>
 
@@ -272,7 +274,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                         {/* Section: Referent Information */}
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-lg">
+                            <h3 className="text-lg font-semibold">
                                 Informations sur le référent
                             </h3>
 
@@ -471,7 +473,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                         {/* Section: Event Information */}
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-lg">
+                            <h3 className="text-lg font-semibold">
                                 Informations sur l'évènement
                             </h3>
 
@@ -732,7 +734,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                         {/* Section: Equipment Selection */}
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-lg">
+                            <h3 className="text-lg font-semibold">
                                 Sélection du matériel
                             </h3>
                             <FieldDescription>

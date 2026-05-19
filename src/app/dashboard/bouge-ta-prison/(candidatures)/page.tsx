@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import {
     Card,
     CardContent,
@@ -6,6 +7,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+
 import ApprovedApplications from "./approvedApplications"
 import ArchivedApplications from "./archivedApplications"
 import PendingApplications from "./pendingApplications"

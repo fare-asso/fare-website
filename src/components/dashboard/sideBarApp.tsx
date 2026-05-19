@@ -21,7 +21,9 @@ import {
     LuTicket,
     LuUser
 } from "react-icons/lu" // Bagad'Asso
+
 import LogoFARE from "#public/logo_fare.png"
+
 // UI components
 import {
     Sidebar,
@@ -214,8 +216,7 @@ export default function SideBarApp({
                                                             asChild
                                                         >
                                                             <a href={link.href}>
-                                                                {link.icon &&
-                                                                    link.icon}
+                                                                {link.icon}
                                                                 <span>
                                                                     {link.title}
                                                                 </span>
@@ -241,8 +242,9 @@ export default function SideBarApp({
                                                                                     child.href
                                                                                 }
                                                                             >
-                                                                                {child.icon &&
-                                                                                    child.icon}
+                                                                                {
+                                                                                    child.icon
+                                                                                }
                                                                                 <span>
                                                                                     {
                                                                                         child.title
@@ -266,8 +268,7 @@ export default function SideBarApp({
                                                             )}
                                                         >
                                                             <a href={link.href}>
-                                                                {link.icon &&
-                                                                    link.icon}
+                                                                {link.icon}
                                                                 <span>
                                                                     {link.title}
                                                                 </span>

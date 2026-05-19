@@ -2,6 +2,7 @@
 
 import type { Role } from "@prisma/client"
 import { useState, useTransition } from "react"
+
 import bulkUpdateRole from "@/actions/users/bulkUpdateRole"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Button } from "@/components/ui/button"
@@ -97,7 +98,7 @@ export function BulkRoleDialog({
                     </Select>
 
                     {error && (
-                        <p className="rounded-md bg-red-100 p-3 text-red-800 text-sm dark:bg-red-900/30 dark:text-red-200">
+                        <p className="rounded-md bg-red-100 p-3 text-sm text-red-800 dark:bg-red-900/30 dark:text-red-200">
                             {error}
                         </p>
                     )}

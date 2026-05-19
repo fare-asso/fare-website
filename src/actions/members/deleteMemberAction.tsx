@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
@@ -32,21 +33,20 @@ async function deleteMemberActionImpl({ id }: { id: number }) {
         return { error: "Echec de la suppression du membre" }
     }
 
-    if (res != null) {
-        // successfully deleted
+    if (res == null) return { error: "Failed to delete record" }
 
-        const { error } = await supabase.storage
-            .from("member-pictures")
-            .remove([res.picturePath])
+    // successfully deleted
+    const { error } = await supabase.storage
+        .from("member-pictures")
+        .remove([res.picturePath])
 
-        if (error) {
-            return { error: error.message }
-        } else {
-            revalidatePath("/dashboard/membres")
-            revalidatePath("/a-propos/bureau")
-            return { success: true }
-        }
-    } else return { error: "Failed to delete record" }
+    if (error) {
+        return { error: error.message }
+    }
+
+    revalidatePath("/dashboard/membres")
+    revalidatePath("/a-propos/bureau")
+    return { success: true }
 }
 
 export default withServerAction("deleteMemberAction", deleteMemberActionImpl)

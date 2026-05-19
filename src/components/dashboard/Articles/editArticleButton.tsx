@@ -11,6 +11,7 @@ import {
 } from "react"
 import { MdEdit } from "react-icons/md"
 import { v4 as uuidv4 } from "uuid"
+
 import editArticleAction from "@/actions/articles/editArticleAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -28,6 +29,7 @@ import { Label } from "@/components/ui/label"
 import RichTextEditor from "@/components/ui/rich-text-editor/richTextEditor"
 import { base64ToFile } from "@/helpers/image"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
+
 import LoadingRing from "../loadingRing"
 
 /**
@@ -62,7 +64,7 @@ function extractAndReplaceImages(content: JSONContent): {
         }
 
         if (node.content) {
-            node.content.forEach(traverseNodes)
+            for (const child of node.content) traverseNodes(child)
         }
     }
 
@@ -178,7 +180,7 @@ export default function EditArticleButton({ article }: { article: Article }) {
                 <DialogHeader>
                     <DialogTitle>Modifier l'article</DialogTitle>
                     <DialogDescription>
-                        {"Ceci est un formulaire de modification d'article"}
+                        Ceci est un formulaire de modification d'article
                     </DialogDescription>
                 </DialogHeader>
 

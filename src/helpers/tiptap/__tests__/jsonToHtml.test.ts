@@ -1,5 +1,6 @@
 import type { JSONContent } from "@tiptap/react"
 import { describe, expect, it } from "vitest"
+
 import jsonToHtml from "../jsonToHtml"
 
 const doc = (content: JSONContent[]): JSONContent => ({

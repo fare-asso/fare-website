@@ -1,18 +1,18 @@
 "use client"
 
+import type { Article } from "@prisma/client"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
-import { Button } from "@/components/ui/button"
-
-// import EditArticleButton from "./editArticleButton";
-
-import type { Article } from "@prisma/client"
 import Link from "next/link"
+// import EditArticleButton from "./editArticleButton";
 import { startTransition, useActionState, useEffect, useState } from "react"
+import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
+
 import deleteArticleAction from "@/actions/articles/deleteArticleAction"
 import switchVisibilityAction from "@/actions/articles/switchVisibilityAction"
+import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
+
 import LoadingRing from "../loadingRing"
 import EditArticleButton from "./editArticleButton"
 
@@ -72,15 +72,15 @@ export default function ArticleCard({
     }
 
     return (
-        <div className="flex h-16 w-full flex-row items-center justify-between rounded-lg border bg-card px-4 py-4 text-card-foreground shadow-xs">
+        <div className="bg-card text-card-foreground flex h-16 w-full flex-row items-center justify-between rounded-lg border px-4 py-4 shadow-xs">
             <Link
                 href={`/actualites/articles/${article.id}`}
                 title={article.title}
-                className="overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm"
+                className="overflow-hidden text-xs text-ellipsis whitespace-nowrap md:text-sm"
             >
                 {article.title}
             </Link>
-            <div className="hidden text-card-foreground/70 text-sm md:block">
+            <div className="text-card-foreground/70 hidden text-sm md:block">
                 {format(article.writtenOn, "PPP", { locale: fr })}
             </div>
 

@@ -37,7 +37,7 @@ export default function AssociationAccountDropdown({
 
                 <div
                     ref={dropdownRef}
-                    className={`-right-3 absolute top-full mt-2 flex w-max flex-col items-center space-y-1 rounded-xl border-2 border-black bg-black p-1 transition-all ${
+                    className={`absolute top-full -right-3 mt-2 flex w-max flex-col items-center space-y-1 rounded-xl border-2 border-black bg-black p-1 transition-all ${
                         isDropdownOpen
                             ? "scale-100 opacity-100"
                             : "scale-0 opacity-0"

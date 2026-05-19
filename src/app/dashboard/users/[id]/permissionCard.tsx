@@ -2,6 +2,7 @@
 
 import type { Permission } from "@prisma/client"
 import { Check, Info } from "lucide-react"
+
 import {
     Tooltip,
     TooltipContent,
@@ -30,7 +31,7 @@ export function PermissionCard({
             className={cn(
                 "group relative flex w-full cursor-pointer flex-col gap-1 rounded-lg border-2 p-4 text-left transition-all hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50",
                 isSelected
-                    ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                    ? "border-primary bg-primary/5 ring-primary/20 ring-1"
                     : "border-muted hover:border-muted-foreground/30"
             )}
         >
@@ -40,7 +41,7 @@ export function PermissionCard({
                     "absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full transition-all",
                     isSelected
                         ? "bg-primary text-primary-foreground"
-                        : "border-2 border-muted-foreground/30 bg-background"
+                        : "border-muted-foreground/30 bg-background border-2"
                 )}
             >
                 {isSelected && <Check className="h-3 w-3" />}
@@ -50,7 +51,7 @@ export function PermissionCard({
             <div className="flex items-center gap-2 pr-6">
                 <span
                     className={cn(
-                        "font-medium text-sm",
+                        "text-sm font-medium",
                         isSelected && "text-primary"
                     )}
                 >
@@ -59,7 +60,7 @@ export function PermissionCard({
                 {permission.description && (
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                            <Info className="text-muted-foreground h-3.5 w-3.5" />
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-xs">
                             <p className="text-xs">{permission.description}</p>
@@ -69,7 +70,7 @@ export function PermissionCard({
             </div>
 
             {/* Permission name (technical) */}
-            <span className="font-mono text-muted-foreground text-xs">
+            <span className="text-muted-foreground font-mono text-xs">
                 {permission.name}
             </span>
         </button>

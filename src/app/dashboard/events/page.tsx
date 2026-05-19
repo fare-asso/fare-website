@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+
 import type { Event } from "@/app/dashboard/events/columns"
 import CreateEventButton from "@/components/dashboard/event/createEventButton"
 import { getData } from "@/components/dashboard/event/eventDataTable"
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/card"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+
 import { DataTable } from "./data-table"
 
 export const metadata: Metadata = {

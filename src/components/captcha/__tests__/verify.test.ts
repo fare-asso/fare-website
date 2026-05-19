@@ -1,6 +1,8 @@
 import { HttpResponse, http } from "msw"
 import { describe, expect, it } from "vitest"
+
 import { captchaUrl, server } from "@/test/msw"
+
 import { verifyCaptcha } from "../verify"
 
 describe("verifyCaptcha", () => {

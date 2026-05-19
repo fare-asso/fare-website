@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+
 import TutorApplicationForm from "./TutorApplicationForm"
 
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ export default function Tutorat() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">Candidature</h2>
+                    <h2 className="mb-4 text-2xl font-semibold">Candidature</h2>
                     <p className="mb-4">Pour candidater les prérequis sont :</p>
                     <ul className="mb-8 ml-4 list-inside list-disc space-y-2">
                         <li>
@@ -82,7 +83,7 @@ export default function Tutorat() {
                     {/* Intéressé pour devenir tuteur? */}
                     <div className="flex h-auto w-full flex-col items-center py-4 pb-8!">
                         <div className="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-3/4">
-                            <h2 className="mb-2 font-semibold text-lg">
+                            <h2 className="mb-2 text-lg font-semibold">
                                 Vous avez des questions ?
                             </h2>
                             <p>

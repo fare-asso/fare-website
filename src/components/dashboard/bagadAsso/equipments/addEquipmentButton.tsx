@@ -13,6 +13,7 @@ import {
     useState
 } from "react"
 import { MdDelete } from "react-icons/md"
+
 import addEquipmentAction from "@/actions/bagadAsso/addEquipmentAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -29,6 +30,7 @@ import { Input } from "@/components/ui/input"
 import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput"
 import NumberInput from "@/components/ui/input/numberInput"
 import { Label } from "@/components/ui/label"
+
 import LoadingRing from "../../loadingRing"
 
 export default function AddEquipmentButton() {
@@ -101,9 +103,8 @@ export default function AddEquipmentButton() {
                 <DialogHeader>
                     <DialogTitle>Nouveau matériel</DialogTitle>
                     <DialogDescription>
-                        {
-                            "Ceci est le formulaire d'ajout des nouveaux équipements du projet BagadAsso"
-                        }
+                        Ceci est le formulaire d'ajout des nouveaux équipements
+                        du projet BagadAsso
                     </DialogDescription>
                 </DialogHeader>
 
@@ -139,7 +140,7 @@ export default function AddEquipmentButton() {
                     {/* Picture */}
                     <div>
                         <Label htmlFor="equipment-picture">
-                            {"Image de l'équipement"}
+                            Image de l'équipement
                         </Label>
                         {file && (
                             <div className="relative w-fit">
@@ -147,7 +148,7 @@ export default function AddEquipmentButton() {
                                     width={300}
                                     height={300}
                                     src={file}
-                                    alt={`Photo du matériel`}
+                                    alt="Photo du matériel"
                                     className="my-2 aspect-auto h-48 rounded-lg border outline outline-offset-1"
                                 />
                                 <Button

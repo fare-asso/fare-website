@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import { AdhesionForm } from "./form"
 
 export const metadata: Metadata = {
@@ -8,11 +9,11 @@ export const metadata: Metadata = {
 export default function Adhesion() {
     return (
         <div className="flex w-full flex-col items-center justify-start">
-            <h1 className="py-12 font-semibold text-[3rem] sm:py-24 md:py-32 lg:py-44">
+            <h1 className="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
                 Rejoindre la FARE
             </h1>
             <div className="mb-8 w-full max-w-3xl text-left">
-                <h2 className="mb-4 font-bold text-2xl">
+                <h2 className="mb-4 text-2xl font-bold">
                     Adhésion à la FARE :
                 </h2>
                 <p className="mb-4 text-justify">
@@ -37,7 +38,7 @@ export default function Adhesion() {
                     Générale Ordinaire de Passation.
                 </p>
 
-                <h2 className="mt-8 mb-4 font-bold text-2xl">
+                <h2 className="mt-8 mb-4 text-2xl font-bold">
                     Pourquoi adhérer à la FARE ? :
                 </h2>
                 <p className="mb-4 text-justify">
@@ -125,7 +126,7 @@ export default function Adhesion() {
                     </li>
                 </ul>
 
-                <h2 className="mt-8 mb-4 font-bold text-2xl">
+                <h2 className="mt-8 mb-4 text-2xl font-bold">
                     Comment adhérer à la FARE ? :
                 </h2>
                 <p className="mb-4 text-justify">

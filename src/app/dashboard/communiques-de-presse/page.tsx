@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+
 import AddNewCDPButton from "@/components/dashboard/CDP/addCDPButton"
 import CDPList from "@/components/dashboard/CDP/CDPList"
 import {
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 
 function CDPListSkeleton() {
     return (
-        <div className="h-full w-full rounded-lg border bg-card p-4 shadow-xs md:p-6">
+        <div className="bg-card h-full w-full rounded-lg border p-4 shadow-xs md:p-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="flex flex-col rounded-lg border">

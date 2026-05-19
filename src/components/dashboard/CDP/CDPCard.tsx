@@ -8,6 +8,7 @@ import { useState } from "react"
 import { FaRegFilePdf } from "react-icons/fa"
 import { FaRegFolderOpen } from "react-icons/fa6"
 import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
+
 import deleteCDPAction from "@/actions/CDP/deleteCDPAction"
 import {
     AlertDialog,
@@ -28,6 +29,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/use-toast"
+
 import LoadingRing from "../loadingRing"
 
 function downloadFile(url: string) {
@@ -72,13 +74,13 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
             : `${(cdp.size / 1024).toFixed(0)} Ko`
 
     return (
-        <div className="group flex flex-col rounded-lg border bg-card shadow-xs transition-shadow hover:shadow-md">
+        <div className="group bg-card flex flex-col rounded-lg border shadow-xs transition-shadow hover:shadow-md">
             {/* File icon area */}
             <Link
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center rounded-t-lg bg-muted/50 py-8 transition-colors group-hover:bg-muted"
+                className="bg-muted/50 group-hover:bg-muted flex items-center justify-center rounded-t-lg py-8 transition-colors"
             >
                 {cdp.type === "CDP" ? (
                     <FaRegFilePdf size={48} className="text-red-500" />
@@ -97,7 +99,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="line-clamp-2 flex-1 font-medium text-sm leading-tight hover:underline"
+                                className="line-clamp-2 flex-1 text-sm leading-tight font-medium hover:underline"
                             >
                                 {cdp.name}
                             </Link>
@@ -114,7 +116,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
                     >
                         {cdp.type === "CDP" ? "Communique" : "Dossier"}
                     </Badge>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-muted-foreground text-[11px]">
                         {formattedSize}
                     </span>
                 </div>
@@ -151,7 +153,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                            className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 w-8"
                                             disabled={isDeleting}
                                         >
                                             {isDeleting ? (
@@ -181,7 +183,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
                                     </AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={handleDelete}
-                                        className="bg-destructive text-white hover:bg-destructive/90"
+                                        className="bg-destructive hover:bg-destructive/90 text-white"
                                     >
                                         Supprimer
                                     </AlertDialogAction>

@@ -1,7 +1,7 @@
 import type { BTPTutorApplication as BTPTutorApplicationPrisma } from "@prisma/client"
 import { Heading, Text } from "@react-email/components"
-//biome-ignore lint/correctness/noUnusedImports: need to import react for react-email to work
 import React from "react"
+
 import BaseTemplate from "./base"
 
 type BtpApplicationAckProps = Pick<
@@ -16,7 +16,7 @@ export function BtpApplicationAck({
 }: BtpApplicationAckProps) {
     return (
         <BaseTemplate>
-            <Heading className="font-normal text-4xl text-stone-800">
+            <Heading className="text-4xl font-normal text-stone-800">
                 Candiudature reçue
             </Heading>
             <Text>

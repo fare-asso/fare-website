@@ -1,7 +1,10 @@
 import Image from "next/image"
 import Link from "next/link"
+
 import logo from "#public/logo_fare.png"
+
 import HeaderLinks from "./headerLinks"
+
 import "./header.css"
 // import DefenseDroits from "./defenseDroitsButton"
 

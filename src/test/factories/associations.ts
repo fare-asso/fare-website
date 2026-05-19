@@ -1,4 +1,5 @@
 import type { Association } from "@prisma/client"
+
 import { imageFile } from "./files"
 
 export function validAssociationFormData(

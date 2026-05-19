@@ -3,6 +3,7 @@
 import type { Association } from "@prisma/client"
 import { CheckCircleIcon } from "lucide-react"
 import { startTransition, useActionState, useEffect, useState } from "react"
+
 import approveAssociationAction from "@/actions/associations/approveAssociationAction"
 import {
     AlertDialog,
@@ -21,6 +22,7 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+
 import LoadingRing from "../loadingRing"
 
 export default function ApproveAssociationButton({

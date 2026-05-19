@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { redirect } from "next/navigation"
+
 import "../globals.css"
 import Header from "@/components/espaceAsso/header"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"

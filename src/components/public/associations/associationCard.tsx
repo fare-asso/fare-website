@@ -1,6 +1,7 @@
 import type { Association } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
+
 import { createClient } from "@/helpers/supabase/server"
 
 interface JsonLocation {
@@ -56,10 +57,10 @@ export default async function AssociationCard({
             />
             <div className="flex w-full flex-row">
                 <div className="mt-2 flex flex-col">
-                    <span className="font-semibold text-xl">
+                    <span className="text-xl font-semibold">
                         {association.name}
                     </span>
-                    <span className="rounded-full border border-black px-4 py-0.5 text-center font-semibold text-xs">
+                    <span className="rounded-full border border-black px-4 py-0.5 text-center text-xs font-semibold">
                         {association.major}
                     </span>
                 </div>

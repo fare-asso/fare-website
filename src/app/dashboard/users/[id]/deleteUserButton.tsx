@@ -3,6 +3,7 @@
 import { Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
+
 import deleteUser from "@/actions/users/deleteUser"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
@@ -62,13 +63,13 @@ export function DeleteUserButton({ userId, userName }: Props) {
                                 l'utilisateur{" "}
                                 <strong>{userName || "sans nom"}</strong>.
                             </p>
-                            <p className="rounded-md bg-amber-100 p-3 text-amber-800 text-sm dark:bg-amber-900/30 dark:text-amber-200">
+                            <p className="rounded-md bg-amber-100 p-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
                                 L'utilisateur sera archive et ne pourra plus se
                                 connecter. Cette action peut etre annulee par un
                                 administrateur.
                             </p>
                             {error && (
-                                <p className="rounded-md bg-red-100 p-3 text-red-800 text-sm dark:bg-red-900/30 dark:text-red-200">
+                                <p className="rounded-md bg-red-100 p-3 text-sm text-red-800 dark:bg-red-900/30 dark:text-red-200">
                                     {error}
                                 </p>
                             )}

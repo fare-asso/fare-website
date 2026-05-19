@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+
 import AdhesionSummary from "@/components/dashboard/adhesions/adhesionSummary"
 import {
     Card,
@@ -11,6 +12,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+
 import ActiveAdhesions from "./activeAdhesions"
 import ArchivedAdhesions from "./archivedAdhesions"
 import AdhesionTabSwitcher from "./tabSwitcher"

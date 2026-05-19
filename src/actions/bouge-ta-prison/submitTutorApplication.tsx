@@ -3,6 +3,7 @@
 import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
 import { isDevelopment } from "std-env"
+
 import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
@@ -11,6 +12,7 @@ import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { BTPTutorApplicationSchema } from "@/schemas/bougeTaPrison"
 import type { ActionResponse } from "@/types/actions"
+
 import BtpApplication from "../../../emails/btp-application"
 
 async function submitTutorApplicationImpl(
@@ -18,9 +20,9 @@ async function submitTutorApplicationImpl(
 ): Promise<ActionResponse> {
     const data: { [key: string]: FormDataEntryValue } = {}
 
-    formData.forEach((value, key) => {
+    for (const [key, value] of formData) {
         data[key] = value
-    })
+    }
 
     const parsedData = BTPTutorApplicationSchema.safeParse(data)
 

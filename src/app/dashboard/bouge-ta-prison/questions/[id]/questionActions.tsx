@@ -3,6 +3,7 @@
 import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+
 import archiveTutorQuestion from "@/actions/bouge-ta-prison/archiveTutorQuestion"
 import deleteTutorQuestion from "@/actions/bouge-ta-prison/deleteTutorQuestion"
 import unarchiveTutorQuestion from "@/actions/bouge-ta-prison/unarchiveTutorQuestion"
@@ -100,8 +101,8 @@ export default function QuestionActions({
     }
 
     return (
-        <div className="flex flex-col gap-3 rounded-lg border border-muted-foreground/30 border-dashed p-4">
-            <p className="text-muted-foreground text-xs uppercase tracking-wide">
+        <div className="border-muted-foreground/30 flex flex-col gap-3 rounded-lg border border-dashed p-4">
+            <p className="text-muted-foreground text-xs tracking-wide uppercase">
                 Actions sur la question
             </p>
             <div className="flex flex-wrap gap-2">
@@ -175,7 +176,7 @@ export default function QuestionActions({
                             variant="outline"
                             size="sm"
                             disabled={isDeleteLoading}
-                            className="gap-2 border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive gap-2"
                         >
                             {isDeleteLoading ? (
                                 <LoadingRing className="m-0!" />
@@ -195,7 +196,7 @@ export default function QuestionActions({
                                     <p>
                                         La question #{questionId} de "
                                         {questionAuthor}" sera{" "}
-                                        <span className="font-semibold text-destructive">
+                                        <span className="text-destructive font-semibold">
                                             supprimée de manière permanente
                                         </span>
                                         .

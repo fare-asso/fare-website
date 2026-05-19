@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
+
 import { getAssistanceConfig } from "@/helpers/assistanceConfig"
+
 import { AssistanceForm } from "./form"
 
 export const metadata: Metadata = {
@@ -14,7 +16,7 @@ export default async function Assistance() {
 
     return (
         <div className="flex w-full flex-col items-center justify-start">
-            <h1 className="py-12 text-center font-semibold text-[3rem] sm:py-20">
+            <h1 className="py-12 text-center text-[3rem] font-semibold sm:py-20">
                 Défense des droits étudiants
             </h1>
             <div className="mb-8 w-full max-w-3xl text-left">

@@ -1,5 +1,6 @@
 import type { BagadAssoEquipment } from "@prisma/client"
 import { use, useEffect, useRef, useState } from "react"
+
 import EquipmentCard from "./equipmentCard"
 
 export default function EquipmentSelection({

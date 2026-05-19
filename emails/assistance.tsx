@@ -1,6 +1,6 @@
 import { Heading, Hr, Text } from "@react-email/components"
-//biome-ignore lint/correctness/noUnusedImports: need to import react for react-email to work
 import React from "react"
+
 import BaseTemplate from "./base"
 
 interface AssistanceTemplateProps {
@@ -30,7 +30,7 @@ export function AssistanceTemplate({
 }: AssistanceTemplateProps) {
     return (
         <BaseTemplate>
-            <Heading className="font-normal text-4xl text-stone-800">
+            <Heading className="text-4xl font-normal text-stone-800">
                 Nouvelle demande de défense des droits
             </Heading>
             <Text className="font-bold">

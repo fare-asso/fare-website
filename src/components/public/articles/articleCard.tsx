@@ -2,6 +2,7 @@ import type { Article } from "@prisma/client"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
+
 import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml"
 
 export default function ArticleCard({ article }: { article: Article }) {
@@ -12,7 +13,7 @@ export default function ArticleCard({ article }: { article: Article }) {
 
             <div className="mt-2 ml-0 flex flex-1 flex-col md:mt-0 md:ml-4">
                 {/* Title */}
-                <span className="font-bold text-lg">{article.title}</span>
+                <span className="text-lg font-bold">{article.title}</span>
 
                 {/* Date */}
                 <span className="text-sm opacity-80">

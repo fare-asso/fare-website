@@ -16,8 +16,10 @@ import {
     sortableKeyboardCoordinates
 } from "@dnd-kit/sortable"
 import { useState, useTransition } from "react"
+
 import updateMemberOrderAction from "@/actions/members/updateMemberOrderAction"
 import { useToast } from "@/components/ui/use-toast"
+
 import SortableMemberCard from "./sortableMemberCard"
 
 interface Member {
@@ -97,7 +99,7 @@ export default function SortableMemberList({
     }
 
     return (
-        <div className="h-full w-full overflow-y-auto rounded-lg border bg-card p-6 text-card-foreground shadow-xs">
+        <div className="bg-card text-card-foreground h-full w-full overflow-y-auto rounded-lg border p-6 shadow-xs">
             <DndContext
                 sensors={canEdit ? sensors : []}
                 collisionDetection={closestCenter}

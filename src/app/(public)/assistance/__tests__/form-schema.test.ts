@@ -1,7 +1,9 @@
 import { type } from "arktype"
 import { describe, expect, it } from "vitest"
+
 import { validAssistanceForm } from "@/test/factories/assistance"
 import { imageFile, pdfFile } from "@/test/factories/files"
+
 import { AssistanceFormSchema, MOYEN_CONTACT, SITUATIONS } from "../form-schema"
 
 const isErrors = (out: object): boolean => out instanceof type.errors
@@ -13,15 +15,13 @@ describe("AssistanceFormSchema — required fields", () => {
         )
     })
 
-    it.each([
-        "prenom",
-        "nom",
-        "etablissement",
-        "message"
-    ] as const)("rejects an empty %s", (field) => {
-        const input = validAssistanceForm({ [field]: "" })
-        expect(isErrors(AssistanceFormSchema(input))).toBe(true)
-    })
+    it.each(["prenom", "nom", "etablissement", "message"] as const)(
+        "rejects an empty %s",
+        (field) => {
+            const input = validAssistanceForm({ [field]: "" })
+            expect(isErrors(AssistanceFormSchema(input))).toBe(true)
+        }
+    )
 
     it("rejects an invalid email", () => {
         expect(

@@ -7,9 +7,10 @@ import {
     Section,
     Text
 } from "@react-email/components"
-//biome-ignore lint/correctness/noUnusedImports: need to import react for react-email to work
 import React from "react"
+
 import type { BTPTutorApplication } from "@/schemas/bougeTaPrison"
+
 import BaseTemplate, { APP_URL } from "./base"
 
 type BtpApplicationProps = {
@@ -22,16 +23,16 @@ export function BtpApplication({
     return (
         <BaseTemplate>
             <Section className="mt-8">
-                <Text className="m-0 font-medium text-blue-600 text-sm uppercase tracking-wider">
+                <Text className="m-0 text-sm font-medium tracking-wider text-blue-600 uppercase">
                     Nouvelle candidature
                 </Text>
-                <Heading className="m-0 mt-2 font-semibold text-3xl text-stone-800">
+                <Heading className="m-0 mt-2 text-3xl font-semibold text-stone-800">
                     Bouge Ta Prison
                 </Heading>
             </Section>
 
             <Section className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-6">
-                <Text className="m-0 font-semibold text-lg text-stone-800">
+                <Text className="m-0 text-lg font-semibold text-stone-800">
                     {firstName} {lastName}
                 </Text>
                 <Text className="m-0 mt-1 text-sm text-stone-500">
@@ -42,7 +43,7 @@ export function BtpApplication({
 
                 <Row>
                     <Column className="w-1/2">
-                        <Text className="m-0 font-medium text-stone-400 text-xs uppercase tracking-wide">
+                        <Text className="m-0 text-xs font-medium tracking-wide text-stone-400 uppercase">
                             Filière
                         </Text>
                         <Text className="m-0 mt-1 text-sm text-stone-700">
@@ -50,7 +51,7 @@ export function BtpApplication({
                         </Text>
                     </Column>
                     <Column className="w-1/2">
-                        <Text className="m-0 font-medium text-stone-400 text-xs uppercase tracking-wide">
+                        <Text className="m-0 text-xs font-medium tracking-wide text-stone-400 uppercase">
                             Année d'études
                         </Text>
                         <Text className="m-0 mt-1 text-sm text-stone-700">
@@ -61,7 +62,7 @@ export function BtpApplication({
 
                 <Row className="mt-4">
                     <Column>
-                        <Text className="m-0 font-medium text-stone-400 text-xs uppercase tracking-wide">
+                        <Text className="m-0 text-xs font-medium tracking-wide text-stone-400 uppercase">
                             Email
                         </Text>
                         <Text className="m-0 mt-1 text-sm text-stone-700">
@@ -79,7 +80,7 @@ export function BtpApplication({
             <Section className="mt-8 text-center">
                 <Link
                     href={`${APP_URL}/dashboard/bouge-ta-prison?tab=candidatures`}
-                    className="inline-block rounded-lg bg-blue-500 px-6 py-3 font-semibold text-sm text-white no-underline"
+                    className="inline-block rounded-lg bg-blue-500 px-6 py-3 text-sm font-semibold text-white no-underline"
                 >
                     Voir la candidature complète
                 </Link>

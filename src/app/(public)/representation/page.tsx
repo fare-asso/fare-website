@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
+
 import gifElues from "#public/elues/elues.gif"
 import logoFage from "#public/Logo_FAGE.png"
 
@@ -11,11 +12,11 @@ export const metadata: Metadata = {
 export default function Representation() {
     return (
         <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
+            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
                 Représentation
             </h1>
 
-            <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-x-20 md:space-y-0">
+            <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-y-0 md:space-x-20">
                 <Link
                     href="/representation/fage"
                     className="flex flex-col items-center transition-all hover:scale-105"

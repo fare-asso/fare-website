@@ -8,6 +8,7 @@ import {
 import type { Metadata } from "next"
 import Link from "next/link"
 import { FaCaretLeft, FaEnvelope } from "react-icons/fa"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db"
+
 import QuestionActions from "./questionActions"
 
 export async function generateMetadata({
@@ -45,7 +47,7 @@ export default async function TutorQuestionPage({
                 <Card className="max-w-md">
                     <CardContent className="pt-6 text-center">
                         <span className="text-4xl">😔</span>
-                        <p className="mt-4 text-lg text-muted-foreground">
+                        <p className="text-muted-foreground mt-4 text-lg">
                             Cette question n'existe pas
                         </p>
                         <Button asChild className="mt-4">
@@ -71,7 +73,7 @@ export default async function TutorQuestionPage({
                 <Card className="max-w-md">
                     <CardContent className="pt-6 text-center">
                         <span className="text-4xl">😔</span>
-                        <p className="mt-4 text-lg text-muted-foreground">
+                        <p className="text-muted-foreground mt-4 text-lg">
                             Cette question n'existe pas ou plus
                         </p>
                         <Button asChild className="mt-4">
@@ -93,7 +95,7 @@ export default async function TutorQuestionPage({
                     asChild
                     variant="ghost"
                     size="sm"
-                    className="-ml-3 mb-4"
+                    className="mb-4 -ml-3"
                 >
                     <Link href="/dashboard/bouge-ta-prison/questions">
                         <FaCaretLeft className="mr-1" />
@@ -102,9 +104,9 @@ export default async function TutorQuestionPage({
                 </Button>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="font-bold text-3xl">
+                    <h1 className="text-3xl font-bold">
                         Question{" "}
-                        <span className="font-mono text-muted-foreground">
+                        <span className="text-muted-foreground font-mono">
                             #{tutorQuestion.id}
                         </span>
                     </h1>
@@ -131,8 +133,8 @@ export default async function TutorQuestionPage({
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="rounded-lg border bg-muted/50 p-4">
-                                <p className="whitespace-break-spaces text-justify leading-relaxed">
+                            <div className="bg-muted/50 rounded-lg border p-4">
+                                <p className="text-justify leading-relaxed whitespace-break-spaces">
                                     {tutorQuestion.question}
                                 </p>
                             </div>
@@ -152,7 +154,7 @@ export default async function TutorQuestionPage({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <p className="font-medium text-lg">
+                                <p className="text-lg font-medium">
                                     {tutorQuestion.firstName}{" "}
                                     {tutorQuestion.lastName}
                                 </p>
@@ -163,7 +165,7 @@ export default async function TutorQuestionPage({
                             <div className="grid gap-3">
                                 <a
                                     href={`mailto:${tutorQuestion.email}`}
-                                    className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
+                                    className="hover:text-primary flex items-center gap-2 text-sm transition-colors"
                                 >
                                     <FaEnvelope className="text-muted-foreground" />
                                     {tutorQuestion.email}
@@ -186,14 +188,14 @@ export default async function TutorQuestionPage({
                         <CardContent className="space-y-4">
                             <div className="grid gap-3">
                                 <div className="flex items-center gap-2 text-sm">
-                                    <BookOpenIcon className="size-4 text-muted-foreground" />
+                                    <BookOpenIcon className="text-muted-foreground size-4" />
                                     <span>Filière :</span>
                                     <span className="font-medium">
                                         {tutorQuestion.major}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm">
-                                    <GraduationCapIcon className="size-4 text-muted-foreground" />
+                                    <GraduationCapIcon className="text-muted-foreground size-4" />
                                     <span>Année d'études :</span>
                                     <span className="font-medium">
                                         {tutorQuestion.studyYear}

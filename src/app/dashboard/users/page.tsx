@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+
 import {
     Card,
     CardContent,
@@ -11,6 +12,7 @@ import {
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+
 import { columns, type UserWithPermissionsRow } from "./columns"
 import { DataTable } from "./data-table"
 import { ShowDeletedToggle } from "./showDeletedToggle"

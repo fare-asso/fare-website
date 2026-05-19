@@ -7,6 +7,7 @@ import {
     useEffect,
     useState
 } from "react"
+
 import addAssociationAction from "@/actions/associations/addAssociationAction"
 import {
     Accordion,
@@ -30,6 +31,7 @@ import DatePicker from "@/components/ui/input/datePicker"
 import { Label } from "@/components/ui/label"
 import LocationPicker from "@/components/ui/location/locationPicker"
 import { Textarea } from "@/components/ui/textarea"
+
 import LoadingRing from "../loadingRing"
 
 export default function AddAssociationButton() {
@@ -81,9 +83,7 @@ export default function AddAssociationButton() {
                 <DialogHeader>
                     <DialogTitle>Nouvelle Association</DialogTitle>
                     <DialogDescription>
-                        {
-                            "Ceci est le formulaire d'ajout d'association du réseau"
-                        }
+                        Ceci est le formulaire d'ajout d'association du réseau
                     </DialogDescription>
                 </DialogHeader>
 
@@ -95,7 +95,7 @@ export default function AddAssociationButton() {
                 >
                     {/* Name */}
                     <div>
-                        <Label htmlFor="name">{"Nom de l'association"}</Label>
+                        <Label htmlFor="name">Nom de l'association</Label>
                         <Input
                             type="text"
                             id="name"
@@ -139,14 +139,13 @@ export default function AddAssociationButton() {
                                 </AccordionTrigger>
                                 <AccordionContent>
                                     <div className="text-muted-foreground text-sm">
-                                        {
-                                            "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
-                                        }
+                                        Format d'image accepté : PNG, JPEG, JPG,
+                                        WebP, GIF
                                     </div>
                                     <div className="text-muted-foreground text-sm">
                                         Taille maximale : 15 Mo
                                     </div>
-                                    <div className="mb-1 text-muted-foreground text-sm">
+                                    <div className="text-muted-foreground mb-1 text-sm">
                                         Format recommandée: carré
                                     </div>
                                     <Input
@@ -168,9 +167,8 @@ export default function AddAssociationButton() {
                                 </AccordionTrigger>
                                 <AccordionContent>
                                     <div className="text-muted-foreground text-sm">
-                                        {
-                                            "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
-                                        }
+                                        Format d'image accepté : PNG, JPEG, JPG,
+                                        WebP, GIF
                                     </div>
                                     <div className="text-muted-foreground text-sm">
                                         Taille maximale : 15 Mo
@@ -190,7 +188,7 @@ export default function AddAssociationButton() {
                     {/* Birth date */}
                     <div>
                         <Label htmlFor="birthdate">
-                            {"Date de Naissance de l'Association"}
+                            Date de Naissance de l'Association
                         </Label>
                         <DatePicker
                             name="birthdate"

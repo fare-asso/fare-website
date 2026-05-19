@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { validBagadAssoForm } from "@/test/factories/bagadAsso"
 import {
     cacheModule,

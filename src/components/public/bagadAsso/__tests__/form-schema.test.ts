@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
+
 import { validBagadAssoForm } from "@/test/factories/bagadAsso"
+
 import { BagadAssoFormSchema } from "../form-schema"
 
 describe("BagadAssoFormSchema", () => {

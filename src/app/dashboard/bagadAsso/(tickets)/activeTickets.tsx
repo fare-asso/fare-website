@@ -17,7 +17,7 @@ export default async function ActiveTickets() {
 
     return (
         <div>
-            <p className="my-4 text-gray-500 text-sm">
+            <p className="my-4 text-sm text-gray-500">
                 <span className="font-bold"> {tickets.length} tickets</span>{" "}
                 dont la date d'événement n'est pas encore passée.
             </p>

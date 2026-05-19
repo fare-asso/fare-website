@@ -2,8 +2,10 @@
 
 import type { Permission } from "@prisma/client"
 import { useOptimistic, useTransition } from "react"
+
 import updateUserPermissions from "@/actions/users/updateUserPermissions"
 import { Button } from "@/components/ui/button"
+
 import { PermissionCard } from "./permissionCard"
 
 type Props = {
@@ -80,7 +82,7 @@ export function UserPermissionsForm({
                     return (
                         <div key={category} className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h3 className="font-semibold text-lg">
+                                <h3 className="text-lg font-semibold">
                                     {category}
                                 </h3>
                                 <Button

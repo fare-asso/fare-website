@@ -10,6 +10,7 @@ import {
 import type { Metadata } from "next"
 import Link from "next/link"
 import { FaCaretLeft, FaEnvelope } from "react-icons/fa"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +23,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
+
 import SendApprovalButton from "./sendApprovalButton"
 
 export async function generateMetadata({
@@ -48,7 +50,7 @@ export default async function TutorApplicationPage({
                 <Card className="max-w-md">
                     <CardContent className="pt-6 text-center">
                         <span className="text-4xl">😔</span>
-                        <p className="mt-4 text-lg text-muted-foreground">
+                        <p className="text-muted-foreground mt-4 text-lg">
                             Cette candidature n'existe pas
                         </p>
                         <Button asChild className="mt-4">
@@ -74,7 +76,7 @@ export default async function TutorApplicationPage({
                 <Card className="max-w-md">
                     <CardContent className="pt-6 text-center">
                         <span className="text-4xl">😔</span>
-                        <p className="mt-4 text-lg text-muted-foreground">
+                        <p className="text-muted-foreground mt-4 text-lg">
                             Cette candidature n'existe pas
                         </p>
                         <Button asChild className="mt-4">
@@ -108,7 +110,7 @@ export default async function TutorApplicationPage({
                     asChild
                     variant="ghost"
                     size="sm"
-                    className="-ml-3 mb-4"
+                    className="mb-4 -ml-3"
                 >
                     <Link href="/dashboard/bouge-ta-prison">
                         <FaCaretLeft className="mr-1" />
@@ -117,9 +119,9 @@ export default async function TutorApplicationPage({
                 </Button>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="font-bold text-3xl">
+                    <h1 className="text-3xl font-bold">
                         Candidature{" "}
-                        <span className="font-mono text-muted-foreground">
+                        <span className="text-muted-foreground font-mono">
                             #{tutorApplication.id}
                         </span>
                     </h1>
@@ -161,7 +163,7 @@ export default async function TutorApplicationPage({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <p className="font-medium text-lg">
+                                <p className="text-lg font-medium">
                                     {tutorApplication.firstName}{" "}
                                     {tutorApplication.lastName}
                                 </p>
@@ -172,7 +174,7 @@ export default async function TutorApplicationPage({
                             <div className="grid gap-3">
                                 <a
                                     href={`mailto:${tutorApplication.email}`}
-                                    className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
+                                    className="hover:text-primary flex items-center gap-2 text-sm transition-colors"
                                 >
                                     <FaEnvelope className="text-muted-foreground" />
                                     {tutorApplication.email}
@@ -195,14 +197,14 @@ export default async function TutorApplicationPage({
                         <CardContent className="space-y-4">
                             <div className="grid gap-3">
                                 <div className="flex items-center gap-2 text-sm">
-                                    <BookOpenIcon className="size-4 text-muted-foreground" />
+                                    <BookOpenIcon className="text-muted-foreground size-4" />
                                     <span>Filière :</span>
                                     <span className="font-medium">
                                         {tutorApplication.major}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm">
-                                    <GraduationCapIcon className="size-4 text-muted-foreground" />
+                                    <GraduationCapIcon className="text-muted-foreground size-4" />
                                     <span>Année d'études :</span>
                                     <span className="font-medium">
                                         {tutorApplication.studyYear}

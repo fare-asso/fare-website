@@ -3,8 +3,10 @@ import { File, Upload } from "lucide-react"
 import type React from "react"
 import { forwardRef, useState } from "react"
 
-interface FileInputProps
-    extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "value"> {
+interface FileInputProps extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "value"
+> {
     maxSize?: number
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
@@ -39,18 +41,18 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
                         {filename ? (
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <File className="mb-4 h-8 w-8 text-gray-500" />
-                                <p className="text-gray-500 text-sm">
+                                <p className="text-sm text-gray-500">
                                     {filename}
                                 </p>
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className="mb-4 h-8 w-8 text-gray-500" />
-                                <p className="text-gray-500 text-sm">
+                                <p className="text-sm text-gray-500">
                                     Cliquez ou glissez un fichier ici
                                 </p>
                                 {maxSize && (
-                                    <p className="text-gray-500 text-xs">
+                                    <p className="text-xs text-gray-500">
                                         (Taille maximale {maxSize}mo)
                                     </p>
                                 )}

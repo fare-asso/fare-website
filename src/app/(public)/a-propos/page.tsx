@@ -20,7 +20,7 @@ export default function APropos() {
 
             <div className="mb-20 w-full max-w-4xl space-y-8">
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Qu'est-ce que la FARE ?
                     </h2>
                     <p className="mb-4 text-justify">
@@ -45,7 +45,7 @@ export default function APropos() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Indépendance et représentation
                     </h2>
                     <p className="mb-4 text-justify">
@@ -58,7 +58,7 @@ export default function APropos() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Des associations étudiantes à votre service
                     </h2>
                     <p className="mb-4">
@@ -76,7 +76,7 @@ export default function APropos() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">Nos actions</h2>
+                    <h2 className="mb-4 text-2xl font-semibold">Nos actions</h2>
                     <p className="mb-4 text-justify">
                         En tant qu'acteur·rice·s associatif·ve·s, nous réalisons
                         des projets d'innovation sociale à destination des

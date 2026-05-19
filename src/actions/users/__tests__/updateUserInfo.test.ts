@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { mockUser } from "@/test/factories/user"
 import { authModule, dbModule, sentryModule } from "@/test/mocks"
 

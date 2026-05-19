@@ -71,7 +71,7 @@ export function DbSizeChartClient({
                                         <tspan
                                             x={viewBox.cx}
                                             y={viewBox.cy}
-                                            className="fill-foreground font-bold text-3xl"
+                                            className="fill-foreground text-3xl font-bold"
                                         >
                                             {(size * 1024).toFixed(0)} Mo
                                         </tspan>

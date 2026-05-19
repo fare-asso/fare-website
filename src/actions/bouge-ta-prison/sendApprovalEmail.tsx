@@ -3,9 +3,11 @@
 import type { BTPTutorApplication } from "@prisma/client"
 import { render } from "@react-email/render"
 import { revalidatePath } from "next/cache"
+
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+
 import BtpApplicationAck from "../../../emails/btp-application-aknowledgement"
 
 async function sendApprovalEmailImpl(

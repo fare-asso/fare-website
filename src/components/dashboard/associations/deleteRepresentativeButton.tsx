@@ -2,6 +2,7 @@
 
 import type { Association } from "@prisma/client"
 import { UserXIcon } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import {
     Tooltip,
@@ -20,7 +21,7 @@ export default function DeleteRepresentativeButton({
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 w-8"
                 >
                     <UserXIcon size={18} />
                 </Button>

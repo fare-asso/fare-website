@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6"
 import { MdAlternateEmail } from "react-icons/md"
+
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 export default function MemberCard({ member }: { member: Member }) {

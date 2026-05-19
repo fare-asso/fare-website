@@ -2,6 +2,7 @@ import { ExternalLinkIcon, MailIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { FaFacebook, FaInstagram } from "react-icons/fa6"
+
 import ContactForm from "@/components/public/contact/contactForm"
 
 export const metadata: Metadata = {
@@ -38,7 +39,7 @@ const socialLinks = [
 export default function Contact() {
     return (
         <div className="mb-16 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
+            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
                 Vous souhaitez nous contacter ?
             </h1>
 
@@ -47,7 +48,7 @@ export default function Contact() {
                 {socialLinks.map((link) => (
                     <Link
                         key={link.name}
-                        className={`group flex flex-col items-center gap-2 rounded-xl border-2 bg-card p-5 text-center transition-colors hover:bg-accent ${link.borderColor}`}
+                        className={`group bg-card hover:bg-accent flex flex-col items-center gap-2 rounded-xl border-2 p-5 text-center transition-colors ${link.borderColor}`}
                         href={link.href}
                         target={
                             link.href.startsWith("mailto:")
@@ -63,8 +64,8 @@ export default function Contact() {
                         <link.icon
                             className={`size-8 ${link.iconColor} transition-transform group-hover:scale-110`}
                         />
-                        <span className="font-medium text-sm">{link.name}</span>
-                        <span className="flex items-center gap-1 text-muted-foreground text-xs">
+                        <span className="text-sm font-medium">{link.name}</span>
+                        <span className="text-muted-foreground flex items-center gap-1 text-xs">
                             {link.description}
                             {!link.href.startsWith("mailto:") && (
                                 <ExternalLinkIcon className="size-3" />

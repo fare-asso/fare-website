@@ -11,14 +11,13 @@ import {
     Text
 } from "@react-email/components"
 import type { JSX } from "react"
-//biome-ignore lint/correctness/noUnusedImports: need to import react for react-email to work
 import React from "react"
 
 export const APP_URL = "https://fare-asso.fr"
 export const APPLICATION_NAME = "FARE"
 
 interface BaseTemplateProps {
-    children?: Array<JSX.Element | undefined> | JSX.Element
+    children?: (JSX.Element | undefined)[] | JSX.Element
 }
 
 export function BaseTemplate({ children }: BaseTemplateProps) {

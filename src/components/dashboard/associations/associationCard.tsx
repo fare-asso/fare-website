@@ -8,7 +8,9 @@ import {
     MapPinIcon
 } from "lucide-react"
 import Image from "next/image"
+
 import { Badge } from "@/components/ui/badge"
+
 import ApproveAssociationButton from "./approveAssociationButton"
 import DeclineAssociationButton from "./declineAssociationButton"
 import DeleteAssociationButton from "./deleteAssociationButton"
@@ -72,10 +74,10 @@ export default function AssociationCard({
 
     return (
         <div
-            className={`group flex flex-col rounded-lg border bg-card shadow-xs transition-shadow hover:shadow-md ${isPending ? "border-amber-300 dark:border-amber-700" : ""}`}
+            className={`group bg-card flex flex-col rounded-lg border shadow-xs transition-shadow hover:shadow-md ${isPending ? "border-amber-300 dark:border-amber-700" : ""}`}
         >
             {/* Logo area */}
-            <div className="relative flex items-center justify-center rounded-t-lg bg-muted/50 transition-colors group-hover:bg-muted">
+            <div className="bg-muted/50 group-hover:bg-muted relative flex items-center justify-center rounded-t-lg transition-colors">
                 <Image
                     src={logoUrl}
                     width={220}
@@ -97,7 +99,7 @@ export default function AssociationCard({
             {/* Content area */}
             <div className="flex flex-1 flex-col gap-2 p-3">
                 {/* Name with tooltip */}
-                <h3 className="line-clamp-1 font-medium text-sm leading-tight">
+                <h3 className="line-clamp-1 text-sm leading-tight font-medium">
                     {association.name}
                 </h3>
 
@@ -143,7 +145,7 @@ export default function AssociationCard({
                     {association.email ? (
                         <a
                             href={`mailto:${association.email}`}
-                            className="flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-primary"
+                            className="text-muted-foreground hover:text-primary flex items-center gap-1.5 transition-colors"
                         >
                             <MailIcon className="h-3 w-3 shrink-0" />
                             <span className="truncate">
@@ -152,7 +154,7 @@ export default function AssociationCard({
                         </a>
                     ) : null}
                     {location ? (
-                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center gap-1.5">
                             <MapPinIcon className="h-3 w-3 shrink-0" />
                             <span className="truncate">{location.short}</span>
                         </div>

@@ -22,7 +22,7 @@ export default async function ArticleList({
 
     if (articles == null) {
         return (
-            <span className="text-red-800 text-xl">
+            <span className="text-xl text-red-800">
                 Echec du chargement des articles, veuillez réessayer
             </span>
         )
@@ -38,7 +38,7 @@ export default async function ArticleList({
         ))
 
         return (
-            <div className="flex h-full w-full flex-col items-center space-y-4 overflow-y-auto rounded-lg border bg-card p-3 text-card-foreground shadow-xs md:p-6">
+            <div className="bg-card text-card-foreground flex h-full w-full flex-col items-center space-y-4 overflow-y-auto rounded-lg border p-3 shadow-xs md:p-6">
                 {articleCards.length > 0 ? (
                     articleCards
                 ) : (

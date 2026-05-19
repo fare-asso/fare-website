@@ -1,4 +1,5 @@
 import { PackageIcon } from "lucide-react"
+
 import AddEquipmentButton from "@/components/dashboard/bagadAsso/equipments/addEquipmentButton"
 import EquipmentCard from "@/components/dashboard/bagadAsso/equipments/equipmentCard"
 import prisma from "@/helpers/db"
@@ -20,7 +21,7 @@ export default async function Equipments() {
             {/* Header */}
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="font-semibold text-lg">
+                    <h1 className="text-lg font-semibold">
                         Matériel Bagad'Asso
                     </h1>
                     <p className="text-muted-foreground text-sm">
@@ -32,7 +33,7 @@ export default async function Equipments() {
 
             {/* Equipment Grid */}
             {equipments.length > 0 ? (
-                <div className="grid @4xl:grid-cols-5 @5xl:grid-cols-6 @lg:grid-cols-4 @sm:grid-cols-3 grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3 @lg:grid-cols-4 @4xl:grid-cols-5 @5xl:grid-cols-6">
                     {equipments.map((equipment) => (
                         <EquipmentCard
                             key={equipment.id}
@@ -43,12 +44,12 @@ export default async function Equipments() {
                     ))}
                 </div>
             ) : (
-                <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30 py-12">
-                    <PackageIcon className="mb-3 h-10 w-10 text-muted-foreground/50" />
-                    <p className="font-medium text-muted-foreground text-sm">
+                <div className="bg-muted/30 flex flex-1 flex-col items-center justify-center rounded-lg border border-dashed py-12">
+                    <PackageIcon className="text-muted-foreground/50 mb-3 h-10 w-10" />
+                    <p className="text-muted-foreground text-sm font-medium">
                         Aucun matériel pour le moment
                     </p>
-                    <p className="mt-1 text-muted-foreground/70 text-xs">
+                    <p className="text-muted-foreground/70 mt-1 text-xs">
                         Ajoutez votre premier équipement pour commencer
                     </p>
                 </div>

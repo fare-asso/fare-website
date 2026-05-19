@@ -12,10 +12,11 @@ import {
 } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 // import FileHandler from "@tiptap-pro/extension-file-handler";
-
 import clsx from "clsx"
 import { useRef } from "react"
+
 import { compressImage } from "@/helpers/image"
+
 import EditorBubbleMenu from "./bubbleMenu"
 
 export default function RichTextEditor({
