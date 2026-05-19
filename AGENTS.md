@@ -399,7 +399,7 @@ Emails live in `src/emails/` as React components using react-email:
 
 ```typescript
 // src/emails/welcome.tsx
-import { Container, Text } from '@react-email/components';
+import { Container, Text } from 'react-email';
 import React from "react"
 import BaseTemplate from "./base"
 

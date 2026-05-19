@@ -1,4 +1,4 @@
-import { Heading, Hr, Text } from "@react-email/components"
+import { Heading, Hr, Text } from "react-email"
 import React from "react"
 
 import BaseTemplate from "./base"

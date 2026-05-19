@@ -9,7 +9,7 @@ import {
     pixelBasedPreset,
     Tailwind,
     Text
-} from "@react-email/components"
+} from "react-email"
 import type { JSX } from "react"
 import React from "react"
 

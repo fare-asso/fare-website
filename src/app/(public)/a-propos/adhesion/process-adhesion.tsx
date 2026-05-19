@@ -1,6 +1,6 @@
 "use server"
 
-import { render } from "@react-email/render"
+import { render } from "react-email"
 import { type } from "arktype"
 import { revalidatePath } from "next/cache"
 import { isDevelopment } from "std-env"

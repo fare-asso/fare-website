@@ -6,7 +6,7 @@ import {
     Row,
     Section,
     Text
-} from "@react-email/components"
+} from "react-email"
 import React from "react"
 
 import BaseTemplate, { APP_URL } from "./base"

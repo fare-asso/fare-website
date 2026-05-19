@@ -20,7 +20,7 @@ vi.mock("@/helpers/db", () =>
     dbModule({ bTPTutorApplication: { update: h.update } })
 )
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
-vi.mock("@react-email/render", () => reactEmailRenderModule())
+vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 

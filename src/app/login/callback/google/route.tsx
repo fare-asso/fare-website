@@ -1,4 +1,4 @@
-import { render } from "@react-email/render"
+import { render } from "react-email"
 import { NextResponse } from "next/server"
 import { isDevelopment } from "std-env"
 

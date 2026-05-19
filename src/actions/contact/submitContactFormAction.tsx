@@ -1,6 +1,6 @@
 "use server"
 
-import { render } from "@react-email/render"
+import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
 import { verifyCaptcha } from "@/components/captcha/verify"

@@ -1,7 +1,7 @@
 "use server"
 
 import type { BTPTutorApplication } from "@prisma/client"
-import { render } from "@react-email/render"
+import { render } from "react-email"
 import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"

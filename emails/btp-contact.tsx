@@ -6,7 +6,7 @@ import {
     Row,
     Section,
     Text
-} from "@react-email/components"
+} from "react-email"
 import React from "react"
 
 import type { BTPTutorQuestion } from "@/schemas/bougeTaPrison"
