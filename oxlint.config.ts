@@ -3,7 +3,8 @@ import { defineConfig } from "oxlint"
 export default defineConfig({
     options: {
         typeAware: true,
-        typeCheck: true
+        typeCheck: true,
+        reportUnusedDisableDirectives: "error"
     },
     plugins: [
         "eslint",
@@ -20,20 +21,10 @@ export default defineConfig({
         "jest",
         "promise"
     ],
-    // Minimal: only the `correctness` safety net (oxlint's analog of biome
-    // `recommended: true`). Style/suspicious are NOT enabled wholesale —
-    // biome.jsonc only opts into specific rules, so we mirror that via the
-    // explicit `rules` map below instead of broad categories (which added
-    // ~13k findings absent from biome).
     categories: {
         correctness: "error"
     },
-    ignorePatterns: [
-        "**/next-env.d.ts",
-        "**/migrations/**",
-        "**/dist",
-        "**/out"
-    ],
+    ignorePatterns: ["**/next-env.d.ts", "**/migrations/**"],
     overrides: [
         {
             // Test files & mocks: async mock factories must keep the async
@@ -82,10 +73,6 @@ export default defineConfig({
         "jsx-a11y/no-static-element-interactions": "warn",
 
         // correctness
-        // biome `noUndeclaredVariables` is TS-aware; the raw eslint `no-undef`
-        // is not (the TS compiler already covers undeclared vars), so it is
-        // disabled to avoid ~220 non-biome false positives.
-        "no-undef": "off",
         // biome's noUnusedVariables ignores leading-underscore names; mirror
         // that so `catch (_error)` / unused `_args` are not flagged.
         "no-unused-vars": [
@@ -103,17 +90,7 @@ export default defineConfig({
         // the result mirrors biome's clean output instead of adding noise.
         "vitest/require-mock-type-parameters": "off",
         "typescript/no-base-to-string": "off",
-        // biome has no equivalent for these; they false-positive on
-        // idiomatic code (preallocated arrays, Sentry re-exports, coerced
-        // template values), so keep parity with biome and leave them off.
-        "unicorn/no-new-array": "off",
-        "import/namespace": "off",
-        "typescript/restrict-template-expressions": "off",
-        // jsx-a11y plugin rules not in biome.jsonc, and react-hooks
-        // exhaustive-deps: biome's a11y recommended set / useExhaustive-
-        // Dependencies treat these as non-erroring on this codebase.
-        // Downgraded to warn to match biome's effective severity while
-        // keeping the signal visible (warnings don't fail the run).
+
         "jsx-a11y/control-has-associated-label": "off",
         "jsx-a11y/prefer-tag-over-role": "warn",
         "jsx-a11y/interactive-supports-focus": "warn",
@@ -127,10 +104,9 @@ export default defineConfig({
 
         // nursery
         "typescript/no-floating-promises": "off",
-        "import/no-cycle": "off",
 
         // performance
-        "oxc/no-barrel-file": "error",
+        "oxc/no-barrel-file": ["error", { threshold: 10 }],
         "nextjs/no-img-element": "warn",
         "nextjs/no-unwanted-polyfillio": "warn",
         "nextjs/google-font-preconnect": "warn",
@@ -142,7 +118,6 @@ export default defineConfig({
         "typescript/no-namespace": "error",
         "no-negated-condition": "error",
         "node/no-process-env": "error",
-        yoda: "off",
         "typescript/prefer-as-const": "error",
         "unicorn/prefer-at": "error",
         "no-lonely-if": "error",
@@ -173,7 +148,6 @@ export default defineConfig({
         "typescript/only-throw-error": "error",
 
         // suspicious
-        "no-console": "off",
         "vitest/no-duplicate-hooks": "error",
         "no-empty": "error",
         "jest/no-export": "error",
@@ -185,18 +159,6 @@ export default defineConfig({
         "nextjs/google-font-display": "warn",
         "array-callback-return": "error",
         "typescript/ban-ts-comment": "error",
-        "unicorn/no-document-cookie": "off"
+        "unicorn/no-document-cookie": "error"
     }
-    // Dropped — no oxlint equivalent (biome rules without a counterpart):
-    //   correctness/noUndeclaredDependencies
-    //   correctness/noProcessGlobal
-    //   correctness/noGlobalDirnameFilename
-    //   complexity/noExcessiveCognitiveComplexity (oxlint `complexity` is
-    //     cyclomatic, not cognitive — not equivalent)
-    //   style/noEnum
-    //   style/useNamingConvention
-    //   style/useSingleVarDeclarator
-    //   suspicious/noImplicitAnyLet
-    // Partial: style/useCollapsedIf (collapse nested `if` into `&&`) has no
-    //   exact rule; `no-lonely-if` only covers the `else if` case.
 })

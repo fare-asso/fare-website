@@ -13,4 +13,4 @@ Sentry.init({
 })
 
 // This export will instrument router navigations
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart // oxlint-disable-line import/namespace
