@@ -47,7 +47,7 @@ jobs:
               run: pnpm install --frozen-lockfile=false # Allow lockfile updates
 
             - name: Format package.json
-              run: pnpm biome format ./package.json --write
+              run: pnpm oxfmt ./package.json
 
             # Run essential checks
             - name: Run check types
@@ -55,6 +55,12 @@ jobs:
 
             - name: Run Lint Checks
               run: pnpm run check:lint
+
+            - name: Install Playwright Chromium
+              run: pnpm exec playwright install --with-deps chromium
+
+            - name: Run tests
+              run: pnpm run test
 
             - name: Create Pull Request if changes exist
               uses: peter-evans/create-pull-request@v8
