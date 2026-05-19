@@ -76,6 +76,19 @@ model Association {
   adhesion         Adhesion? @relation(fields: [adhesionId], references: [id])
 }
 
+model Partenaire {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  logoPath    String
+}
+
+model AssistanceConfig {
+  id             Int    @id @default(autoincrement())
+  recipientEmail String @default("defense-des-droits@fare-asso.fr")
+  delay          String @default("48h")
+}
+
 model Event {
   id         Int      @id @default(autoincrement())
   name       String

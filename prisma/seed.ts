@@ -128,6 +128,32 @@ async function main() {
                 "Approuver ou refuser les demandes d'adhésion d'associations"
         },
 
+        // Partenaires
+        {
+            name: "access:partner",
+            title: "Accéder Partenaires",
+            category: "Partenaires",
+            description: "Voir la page de gestion des partenaires"
+        },
+        {
+            name: "create:partner",
+            title: "Créer Partenaire",
+            category: "Partenaires",
+            description: "Ajouter de nouveaux partenaires"
+        },
+        {
+            name: "edit:partner",
+            title: "Modifier Partenaire",
+            category: "Partenaires",
+            description: "Modifier les informations des partenaires"
+        },
+        {
+            name: "delete:partner",
+            title: "Supprimer Partenaire",
+            category: "Partenaires",
+            description: "Supprimer des partenaires"
+        },
+
         // Events
         {
             name: "access:events",
