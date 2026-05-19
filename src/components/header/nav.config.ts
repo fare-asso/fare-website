@@ -32,7 +32,7 @@ export const links: NavLink[] = [
             {
                 title: "Nos partenaires",
                 href: "/a-propos/partenaires",
-                hidden: true
+                hidden: false
             },
             {
                 title: "Nous contacter",

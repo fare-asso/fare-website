@@ -1,22 +1,15 @@
 "use client"
 
 import type { Partenaire } from "@prisma/client"
-import {
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
+import { useForm } from "@tanstack/react-form"
+import { Loader2Icon } from "lucide-react"
+import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 import editPartenaireAction from "@/actions/partenaires/editPartenaireAction"
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger
-} from "@/components/ui/accordion"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+    EditPartenaireSchema,
+    type TEditPartenaire
+} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -27,60 +20,60 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog"
+import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel
+} from "@/components/ui/field"
+import { FilePondInput } from "@/components/ui/filepond"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
-import LoadingRing from "../loadingRing"
+
+const MAX_FILE_SIZE = 15 * 1024 * 1024
 
 export default function EditPartenaireButton({
     partenaire
 }: {
     partenaire: Partenaire
 }) {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(editPartenaireAction, undefined)
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [open, setOpen] = useState(false)
+    const [isPending, submit] = useTransition()
+    const [submitError, setSubmitError] = useState<string | null>(null)
 
-    const handleOpenChange = useCallback((open: boolean) => {
-        setDialogIsOpen(open)
-        if (!open) {
-            setIsLoading(false)
-            // Réinitialiser le formulaire lorsque le dialogue est fermé
+    const form = useForm({
+        defaultValues: {
+            id: partenaire.id,
+            name: partenaire.name,
+            description: partenaire.description,
+            logo: undefined
+        } as TEditPartenaire,
+        validators: {
+            onChange: EditPartenaireSchema,
+            onSubmit: EditPartenaireSchema
+        },
+        // biome-ignore lint/suspicious/useAwait: submission runs inside a transition
+        onSubmit: async ({ value }) => {
+            setSubmitError(null)
+            submit(async () => {
+                const res = await editPartenaireAction(value)
+                if (res.success) {
+                    setOpen(false)
+                } else {
+                    setSubmitError(res.error)
+                }
+            })
         }
-    }, [])
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-            setIsLoading(false)
-        }
-        setIsLoading(false)
-    }, [formState, handleOpenChange])
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        const formData = new FormData(event.currentTarget)
-
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(formData)
-        })
-    }
+    })
 
     return (
-        <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
-            {/* Trigger */}
+        <Dialog open={open} onOpenChange={setOpen}>
             <Tooltip>
                 <TooltipTrigger asChild>
                     <DialogTrigger asChild>
@@ -92,96 +85,157 @@ export default function EditPartenaireButton({
                 <TooltipContent>Modifier</TooltipContent>
             </Tooltip>
 
-            {/* Content */}
             <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[60%] lg:max-w-[40%]">
                 <DialogHeader>
                     <DialogTitle>Modifier Partenaire</DialogTitle>
                     <DialogDescription>
-                        Ceci est le formulaire de modification du partenaire
+                        Formulaire de modification du partenaire.
                     </DialogDescription>
                 </DialogHeader>
 
-                {/* Form */}
                 <form
-                    onSubmit={handleSubmit}
                     id="editPartenaireForm"
-                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
+                    className="overflow-y-auto p-2"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        form.handleSubmit()
+                    }}
                 >
-                    <input type="hidden" name="id" value={partenaire.id} />
-
-                    <div>
-                        <Label htmlFor="name">{"Nom du partenaire"}</Label>
-                        <Input
-                            type="text"
-                            id="name"
+                    <FieldGroup>
+                        <form.Field
                             name="name"
-                            placeholder="Nom"
-                            required
-                            defaultValue={partenaire.name}
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Nom du partenaire
+                                        </FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
+                                            placeholder="Nom"
+                                        />
+                                        {isInvalid && (
+                                            <FieldError>
+                                                Le nom est requis.
+                                            </FieldError>
+                                        )}
+                                    </Field>
+                                )
+                            }}
                         />
-                    </div>
 
-                    <div>
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
+                        <form.Field
                             name="description"
-                            maxLength={1000}
-                            placeholder="(Max: 1000 caractères)"
-                            className="max-h-[170px]"
-                            defaultValue={partenaire.description}
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Description
+                                        </FieldLabel>
+                                        <Textarea
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            maxLength={1000}
+                                            className="max-h-[170px]"
+                                            placeholder="(Max: 1000 caractères)"
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError>
+                                                La description est requise (max
+                                                1000 caractères).
+                                            </FieldError>
+                                        )}
+                                    </Field>
+                                )
+                            }}
                         />
-                    </div>
 
-                    {/* Pictures */}
-                    <div>
-                        <Accordion type="single" collapsible>
-                            {/* Logo Picture */}
-                            <AccordionItem value="logo-picture">
-                                <AccordionTrigger>
-                                    <Label htmlFor="logo-picture">Logo</Label>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="text-muted-foreground text-sm">
-                                        {
-                                            "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
-                                        }
-                                    </div>
-                                    <div className="text-muted-foreground text-sm">
-                                        Taille maximale : 15 Mo
-                                    </div>
-                                    <div className="mb-1 text-muted-foreground text-sm">
-                                        Format recommandée: carré
-                                    </div>
-                                    <Input
-                                        type="file"
-                                        id="logo-picture"
-                                        name="logo-picture"
-                                        accept="image/*"
-                                    />
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </div>
+                        <form.Field
+                            name="logo"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Logo{" "}
+                                            <span className="text-muted-foreground">
+                                                (optionnel)
+                                            </span>
+                                        </FieldLabel>
+                                        <FieldDescription>
+                                            Laissez vide pour conserver le logo
+                                            actuel. Format : PNG, JPG, WebP,
+                                            SVG. Maximum{" "}
+                                            {MAX_FILE_SIZE / (1024 * 1024)} Mo.
+                                        </FieldDescription>
+                                        <FilePondInput
+                                            maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
+                                            acceptedFileTypes={[
+                                                "image/png",
+                                                "image/jpeg",
+                                                "image/webp",
+                                                "image/svg+xml"
+                                            ]}
+                                            onChange={(file) =>
+                                                field.handleChange(file)
+                                            }
+                                        />
+                                        {isInvalid && (
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    </Field>
+                                )
+                            }}
+                        />
 
-                    {formState?.error ? (
-                        <Alert variant="destructive">
-                            <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
-                        </Alert>
-                    ) : null}
+                        {submitError && (
+                            <p
+                                role="alert"
+                                className="rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-destructive text-sm"
+                            >
+                                {submitError}
+                            </p>
+                        )}
+                    </FieldGroup>
                 </form>
 
                 <DialogFooter>
                     <Button
                         type="submit"
                         form="editPartenaireForm"
-                        disabled={isLoading}
+                        disabled={isPending}
                     >
-                        {isLoading ? <LoadingRing /> : null} Valider
-                        modifications
+                        {isPending ? (
+                            <Loader2Icon className="animate-spin" />
+                        ) : null}{" "}
+                        Valider les modifications
                     </Button>
                 </DialogFooter>
             </DialogContent>

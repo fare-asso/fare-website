@@ -1,20 +1,13 @@
 "use client"
 
-import {
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
+import { useForm } from "@tanstack/react-form"
+import { Loader2Icon } from "lucide-react"
+import { useState, useTransition } from "react"
 import addPartenaireAction from "@/actions/partenaires/addPartenaireAction"
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger
-} from "@/components/ui/accordion"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+    AddPartenaireSchema,
+    type TAddPartenaire
+} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -25,146 +18,203 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog"
+import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel
+} from "@/components/ui/field"
+import { FilePondInput } from "@/components/ui/filepond"
 import { Input } from "@/components/ui/input"
-import DatePicker from "@/components/ui/input/datePicker"
-import { Label } from "@/components/ui/label"
-import LocationPicker from "@/components/ui/location/locationPicker"
 import { Textarea } from "@/components/ui/textarea"
-import LoadingRing from "../loadingRing"
+
+const MAX_FILE_SIZE = 15 * 1024 * 1024
+
+const emptyForm: TAddPartenaire = {
+    name: "",
+    description: "",
+    logo: undefined as unknown as File
+}
 
 export default function AddPartenaireButton() {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(addPartenaireAction, undefined)
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [open, setOpen] = useState(false)
+    const [isPending, submit] = useTransition()
+    const [submitError, setSubmitError] = useState<string | null>(null)
 
-    const handleOpenChange = useCallback((open: boolean) => {
-        setDialogIsOpen(open)
-        if (!open) {
-            setIsLoading(false)
-            // Réinitialiser le formulaire lorsque le dialogue est fermé
+    const form = useForm({
+        defaultValues: emptyForm,
+        validators: {
+            onChange: AddPartenaireSchema,
+            onSubmit: AddPartenaireSchema
+        },
+        onSubmit: async ({ value }) => {
+            setSubmitError(null)
+            submit(async () => {
+                const res = await addPartenaireAction(value)
+                if (res.success) {
+                    setOpen(false)
+                    form.reset()
+                } else {
+                    setSubmitError(res.error)
+                }
+            })
         }
-    }, [])
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-            setIsLoading(false)
-        }
-        setIsLoading(false)
-    }, [formState, handleOpenChange])
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        const formData = new FormData(event.currentTarget)
-
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(formData)
-        })
-    }
+    })
 
     return (
-        <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
-            {/* Trigger */}
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button>Ajouter un Nouveau Partenaire</Button>
             </DialogTrigger>
-
-            {/* Content */}
             <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[60%] lg:max-w-[40%]">
                 <DialogHeader>
                     <DialogTitle>Nouveau Partenaire</DialogTitle>
                     <DialogDescription>
-                        {"Ceci est le formulaire d'ajout de nouveau partenaire"}
+                        {"Formulaire d'ajout d'un nouveau partenaire."}
                     </DialogDescription>
                 </DialogHeader>
 
-                {/* Form */}
                 <form
-                    onSubmit={handleSubmit}
                     id="addPartenaireForm"
-                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
+                    className="overflow-y-auto p-2"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        form.handleSubmit()
+                    }}
                 >
-                    {/* Name */}
-                    <div>
-                        <Label htmlFor="name">{"Nom du partenaire"}</Label>
-                        <Input
-                            type="text"
-                            id="name"
+                    <FieldGroup>
+                        <form.Field
                             name="name"
-                            placeholder="Nom"
-                            required
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Nom du partenaire
+                                        </FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
+                                            placeholder="Nom"
+                                        />
+                                        {isInvalid && (
+                                            <FieldError>
+                                                Le nom est requis.
+                                            </FieldError>
+                                        )}
+                                    </Field>
+                                )
+                            }}
                         />
-                    </div>
 
-                    {/* Description */}
-                    <div>
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
+                        <form.Field
                             name="description"
-                            maxLength={1000}
-                            placeholder="(Max: 1000 caractères)"
-                            className="max-h-[170px]"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Description
+                                        </FieldLabel>
+                                        <Textarea
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            maxLength={1000}
+                                            className="max-h-[170px]"
+                                            placeholder="(Max: 1000 caractères)"
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError>
+                                                La description est requise (max
+                                                1000 caractères).
+                                            </FieldError>
+                                        )}
+                                    </Field>
+                                )
+                            }}
                         />
-                    </div>
 
-                    {/* Pictures */}
-                    <div>
-                        <Accordion type="single" collapsible>
-                            {/* Logo Picture */}
-                            <AccordionItem value="logo-picture">
-                                <AccordionTrigger>
-                                    <Label htmlFor="logo-picture">Logo</Label>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="text-muted-foreground text-sm">
-                                        {
-                                            "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
-                                        }
-                                    </div>
-                                    <div className="text-muted-foreground text-sm">
-                                        Taille maximale : 15 Mo
-                                    </div>
-                                    <div className="mb-1 text-muted-foreground text-sm">
-                                        Format recommandée: carré
-                                    </div>
-                                    <Input
-                                        type="file"
-                                        id="logo-picture"
-                                        name="logo-picture"
-                                        accept="image/*"
-                                        required
-                                    />
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </div>
+                        <form.Field
+                            name="logo"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Logo
+                                        </FieldLabel>
+                                        <FieldDescription>
+                                            Format : PNG, JPG, WebP, SVG.
+                                            Maximum{" "}
+                                            {MAX_FILE_SIZE / (1024 * 1024)} Mo.
+                                            Format recommandé : carré.
+                                        </FieldDescription>
+                                        <FilePondInput
+                                            maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
+                                            acceptedFileTypes={[
+                                                "image/png",
+                                                "image/jpeg",
+                                                "image/webp",
+                                                "image/svg+xml"
+                                            ]}
+                                            onChange={(file) =>
+                                                field.handleChange(file)
+                                            }
+                                        />
+                                        {isInvalid && (
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    </Field>
+                                )
+                            }}
+                        />
 
-                    {/* Error */}
-                    {formState?.error ? (
-                        <Alert variant="destructive">
-                            <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
-                        </Alert>
-                    ) : null}
+                        {submitError && (
+                            <p
+                                role="alert"
+                                className="rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-destructive text-sm"
+                            >
+                                {submitError}
+                            </p>
+                        )}
+                    </FieldGroup>
                 </form>
 
                 <DialogFooter>
                     <Button
                         type="submit"
                         form="addPartenaireForm"
-                        disabled={isLoading}
+                        disabled={isPending}
                     >
-                        {isLoading ? <LoadingRing /> : null} Ajouter
+                        {isPending ? (
+                            <Loader2Icon className="animate-spin" />
+                        ) : null}{" "}
+                        Ajouter
                     </Button>
                 </DialogFooter>
             </DialogContent>

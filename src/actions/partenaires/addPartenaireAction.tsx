@@ -1,102 +1,78 @@
 "use server"
 
 import { randomUUID } from "node:crypto"
+import { type } from "arktype"
 import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    AddPartenaireSchema,
+    type TAddPartenaire
+} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
+
+type Result = { success: true } | { success: false; error: string }
 
 async function addPartenaireActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+    input: TAddPartenaire
+): Promise<Result> {
     const user = await getCurrentUserWithPermissions()
-    if (!user) {
-        return { error: "Authentification requise" }
-    }
+    if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "create:partner")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de créer des partenaires"
         }
     }
 
+    const data = AddPartenaireSchema(input)
+    if (data instanceof type.errors) {
+        return { success: false, error: "Un ou plusieurs champs sont invalides." }
+    }
+
     const supabase = await createClient()
-
-    const name = formData.get("name")?.toString()
-    const description = formData.get("description")?.toString()
-    const logoPicture = formData.get("logo-picture")
-
-    if (!name || !description || !logoPicture) {
-        return {
-            error: "Veuillez remplir tous les champs obligatoires."
+    let logoPath: string
+    try {
+        const { data: uploaded, error } = await supabase.storage
+            .from("partner-pictures")
+            .upload(randomUUID(), data.logo!)
+        if (error || !uploaded) {
+            captureActionError(
+                error ?? new Error("Supabase storage upload returned no data")
+            )
+            return { success: false, error: "Échec de l'upload du logo." }
         }
+        logoPath = uploaded.path
+    } catch (error) {
+        captureActionError(error)
+        return { success: false, error: "Échec de l'upload du logo." }
     }
-
-    const maxFileSize = 15
-
-    if (!(logoPicture instanceof File)) return { error: "Logo non-valide." }
-
-    const file: File = logoPicture
-
-    if (file.size === 0 || file.size / (1024 * 1024) > maxFileSize) {
-        return {
-            error: `La taille du logo doit être inférieure à ${maxFileSize} Mo.`
-        }
-    }
-
-    if (
-        ![
-            "image/png",
-            "image/jpeg",
-            "image/jpg",
-            "image/webp",
-            "image/gif"
-        ].includes(file.type)
-    ) {
-        return {
-            error: "Le format de l'image doit être : PNG, JPEG, JPG, WebP ou GIF"
-        }
-    }
-
-    const { data, error: err } = await supabase.storage
-        .from("partner-pictures")
-        .upload(randomUUID(), file)
-    if (err) {
-        return { error: err.message }
-    }
-
-    const logoPath: string = data.path
 
     try {
-        const newPartenaire = await prisma.partenaire.create({
+        await prisma.partenaire.create({
             data: {
-                name,
-                description,
+                name: data.name,
+                description: data.description,
                 logoPath
             }
         })
-
-        if (newPartenaire) {
-            revalidatePath("/dashboard/partenaires")
-            revalidatePath("/a-propos/partenaires")
-            return { success: true }
-        } else {
-            return {
-                error: "La création du partenaire dans la base de données a échoué... Veuillez contacter un administrateur."
-            }
-        }
     } catch (error) {
         captureActionError(error)
-        const errorMessage =
-            error instanceof Error ? error.message : "Unknown error"
-        return { error: errorMessage }
+        await supabase.storage.from("partner-pictures").remove([logoPath])
+        return {
+            success: false,
+            error: "Échec de la création du partenaire."
+        }
     }
+
+    revalidatePath("/dashboard/partenaires")
+    revalidatePath("/a-propos/partenaires")
+    return { success: true }
 }
 
 export default withServerAction(
     "addPartenaireAction",
-    addPartenaireActionImpl,
-    { attachFormData: true }
+    addPartenaireActionImpl
 )

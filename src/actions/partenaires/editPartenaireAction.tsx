@@ -1,125 +1,89 @@
 "use server"
 
+import { type } from "arktype"
 import { revalidatePath } from "next/cache"
+import {
+    EditPartenaireSchema,
+    type TEditPartenaire
+} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 
+type Result = { success: true } | { success: false; error: string }
+
 async function editPartenaireActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
-    // Auth and permission verifications
+    input: TEditPartenaire
+): Promise<Result> {
     const user = await getCurrentUserWithPermissions()
-    if (!user) {
-        return { error: "Authentification requise" }
-    }
+    if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "edit:partner")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de modifier des partenaires"
         }
     }
 
-    // create supabase client
+    const data = EditPartenaireSchema(input)
+    if (data instanceof type.errors) {
+        return {
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        }
+    }
+
     const supabase = await createClient()
 
-    // retrieve form data fields
-    const id = Number(formData.get("id")?.toString() ?? Number.NaN)
-    const name = formData.get("name")?.toString()
-    const description = formData.get("description")?.toString()
-    const logoPicture = formData.get("logo-picture")
-
-    // fetch current partenaire logo path
-    const currentPartenaire = await prisma.partenaire.findUnique({
-        where: {
-            id: id
-        },
-        select: {
-            logoPath: true
-        }
+    const current = await prisma.partenaire.findUnique({
+        where: { id: data.id },
+        select: { logoPath: true }
     })
-
-    // validate current partenaire
-    if (!currentPartenaire)
-        return {
-            error: "Echec de la récupération des informations du partenaire"
-        }
-
-    // Fields Validation
-    if (Number.isNaN(id) || !name || !description || !logoPicture) {
-        return { error: "Veuillez remplir tous les champs obligatoires." }
+    if (!current) {
+        return { success: false, error: "Partenaire introuvable." }
     }
 
-    const maxFileSize = 15 // max file size in mb
+    let logoPath = current.logoPath
 
-    // Logo Picture
-    if (!(logoPicture instanceof File)) return { error: "Logo non-valide." }
-
-    const file: File = logoPicture
-
-    // size validation
-    if (file.size === 0 || file.size / (1024 * 1024) > maxFileSize) {
-        return {
-            error: `La taille de chaque photo doit être inférieure à ${maxFileSize} Mo.`
+    if (data.logo) {
+        try {
+            const { data: uploaded, error } = await supabase.storage
+                .from("partner-pictures")
+                .update(current.logoPath, data.logo)
+            if (error || !uploaded) {
+                return { success: false, error: "Échec de l'upload du logo." }
+            }
+            logoPath = uploaded.path
+        } catch (error) {
+            captureActionError(error)
+            return { success: false, error: "Échec de l'upload du logo." }
         }
     }
-
-    // type validation
-    if (
-        ![
-            "image/png",
-            "image/jpeg",
-            "image/jpg",
-            "image/webp",
-            "image/gif"
-        ].includes(file.type)
-    ) {
-        return {
-            error: "Le format de l'image doit être : PNG, JPEG, JPG, WebP ou GIF"
-        }
-    }
-
-    // update logo picture
-    const { data, error: err } = await supabase.storage
-        .from("partner-pictures")
-        .update(currentPartenaire.logoPath, file)
-    if (err) return { error: err.message }
-
-    const logoPath: string = data.path
 
     try {
-        const editedPartenaire = await prisma.partenaire.update({
-            where: {
-                id: id
-            },
+        await prisma.partenaire.update({
+            where: { id: data.id },
             data: {
-                name,
-                description: description,
+                name: data.name,
+                description: data.description,
                 logoPath
             }
         })
-
-        if (editedPartenaire) {
-            revalidatePath("/dashboard/partenaires")
-            revalidatePath("/a-propos/partenaires")
-            return { success: true }
-        } else {
-            return {
-                error: "La modification du partenaire dans la base de données a échoué... Veuillez contacter un administrateur."
-            }
-        }
     } catch (error) {
         captureActionError(error)
-        const errorMessage =
-            error instanceof Error ? error.message : "Unknown error"
-        return { error: errorMessage }
+        return {
+            success: false,
+            error: "Échec de la modification du partenaire."
+        }
     }
+
+    revalidatePath("/dashboard/partenaires")
+    revalidatePath("/a-propos/partenaires")
+    return { success: true }
 }
 
 export default withServerAction(
-    "editPartenaireActionImplAction",
-    editPartenaireActionImpl,
-    { attachFormData: true }
+    "editPartenaireAction",
+    editPartenaireActionImpl
 )

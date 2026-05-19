@@ -29,7 +29,7 @@ export default async function Partenaires() {
                 Nos Partenaires
             </h1>
             {partners.length === 0 ? (
-                <p className="px-4 text-center text-gray-600 text-lg">
+                <p className="px-4 text-center text-lg">
                     Aucun partenaire pour le moment.
                 </p>
             ) : (
@@ -56,10 +56,10 @@ export default async function Partenaires() {
                                         />
                                     </div>
                                     <div className="w-full md:w-1/2">
-                                        <h2 className="mb-4 font-semibold text-2xl">
+                                        <h2 className="mb-4 text-3xl">
                                             {partner.name}
                                         </h2>
-                                        <p className="text-justify text-gray-600 text-lg leading-relaxed">
+                                        <p className="text-justify">
                                             {partner.description}
                                         </p>
                                     </div>

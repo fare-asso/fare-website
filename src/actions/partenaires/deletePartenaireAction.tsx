@@ -11,7 +11,6 @@ async function deletePartenaireActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ) {
-    // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
         return { error: "Authentification requise" }
@@ -22,13 +21,10 @@ async function deletePartenaireActionImpl(
         }
     }
 
-    // create supabase client
     const supabase = await createClient()
 
-    // create supabase admin client (only on server)
     const supabaseAdmin = await createAdminClient()
 
-    // fetch association to delete
     const partenaire = await prisma.partenaire.findUnique({
         where: {
             id: id
