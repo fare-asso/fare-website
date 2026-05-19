@@ -20,7 +20,7 @@ export default function AGORAe() {
             <Image
                 src={logoAgoraE}
                 alt="Logo de l'AGORAé"
-                className="w-full md:w-1/2"
+                className="w-full md:w-1/2 mb-10"
             />
 
             <div className="mb-20 flex w-full max-w-4xl flex-col items-center space-y-12">
