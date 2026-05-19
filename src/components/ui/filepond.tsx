@@ -23,7 +23,9 @@ registerPlugin(
 interface FilePondInputProps
     extends Omit<ReactFilePondProps, "onupdatefiles" | "files"> {
     /** Called with the first File when files change (single mode), or undefined if cleared. */
-    onChange: (file: File) => void
+    onChange?: (file: File) => void
+    /** Called with every selected File (multi mode). */
+    onChangeMultiple?: (files: File[]) => void
 }
 
 /**
@@ -34,7 +36,8 @@ interface FilePondInputProps
  * Pass FilePond props directly — they're forwarded to the underlying component.
  */
 export function FilePondInput({
-    onChange = () => {},
+    onChange = () => undefined,
+    onChangeMultiple,
     labelIdle = 'Glissez-déposez un fichier ou <span class="filepond--label-action">parcourir</span>',
     ...props
 }: FilePondInputProps): React.ReactNode {
@@ -43,10 +46,14 @@ export function FilePondInput({
     const handleUpdateFiles = useCallback(
         (fileItems: FilePondFile[]) => {
             setFiles(fileItems)
+            if (onChangeMultiple) {
+                onChangeMultiple(fileItems.map((item) => item.file as File))
+                return
+            }
             const file = fileItems[0]?.file as File
             onChange(file)
         },
-        [onChange]
+        [onChange, onChangeMultiple]
     )
 
     return (

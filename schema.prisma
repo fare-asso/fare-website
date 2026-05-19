@@ -224,6 +224,12 @@ model BugReport {
   description String
 }
 
+model AssistanceConfig {
+  id             Int    @id @default(autoincrement())
+  recipientEmail String @default("defense-des-droits@fare-asso.fr")
+  delay          String @default("48h")
+}
+
 enum Role {
   MEMBER
   ADMIN

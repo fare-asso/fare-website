@@ -77,7 +77,7 @@ async function deleteAssociationActionImpl(
         })
         revalidatePath("/dashboard/associations")
         revalidatePath("/reseau")
-        revalidatePath("/(home)")
+        revalidatePath("/")
         return { success: true }
     } catch (error) {
         captureActionError(error)

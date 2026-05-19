@@ -60,20 +60,20 @@ export default function Home() {
             </section>
 
             {/* Last articles
-      <div className="my-10 w-full flex flex-col">
-        <h2 className="text-2xl font-semibold mb-2">
-          Actualités
-        </h2>
-        <div className="w-full flex flex-row space-x-2">
-          <div className="rounded-xl h-32 w-24 bg-gray-600">
+              <div className="my-10 w-full flex flex-col">
+                <h2 className="text-2xl font-semibold mb-2">
+                  Actualités
+                </h2>
+                <div className="w-full flex flex-row space-x-2">
+                  <div className="rounded-xl h-32 w-24 bg-gray-600">
 
-          </div>
-          <div className="rounded-xl h-32 w-24 bg-gray-600">
+                  </div>
+                  <div className="rounded-xl h-32 w-24 bg-gray-600">
 
-          </div>
-        </div>
+                  </div>
+                </div>
 
-      </div> */}
+              </div> */}
 
             {/* Le réseau */}
             <div className="my-10 flex w-full flex-col">
@@ -84,15 +84,15 @@ export default function Home() {
             </div>
 
             {/* Les évènements à venir
-      <div className="my-10 w-full flex flex-col">
-        <h2 className="text-2xl font-semibold mb-2">
-          Les évènements à venir
-        </h2>
-        <div className="w-full flex flex-row space-x-2">
+              <div className="my-10 w-full flex flex-col">
+                <h2 className="text-2xl font-semibold mb-2">
+                  Les évènements à venir
+                </h2>
+                <div className="w-full flex flex-row space-x-2">
 
-        </div>
+                </div>
 
-      </div> */}
+              </div> */}
 
             {/* Discord */}
             <div className="my-10 flex w-full flex-col">
@@ -141,8 +141,6 @@ export default function Home() {
                 <h2 className="mb-2 font-semibold text-2xl">Nos partenaires</h2>
                 <PartnersCarousel />
             </div>
-
-            {/* <iframe width="560" height="315" src="https://www.youtube.com/embed/_nu4cbdJ8do?si=_OAfgGASwAr1jEg5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> */}
         </div>
     )
 }

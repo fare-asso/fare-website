@@ -28,4 +28,12 @@ if (!Reflect.has(globalThis, "process")) {
 afterEach(() => {
     cleanup()
     vi.clearAllMocks()
+    // Forms persist localStorage drafts (e.g. the assistance form) and the
+    // browser page context is shared across tests — reset it between tests.
+    try {
+        window.localStorage.clear()
+        window.sessionStorage.clear()
+    } catch {
+        // storage may be unavailable in some contexts; ignore
+    }
 })

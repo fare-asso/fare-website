@@ -4,7 +4,8 @@ import type { Permission } from "@prisma/client"
 import {
     FileUserIcon,
     MessageCircleQuestionMarkIcon,
-    NewspaperIcon
+    NewspaperIcon,
+    ShieldIcon
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -158,6 +159,14 @@ export default function SideBarApp({
                     )
                 },
 
+                {
+                    href: "/dashboard/defense-des-droits",
+                    title: "Défense des droits",
+                    icon: <ShieldIcon />,
+                    hidden: !permissions?.find(
+                        (p) => p.name === "access:defense-droits"
+                    )
+                },
                 {
                     href: "/dashboard/users",
                     title: "Utilisateurs",

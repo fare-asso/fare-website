@@ -60,6 +60,11 @@ This document lists all permissions required for the FARE Website application. T
 - `access:btp` - View Bouge Ta Prison dashboard pages (candidatures & questions)
 - Note: Submitting tutor applications and questions are public actions (no permission required)
 
+### Défense des droits
+
+- `access:defense-droits` - View and configure the Défense des droits page (recipient address and response delay)
+- Note: Submitting an assistance request is a public action (no permission required)
+
 ### Users
 
 - `access:users` - View users dashboard page
@@ -156,6 +161,9 @@ INSERT INTO "Permission" (name, title, category, description) VALUES
 
 -- Bouge Ta Prison
 ('access:btp', 'Accès BTP', 'Bouge Ta Prison', 'Voir les pages de gestion Bouge Ta Prison'),
+
+-- Défense des droits
+('access:defense-droits', 'Accès Défense des droits', 'Défense des droits', 'Voir et configurer la page Défense des droits (adresse de réception et délai)'),
 
 -- Users (already exist in system, documented here for completeness)
 ('access:users', 'Accès Utilisateurs', 'Utilisateurs', 'Voir la page de gestion des utilisateurs'),

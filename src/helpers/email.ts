@@ -2,10 +2,17 @@ import nodemailer from "nodemailer"
 import { isProduction } from "std-env"
 import { env } from "@/env"
 
+interface EmailAttachment {
+    filename: string
+    content: Buffer
+    contentType?: string
+}
+
 interface EmailPayload {
     to: string
     subject: string
     html: string
+    attachments?: EmailAttachment[]
 }
 
 // Configuration du transporteur
@@ -22,14 +29,15 @@ const transporter = nodemailer.createTransport({
 export async function sendEmail(
     payload: EmailPayload
 ): Promise<{ error?: string; success?: boolean }> {
-    const { to, subject, html } = payload
+    const { to, subject, html, attachments } = payload
 
     try {
         await transporter.sendMail({
             from: `FARE <${env.SMTP_FROM_EMAIL}>`,
             to: isProduction ? to : "outils-numeriques@fare-asso.fr",
             subject: isProduction ? subject : `TEST - ${subject}`,
-            html
+            html,
+            attachments
         })
         return { success: true }
     } catch (error: unknown) {

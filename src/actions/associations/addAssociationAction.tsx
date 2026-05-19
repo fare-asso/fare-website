@@ -113,7 +113,7 @@ async function addAssociationActionImpl(
         if (newAssociation) {
             revalidatePath("/dashboard/associations")
             revalidatePath("/reseau")
-            revalidatePath("/(home)")
+            revalidatePath("/")
             return { success: true }
         } else {
             return {

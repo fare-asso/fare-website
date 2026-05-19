@@ -5,7 +5,7 @@ import { PDFDocument, type PDFPage, rgb, StandardFonts } from "pdf-lib"
 import {
     type BureauMember,
     bureauMemberSchema
-} from "@/app/(home)/a-propos/adhesion/form-schema"
+} from "@/app/(public)/a-propos/adhesion/form-schema"
 import { env } from "@/env"
 
 interface AdhesionPdfData {

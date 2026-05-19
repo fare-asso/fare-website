@@ -2,7 +2,7 @@ import type { Adhesion } from "@prisma/client"
 import type {
     BureauMember,
     TAdhesionForm
-} from "@/app/(home)/a-propos/adhesion/form-schema"
+} from "@/app/(public)/a-propos/adhesion/form-schema"
 import { imageFile, pdfFile } from "./files"
 
 const bureauMember: BureauMember = {

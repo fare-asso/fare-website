@@ -204,6 +204,15 @@ async function main() {
             description: "Voir les pages de gestion Bouge Ta Prison"
         },
 
+        // Défense des droits
+        {
+            name: "access:defense-droits",
+            title: "Accès Défense des droits",
+            category: "Défense des droits",
+            description:
+                "Voir et configurer la page Défense des droits (adresse de réception et délai)"
+        },
+
         // Users
         {
             name: "access:users",

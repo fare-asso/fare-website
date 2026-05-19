@@ -1,7 +1,5 @@
 import { type } from "arktype"
-import { fileSchema } from "@/schemas/reusables"
-
-const frenchPhone = type("/^((0[1-9]([.\\s]?\\d{2}){4})|)$/")
+import { fileSchema, frenchPhone } from "@/schemas/reusables"
 
 export const bureauMemberSchema = type({
     isAdmin: "boolean",
