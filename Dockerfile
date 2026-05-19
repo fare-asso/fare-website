@@ -118,10 +118,6 @@ COPY --from=builder --chown=runner:runner /app/.next/static ./.next/static
 # Copy Prisma files for runtime migrations
 COPY --from=builder --chown=runner:runner /app/prisma ./prisma
 
-# Copy entrypoint script
-COPY --chown=runner:runner docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
-
 USER runner
 
 EXPOSE 3000
