@@ -5,14 +5,9 @@
         "prisma/seed.ts",
         "src/**/*.test.{ts,tsx}",
         "src/test/**",
-        "emails/**/*.test.tsx"
+        "emails/**/*.test.tsx",
+        "src/components/header/defenseDroitsButton.tsx"
     ],
-    "ignoreExportsUsedInFile": {
-        "interface": true,
-        "type": true
-    },
-    "tags": ["-lintignore"],
-    "ignoreBinaries": ["only-allow"],
     "ignoreDependencies": ["postcss-load-config"],
     "ignoreIssues": {
         "src/components/ui/**": [
