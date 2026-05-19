@@ -5,6 +5,7 @@ import type { Role, User } from "@prisma/client"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+
 import updateUserInfo from "@/actions/users/updateUserInfo"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
@@ -78,7 +79,7 @@ export function UserInfoForm({ user }: { user: User }) {
     useEffect(() => {
         form.reset(userInfo)
         setInitialInfo(userInfo)
-    }, [userInfo, form.reset])
+    }, [form, userInfo])
 
     const currentValues = form.watch()
     const isChanged =
@@ -146,7 +147,7 @@ export function UserInfoForm({ user }: { user: User }) {
                             placeholder={user.name ? "" : "NULL"}
                         />
                         {form.formState.errors.name && (
-                            <p className="text-red-500 text-sm">
+                            <p className="text-sm text-red-500">
                                 {form.formState.errors.name.message}
                             </p>
                         )}
@@ -159,7 +160,7 @@ export function UserInfoForm({ user }: { user: User }) {
                             {...form.register("email")}
                         />
                         {form.formState.errors.email && (
-                            <p className="text-red-500 text-sm">
+                            <p className="text-sm text-red-500">
                                 {form.formState.errors.email.message}
                             </p>
                         )}

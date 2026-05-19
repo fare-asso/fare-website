@@ -3,6 +3,7 @@
 import type { Association } from "@prisma/client"
 import { XCircleIcon } from "lucide-react"
 import { startTransition, useActionState, useEffect, useState } from "react"
+
 import declineAssociationAction from "@/actions/associations/declineAssociationAction"
 import {
     AlertDialog,
@@ -21,6 +22,7 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+
 import LoadingRing from "../loadingRing"
 
 export default function DeclineAssociationButton({
@@ -62,7 +64,7 @@ export default function DeclineAssociationButton({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 w-8"
                         >
                             <XCircleIcon size={18} />
                         </Button>
@@ -85,7 +87,7 @@ export default function DeclineAssociationButton({
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDecline}
-                        className="bg-destructive text-white hover:bg-destructive/90"
+                        className="bg-destructive hover:bg-destructive/90 text-white"
                     >
                         {isLoading ? <LoadingRing /> : null} Refuser
                     </AlertDialogAction>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import MemberList from "@/components/public/bureau/memberList"
 import prisma from "@/helpers/db"
 
@@ -14,7 +15,7 @@ export default async function Bureau() {
 
     return (
         <div className="flex w-full flex-col items-center justify-start">
-            <h1 className="py-[10vw] font-semibold text-[3rem]">Le Bureau</h1>
+            <h1 className="py-[10vw] text-[3rem] font-semibold">Le Bureau</h1>
             <MemberList members={bureau} />
         </div>
     )

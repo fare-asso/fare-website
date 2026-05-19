@@ -1,5 +1,6 @@
 import { render } from "@react-email/render"
 import { describe, expect, it } from "vitest"
+
 import AdhesionTemplate from "../new-adhesion"
 
 describe("AdhesionTemplate email", () => {

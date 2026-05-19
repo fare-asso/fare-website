@@ -7,9 +7,10 @@ import {
     Section,
     Text
 } from "@react-email/components"
-//biome-ignore lint/correctness/noUnusedImports: need to import react for react-email to work
 import React from "react"
+
 import type { BTPTutorQuestion } from "@/schemas/bougeTaPrison"
+
 import BaseTemplate, { APP_URL } from "./base"
 
 type BtpContactProps = Omit<
@@ -29,10 +30,10 @@ export function BtpContact({
     return (
         <BaseTemplate>
             <Section className="mt-8">
-                <Text className="m-0 font-medium text-blue-600 text-sm uppercase tracking-wider">
+                <Text className="m-0 text-sm font-medium tracking-wider text-blue-600 uppercase">
                     Question #{id}
                 </Text>
-                <Heading className="m-0 mt-2 font-semibold text-3xl text-stone-800">
+                <Heading className="m-0 mt-2 text-3xl font-semibold text-stone-800">
                     Bouge Ta Prison
                 </Heading>
             </Section>
@@ -40,15 +41,15 @@ export function BtpContact({
             <Section className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-6">
                 <Row>
                     <Column className="w-1/2">
-                        <Text className="m-0 font-medium text-stone-400 text-xs uppercase tracking-wide">
+                        <Text className="m-0 text-xs font-medium tracking-wide text-stone-400 uppercase">
                             De
                         </Text>
-                        <Text className="m-0 mt-1 font-medium text-sm text-stone-700">
+                        <Text className="m-0 mt-1 text-sm font-medium text-stone-700">
                             {firstName} {lastName}
                         </Text>
                     </Column>
                     <Column className="w-1/2">
-                        <Text className="m-0 font-medium text-stone-400 text-xs uppercase tracking-wide">
+                        <Text className="m-0 text-xs font-medium tracking-wide text-stone-400 uppercase">
                             Email
                         </Text>
                         <Text className="m-0 mt-1 text-sm text-stone-700">
@@ -64,10 +65,10 @@ export function BtpContact({
 
                 <Hr className="my-4 border-stone-200" />
 
-                <Text className="m-0 font-medium text-stone-400 text-xs uppercase tracking-wide">
+                <Text className="m-0 text-xs font-medium tracking-wide text-stone-400 uppercase">
                     Message
                 </Text>
-                <Text className="m-0 mt-2 text-sm text-stone-700 leading-relaxed">
+                <Text className="m-0 mt-2 text-sm leading-relaxed text-stone-700">
                     {message}
                 </Text>
             </Section>
@@ -75,7 +76,7 @@ export function BtpContact({
             <Section className="mt-8 text-center">
                 <Link
                     href={`${APP_URL}/dashboard/bouge-ta-prison/questions/${id}`}
-                    className="inline-block rounded-lg bg-blue-500 px-6 py-3 font-semibold text-sm text-white no-underline"
+                    className="inline-block rounded-lg bg-blue-500 px-6 py-3 text-sm font-semibold text-white no-underline"
                 >
                     Voir la question
                 </Link>

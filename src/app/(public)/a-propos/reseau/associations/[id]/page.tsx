@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
+
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 
@@ -49,7 +50,7 @@ export default async function Page({
     if (Number.isNaN(Number(id))) {
         return (
             <div>
-                <span>{"L'association recherchée n'existe pas"}</span>
+                <span>L'association recherchée n'existe pas</span>
             </div>
         )
     }
@@ -64,7 +65,7 @@ export default async function Page({
     if (!associationRecord) {
         return (
             <div>
-                <span>{"L'association recherchée n'existe pas ou plus"}</span>
+                <span>L'association recherchée n'existe pas ou plus</span>
             </div>
         )
     }
@@ -77,7 +78,7 @@ export default async function Page({
             >
                 &lt; Retour aux associations
             </Link>
-            <h1 className="mt-2 font-bold text-3xl">
+            <h1 className="mt-2 text-3xl font-bold">
                 {associationRecord.name}
             </h1>
             <div className="flex w-full flex-row">

@@ -6,6 +6,7 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { createClient } from "@/helpers/supabase/server"
+
 import { DbSizeChartClient } from "./dbSizeChartClient"
 
 export default async function DbSizeChart() {

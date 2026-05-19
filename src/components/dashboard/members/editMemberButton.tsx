@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { MdEdit } from "react-icons/md"
+
 import editMemberAction from "@/actions/members/editMemberAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,7 @@ import {
     MemberEditClientSchema,
     maxUploadSizeInMb
 } from "@/schemas/members"
+
 import LoadingRing from "../loadingRing"
 
 type Member = {
@@ -220,9 +222,7 @@ export default function EditMemberButton({
                     <div>
                         <Label htmlFor="picture">Photo</Label>
                         <div className="text-muted-foreground text-sm">
-                            {
-                                "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
-                            }
+                            Format d'image accepté : PNG, JPEG, JPG, WebP, GIF
                         </div>
                         <div className="text-muted-foreground text-sm">
                             Taille maximale : 10 Mo

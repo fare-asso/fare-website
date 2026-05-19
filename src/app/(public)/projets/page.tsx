@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
+
 import logoAgoraE from "#public/AGORAe/logo_AgoraE.png"
 import logoBTP from "#public/BTP/Logo_BTP.png"
 import logoBA from "#public/Logo_Bagadasso.png"
@@ -12,11 +13,11 @@ export const metadata: Metadata = {
 export default function Projets() {
     return (
         <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
+            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
                 Projets
             </h1>
 
-            <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-x-20 md:space-y-0">
+            <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-y-0 md:space-x-20">
                 <Link
                     href="/projets/agorae"
                     className="flex flex-col items-center transition-all hover:scale-105"

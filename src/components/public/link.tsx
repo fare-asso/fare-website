@@ -1,4 +1,5 @@
 import Link from "next/link"
+
 import { Button, type ButtonVariants } from "../ui/button"
 
 export default function LinkButton({

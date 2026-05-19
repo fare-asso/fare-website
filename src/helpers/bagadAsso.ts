@@ -1,4 +1,5 @@
 import type { BagadAssoTicket } from "@prisma/client"
+
 import prisma from "./db"
 
 interface Equipement {

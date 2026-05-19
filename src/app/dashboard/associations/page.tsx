@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+
 import AddAssociationButton from "@/components/dashboard/associations/addAssociationButton"
 import AssociationList from "@/components/dashboard/associations/associationList"
 import {

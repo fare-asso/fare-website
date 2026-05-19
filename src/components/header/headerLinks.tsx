@@ -4,6 +4,7 @@ import { ChevronDownIcon, MenuIcon, XIcon } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { CSSProperties } from "react"
+
 import { links } from "./nav.config"
 
 const MOBILE_MENU_ID = "fare-mobile-menu"

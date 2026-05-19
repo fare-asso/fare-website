@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { validAdhesionForm } from "@/test/factories/adhesion"
 import { pdfFile } from "@/test/factories/files"
 import {

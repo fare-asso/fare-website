@@ -10,6 +10,7 @@ import { MdDelete, MdDragIndicator } from "react-icons/md"
 import deleteMemberAction from "@/actions/members/deleteMemberAction"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
+
 import EditMemberButton from "./editMemberButton"
 
 interface Member {
@@ -146,10 +147,10 @@ export default function SortableMemberCard({
 
                 {/* Member info */}
                 <div className="mt-auto">
-                    <p className="w-full truncate font-medium text-card-foreground">
+                    <p className="text-card-foreground w-full truncate font-medium">
                         {member.firstName} {member.lastName}
                     </p>
-                    <p className="truncate text-muted-foreground text-xs">
+                    <p className="text-muted-foreground truncate text-xs">
                         {member.position}
                     </p>
                 </div>

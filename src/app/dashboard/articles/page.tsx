@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+
 import ArticleList from "@/components/dashboard/Articles/articleList"
 import CreateArticleButton from "@/components/dashboard/Articles/createArticleButton"
 import {

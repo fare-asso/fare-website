@@ -10,6 +10,7 @@ import {
     useState,
     useTransition
 } from "react"
+
 import { Captcha } from "@/components/captcha"
 import {
     AlertDialog,
@@ -50,6 +51,7 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+
 import {
     AssistanceFormSchema,
     MOYEN_CONTACT,
@@ -773,7 +775,7 @@ export function AssistanceForm(): React.ReactNode {
                         {submitError && (
                             <p
                                 role="alert"
-                                className="rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-destructive text-sm"
+                                className="border-destructive bg-destructive/10 text-destructive rounded-md border px-4 py-3 text-sm"
                             >
                                 {submitError}
                             </p>

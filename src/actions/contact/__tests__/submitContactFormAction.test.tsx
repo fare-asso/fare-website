@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { validContact } from "@/test/factories/contact"
 import {
     captchaModule,

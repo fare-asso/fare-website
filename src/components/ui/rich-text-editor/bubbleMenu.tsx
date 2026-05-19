@@ -11,6 +11,7 @@ import {
     MdImage,
     MdLink
 } from "react-icons/md"
+
 import TextAlignDropdown from "./alignmentDropdown"
 import BubbleButton from "./bubbleButton"
 import ColorPicker from "./colorPicker"
@@ -45,7 +46,7 @@ export default function EditorBubbleMenu({
                 />
 
                 {/* Spacer */}
-                <div className="h-6 w-1px bg-white/30"></div>
+                <div className="w-1px h-6 bg-white/30"></div>
 
                 {/* Bold button */}
                 <BubbleButton
@@ -85,7 +86,7 @@ export default function EditorBubbleMenu({
                 <ColorPicker editor={editor} />
 
                 {/* Spacer */}
-                <div className="h-6 w-1px bg-white/30"></div>
+                <div className="w-1px h-6 bg-white/30"></div>
 
                 {/* Link button */}
                 <BubbleButton
@@ -120,7 +121,7 @@ export default function EditorBubbleMenu({
                 />
 
                 {/* Spacer */}
-                <div className="h-6 w-1px bg-white/30"></div>
+                <div className="w-1px h-6 bg-white/30"></div>
 
                 {/* Align Dropdown menu */}
                 <TextAlignDropdown editor={editor} />

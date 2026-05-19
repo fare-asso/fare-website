@@ -1,4 +1,5 @@
 import type { Role, User } from "@prisma/client"
+
 import type { UserWithPermissions } from "./supabase/auth"
 
 export function hasRole(user: User, role: Role) {

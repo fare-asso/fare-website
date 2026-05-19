@@ -14,6 +14,7 @@ import {
     useState
 } from "react"
 import { MdDelete } from "react-icons/md"
+
 import editEquipmentAction from "@/actions/bagadAsso/editEquipmentAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -30,6 +31,7 @@ import { Input } from "@/components/ui/input"
 import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput"
 import NumberInput from "@/components/ui/input/numberInput"
 import { Label } from "@/components/ui/label"
+
 import LoadingRing from "../../loadingRing"
 
 export default function EditEquipmentDialog({
@@ -46,9 +48,8 @@ export default function EditEquipmentDialog({
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
     const [file, setFile] = useState<string | undefined>(undefined)
-    const [keepCurrentImage, setKeepCurrentImage] = useState<boolean>(
-        !!currentImageUrl
-    )
+    const [keepCurrentImage, setKeepCurrentImage] =
+        useState<boolean>(!!currentImageUrl)
 
     const inputFileRef = useRef<HTMLInputElement>(null)
 
@@ -177,7 +178,7 @@ export default function EditEquipmentDialog({
                     {/* Picture */}
                     <div>
                         <Label htmlFor={`equipment-picture-${equipment.id}`}>
-                            {"Image de l'équipement"}
+                            Image de l'équipement
                         </Label>
 
                         {/* Current image */}

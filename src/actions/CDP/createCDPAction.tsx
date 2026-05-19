@@ -2,6 +2,7 @@
 
 import type { PresseType } from "@prisma/client"
 import { revalidatePath } from "next/cache"
+
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
@@ -103,21 +104,7 @@ async function createCDPActionImpl(
         }
     }
 
-    if (createdCDP != null) {
-        // successfully created the record
-        // revalidate cdp page
-        revalidatePath("/dashboard/communiques-de-presse")
-        revalidatePath("/presse")
-        revalidatePath(
-            type === "CDP"
-                ? "/presse/communiques-de-presse"
-                : "/presse/dossiers-de-presse"
-        )
-
-        return {
-            success: true
-        }
-    } else {
+    if (createdCDP == null) {
         // failed to create the record
 
         // Remove the file from the storage
@@ -132,6 +119,20 @@ async function createCDPActionImpl(
         return {
             error: `Echec de l'ajout du CDP dans la base de données`
         }
+    }
+
+    // successfully created the record
+    // revalidate cdp page
+    revalidatePath("/dashboard/communiques-de-presse")
+    revalidatePath("/presse")
+    revalidatePath(
+        type === "CDP"
+            ? "/presse/communiques-de-presse"
+            : "/presse/dossiers-de-presse"
+    )
+
+    return {
+        success: true
     }
 }
 

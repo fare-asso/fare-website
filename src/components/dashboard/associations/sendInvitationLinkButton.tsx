@@ -3,6 +3,7 @@
 import type { Association } from "@prisma/client"
 import { MailPlusIcon } from "lucide-react"
 import { useActionState, useCallback, useEffect, useState } from "react"
+
 import inviteRepresentativeAction from "@/actions/associations/inviteRepresentativeAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,7 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+
 import LoadingRing from "../loadingRing"
 
 export default function SendInvitationLinkButton({
@@ -83,7 +85,7 @@ export default function SendInvitationLinkButton({
                     <DialogTitle>Invitation Représentant</DialogTitle>
                     <DialogDescription>
                         {`Un e-mail sera envoyé à l'adresse e-mail ci-dessous et créera un compte `}{" "}
-                        <b>Représentant</b> {"pour l'association"}{" "}
+                        <b>Représentant</b> pour l'association{" "}
                         <b>{association.name}</b>.
                     </DialogDescription>
                 </DialogHeader>

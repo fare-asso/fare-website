@@ -8,6 +8,7 @@ import {
     FileTextIcon
 } from "lucide-react"
 import { useState } from "react"
+
 import archiveAdhesionAction from "@/actions/adhesion/archiveAdhesionAction"
 import downloadAdhesionPdfAction from "@/actions/adhesion/downloadAdhesionPdfAction"
 import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
@@ -30,11 +31,12 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/use-toast"
+
 import LoadingRing from "../loadingRing"
 
 function downloadBase64Zip(zipData: string, filename: string) {
     const byteCharacters = atob(zipData)
-    const byteNumbers = new Array(byteCharacters.length)
+    const byteNumbers = Array.from<number>({ length: byteCharacters.length })
     for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i)
     }
@@ -54,7 +56,7 @@ function downloadBase64Zip(zipData: string, filename: string) {
 
 function downloadBase64Pdf(pdfData: string, filename: string) {
     const byteCharacters = atob(pdfData)
-    const byteNumbers = new Array(byteCharacters.length)
+    const byteNumbers = Array.from<number>({ length: byteCharacters.length })
     for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i)
     }

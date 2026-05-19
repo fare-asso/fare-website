@@ -1,7 +1,9 @@
 "use client"
 
 import { useActionState } from "react"
+
 import createPasswordForRepresentativeAction from "@/actions/espace-asso/createPasswordForRepresentativeAction"
+
 import LoadingRing from "../dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
 import { Button } from "../ui/button"

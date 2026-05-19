@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+
 import archiveTutorApplication from "@/actions/bouge-ta-prison/archiveTutorApplication"
 import unarchiveTutorApplication from "@/actions/bouge-ta-prison/unarchiveTutorApplication"
 import LoadingRing from "@/components/dashboard/loadingRing"
@@ -121,7 +122,7 @@ export default function ApplicationCard({
                     <span className="text-muted-foreground text-xs">
                         #{application.id}
                     </span>
-                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                    <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
                         <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
                         <span>
                             {format(application.createdAt, "d MMM yyyy", {
@@ -133,12 +134,12 @@ export default function ApplicationCard({
 
                 <Link
                     href={`/dashboard/bouge-ta-prison/candidatures-tutorat/${application.id}`}
-                    className="font-semibold text-base transition-colors hover:text-primary hover:underline"
+                    className="hover:text-primary text-base font-semibold transition-colors hover:underline"
                 >
                     {application.firstName} {application.lastName}
                 </Link>
 
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-sm">
+                <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm">
                     <div className="flex items-center gap-1.5">
                         <MailIcon className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">{application.email}</span>

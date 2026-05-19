@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
+
 import food from "#public/AGORAe/food.jpg"
 import logoAgoraE from "#public/AGORAe/logo_AgoraE.png"
 import recettesParMois from "#public/AGORAe/recettes_par_mois.png"
@@ -20,12 +21,12 @@ export default function AGORAe() {
             <Image
                 src={logoAgoraE}
                 alt="Logo de l'AGORAé"
-                className="w-full md:w-1/2 mb-10"
+                className="mb-10 w-full md:w-1/2"
             />
 
             <div className="mb-20 flex w-full max-w-4xl flex-col items-center space-y-12">
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         L'AGORAé, la lutte contre la pauvreté étudiante sur
                         Saint-Brieuc
                     </h2>
@@ -91,13 +92,13 @@ export default function AGORAe() {
                     </p>
                 </section>
 
-                <div className="flex flex-col space-x-0 space-y-3 md:flex-row md:space-x-2 md:space-y-0 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
+                <div className="flex flex-col space-y-3 space-x-0 md:flex-row md:space-y-0 md:space-x-2 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
                     <Image src={salle} alt="Cantine de l'AGORAé" />
                     <Image src={food} alt="Nourriture proposée à l'AGORAé" />
                 </div>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Comment devenir bénéficiaire de l'AGORAé ?
                     </h2>
                     <p className="mb-4 text-justify">
@@ -166,7 +167,7 @@ export default function AGORAe() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Envie de participer au projet AGORAé ?
                     </h2>
                     <p className="mb-4 text-justify">
@@ -189,7 +190,7 @@ export default function AGORAe() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Quand venir à l'AGORAé ?
                     </h2>
                     <p>

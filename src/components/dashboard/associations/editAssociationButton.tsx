@@ -9,6 +9,7 @@ import {
     useState
 } from "react"
 import { MdEdit } from "react-icons/md"
+
 import editAssociationAction from "@/actions/associations/editAssociationAction"
 import {
     Accordion,
@@ -37,6 +38,7 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+
 import LoadingRing from "../loadingRing"
 
 export default function EditAssociationButton({
@@ -113,7 +115,7 @@ export default function EditAssociationButton({
                     <input type="hidden" name="id" value={association.id} />
 
                     <div>
-                        <Label htmlFor="name">{"Nom de l'association"}</Label>
+                        <Label htmlFor="name">Nom de l'association</Label>
                         <Input
                             type="text"
                             id="name"
@@ -158,14 +160,13 @@ export default function EditAssociationButton({
                                 </AccordionTrigger>
                                 <AccordionContent>
                                     <div className="text-muted-foreground text-sm">
-                                        {
-                                            "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
-                                        }
+                                        Format d'image accepté : PNG, JPEG, JPG,
+                                        WebP, GIF
                                     </div>
                                     <div className="text-muted-foreground text-sm">
                                         Taille maximale : 15 Mo
                                     </div>
-                                    <div className="mb-1 text-muted-foreground text-sm">
+                                    <div className="text-muted-foreground mb-1 text-sm">
                                         Format recommandée: carré
                                     </div>
                                     <Input
@@ -187,9 +188,8 @@ export default function EditAssociationButton({
                                 </AccordionTrigger>
                                 <AccordionContent>
                                     <div className="text-muted-foreground text-sm">
-                                        {
-                                            "Format d'image accepté : PNG, JPEG, JPG, WebP, GIF"
-                                        }
+                                        Format d'image accepté : PNG, JPEG, JPG,
+                                        WebP, GIF
                                     </div>
                                     <div className="text-muted-foreground text-sm">
                                         Taille maximale : 15 Mo
@@ -208,7 +208,7 @@ export default function EditAssociationButton({
 
                     <div>
                         <Label htmlFor="birthdate">
-                            {"Date de Naissance de l'Association"}
+                            Date de Naissance de l'Association
                         </Label>
                         <DatePicker
                             name="birthdate"

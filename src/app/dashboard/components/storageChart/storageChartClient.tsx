@@ -71,7 +71,7 @@ export function StorageChartClient({
                                         <tspan
                                             x={viewBox.cx}
                                             y={viewBox.cy}
-                                            className="fill-foreground font-bold text-3xl"
+                                            className="fill-foreground text-3xl font-bold"
                                         >
                                             {used.toFixed(2)} Go
                                         </tspan>

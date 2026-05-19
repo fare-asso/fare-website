@@ -8,6 +8,7 @@ import {
     useEffect,
     useState
 } from "react"
+
 import editEventAction from "@/actions/events/editEventAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -25,6 +26,7 @@ import DatePicker from "@/components/ui/input/datePicker"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+
 import CategorySelect from "../../ui/category/categorySelect"
 import TimePicker from "../../ui/input/timePicker"
 import LocationPicker from "../../ui/location/locationPicker"
@@ -172,7 +174,7 @@ export default function EditEventButtonClient({
                                 width={400}
                                 height={200}
                                 alt="Image de l'évènement"
-                                className="my-3 h-auto w-32 rounded-lg outline-2 outline-black outline-offset-2"
+                                className="my-3 h-auto w-32 rounded-lg outline-2 outline-offset-2 outline-black"
                             />
                         ) : null}
                         <Input

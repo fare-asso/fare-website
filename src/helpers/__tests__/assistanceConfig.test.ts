@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { assistanceConfigRecord } from "@/test/factories/assistance"
 import { dbModule } from "@/test/mocks"
 

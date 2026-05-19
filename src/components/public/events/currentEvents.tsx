@@ -1,6 +1,6 @@
 import prisma from "@/helpers/db"
-
 import { createClient } from "@/helpers/supabase/server"
+
 import EventCard from "./eventCard"
 
 export default async function CurrentEvents() {
@@ -34,7 +34,7 @@ export default async function CurrentEvents() {
 
     return (
         <div className="mb-8 flex w-full flex-col">
-            <span className="mb-4 font-semibold text-2xl">En ce moment</span>
+            <span className="mb-4 text-2xl font-semibold">En ce moment</span>
             <div className="flex h-auto w-full flex-col items-center">
                 {events.length > 0
                     ? events.map((event) => (

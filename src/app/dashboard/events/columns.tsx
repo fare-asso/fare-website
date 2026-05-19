@@ -3,6 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import type { ReactElement } from "react"
 import { MdVisibility, MdVisibilityOff } from "react-icons/md"
+
 import deleteEventAction from "@/actions/events/deleteEventAction"
 import EditEventButtonClient from "@/components/dashboard/event/editEventButton"
 import {
@@ -181,11 +182,7 @@ export function getColumns(
             header: "Créé par",
             cell: ({ row }) => {
                 const user: { name: string | null } = row.getValue("createdBy")
-                if (user.name != null) {
-                    return user.name
-                } else {
-                    return "?"
-                }
+                return user.name ?? "?"
             }
         }
     ]

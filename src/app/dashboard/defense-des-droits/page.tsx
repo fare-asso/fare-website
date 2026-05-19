@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
+
 import {
     Card,
     CardContent,
@@ -10,6 +11,7 @@ import {
 import { getAssistanceConfig } from "@/helpers/assistanceConfig"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+
 import ConfigForm from "./configForm"
 
 export const metadata: Metadata = {

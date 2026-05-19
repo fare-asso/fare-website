@@ -1,14 +1,16 @@
 "use client"
 
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
-import "leaflet/dist/leaflet.css"
 import type { Association } from "@prisma/client"
+
+import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 import { Inter } from "next/font/google"
 import Image from "next/image"
 import { type ChangeEvent, useRef, useState } from "react"
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 
 import { createClient } from "@/helpers/supabase/client"
+
 import AssociationMapSearchBar from "./associationMapSearchBar"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -148,7 +150,7 @@ export default function AssociationMap({
                                         className="aspect-square rounded-md object-cover"
                                     />
                                     <div className="ml-3">
-                                        <h2 className="font-semibold text-base">
+                                        <h2 className="text-base font-semibold">
                                             {association.name}
                                         </h2>
                                         <p className="text-xs opacity-80">

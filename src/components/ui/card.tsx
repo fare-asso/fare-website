@@ -1,9 +1,10 @@
 import { cva, type VariantProps } from "class-variance-authority"
 import type * as React from "react"
+
 import { cn } from "@/lib/utils"
 
 const cardVariants = cva(
-    "flex flex-col gap-6 rounded-xl bg-card py-6 text-card-foreground",
+    "bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6",
     {
         variants: {
             variant: {
@@ -60,7 +61,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
     return (
         <div
             data-slot="card-title"
-            className={cn("font-semibold leading-none", className)}
+            className={cn("leading-none font-semibold", className)}
             {...props}
         />
     )

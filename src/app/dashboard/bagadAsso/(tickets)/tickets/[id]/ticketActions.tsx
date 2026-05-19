@@ -3,6 +3,7 @@
 import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+
 import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction"
 import hardDeleteBagadAssoTicketAction from "@/actions/bagadAsso/hardDeleteTicketAction"
 import unarchiveBagadAssoTicketAction from "@/actions/bagadAsso/unarchiveTicketAction"
@@ -106,8 +107,8 @@ export default function TicketActions({
     }
 
     return (
-        <div className="flex flex-col gap-3 rounded-lg border border-muted-foreground/30 border-dashed p-4">
-            <p className="text-muted-foreground text-xs uppercase tracking-wide">
+        <div className="border-muted-foreground/30 flex flex-col gap-3 rounded-lg border border-dashed p-4">
+            <p className="text-muted-foreground text-xs tracking-wide uppercase">
                 Actions sur le ticket
             </p>
             <div className="flex flex-wrap gap-2">
@@ -186,7 +187,7 @@ export default function TicketActions({
                                 variant="outline"
                                 size="sm"
                                 disabled={isDeleteLoading}
-                                className="gap-2 border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive gap-2"
                             >
                                 {isDeleteLoading ? (
                                     <LoadingRing className="m-0!" />
@@ -206,7 +207,7 @@ export default function TicketActions({
                                         <p>
                                             Le ticket #{ticketId} pour "
                                             {ticketName}" sera{" "}
-                                            <span className="font-semibold text-destructive">
+                                            <span className="text-destructive font-semibold">
                                                 supprimé de manière permanente
                                             </span>
                                             .

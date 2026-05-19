@@ -5,12 +5,13 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+
 import ActiveTickets from "./activeTickets"
 import ArchivedTickets from "./archivedTickets"
 import PastTickets from "./pastTickets"
 import TabSwitcher from "./tabSwitcher"
 
-// biome-ignore lint/suspicious/useAwait: Nextjs server component
+// oxlint-disable-next-line require-await -- Nextjs server component
 export default async function Tickets() {
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">

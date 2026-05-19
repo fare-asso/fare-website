@@ -3,6 +3,7 @@
 import type { Association } from "@prisma/client"
 import { Trash2Icon } from "lucide-react"
 import { startTransition, useActionState, useEffect, useState } from "react"
+
 import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
 import {
     AlertDialog,
@@ -21,6 +22,7 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+
 import LoadingRing from "../loadingRing"
 
 export default function DeleteAssociationButton({
@@ -65,7 +67,7 @@ export default function DeleteAssociationButton({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 w-8"
                         >
                             <Trash2Icon size={18} />
                         </Button>

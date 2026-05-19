@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import CommuniquesCard from "@/components/public/presse/cdpCard"
 import DossierDePresseCard from "@/components/public/presse/ddpCard"
 import prisma from "@/helpers/db"
@@ -16,7 +17,7 @@ export default async function Presse() {
 
     return (
         <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center font-bold text-4xl sm:py-24">
+            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
                 Documents de presse
             </h1>
 
@@ -31,7 +32,7 @@ export default async function Presse() {
                     )
                 ) : (
                     <span className="text-xl">
-                        {"Nous n'avons pas encore de documents de presse.🥲"}
+                        Nous n'avons pas encore de documents de presse.🥲
                     </span>
                 )}
             </div>

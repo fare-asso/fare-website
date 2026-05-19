@@ -5,6 +5,7 @@ import {
     FriendlyCaptchaSDK
 } from "@friendlycaptcha/sdk"
 import { useEffect, useRef } from "react"
+
 import { env } from "@/env"
 
 interface CaptchaProps {

@@ -2,6 +2,7 @@
 
 import { useForm } from "@tanstack/react-form"
 import { memo, startTransition, useActionState, useCallback } from "react"
+
 import submitContactFormAction, {
     type FormState
 } from "@/actions/contact/submitContactFormAction"
@@ -44,7 +45,7 @@ function CaptchaValidation({
 }: {
     isTouched: boolean
     isValid: boolean
-    errors: Array<{ message?: string } | string | undefined>
+    errors: ({ message?: string } | string | undefined)[]
 }) {
     const isInvalid = isTouched && !isValid
     if (!isInvalid) return null

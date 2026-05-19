@@ -2,6 +2,7 @@
 
 import { Trash2Icon } from "lucide-react"
 import { startTransition, useActionState, useEffect } from "react"
+
 import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction"
 import {
     AlertDialog,
@@ -15,6 +16,7 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+
 import LoadingRing from "../../loadingRing"
 
 export default function DeleteEquipmentButton({
@@ -50,7 +52,7 @@ export default function DeleteEquipmentButton({
                 <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8 border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive h-8 w-8"
                 >
                     <Trash2Icon className="h-4 w-4" />
                     <span className="sr-only">Supprimer</span>

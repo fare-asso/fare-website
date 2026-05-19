@@ -1,6 +1,7 @@
 import { render } from "@react-email/render"
 import { NextResponse } from "next/server"
 import { isDevelopment } from "std-env"
+
 import NewGoogleUserTemplate from "@/../emails/new-google-user"
 import { env } from "@/env"
 import prisma from "@/helpers/db"

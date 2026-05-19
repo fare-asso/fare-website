@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+
 import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction"
 import unarchiveBagadAssoTicketAction from "@/actions/bagadAsso/unarchiveTicketAction"
 import {
@@ -41,6 +42,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/use-toast"
+
 import LoadingRing from "../../loadingRing"
 
 export default function BagadAssoTicketCard({
@@ -142,12 +144,12 @@ export default function BagadAssoTicketCard({
                         <CardTitle className="text-lg">
                             <Link
                                 href={`/dashboard/bagadAsso/tickets/${ticket.id}`}
-                                className="transition-colors hover:text-primary hover:underline"
+                                className="hover:text-primary transition-colors hover:underline"
                             >
                                 {ticket.assocation}
                             </Link>
                         </CardTitle>
-                        <CardDescription className="font-medium text-base">
+                        <CardDescription className="text-base font-medium">
                             {ticket.eventName}
                         </CardDescription>
                     </div>
@@ -235,7 +237,7 @@ export default function BagadAssoTicketCard({
 
             <CardContent className="pt-0">
                 <div className="grid gap-3 text-sm sm:grid-cols-2">
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="text-muted-foreground flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4 shrink-0" />
                         <span>
                             {format(ticket.eventDate, "EEEE d MMMM yyyy", {
@@ -244,19 +246,19 @@ export default function BagadAssoTicketCard({
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="text-muted-foreground flex items-center gap-2">
                         <MapPinIcon className="h-4 w-4 shrink-0" />
                         <span className="truncate">{ticket.eventAddr}</span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="text-muted-foreground flex items-center gap-2">
                         <UserIcon className="h-4 w-4 shrink-0" />
                         <span>
                             {ticket.firstName} {ticket.lastName}
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="text-muted-foreground flex items-center gap-2">
                         <UsersIcon className="h-4 w-4 shrink-0" />
                         <span>
                             {ticket.estimatedParticipants} participant
@@ -266,7 +268,7 @@ export default function BagadAssoTicketCard({
                     </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t pt-3 text-muted-foreground text-xs">
+                <div className="text-muted-foreground mt-4 flex items-center justify-between border-t pt-3 text-xs">
                     <span>
                         Type :{" "}
                         <span className="font-medium">

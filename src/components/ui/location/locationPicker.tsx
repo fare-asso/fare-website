@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react"
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
+
 import type { AutocompleteResponse } from "@/app/api/searchLocation/types"
 import { Input } from "@/components/ui/input"
 
@@ -176,7 +177,6 @@ export default function LocationPicker({
     }, [])
 
     return (
-        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: fieldset needs focus/blur for input group behavior
         <fieldset
             className="relative m-0 border-0 p-0"
             ref={containerRef}
@@ -185,7 +185,7 @@ export default function LocationPicker({
         >
             <label
                 htmlFor={name}
-                className="block font-medium text-gray-700 text-sm"
+                className="block text-sm font-medium text-gray-700"
             >
                 {name}
             </label>
@@ -205,25 +205,28 @@ export default function LocationPicker({
                     placeholder="Enter location..."
                     className="pl-10"
                     autoComplete="off"
+                    tabIndex={0}
                     role="combobox"
                     aria-expanded={showRecommendations}
                     aria-haspopup="listbox"
                     aria-autocomplete="list"
+                    aria-controls={`${name}-listbox`}
                 />
             </div>
 
             {showRecommendations && (
                 <div
+                    id={`${name}-listbox`}
                     className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg"
                     role="listbox"
                 >
                     {isLoading && (
-                        <div className="px-3 py-2 text-gray-500 text-sm">
+                        <div className="px-3 py-2 text-sm text-gray-500">
                             Loading...
                         </div>
                     )}
                     {!isLoading && recommendations.length === 0 && (
-                        <div className="px-3 py-2 text-gray-500 text-sm">
+                        <div className="px-3 py-2 text-sm text-gray-500">
                             No locations found
                         </div>
                     )}

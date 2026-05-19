@@ -121,10 +121,10 @@ caller side.
     export type ActionResponse<T = void> =
         | (T extends void ? { success: true } : { success: true; value: T })
         | {
-              success: false;
-              error: string;
-              fieldErrors?: Record<string, string[]>;
-          };
+              success: false
+              error: string
+              fieldErrors?: Record<string, string[]>
+          }
     ```
 2. Update all server actions to set an explicit `success` on every branch
 3. Update callers to narrow on `success` instead of checking optional fields

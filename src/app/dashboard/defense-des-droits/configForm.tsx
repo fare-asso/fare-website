@@ -2,6 +2,7 @@
 
 import { Loader2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
+
 import { Button } from "@/components/ui/button"
 import {
     Field,
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
+
 import { updateAssistanceConfig } from "./actions"
 
 export default function ConfigForm({

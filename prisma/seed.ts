@@ -1,4 +1,5 @@
 import process from "node:process"
+
 import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
@@ -258,11 +259,12 @@ async function main() {
     let updatedCount = 0
 
     for (const permission of permissions) {
-        // biome-ignore lint/performance/noAwaitInLoops: it's fine
+        // oxlint-disable-next-line no-await-in-loop -- sequential seed is fine
         const existing = await prisma.permission.findUnique({
             where: { name: permission.name }
         })
 
+        // oxlint-disable-next-line no-await-in-loop -- sequential seed is fine
         await prisma.permission.upsert({
             where: { name: permission.name },
             update: {

@@ -1,4 +1,5 @@
 import type { AssistanceConfig } from "@prisma/client"
+
 import type { TAssistanceForm } from "@/app/(public)/assistance/form-schema"
 
 export function validAssistanceForm(

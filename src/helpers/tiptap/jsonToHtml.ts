@@ -6,6 +6,7 @@ import type { JSONContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { renderToHTMLString } from "@tiptap/static-renderer"
 import sanitizeHtml from "sanitize-html"
+
 import { StorageUtils } from "../supabase/storageUtils"
 
 export function extractFirstWords(take: number, content: JSONContent): string {
@@ -85,7 +86,7 @@ export default function jsonToHtml(content: JSONContent): string {
         }
 
         if (node.content) {
-            node.content.forEach(traverseNodes)
+            for (const child of node.content) traverseNodes(child)
         }
     }
 

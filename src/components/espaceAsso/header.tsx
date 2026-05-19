@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation"
+
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
+
 import AssociationAccountDropdown from "./accountDropdown"
 
 export default async function Header() {
@@ -30,7 +32,7 @@ export default async function Header() {
 
     return (
         <div className="flex h-12 w-full flex-row items-center justify-between bg-black p-3 text-white">
-            <span className="font-semibold text-xl">Espace Asso FARE</span>
+            <span className="text-xl font-semibold">Espace Asso FARE</span>
             <AssociationAccountDropdown
                 associationName={association.name}
                 logoUrl={logoUrl}

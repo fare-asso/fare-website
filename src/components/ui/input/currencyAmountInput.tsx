@@ -1,6 +1,7 @@
 "use client"
 
 import { type ChangeEvent, useState } from "react"
+
 import { Input } from "../input"
 
 export default function CurrencyAmountInput({
@@ -35,7 +36,7 @@ export default function CurrencyAmountInput({
                 onChange={handleChange}
                 value={amount}
             />
-            <span className="select-none rounded-r-lg bg-black/10 px-3 py-2 opacity-90">
+            <span className="rounded-r-lg bg-black/10 px-3 py-2 opacity-90 select-none">
                 {currency}
             </span>
         </div>

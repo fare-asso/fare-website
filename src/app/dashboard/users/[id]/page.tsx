@@ -2,11 +2,13 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { AlertTriangle } from "lucide-react"
 import type { Metadata } from "next"
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+
 import { DeleteUserButton } from "./deleteUserButton"
 import { RestoreUserButton } from "./restoreUserButton"
 import { UserInfoForm } from "./userInfoForm"
@@ -75,7 +77,7 @@ export default async function UserPage({
             {canEdit ? (
                 <>
                     <section>
-                        <h2 className="mb-4 font-bold text-lg">Informations</h2>
+                        <h2 className="mb-4 text-lg font-bold">Informations</h2>
                         <UserInfoForm user={user} />
                     </section>
 
@@ -87,7 +89,7 @@ export default async function UserPage({
             {canEditPermissions ? (
                 <>
                     <section>
-                        <h2 className="mb-4 font-bold text-lg">Permissions</h2>
+                        <h2 className="mb-4 text-lg font-bold">Permissions</h2>
                         <UserPermissionsForm
                             userId={user.id}
                             userPermissions={user.permissions.map(

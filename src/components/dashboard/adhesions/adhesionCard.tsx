@@ -10,6 +10,7 @@ import {
     PhoneIcon,
     UsersIcon
 } from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
 import {
     Card,
@@ -18,6 +19,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+
 import AdhesionCardActions from "./adhesionCardActions"
 
 interface AdhesionCardProps {
@@ -92,7 +94,7 @@ export default function AdhesionCard({
                     {adhesion.email && (
                         <a
                             href={`mailto:${adhesion.email}`}
-                            className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
+                            className="text-muted-foreground hover:text-primary flex items-center gap-2 transition-colors"
                         >
                             <MailIcon className="h-4 w-4 shrink-0" />
                             <span className="truncate">{adhesion.email}</span>
@@ -102,7 +104,7 @@ export default function AdhesionCard({
                     {adhesion.telephonePortable && (
                         <a
                             href={`tel:${adhesion.telephonePortable}`}
-                            className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
+                            className="text-muted-foreground hover:text-primary flex items-center gap-2 transition-colors"
                         >
                             <PhoneIcon className="h-4 w-4 shrink-0" />
                             <span>{adhesion.telephonePortable}</span>
@@ -110,7 +112,7 @@ export default function AdhesionCard({
                     )}
 
                     {adhesion.objetPrincipal && (
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center gap-2">
                             <BuildingIcon className="h-4 w-4 shrink-0" />
                             <span className="truncate">
                                 {adhesion.objetPrincipal}
@@ -119,7 +121,7 @@ export default function AdhesionCard({
                     )}
 
                     {adhesion.adresseAdministrative && (
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center gap-2">
                             <MapPinIcon className="h-4 w-4 shrink-0" />
                             <span className="truncate">
                                 {adhesion.adresseAdministrative}
@@ -128,7 +130,7 @@ export default function AdhesionCard({
                     )}
 
                     {adhesion.nombreAdherents > 0 && (
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center gap-2">
                             <UsersIcon className="h-4 w-4 shrink-0" />
                             <span>
                                 {adhesion.nombreAdherents} adhérent
@@ -138,11 +140,13 @@ export default function AdhesionCard({
                     )}
                 </div>
 
-                <div className="mt-auto flex items-center justify-between border-t pt-3 text-muted-foreground text-xs">
+                <div className="text-muted-foreground mt-auto flex items-center justify-between border-t pt-3 text-xs">
                     {adhesion.nombreEtudiantsRepresentes > 0 && (
                         <span>
                             {adhesion.nombreEtudiantsRepresentes} étudiant
-                            {adhesion.nombreEtudiantsRepresentes > 1 ? "s" : ""}{" "}
+                            {adhesion.nombreEtudiantsRepresentes > 1
+                                ? "s"
+                                : ""}{" "}
                             représenté
                             {adhesion.nombreEtudiantsRepresentes > 1 ? "s" : ""}
                         </span>

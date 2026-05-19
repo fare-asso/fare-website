@@ -1,6 +1,7 @@
 "use client"
 
 import { useActionState, useCallback, useEffect, useState } from "react"
+
 import createEventAction from "@/actions/events/createEventAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -18,6 +19,7 @@ import DatePicker from "@/components/ui/input/datePicker"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+
 import CategorySelect from "../../ui/category/categorySelect"
 import TimePicker from "../../ui/input/timePicker"
 import LocationPicker from "../../ui/location/locationPicker"

@@ -8,6 +8,7 @@ import {
     useReactTable
 } from "@tanstack/react-table"
 import { useRouter } from "next/navigation"
+
 import {
     Table,
     TableBody,
@@ -16,6 +17,7 @@ import {
     TableHeader,
     TableRow
 } from "@/components/ui/table"
+
 import { BulkActionsBar } from "./bulkActionsBar"
 
 interface DataTableProps<TData, TValue> {
@@ -66,7 +68,7 @@ export function DataTable<
         <div className="flex h-full w-full flex-col gap-4">
             <div className="flex-1 overflow-auto rounded-md border">
                 <Table>
-                    <TableHeader className="sticky top-0 bg-background shadow-sm">
+                    <TableHeader className="bg-background sticky top-0 shadow-sm">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {

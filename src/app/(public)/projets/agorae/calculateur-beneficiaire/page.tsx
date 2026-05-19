@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
 
 export const metadata: Metadata = {

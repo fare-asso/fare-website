@@ -3,7 +3,9 @@
 import { LogOut } from "lucide-react"
 import { useTransition } from "react"
 import { toast } from "sonner"
+
 import { signOut } from "@/actions/auth/signOutAction"
+
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import {
     DropdownMenu,
@@ -54,7 +56,7 @@ export default function AccountButton({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="h-auto w-full justify-start gap-2 px-2 py-2 hover:bg-sidebar-accent">
+                <SidebarMenuButton className="hover:bg-sidebar-accent h-auto w-full justify-start gap-2 px-2 py-2">
                     <Avatar className="h-8 w-8">
                         <AvatarImage
                             src={image || undefined}
@@ -63,10 +65,10 @@ export default function AccountButton({
                         <AvatarFallback>{getInitials()}</AvatarFallback>
                     </Avatar>
                     <div className="flex min-w-0 flex-1 flex-col items-start text-left">
-                        <span className="truncate font-semibold text-sm">
+                        <span className="truncate text-sm font-semibold">
                             {name || email.split("@")[0]}
                         </span>
-                        <span className="truncate text-muted-foreground text-xs">
+                        <span className="text-muted-foreground truncate text-xs">
                             {email}
                         </span>
                     </div>
@@ -78,7 +80,7 @@ export default function AccountButton({
                 <DropdownMenuItem
                     onClick={handleSignOut}
                     disabled={isPending}
-                    className="cursor-pointer text-destructive focus:text-destructive"
+                    className="text-destructive focus:text-destructive cursor-pointer"
                 >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Se déconnecter</span>

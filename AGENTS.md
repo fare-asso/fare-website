@@ -168,35 +168,35 @@ The application uses **granular permission-based access control** instead of rol
 **Permission Checking Pattern (Server Actions):**
 
 ```typescript
-"use server";
+"use server"
 
-import { hasPermission } from "@/helpers/permissions";
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth";
-import { withServerAction } from "@/lib/sentry";
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { withServerAction } from "@/lib/sentry"
 
 async function someActionImpl(): Promise<
     { success: true } | { success: false; error: string }
 > {
     // REQUIRED: Check authentication first
-    const user = await getCurrentUserWithPermissions();
+    const user = await getCurrentUserWithPermissions()
     if (!user) {
-        return { success: false, error: "Authentification requise" };
+        return { success: false, error: "Authentification requise" }
     }
 
     // REQUIRED: Check specific permission
     if (!hasPermission(user, "create:article")) {
         return {
             success: false,
-            error: "Vous n'avez pas la permission de créer des articles",
-        };
+            error: "Vous n'avez pas la permission de créer des articles"
+        }
     }
 
     // Proceed with action...
-    return { success: true };
+    return { success: true }
 }
 
 // REQUIRED: every action is wrapped and is the single export of its file
-export default withServerAction("someAction", someActionImpl);
+export default withServerAction("someAction", someActionImpl)
 ```
 
 **UI Visibility (Client Components):**
@@ -268,61 +268,61 @@ the client trace) and auto-captures uncaught throws.
 
 ```typescript
 // src/actions/items/createItemAction.ts
-"use server";
+"use server"
 
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-import prisma from "@/helpers/db";
-import { hasPermission } from "@/helpers/permissions";
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth";
-import { captureActionError, withServerAction } from "@/lib/sentry";
+import { revalidatePath } from "next/cache"
+import { z } from "zod"
+import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError, withServerAction } from "@/lib/sentry"
 
 const CreateItemSchema = z.object({
     name: z.string().min(1, "Name required"),
-    email: z.email(),
-});
+    email: z.email()
+})
 
 // Discriminated union — callers narrow on `success`, never optional fields
 type CreateItemResult =
     | { success: true; value: Item }
-    | { success: false; error: string };
+    | { success: false; error: string }
 
 async function createItemActionImpl(
-    formData: z.infer<typeof CreateItemSchema>,
+    formData: z.infer<typeof CreateItemSchema>
 ): Promise<CreateItemResult> {
     // 1. Auth + permission guards (early returns — NOT captured by Sentry)
-    const user = await getCurrentUserWithPermissions();
-    if (!user) return { success: false, error: "Authentification requise" };
+    const user = await getCurrentUserWithPermissions()
+    if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "create:item")) {
-        return { success: false, error: "Vous n'avez pas la permission" };
+        return { success: false, error: "Vous n'avez pas la permission" }
     }
 
     // 2. Zod validation (early return — NOT captured)
-    const parsed = CreateItemSchema.safeParse(formData);
+    const parsed = CreateItemSchema.safeParse(formData)
     if (!parsed.success) {
         return {
             success: false,
-            error: "Un ou plusieurs champs sont invalides.",
-        };
+            error: "Un ou plusieurs champs sont invalides."
+        }
     }
 
     // 3. Risky IO wrapped in targeted try/catch (process-adhesion style)
-    let item: Item;
+    let item: Item
     try {
-        item = await prisma.item.create({ data: parsed.data });
+        item = await prisma.item.create({ data: parsed.data })
     } catch (error) {
-        captureActionError(error); // logs + sends to Sentry + rethrows redirect/notFound
-        return { success: false, error: "Echec de la création de l'élément" };
+        captureActionError(error) // logs + sends to Sentry + rethrows redirect/notFound
+        return { success: false, error: "Echec de la création de l'élément" }
     }
 
-    revalidatePath("/dashboard/items");
-    return { success: true, value: item };
+    revalidatePath("/dashboard/items")
+    return { success: true, value: item }
 }
 
 // Single export. Pass `{ attachFormData: true }` ONLY for internal/dashboard
 // CRUD actions whose arg is a FormData with no secrets. Never for public
 // forms or password-bearing actions.
-export default withServerAction("createItemAction", createItemActionImpl);
+export default withServerAction("createItemAction", createItemActionImpl)
 ```
 
 For a named (non-default) export, keep the impl private and export the
@@ -366,24 +366,24 @@ persisted) goes in its own try/catch that `captureActionError`s and continues.
 - Example:
 
     ```tsx
-    "use client";
-    import { createItem } from "@/actions/items/create";
-    import { useTransition } from "react";
+    "use client"
+    import { createItem } from "@/actions/items/create"
+    import { useTransition } from "react"
 
     export function CreateForm() {
-        const [isPending, startTransition] = useTransition();
+        const [isPending, startTransition] = useTransition()
 
         async function handleSubmit(formData: FormData) {
             startTransition(async () => {
                 const result = await createItem({
-                    name: formData.get("name") as string,
-                });
-                if (!result.success) toast.error(result.error);
-                else toast.success("Created!");
-            });
+                    name: formData.get("name") as string
+                })
+                if (!result.success) toast.error(result.error)
+                else toast.success("Created!")
+            })
         }
 
-        return <form action={handleSubmit}>...</form>;
+        return <form action={handleSubmit}>...</form>
     }
     ```
 
@@ -400,7 +400,6 @@ Emails live in `src/emails/` as React components using react-email:
 ```typescript
 // src/emails/welcome.tsx
 import { Container, Text } from '@react-email/components';
-//biome-ignore lint/correctness/noUnusedImports: need to import react for react-email to work
 import React from "react"
 import BaseTemplate from "./base"
 
@@ -499,13 +498,13 @@ const emailResponse = await sendEmail({
 
 **What to test for each kind of change:**
 
-| Change | Required tests |
-| --- | --- |
-| New/changed server action | Node test covering the full branch + IO matrix (see convention 4) |
+| Change                                    | Required tests                                                               |
+| ----------------------------------------- | ---------------------------------------------------------------------------- |
+| New/changed server action                 | Node test covering the full branch + IO matrix (see convention 4)            |
 | New/changed Zod/arktype schema with rules | Schema test in `src/schemas/__tests__/` (convention 5) — only if non-trivial |
-| New/changed form component | Browser test (convention 6) |
-| New/changed helper with logic | Node unit test next to it in `__tests__/` |
-| Behavioural bug fix | A regression test that fails without the fix |
+| New/changed form component                | Browser test (convention 6)                                                  |
+| New/changed helper with logic             | Node unit test next to it in `__tests__/`                                    |
+| Behavioural bug fix                       | A regression test that fails without the fix                                 |
 
 **Framework:** Vitest with two projects (`pnpm test` runs both):
 

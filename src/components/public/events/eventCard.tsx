@@ -49,7 +49,7 @@ export default function EventCard({
 
     return (
         <div
-            className={`flex h-32 w-full flex-row rounded-xl p-2 md:w-2/3 lg:h-44 lg:w-1/2`}
+            className="flex h-32 w-full flex-row rounded-xl p-2 md:w-2/3 lg:h-44 lg:w-1/2"
             style={{ backgroundColor }}
         >
             <Image
@@ -63,14 +63,14 @@ export default function EventCard({
             <div className="mr-4 flex w-2/3 flex-col items-start pl-2 md:w-1/4">
                 {/* Title */}
                 <span
-                    className={`font-semibold text-xl`}
+                    className="text-xl font-semibold"
                     style={{ color: fontColor }}
                 >
                     {event.name}
                 </span>
                 {/* Category */}
                 <div
-                    className={`rounded-full px-4 text-center text-sm`}
+                    className="rounded-full px-4 text-center text-sm"
                     style={{
                         backgroundColor: fontColor,
                         color: backgroundColor
@@ -80,7 +80,7 @@ export default function EventCard({
                 </div>
                 {/* Date */}
                 <div
-                    className="mt-2 text-balance rounded-full px-2 text-center text-sm outline outline-1"
+                    className="mt-2 rounded-full px-2 text-center text-sm text-balance outline outline-1"
                     style={{ outlineColor: fontColor, color: fontColor }}
                 >
                     {`${format(event.startTime, "dd/MM/yy")} au ${format(event.endTime, "dd/MM/yy")}`}
@@ -91,7 +91,7 @@ export default function EventCard({
                     style={{ color: fontColor }}
                 >
                     <MdLocationPin size={20} className="min-h-4 min-w-4" />
-                    <span className="mt-1 overflow-hidden text-ellipsis text-nowrap text-sm">
+                    <span className="mt-1 overflow-hidden text-sm text-nowrap text-ellipsis">
                         {location.json
                             ? location.json.displayName.split(",")[0]
                             : location.string?.split(",")[0]}

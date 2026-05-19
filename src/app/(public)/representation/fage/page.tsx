@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
+
 import logoFage from "#public/Logo_FAGE.png"
 
 export const metadata: Metadata = {
@@ -19,10 +20,10 @@ export default function FAGE() {
 
             <div className="mb-20 w-full max-w-4xl space-y-8">
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Présentation
                     </h2>
-                    <p className="mb-4 italic text-justify">
+                    <p className="mb-4 text-justify italic">
                         La{" "}
                         <strong>
                             Fédération des Associations du Réseau Étudiant de
@@ -47,7 +48,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Reconnaissance et indépendance
                     </h2>
                     <p className="mb-4 text-justify">
@@ -69,7 +70,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Rôle et valeurs
                     </h2>
                     <p className="mb-4 text-justify">
@@ -86,7 +87,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">Histoire</h2>
+                    <h2 className="mb-4 text-2xl font-semibold">Histoire</h2>
                     <p className="mb-4 text-justify">
                         À la fin des années 80, l'idée de fonder une
                         organisation germe à Lyon. Plusieurs réunions, se
@@ -109,7 +110,7 @@ export default function FAGE() {
                 </section>
 
                 <section>
-                    <h2 className="mb-4 font-semibold text-2xl">
+                    <h2 className="mb-4 text-2xl font-semibold">
                         Projet éducatif
                     </h2>
                     <p className="mb-4 text-justify">

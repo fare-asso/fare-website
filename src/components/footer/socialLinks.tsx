@@ -1,5 +1,4 @@
 import Link from "next/link"
-
 import { FaFacebook, FaInstagram } from "react-icons/fa6"
 import { TbBrandLinktree } from "react-icons/tb"
 

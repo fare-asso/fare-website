@@ -2,6 +2,7 @@
 
 import type { JSONContent } from "@tiptap/react"
 import { revalidatePath } from "next/cache"
+
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"

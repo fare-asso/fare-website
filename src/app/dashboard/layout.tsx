@@ -1,11 +1,13 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
+
 import CurrentRoute from "@/components/dashboard/currentRoute"
 import SideBarApp from "@/components/dashboard/sideBarApp"
 import { Separator } from "@/components/ui/separator"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/toaster"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+
 import "../globals.css"
 import "./layout.css"
 
@@ -46,7 +48,7 @@ export default async function RootLayout({
                 />
 
                 {/* Contenu principal */}
-                <div className="flex h-full w-full flex-col bg-sidebar">
+                <div className="bg-sidebar flex h-full w-full flex-col">
                     {/* Barre du haut */}
                     <header className="fixed top-0 z-10 flex h-12 w-full flex-row items-center p-4">
                         <SidebarTrigger />

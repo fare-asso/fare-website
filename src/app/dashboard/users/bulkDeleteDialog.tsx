@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+
 import bulkDeleteUsers from "@/actions/users/bulkDeleteUsers"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
@@ -58,13 +59,13 @@ export function BulkDeleteDialog({
                                 <strong>{userIds.length}</strong> utilisateur
                                 {userIds.length > 1 ? "s" : ""}.
                             </p>
-                            <p className="rounded-md bg-amber-100 p-3 text-amber-800 text-sm dark:bg-amber-900/30 dark:text-amber-200">
+                            <p className="rounded-md bg-amber-100 p-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
                                 Les utilisateurs seront archives et ne pourront
                                 plus se connecter. Cette action peut etre
                                 annulee par un administrateur.
                             </p>
                             {error && (
-                                <p className="rounded-md bg-red-100 p-3 text-red-800 text-sm dark:bg-red-900/30 dark:text-red-200">
+                                <p className="rounded-md bg-red-100 p-3 text-sm text-red-800 dark:bg-red-900/30 dark:text-red-200">
                                     {error}
                                 </p>
                             )}

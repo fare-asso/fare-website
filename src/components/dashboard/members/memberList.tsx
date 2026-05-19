@@ -22,7 +22,7 @@ export default async function MemberList({
 
     if (members == null) {
         return (
-            <span className="text-red-800 text-xl">
+            <span className="text-xl text-red-800">
                 Echec du chargement des membres, veuillez réessayer
             </span>
         )

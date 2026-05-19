@@ -71,7 +71,7 @@ export default function TextAlignDropdown({ editor }: { editor: Editor }) {
                 {alignmentOptions.find((option) =>
                     editor.isActive({ textAlign: option.value })
                 )?.icon ?? <MdFormatAlignLeft size={20} />}
-                {<MdArrowDropDown size={20} />}
+                <MdArrowDropDown size={20} />
             </button>
 
             {isOpen && (

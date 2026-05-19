@@ -1,4 +1,5 @@
 import { ArchiveIcon, FileTextIcon, InboxIcon } from "lucide-react"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import prisma from "@/helpers/db"
 
@@ -48,13 +49,13 @@ export default async function AdhesionSummary() {
             {stats.map((stat) => (
                 <Card key={stat.label}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="font-medium text-sm">
+                        <CardTitle className="text-sm font-medium">
                             {stat.label}
                         </CardTitle>
-                        <stat.icon className="h-4 w-4 text-muted-foreground" />
+                        <stat.icon className="text-muted-foreground h-4 w-4" />
                     </CardHeader>
                     <CardContent>
-                        <div className="font-bold text-2xl">{stat.value}</div>
+                        <div className="text-2xl font-bold">{stat.value}</div>
                         <p className="text-muted-foreground text-xs">
                             {stat.description}
                         </p>

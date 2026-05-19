@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { validAdhesionRecord } from "@/test/factories/adhesion"
 import { mockUser } from "@/test/factories/user"
 import {

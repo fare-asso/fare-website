@@ -2,6 +2,7 @@ import type { Adhesion } from "@prisma/client"
 import { type } from "arktype"
 import { format } from "date-fns"
 import { PDFDocument, type PDFPage, rgb, StandardFonts } from "pdf-lib"
+
 import {
     type BureauMember,
     bureauMemberSchema

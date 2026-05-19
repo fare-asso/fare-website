@@ -1,6 +1,6 @@
 import { Heading, Section, Text } from "@react-email/components"
-//biome-ignore lint/correctness/noUnusedImports: need to import react for react-email to work
 import React from "react"
+
 import BaseTemplate from "./base"
 
 interface NewGoogleUserProps {
@@ -16,7 +16,7 @@ export function NewGoogleUserTemplate({
 }: NewGoogleUserProps) {
     return (
         <BaseTemplate>
-            <Heading className="font-normal text-4xl text-stone-800">
+            <Heading className="text-4xl font-normal text-stone-800">
                 Nouvelle connexion Google
             </Heading>
             <Text className="text-stone-600">

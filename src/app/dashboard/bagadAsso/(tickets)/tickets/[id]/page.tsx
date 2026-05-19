@@ -17,6 +17,7 @@ import {
     FaPhone,
     FaUsers
 } from "react-icons/fa"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -34,6 +35,7 @@ import {
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+
 import TicketActions from "./ticketActions"
 
 export async function generateMetadata({
@@ -64,7 +66,7 @@ export default async function Page({
                 <Card className="max-w-md">
                     <CardContent className="pt-6 text-center">
                         <span className="text-4xl">😔</span>
-                        <p className="mt-4 text-lg text-muted-foreground">
+                        <p className="text-muted-foreground mt-4 text-lg">
                             Le ticket n'existe pas
                         </p>
                         <Button asChild className="mt-4">
@@ -90,7 +92,7 @@ export default async function Page({
                 <Card className="max-w-md">
                     <CardContent className="pt-6 text-center">
                         <span className="text-4xl">😔</span>
-                        <p className="mt-4 text-lg text-muted-foreground">
+                        <p className="text-muted-foreground mt-4 text-lg">
                             Le ticket n'existe pas
                         </p>
                         <Button asChild className="mt-4">
@@ -124,7 +126,7 @@ export default async function Page({
                     asChild
                     variant="ghost"
                     size="sm"
-                    className="-ml-3 mb-4"
+                    className="mb-4 -ml-3"
                 >
                     <Link href="/dashboard/bagadAsso">
                         <FaCaretLeft className="mr-1" />
@@ -133,9 +135,9 @@ export default async function Page({
                 </Button>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="font-bold text-3xl">
+                    <h1 className="text-3xl font-bold">
                         Ticket{" "}
-                        <span className="font-mono text-muted-foreground">
+                        <span className="text-muted-foreground font-mono">
                             #{ticket.id}
                         </span>
                     </h1>
@@ -159,7 +161,7 @@ export default async function Page({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <p className="font-medium text-lg">
+                                <p className="text-lg font-medium">
                                     {ticket.firstName} {ticket.lastName}
                                 </p>
                                 {ticket.position && (
@@ -174,7 +176,7 @@ export default async function Page({
                             <div className="grid gap-3">
                                 <a
                                     href={`mailto:${ticket.representativeEmail}`}
-                                    className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
+                                    className="hover:text-primary flex items-center gap-2 text-sm transition-colors"
                                 >
                                     <FaEnvelope className="text-muted-foreground" />
                                     {ticket.representativeEmail}
@@ -182,7 +184,7 @@ export default async function Page({
                                 {ticket.phoneNumber && (
                                     <a
                                         href={`tel:${ticket.phoneNumber}`}
-                                        className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
+                                        className="hover:text-primary flex items-center gap-2 text-sm transition-colors"
                                     >
                                         <FaPhone className="text-muted-foreground" />
                                         {ticket.phoneNumber}
@@ -201,12 +203,12 @@ export default async function Page({
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            <p className="font-semibold text-lg">
+                            <p className="text-lg font-semibold">
                                 {ticket.assocation}
                             </p>
                             <a
                                 href={`mailto:${ticket.associationEmail}`}
-                                className="flex items-center gap-2 text-sm transition-colors hover:text-primary"
+                                className="hover:text-primary flex items-center gap-2 text-sm transition-colors"
                             >
                                 <FaEnvelope className="text-muted-foreground" />
                                 {ticket.associationEmail}
@@ -227,7 +229,7 @@ export default async function Page({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <p className="font-semibold text-lg">
+                                <p className="text-lg font-semibold">
                                     {ticket.eventName}
                                 </p>
                                 <Badge variant="outline" className="mt-1">
@@ -239,7 +241,7 @@ export default async function Page({
 
                             <div className="grid gap-3">
                                 <div className="flex items-start gap-2 text-sm">
-                                    <FaCalendarAlt className="mt-0.5 text-muted-foreground" />
+                                    <FaCalendarAlt className="text-muted-foreground mt-0.5" />
                                     <span>
                                         {format(
                                             ticket.eventDate,
@@ -252,9 +254,9 @@ export default async function Page({
                                     href={`https://www.google.fr/maps/search/${ticket.eventAddr}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-start gap-2 text-sm transition-colors hover:text-primary"
+                                    className="hover:text-primary flex items-start gap-2 text-sm transition-colors"
                                 >
-                                    <FaMapMarkerAlt className="mt-0.5 text-muted-foreground" />
+                                    <FaMapMarkerAlt className="text-muted-foreground mt-0.5" />
                                     <span>{ticket.eventAddr}</span>
                                 </a>
                                 <div className="flex items-center gap-2 text-sm">
@@ -320,10 +322,10 @@ export default async function Page({
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="font-bold text-4xl text-primary">
+                            <p className="text-primary text-4xl font-bold">
                                 {totalDeposit}€
                             </p>
-                            <p className="mt-1 text-muted-foreground text-sm">
+                            <p className="text-muted-foreground mt-1 text-sm">
                                 À verser avant le retrait du matériel
                             </p>
                         </CardContent>
