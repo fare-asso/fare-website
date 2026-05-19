@@ -2,6 +2,7 @@
 
 import { cva, type VariantProps } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
+import { cookies } from "next/headers"
 import { Slot as SlotPrimitive } from "radix-ui"
 import * as React from "react"
 
@@ -26,7 +27,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
@@ -83,7 +84,17 @@ function SidebarProvider({
             }
 
             // This sets the cookie to keep the sidebar state.
-            document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+            try {
+                cookieStore.set({
+                    name: SIDEBAR_COOKIE_NAME,
+                    value: String(openState),
+                    expires: new Date(
+                        Date.now() + SIDEBAR_COOKIE_MAX_AGE * 1000
+                    ).valueOf()
+                })
+            } catch (_e) {
+                console.error("Probably doesn't support CookieStore API")
+            }
         },
         [setOpenProp, open]
     )
