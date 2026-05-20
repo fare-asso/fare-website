@@ -15,6 +15,7 @@ import { FaHandcuffs, FaPeopleGroup, FaUsers } from "react-icons/fa6" // Bouge T
 // Link icons
 import {
     LuBox,
+    LuHandshake,
     LuNetwork,
     LuPartyPopper,
     LuTicket,
@@ -71,6 +72,14 @@ export default function SideBarApp({
                     href: "/dashboard/associations",
                     title: "Associations",
                     icon: <LuNetwork />
+                },
+                {
+                    href: "/dashboard/partenaires",
+                    title: "Partenaires",
+                    icon: <LuHandshake />,
+                    hidden: !permissions?.find(
+                        (p) => p.name === "access:partner"
+                    )
                 },
                 {
                     href: "/dashboard/membres",

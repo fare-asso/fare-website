@@ -8,6 +8,17 @@ const srcAlias = {
     "@": fileURLToPath(new URL("./src", import.meta.url))
 }
 
+// `next/image`'s CJS-wrapping (`module.exports = require('./image-external')`)
+// produces a double-default shape under Vite's browser interop, so
+// `import Image from "next/image"` resolves to an object at runtime and
+// React rejects it. Alias to a thin stub in the browser project only.
+const browserAlias = {
+    ...srcAlias,
+    "next/image": fileURLToPath(
+        new URL("./src/test/stubs/next-image.tsx", import.meta.url)
+    )
+}
+
 const testEnv = {
     SUPABASE_POSTGRES_PRISMA_URL: "postgresql://test:test@localhost:5432/test",
     FRIENDLY_CAPTCHA_API_KEY: "test-fc-api-key",
@@ -49,7 +60,7 @@ export default defineConfig({
                 }
             },
             {
-                resolve: { alias: srcAlias },
+                resolve: { alias: browserAlias },
                 plugins: [react()],
                 optimizeDeps: {
                     include: ["@supabase/ssr", "lucide-react", "next/cache"]

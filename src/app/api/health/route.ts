@@ -39,16 +39,15 @@ export async function GET() {
             return supabase.auth.getSession()
         })()
     )
-    if (!supabaseResult.success) {
+    if (supabaseResult.success) {
+        supabaseHealthy = true
+    } else {
+        const err = supabaseResult.error
         const message =
-            supabaseResult.error instanceof Error
-                ? supabaseResult.error.message
+            err && typeof err === "object" && "message" in err
+                ? String(err.message)
                 : "Unknown Supabase error"
         errors.push(`Supabase: ${message}`)
-    } else if (supabaseResult.value.error) {
-        errors.push(`Supabase: ${supabaseResult.value.error.message}`)
-    } else {
-        supabaseHealthy = true
     }
 
     const allHealthy = dbHealthy && supabaseHealthy

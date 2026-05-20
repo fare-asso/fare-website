@@ -49,26 +49,24 @@ async function inviteRepresentativeActionImpl(
         })
     )
     if (!invited.success) {
-        captureActionError(invited.error)
+        const err = invited.error
+        if (
+            err &&
+            typeof err === "object" &&
+            "code" in err &&
+            err.code === "email_exists"
+        ) {
+            return { error: "Cet utilisateur existe déjà" }
+        }
+        captureActionError(err)
         return { error: "Echec de l'invitation du représentant" }
     }
-    const { data, error } = invited.value
+    const { user: invitedUser } = invited.value
 
-    if (error) {
-        // failed to send invitation
-        if (error.code === "email_exists") {
-            return { error: "Cet utilisateur existe déjà" }
-        } else {
-            console.error(error)
-            return { error: "Echec de l'invitation du représentant" }
-        }
-    }
-
-    // invitation has been sent
     const userUpdate = await tryCatch(
         prisma.user.update({
             where: {
-                id: data.user.id
+                id: invitedUser.id
             },
             data: {
                 role: "ASSO_OWNER"
@@ -87,7 +85,7 @@ async function inviteRepresentativeActionImpl(
                 id: Number(associationId)
             },
             data: {
-                representativeId: data.user.id
+                representativeId: invitedUser.id
             }
         })
     )

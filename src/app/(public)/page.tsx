@@ -1,6 +1,7 @@
 import { YouTubeEmbed } from "@next/third-parties/google"
 import type { Metadata } from "next"
 import Image from "next/image"
+import Link from "next/link"
 import { Suspense } from "react"
 
 import WelcomeImage from "#public/hero-image.jpg"
@@ -8,15 +9,43 @@ import AssoMap from "@/components/public/AssoMap"
 import DiscordWidget from "@/components/public/discordWidget"
 import KeyNumbers, { KeyNumbersSkeleton } from "@/components/public/keyNumbers"
 import LinkButton from "@/components/public/link"
-import PartnersCarousel from "@/components/public/partenariats/partnersCarousel"
+// Import pour l'affichage des partenaires
+import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
 
 import "./page.css"
+import { tryCatch } from "@/lib/utils"
 
 export const metadata: Metadata = {
     title: "Accueil"
 }
 
-export default function Home() {
+export default async function Home() {
+    const supabase = await createClient()
+    const partenaires = await tryCatch(
+        prisma.partenaire.findMany({
+            orderBy: { name: "asc" }
+        })
+    )
+
+    if (!partenaires.success) {
+        return (
+            <div className="flex w-full flex-col items-center justify-center py-32">
+                <p className="text-destructive text-lg font-medium">
+                    Echec du chargement des partenaires
+                </p>
+            </div>
+        )
+    }
+
+    const partners = partenaires.value.map((p) => ({
+        id: p.id,
+        name: p.name,
+        logoUrl: supabase.storage
+            .from("partner-pictures")
+            .getPublicUrl(p.logoPath).data.publicUrl
+    }))
+
     return (
         <div className="flex w-full flex-col items-center md:w-[90%]">
             <section className="hero gap-4 md:gap-6">
@@ -138,10 +167,31 @@ export default function Home() {
             </div>
 
             {/* Nos partenaires */}
-            <div className="my-10 flex w-full flex-col">
-                <h2 className="mb-2 text-2xl font-semibold">Nos partenaires</h2>
-                <PartnersCarousel />
-            </div>
+            {partners.length > 0 && (
+                <div className="my-10 flex w-full flex-col items-center">
+                    <h2 className="mb-8 text-3xl font-semibold">
+                        Nos partenaires
+                    </h2>
+                    <div className="flex flex-row flex-wrap items-center justify-center gap-8">
+                        {partners.map((partner) => (
+                            <Link
+                                key={partner.id}
+                                href="/a-propos/partenaires"
+                                className="flex h-24 w-60 items-center justify-center"
+                            >
+                                <Image
+                                    key={partner.id}
+                                    src={partner.logoUrl}
+                                    alt={"Logo de " + partner.name}
+                                    width={160}
+                                    height={80}
+                                    className="h-full w-full object-contain"
+                                />
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

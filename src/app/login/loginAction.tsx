@@ -72,25 +72,17 @@ async function loginWithPasswordActionImpl(
         })
     )
     if (!signIn.success) {
-        captureActionError(signIn.error)
+        const err = signIn.error
+        const code =
+            err && typeof err === "object" && "code" in err ? err.code : null
+        if (code === "invalid_credentials") {
+            return {
+                passwordError: "Mot de passe ou nom d'utilisateur invalide"
+            }
+        }
+        captureActionError(err)
         return {
             passwordError: "Une erreur inattendue est survenue"
-        }
-    }
-    const { error } = signIn.value
-
-    // Check if the user is authenticated and handle errors
-    if (error) {
-        console.error(error.code)
-        switch (error.code) {
-            case "invalid_credentials":
-                return {
-                    passwordError: "Mot de passe ou nom d'utilisateur invalide"
-                }
-            default:
-                return {
-                    passwordError: "Une erreur inattendue est survenue"
-                }
         }
     }
 

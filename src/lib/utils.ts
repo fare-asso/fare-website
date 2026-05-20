@@ -36,6 +36,51 @@ type SyncResult<T, E> =
 
 type AsyncResult<T, E> = Promise<Prettify<SyncResult<T, E>>>
 
+type UnwrapValue<T> = [T] extends [{ data: unknown; error: unknown }]
+    ? [Extract<T, { error: null }>] extends [{ data: infer D }]
+        ? D
+        : T
+    : T
+
+type UnwrapError<T> = [T] extends [{ data: unknown; error: unknown }]
+    ? [Exclude<T, { error: null }>] extends [{ error: infer Err }]
+        ? Err
+        : never
+    : never
+
+function isResultShape(
+    value: unknown
+): value is { data: unknown; error: unknown } {
+    return (
+        typeof value === "object" &&
+        value !== null &&
+        "data" in value &&
+        "error" in value
+    )
+}
+
+function wrap<T, E>(value: T): SyncResult<UnwrapValue<T>, UnwrapError<T> | E> {
+    if (isResultShape(value)) {
+        if (value.error != null) {
+            return {
+                success: false,
+                value: null,
+                error: value.error as UnwrapError<T> | E
+            }
+        }
+        return {
+            success: true,
+            value: value.data as UnwrapValue<T>,
+            error: null
+        }
+    }
+    return {
+        success: true,
+        value: value as unknown as UnwrapValue<T>,
+        error: null
+    }
+}
+
 /**
  * Wrap a Promise, sync thunk, or async thunk in a try/catch and return a
  * Rust-style discriminated-union Result instead of throwing.
@@ -44,6 +89,11 @@ type AsyncResult<T, E> = Promise<Prettify<SyncResult<T, E>>>
  *   - success: `{ success: true, value: T, error: null }`
  *   - failure: `{ success: false, value: null, error: E }`
  *
+ * If the produced value looks like a `{ data, error }` result (e.g. a
+ * Supabase call that returns `{ data, error: null } | { data: null, error }`
+ * instead of throwing), the helper unwraps it: `data` becomes `value` on
+ * success, `error` is surfaced as failure.
+ *
  * Overloads:
  *   - `tryCatch(promise)` → `Promise<Result<T>>` — original async form.
  *   - `tryCatch(() => syncOp())` → `Result<T>` — sync thunk; throws are
@@ -51,6 +101,12 @@ type AsyncResult<T, E> = Promise<Prettify<SyncResult<T, E>>>
  *     expression (`JSON.parse`, `cookieStore.set`, `localStorage.…`).
  *   - `tryCatch(() => asyncOp())` → `Promise<Result<T>>` — async thunk;
  *     catches synchronous throws inside the thunk too.
+ *
+ * @example
+ * // supabase — non-throwing { data, error } result is unwrapped
+ * const r = await tryCatch(supabase.storage.from("x").upload(k, blob))
+ * if (!r.success) { captureActionError(r.error); return ... }
+ * // r.value is { id, path, fullPath } — no manual destructure needed
  *
  * @example
  * // async — Promise input
@@ -69,46 +125,54 @@ type AsyncResult<T, E> = Promise<Prettify<SyncResult<T, E>>>
  * // sync side-effect, result intentionally unused
  * tryCatch(() => cookieStore.set({ name, value, ...options }))
  */
-export function tryCatch<T, E = Error>(input: Promise<T>): AsyncResult<T, E>
+export function tryCatch<T, E = Error>(
+    input: Promise<T>
+): AsyncResult<UnwrapValue<T>, UnwrapError<T> | E>
 export function tryCatch<T, E = Error>(
     input: () => Promise<T>
-): AsyncResult<T, E>
-export function tryCatch<T, E = Error>(input: () => T): SyncResult<T, E>
+): AsyncResult<UnwrapValue<T>, UnwrapError<T> | E>
+export function tryCatch<T, E = Error>(
+    input: () => T
+): SyncResult<UnwrapValue<T>, UnwrapError<T> | E>
 export function tryCatch<T, E = Error>(
     input: Promise<T> | (() => T | Promise<T>)
-): SyncResult<T, E> | AsyncResult<T, E> {
+):
+    | SyncResult<UnwrapValue<T>, UnwrapError<T> | E>
+    | AsyncResult<UnwrapValue<T>, UnwrapError<T> | E> {
     if (typeof input === "function") {
         let produced: T | Promise<T>
         // oxlint-disable-next-line local/no-try-catch
         try {
             produced = input()
         } catch (error) {
-            return { success: false, value: null, error: error as E }
+            return {
+                success: false,
+                value: null,
+                error: error as UnwrapError<T> | E
+            }
         }
         if (produced instanceof Promise) {
             return produced.then(
-                (value): SyncResult<T, E> => ({
-                    success: true,
-                    value,
-                    error: null
-                }),
-                (error: unknown): SyncResult<T, E> => ({
+                (value) => wrap<T, E>(value),
+                (
+                    error: unknown
+                ): SyncResult<UnwrapValue<T>, UnwrapError<T> | E> => ({
                     success: false,
                     value: null,
-                    error: error as E
+                    error: error as UnwrapError<T> | E
                 })
             )
         }
-        return { success: true, value: produced, error: null }
+        return wrap<T, E>(produced)
     }
     // Promise.resolve handles both real Promises and non-thenable inputs
     // (e.g. test mocks that return undefined where a Promise was expected).
     return Promise.resolve(input).then(
-        (value): SyncResult<T, E> => ({ success: true, value, error: null }),
-        (error: unknown): SyncResult<T, E> => ({
+        (value) => wrap<T, E>(value),
+        (error: unknown): SyncResult<UnwrapValue<T>, UnwrapError<T> | E> => ({
             success: false,
             value: null,
-            error: error as E
+            error: error as UnwrapError<T> | E
         })
     )
 }
