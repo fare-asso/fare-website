@@ -229,13 +229,6 @@ model LocationCache {
   lastAccessedAt DateTime @default(now())
 }
 
-model BugReport {
-  id          Int    @id @default(autoincrement())
-  email       String
-  type        String @default("autre")
-  description String
-}
-
 enum Role {
   MEMBER
   ADMIN

@@ -15,13 +15,3 @@ Run the development server:
 ```bash
 pnpm dev
 ```
-
-## Pending cleanup
-
-- **Drop `BugReport` model + table:** the Bug Report feature was removed, but
-  `model BugReport` is still in `schema.prisma` and its table still exists. The
-  dev DB had unrelated drift from another feature branch that made
-  `prisma migrate dev` want a full reset, so this was deferred. Once the
-  migration history is reconciled: delete `model BugReport` from
-  `schema.prisma`, then run
-  `pnpm prisma migrate dev --name remove_bug_report_model`.
