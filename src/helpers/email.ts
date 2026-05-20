@@ -2,6 +2,8 @@ import nodemailer from "nodemailer"
 import { isProduction } from "std-env"
 
 import { env } from "@/env"
+import { captureActionError } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 interface EmailAttachment {
     filename: string
@@ -16,7 +18,6 @@ interface EmailPayload {
     attachments?: EmailAttachment[]
 }
 
-// Configuration du transporteur
 const transporter = nodemailer.createTransport({
     host: env.SMTP_HOST,
     port: env.SMTP_PORT,
@@ -27,24 +28,32 @@ const transporter = nodemailer.createTransport({
     }
 })
 
+/**
+ * Send an email via the configured SMTP transport.
+ *
+ * Failures are caught and reported to Sentry internally via
+ * `captureActionError` — callers receive `{ success: false }` with no
+ * `error` field because the error is already handled. Narrow on
+ * `.success` to decide whether to abort the surrounding action; do NOT
+ * wrap this call in a `try/catch`.
+ */
 export async function sendEmail(
     payload: EmailPayload
-): Promise<{ error?: string; success?: boolean }> {
+): Promise<{ success: true } | { success: false }> {
     const { to, subject, html, attachments } = payload
 
-    try {
-        await transporter.sendMail({
+    const result = await tryCatch(
+        transporter.sendMail({
             from: `FARE <${env.SMTP_FROM_EMAIL}>`,
             to: isProduction ? to : "outils-numeriques@fare-asso.fr",
             subject: isProduction ? subject : `TEST - ${subject}`,
             html,
             attachments
         })
-        return { success: true }
-    } catch (error: unknown) {
-        console.error("Error sendEmail: ", error)
-        const errorMessage =
-            error instanceof Error ? error.message : "Unknown error"
-        return { success: false, error: errorMessage }
+    )
+    if (!result.success) {
+        captureActionError(result.error)
+        return { success: false }
     }
+    return { success: true }
 }

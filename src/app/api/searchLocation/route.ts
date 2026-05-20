@@ -1,3 +1,5 @@
+import { tryCatch } from "@/lib/utils"
+
 import type { AutocompleteResponse } from "./types"
 
 /**
@@ -27,9 +29,9 @@ export async function GET(request: Request) {
         )
     }
 
-    try {
-        // Fetch response from autocompletion service (https://adresse.data.gouv.fr/)
-        const autocompleteResponse = await fetch(
+    // Fetch response from autocompletion service (https://adresse.data.gouv.fr/)
+    const fetched = await tryCatch(
+        fetch(
             `https://data.geopf.fr/geocodage/completion?text=${encodeURIComponent(query)}&maximumResponses=5`,
             {
                 method: "GET",
@@ -38,22 +40,33 @@ export async function GET(request: Request) {
                 }
             }
         )
-
-        if (!autocompleteResponse.ok) {
-            throw new Error("Failed to fetch data from Nominatim API")
-        }
-
-        const jsonData: AutocompleteResponse = await autocompleteResponse.json()
-
-        // Return the results
-        return Response.json(jsonData)
-    } catch (error) {
-        console.error("Error fetching location data:", error)
+    )
+    if (!fetched.success) {
+        console.error("Error fetching location data:", fetched.error)
         return new Response(
             JSON.stringify({ error: "Internal Server Error" }),
-            {
-                status: 500
-            }
+            { status: 500 }
         )
     }
+
+    if (!fetched.value.ok) {
+        console.error("Error fetching location data: non-OK response")
+        return new Response(
+            JSON.stringify({ error: "Internal Server Error" }),
+            { status: 500 }
+        )
+    }
+
+    const jsonData = await tryCatch(
+        fetched.value.json() as Promise<AutocompleteResponse>
+    )
+    if (!jsonData.success) {
+        console.error("Error parsing location data:", jsonData.error)
+        return new Response(
+            JSON.stringify({ error: "Internal Server Error" }),
+            { status: 500 }
+        )
+    }
+
+    return Response.json(jsonData.value)
 }

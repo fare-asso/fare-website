@@ -7,6 +7,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 import { MemberServerSchema } from "@/schemas/members"
 
 async function editMemberActionImpl(formData: FormData, id: number) {
@@ -72,8 +73,8 @@ async function editMemberActionImpl(formData: FormData, id: number) {
     }
 
     // Mise à jour des informations dans la base de données
-    try {
-        await prisma.member.update({
+    const updated = await tryCatch(
+        prisma.member.update({
             where: { id: Number(id) },
             data: {
                 firstName: parsed.data.firstName,
@@ -86,19 +87,20 @@ async function editMemberActionImpl(formData: FormData, id: number) {
                 twitterUrl: parsed.data.twitter
             }
         })
-
-        // Révalidation des chemins
-        revalidatePath("/dashboard/membres")
-        revalidatePath("/a-propos/bureau")
-
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!updated.success) {
+        captureActionError(updated.error)
         return {
             success: false,
             error: "La modification du membre dans la base de données a échoué. Veuillez contacter un administrateur."
         }
     }
+
+    // Révalidation des chemins
+    revalidatePath("/dashboard/membres")
+    revalidatePath("/a-propos/bureau")
+
+    return { success: true }
 }
 
 export default withServerAction("editMemberAction", editMemberActionImpl, {

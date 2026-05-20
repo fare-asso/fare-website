@@ -98,9 +98,17 @@ Always use `pnpm`, never use `npm`
 
 - **Server actions return a discriminated union:** `{ success: true; value: T } | { success: false; error: string }` (omit `value` when there is no payload: `{ success: true } | { success: false; error: string }`). Callers narrow on `success` — never optional `success?`/`error?` fields
 - **Every server action MUST be wrapped with `withServerAction()`** from `@/lib/sentry` (see [Server Actions](#server-actions))
-- **Wrap risky IO with the `tryCatch` helper from `@/lib/utils`, NOT a `try/catch` block.** `tryCatch(promise)` returns the same Rust-style `{ success: true; value } | { success: false; error }` shape we use everywhere else — narrow on `success`, call `captureActionError(result.error)` on the failure branch, return a French error string. Plain `try/catch` is forbidden in server actions except for the rare best-effort fire-and-forget case below
+- **Use the `tryCatch` helper from `@/lib/utils` instead of `try/catch` blocks — everywhere, not just server actions.** `tryCatch` is overloaded so a single import covers every case:
+    - `await tryCatch(promise)` — wrap a Promise (DB call, fetch, etc.)
+    - `await tryCatch(() => asyncOp())` — async thunk, also catches synchronous throws inside the thunk
+    - `tryCatch(() => syncOp())` — sync thunk (`JSON.parse`, `localStorage`, cookie set, …); returns a sync `Result` (no `await`)
+
+    In every form the result is the same Rust-style discriminated union `{ success: true; value } | { success: false; error }`. Narrow on `success`, call `captureActionError(result.error)` on the failure branch (for genuine exceptions), return a French error string.
+
+- **Plain `try/catch` is forbidden anywhere in the codebase** — the only exception is the one inside `tryCatch` itself in `src/lib/utils.ts`, which has an inline `oxlint-disable` comment. The local oxlint rule `local/no-try-catch` enforces this — silence it inline with `// oxlint-disable-next-line local/no-try-catch` only when there's a documented reason in a comment above
+- For pure-side-effect sync calls where you intentionally ignore failure (cookie set, `localStorage` write, best-effort `sendEmail`), call `tryCatch` as a void expression: `void tryCatch(() => cookieStore.set(...))` (or simply `await sendEmail(...)` since it has the same effect)
 - **Report genuine exceptions with `captureActionError(error)`** from `@/lib/sentry` on the `tryCatch` failure branch — never a bare `console.error()` (it already logs + sends to Sentry, and re-throws Next.js `redirect`/`notFound` control flow)
-- Do NOT `captureActionError` on validation/permission/not-found early-returns — only on real thrown exceptions surfaced by `tryCatch` (DB, storage, email, PDF). Keeps Sentry free of expected denials
+- Do NOT `captureActionError` on validation/permission/not-found early-returns — only on real thrown exceptions surfaced by `tryCatch` (DB, storage, PDF). Keeps Sentry free of expected denials. (`sendEmail` already calls `captureActionError` internally — don't double-capture)
 - Never expose sensitive data (stack traces, keys) in error messages
 - Use Sonner toasts for client-side error display
 - Throw `Error` instances with descriptive messages (oxlint enforces `useThrowOnlyError`)
@@ -332,9 +340,10 @@ wrapped result under the public name:
 `export const createItemAction = withServerAction("createItemAction", createItemActionImpl)`.
 For files with multiple actions (e.g. `loginAction.tsx`), wrap each one
 individually. Best-effort work (e.g. notification emails after the record is
-persisted) is the **only** place a bare `try/catch` is acceptable — wrap it,
-`captureActionError(error)` in the catch, and continue. Everything else uses
-`tryCatch`.
+persisted) does NOT need any wrapping — `sendEmail` catches and reports
+its own failures, so just `await sendEmail(...)` and ignore the result. For
+other best-effort sync work, use the sync-thunk form `tryCatch(() => …)`
+and discard the result.
 
 **Key patterns:**
 
@@ -342,12 +351,14 @@ persisted) is the **only** place a bare `try/catch` is acceptable — wrap it,
   exported function name
 - Auth/permission/Zod failures are **early returns**, not exceptions — do not
   `captureActionError` them
-- Wrap every genuinely risky IO (DB, storage, email, PDF/zip, supabase
-  storage downloads/uploads, anything that can reject) in `tryCatch` from
+- Wrap every genuinely risky IO (DB, storage, PDF/zip, supabase storage
+  downloads/uploads, anything that can reject) in `tryCatch` from
   `@/lib/utils` — NOT `try/catch`. Narrow on the returned `success`, call
   `captureActionError(result.error)` on failure, and return a hand-written
-  French message in the action's return shape. Reserve `try/catch` for
-  fire-and-forget best-effort branches that must not abort the action
+  French message in the action's return shape. `sendEmail` is the
+  exception: it already wraps `tryCatch` internally and reports failures
+  to Sentry, so callers just `await sendEmail(...)` and (optionally)
+  narrow on `.success` to decide whether to abort
 - Keep Next.js `redirect()`/`notFound()` OUTSIDE the failure branch of any
   `tryCatch` (the wrapper handles them; `captureActionError` rethrows them, so
   a `redirect` inside a `if (!result.success)` block still works but never
@@ -423,18 +434,28 @@ export function WelcomeEmail({ name }: { name: string }) {
 }
 ```
 
-Send using `sendEmail` helper:
+Send using the `sendEmail` helper. It returns
+`{ success: true } | { success: false }` (no `error` field — failures are
+caught internally and reported to Sentry via `captureActionError`). Do NOT
+wrap the call in `try/catch`; narrow on `.success` only if you want to
+abort the surrounding action on failure.
 
 ```typescript
-import { sendEmail } from "@/helpers/email";
+import { sendEmail } from "@/helpers/email"
 
-const emailResponse = await sendEmail({
+// Abort-on-failure (action fails if the email fails)
+const email = await sendEmail({
     to: "secretariat@fare-asso.fr",
     subject: `Nouvelle demande d'adhésion - ${record.association}`,
-    html: await render(
-        <EmailTemplate />
-    )
+    html: await render(<EmailTemplate />)
 })
+if (!email.success) {
+    return { success: false, error: "Echec de l'envoi du mail" }
+}
+
+// Best-effort (notification after a successful DB write)
+await sendEmail({ to: "...", subject: "...", html: "..." })
+// no need to check .success — sendEmail already reported the failure
 ```
 
 ---

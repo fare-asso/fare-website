@@ -7,6 +7,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function deleteEventActionImpl({ eventId }: { eventId: number }) {
     // Auth and permission verifications
@@ -51,16 +52,18 @@ async function deleteEventActionImpl({ eventId }: { eventId: number }) {
         }
     }
 
-    try {
-        const _response = await prisma.event.delete({
+    const deleted = await tryCatch(
+        prisma.event.delete({
             where: {
                 id: eventId
             }
         })
-        revalidatePath("/dashboard/events")
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!deleted.success) {
+        captureActionError(deleted.error)
+        return
     }
+    revalidatePath("/dashboard/events")
 }
 
 export default withServerAction("deleteEventAction", deleteEventActionImpl)

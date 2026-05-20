@@ -7,6 +7,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function deleteMemberActionImpl({ id }: { id: number }) {
     // Auth and permission verifications
@@ -23,15 +24,16 @@ async function deleteMemberActionImpl({ id }: { id: number }) {
     // create supabase client
     const supabase = await createClient()
 
-    let res: Awaited<ReturnType<typeof prisma.member.delete>>
-    try {
-        res = await prisma.member.delete({
+    const deleted = await tryCatch(
+        prisma.member.delete({
             where: { id: id }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!deleted.success) {
+        captureActionError(deleted.error)
         return { error: "Echec de la suppression du membre" }
     }
+    const res = deleted.value
 
     if (res == null) return { error: "Failed to delete record" }
 

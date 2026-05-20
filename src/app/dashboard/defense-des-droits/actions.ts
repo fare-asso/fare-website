@@ -7,6 +7,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 const ConfigInput = type({
     recipientEmail: "string.email >= 1",
@@ -35,26 +36,36 @@ async function updateAssistanceConfigImpl(input: {
         return { success: false, error: data.summary }
     }
 
-    try {
-        const existing = await prisma.assistanceConfig.findFirst()
-        if (existing) {
-            await prisma.assistanceConfig.update({
-                where: { id: existing.id },
-                data: {
-                    recipientEmail: data.recipientEmail,
-                    delay: data.delay
-                }
-            })
-        } else {
-            await prisma.assistanceConfig.create({
-                data: {
-                    recipientEmail: data.recipientEmail,
-                    delay: data.delay
-                }
-            })
+    const existingResult = await tryCatch(prisma.assistanceConfig.findFirst())
+    if (!existingResult.success) {
+        captureActionError(existingResult.error)
+        return {
+            success: false,
+            error: "Échec de l'enregistrement de la configuration."
         }
-    } catch (error) {
-        captureActionError(error)
+    }
+    const existing = existingResult.value
+
+    const upserted = existing
+        ? await tryCatch(
+              prisma.assistanceConfig.update({
+                  where: { id: existing.id },
+                  data: {
+                      recipientEmail: data.recipientEmail,
+                      delay: data.delay
+                  }
+              })
+          )
+        : await tryCatch(
+              prisma.assistanceConfig.create({
+                  data: {
+                      recipientEmail: data.recipientEmail,
+                      delay: data.delay
+                  }
+              })
+          )
+    if (!upserted.success) {
+        captureActionError(upserted.error)
         return {
             success: false,
             error: "Échec de l'enregistrement de la configuration."

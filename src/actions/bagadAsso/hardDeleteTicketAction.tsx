@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function hardDeleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
     success?: boolean
@@ -22,20 +23,21 @@ async function hardDeleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
         }
     }
 
-    try {
-        await prisma.bagadAssoTicket.delete({
+    const result = await tryCatch(
+        prisma.bagadAssoTicket.delete({
             where: {
                 id: ticketId
             }
         })
-
-        revalidatePath("/dashboard/bagadAsso")
-
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return { error: "Echec de la suppression définitive du ticket" }
     }
+
+    revalidatePath("/dashboard/bagadAsso")
+
+    return { success: true }
 }
 
 export default withServerAction(

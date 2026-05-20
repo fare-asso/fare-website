@@ -10,6 +10,7 @@ import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 import { BTPTutorApplicationSchema } from "@/schemas/bougeTaPrison"
 import type { ActionResponse } from "@/types/actions"
 
@@ -94,8 +95,8 @@ async function submitTutorApplicationImpl(
     }
 
     // Insert the application in the database
-    try {
-        await prisma.bTPTutorApplication.create({
+    const created = await tryCatch(
+        prisma.bTPTutorApplication.create({
             data: {
                 firstName: parsedData.data.firstName,
                 lastName: parsedData.data.lastName,
@@ -106,8 +107,9 @@ async function submitTutorApplicationImpl(
                 mlPath: lmUploadData.path
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!created.success) {
+        captureActionError(created.error)
         // Clean up uploaded files
         await supabase.storage
             .from("btp-tutor-application")
@@ -118,15 +120,11 @@ async function submitTutorApplicationImpl(
     }
 
     // Email is best-effort: the application has already been persisted.
-    try {
-        await sendEmail({
-            to: "intervention-carceral@fare-asso.fr",
-            subject: "Nouvelle candidature de tuteur Bouge Ta Prison",
-            html: await render(<BtpApplication data={parsedData.data} />)
-        })
-    } catch (error) {
-        captureActionError(error)
-    }
+    await sendEmail({
+        to: "intervention-carceral@fare-asso.fr",
+        subject: "Nouvelle candidature de tuteur Bouge Ta Prison",
+        html: await render(<BtpApplication data={parsedData.data} />)
+    })
 
     revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }

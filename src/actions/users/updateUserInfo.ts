@@ -4,6 +4,7 @@ import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function updateUserInfoImpl(
     userId: string,
@@ -26,8 +27,8 @@ async function updateUserInfoImpl(
         throw new Error("Forbidden: Insufficient permissions")
     }
 
-    try {
-        const _updatedUser = await prisma.user.update({
+    const result = await tryCatch(
+        prisma.user.update({
             where: { id: userId },
             data: {
                 name: data.name,
@@ -35,15 +36,15 @@ async function updateUserInfoImpl(
                 role: data.role
             }
         })
-
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return {
             success: false,
             error: "An error occurred while updating user info."
         }
     }
+    return { success: true }
 }
 
 export default withServerAction("updateUserInfo", updateUserInfoImpl)

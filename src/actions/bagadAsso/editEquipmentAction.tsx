@@ -9,6 +9,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function editEquipmentActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -128,8 +129,8 @@ async function editEquipmentActionImpl(
     }
 
     // update record
-    try {
-        await prisma.bagadAssoEquipment.update({
+    const updated = await tryCatch(
+        prisma.bagadAssoEquipment.update({
             where: { id: equipmentIdNum },
             data: {
                 name,
@@ -138,16 +139,17 @@ async function editEquipmentActionImpl(
                 imagePath
             }
         })
-
-        revalidatePath("/dashboard/bagadAsso")
-        revalidatePath("/projets/bagad-asso")
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!updated.success) {
+        captureActionError(updated.error)
         return {
             error: "Echec de la modification de l'équipement. Veuillez réessayer."
         }
     }
+
+    revalidatePath("/dashboard/bagadAsso")
+    revalidatePath("/projets/bagad-asso")
+    return { success: true }
 }
 
 export default withServerAction(

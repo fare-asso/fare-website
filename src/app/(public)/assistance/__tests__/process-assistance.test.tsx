@@ -128,36 +128,23 @@ describe("processAssistance — happy path & emails", () => {
         expect(ack.attachments ?? []).toHaveLength(0)
     })
 
-    it("still succeeds and captures when the acknowledgement email throws", async () => {
+    it("still succeeds when the acknowledgement email fails (handled inside sendEmail)", async () => {
         h.sendEmail
             .mockResolvedValueOnce({ success: true })
-            .mockRejectedValueOnce(new Error("smtp down"))
+            .mockResolvedValueOnce({ success: false })
         const res = await processAssistance(validAssistanceForm())
         expect(res).toEqual({ success: true })
-        expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
-    it("fails when the internal email reports an error (handled, not captured)", async () => {
-        h.sendEmail.mockResolvedValueOnce({
-            success: false,
-            error: "smtp down"
-        })
+    it("fails when the internal email fails (handled inside sendEmail)", async () => {
+        h.sendEmail.mockResolvedValueOnce({ success: false })
         const res = await processAssistance(validAssistanceForm())
         expect(res).toEqual({
             success: false,
             error: "Échec de l'envoi de votre demande. Veuillez réessayer plus tard."
         })
         expect(h.captureActionError).not.toHaveBeenCalled()
-    })
-
-    it("captures and fails when the internal email throws", async () => {
-        h.sendEmail.mockRejectedValueOnce(new Error("smtp exploded"))
-        const res = await processAssistance(validAssistanceForm())
-        expect(res).toEqual({
-            success: false,
-            error: "Échec de l'envoi de votre demande. Veuillez réessayer plus tard."
-        })
-        expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("captures and fails when loading the config throws", async () => {

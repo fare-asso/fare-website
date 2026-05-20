@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 import type { AutocompleteResponse } from "@/app/api/searchLocation/types"
 import { Input } from "@/components/ui/input"
+import { tryCatch } from "@/lib/utils"
 
 interface LocationPickerProps {
     name: string
@@ -35,39 +36,41 @@ export default function LocationPicker({
 
         setIsLoading(true)
 
-        try {
+        const result = await tryCatch(async () => {
             const response = await fetch(
                 `/api/searchLocation?query=${encodeURIComponent(searchQuery)}`
             )
-
             if (!response.ok) {
                 throw new Error(`API request failed: ${response.status}`)
             }
-
-            const data: AutocompleteResponse = await response.json()
-
-            if (!data || data.status !== "OK") {
-                console.error("Invalid response from API:", data)
-                setRecommendations([])
-                setShowRecommendations(false)
-                return
-            }
-
-            // Assuming the API returns an array of strings or objects with a 'name' property
-            const locationNames = data.results.map(
-                (result) => result.fulltext || result.street || result.city
-            )
-
-            setRecommendations(locationNames)
-            setShowRecommendations(locationNames.length > 0)
-            setSelectedIndex(-1) // Reset selection when new results arrive
-        } catch (err) {
-            console.error("Failed to fetch recommendations:", err)
+            return (await response.json()) as AutocompleteResponse
+        })
+        if (!result.success) {
+            console.error("Failed to fetch recommendations:", result.error)
             setRecommendations([])
             setShowRecommendations(false)
-        } finally {
             setIsLoading(false)
+            return
         }
+        const data = result.value
+
+        if (!data || data.status !== "OK") {
+            console.error("Invalid response from API:", data)
+            setRecommendations([])
+            setShowRecommendations(false)
+            setIsLoading(false)
+            return
+        }
+
+        // Assuming the API returns an array of strings or objects with a 'name' property
+        const locationNames = data.results.map(
+            (location) => location.fulltext || location.street || location.city
+        )
+
+        setRecommendations(locationNames)
+        setShowRecommendations(locationNames.length > 0)
+        setSelectedIndex(-1) // Reset selection when new results arrive
+        setIsLoading(false)
     }, [])
 
     useEffect(() => {

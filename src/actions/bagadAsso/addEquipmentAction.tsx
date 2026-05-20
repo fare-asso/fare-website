@@ -9,6 +9,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function addEquipmentActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -88,8 +89,8 @@ async function addEquipmentActionImpl(
     }
 
     // create new record
-    try {
-        const _createdRecord = await prisma.bagadAssoEquipment.create({
+    const created = await tryCatch(
+        prisma.bagadAssoEquipment.create({
             data: {
                 name,
                 deposit: Number(guarantee),
@@ -97,16 +98,17 @@ async function addEquipmentActionImpl(
                 imagePath
             }
         })
-
-        revalidatePath("/dashboard/bagadAsso")
-        revalidatePath("/projets/bagad-asso")
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!created.success) {
+        captureActionError(created.error)
         return {
             error: "Echec de l'ajout de l'équipement. Veuillez réessayer."
         }
     }
+
+    revalidatePath("/dashboard/bagadAsso")
+    revalidatePath("/projets/bagad-asso")
+    return { success: true }
 }
 
 export default withServerAction("addEquipmentAction", addEquipmentActionImpl, {

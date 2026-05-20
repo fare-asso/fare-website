@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function updateUserPermissionsImpl(
     userId: string,
@@ -25,8 +26,8 @@ async function updateUserPermissionsImpl(
     }
 
     // Commencer une transaction pour supprimer les anciennes permissions et ajouter les nouvelles
-    try {
-        await prisma.$transaction(async (tx) => {
+    const result = await tryCatch(
+        prisma.$transaction(async (tx) => {
             // Supprimer les permissions existantes pour cet utilisateur
             await tx.userPermission.deleteMany({
                 where: {
@@ -45,17 +46,18 @@ async function updateUserPermissionsImpl(
                 skipDuplicates: true
             })
         })
-
-        revalidatePath(`/dashboard/users/${userId}`)
-
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return {
             success: false,
             error: "An error occurred while updating permissions."
         }
     }
+
+    revalidatePath(`/dashboard/users/${userId}`)
+
+    return { success: true }
 }
 
 export default withServerAction(

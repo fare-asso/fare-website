@@ -40,14 +40,6 @@ describe("sendApprovalEmail", () => {
         expect(h.update).not.toHaveBeenCalled()
     })
 
-    it("captures and fails when sending throws", async () => {
-        h.sendEmail.mockRejectedValue(new Error("smtp down"))
-        const res = await sendApprovalEmail(validTutorApplicationRecord())
-        expect(res.success).toBe(false)
-        expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.update).not.toHaveBeenCalled()
-    })
-
     it("captures and fails when the approval update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         const res = await sendApprovalEmail(validTutorApplicationRecord())

@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function deleteUserImpl(userId: string) {
     const currentUser = await getCurrentUserWithPermissions()
@@ -29,22 +30,23 @@ async function deleteUserImpl(userId: string) {
         }
     }
 
-    try {
-        // Soft delete: set deletedAt timestamp
-        await prisma.user.update({
+    // Soft delete: set deletedAt timestamp
+    const result = await tryCatch(
+        prisma.user.update({
             where: { id: userId },
             data: { deletedAt: new Date() }
         })
-
-        revalidatePath("/dashboard/users")
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return {
             success: false,
             error: "Une erreur s'est produite lors de la suppression"
         }
     }
+
+    revalidatePath("/dashboard/users")
+    return { success: true }
 }
 
 export default withServerAction("deleteUser", deleteUserImpl)

@@ -13,6 +13,7 @@ import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 import { AdhesionFormSchema, type TAdhesionForm } from "./form-schema"
 
@@ -130,8 +131,8 @@ async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
         }
     }
 
-    try {
-        await prisma.adhesion.create({
+    const created = await tryCatch(
+        prisma.adhesion.create({
             data: {
                 association: data.nomComplet,
                 nomComplet: data.nomComplet,
@@ -160,8 +161,9 @@ async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
                 bilanFinancierPath
             }
         })
-    } catch (e) {
-        captureActionError(e)
+    )
+    if (!created.success) {
+        captureActionError(created.error)
         await cleanup()
         return {
             success: false,
@@ -171,22 +173,16 @@ async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
     }
 
     // Emails are best-effort: the request has already been persisted.
-    try {
-        await sendEmail({
-            to: "secretariat@fare-asso.fr",
-            subject: `Nouvelle demande d'adhésion - ${data.sigle}`,
-            html: await render(
-                <AdhesionTemplate associationName={data.sigle} />
-            )
-        })
-        await sendEmail({
-            to: data.emailAssociation,
-            subject: "Demande d'adhésion reçue",
-            html: await render(<AdhesionAck associationName={data.sigle} />)
-        })
-    } catch (e) {
-        captureActionError(e)
-    }
+    await sendEmail({
+        to: "secretariat@fare-asso.fr",
+        subject: `Nouvelle demande d'adhésion - ${data.sigle}`,
+        html: await render(<AdhesionTemplate associationName={data.sigle} />)
+    })
+    await sendEmail({
+        to: data.emailAssociation,
+        subject: "Demande d'adhésion reçue",
+        html: await render(<AdhesionAck associationName={data.sigle} />)
+    })
 
     revalidatePath("/dashboard/adhesions")
     return { success: true }

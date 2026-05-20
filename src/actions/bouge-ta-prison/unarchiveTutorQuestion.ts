@@ -4,12 +4,13 @@ import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function unarchiveTutorQuestionImpl(
     id: number
 ): Promise<{ success?: boolean; error?: string }> {
-    try {
-        await prisma.bTPTutorQuestion.update({
+    const result = await tryCatch(
+        prisma.bTPTutorQuestion.update({
             where: {
                 id
             },
@@ -17,8 +18,9 @@ async function unarchiveTutorQuestionImpl(
                 archived: null
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return { error: "Echec du désarchivage de la question" }
     }
 

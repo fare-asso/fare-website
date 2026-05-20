@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function switchVisibilityActionImpl(
     articleId: number
@@ -21,9 +22,9 @@ async function switchVisibilityActionImpl(
         }
     }
 
-    try {
-        // Fetch current article
-        const article = await prisma.article.findUnique({
+    // Fetch current article
+    const articleResult = await tryCatch(
+        prisma.article.findUnique({
             where: {
                 id: articleId
             },
@@ -31,12 +32,19 @@ async function switchVisibilityActionImpl(
                 published: true
             }
         })
+    )
+    if (!articleResult.success) {
+        captureActionError(articleResult.error)
+        return { error: "Echec du changement de visibilité de l'article" }
+    }
+    const article = articleResult.value
 
-        if (!article) {
-            return { error: "Article non trouvé" }
-        }
+    if (!article) {
+        return { error: "Article non trouvé" }
+    }
 
-        await prisma.article.update({
+    const updated = await tryCatch(
+        prisma.article.update({
             where: {
                 id: articleId
             },
@@ -44,8 +52,9 @@ async function switchVisibilityActionImpl(
                 published: !article.published
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!updated.success) {
+        captureActionError(updated.error)
         return { error: "Echec du changement de visibilité de l'article" }
     }
 

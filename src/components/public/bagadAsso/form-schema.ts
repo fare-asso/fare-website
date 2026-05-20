@@ -1,6 +1,8 @@
 import { isDevelopment } from "std-env"
 import { z } from "zod"
 
+import { tryCatch } from "@/lib/utils"
+
 export const eventTypes = [
     { value: "Weekend de cohésion", label: "Weekend de cohésion" },
     { value: "Soirée", label: "Soirée" },
@@ -46,12 +48,12 @@ const baseFields = {
         .min(1, "Veuillez sélectionner au moins un matériel.")
         .refine(
             (val) => {
-                try {
-                    const parsed = JSON.parse(val)
-                    return Array.isArray(parsed) && parsed.length > 0
-                } catch {
-                    return false
-                }
+                const parsed = tryCatch(() => JSON.parse(val) as unknown)
+                return (
+                    parsed.success &&
+                    Array.isArray(parsed.value) &&
+                    parsed.value.length > 0
+                )
             },
             { message: "Veuillez sélectionner au moins un matériel." }
         ),

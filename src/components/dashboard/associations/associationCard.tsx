@@ -10,6 +10,7 @@ import Image from "next/image"
 
 import { Badge } from "@/components/ui/badge"
 import type { Association } from "@/generated/prisma/client"
+import { parseLocation } from "@/helpers/location"
 
 import ApproveAssociationButton from "./approveAssociationButton"
 import DeclineAssociationButton from "./declineAssociationButton"
@@ -18,33 +19,16 @@ import DeleteRepresentativeButton from "./deleteRepresentativeButton"
 import EditAssociationButton from "./editAssociationButton"
 import SendInvitationLinkButton from "./sendInvitationLinkButton"
 
-/**
- * Parse a location string that may be either a plain string
- * or a JSON object with `displayName` and `coordinates`.
- * Returns a short display label and the full address.
- */
-function parseLocation(raw: string): {
-    short: string
-    full: string
-} {
-    try {
-        const parsed: unknown = JSON.parse(raw)
-        if (
-            typeof parsed === "object" &&
-            parsed !== null &&
-            "displayName" in parsed &&
-            typeof (parsed as { displayName: unknown }).displayName === "string"
-        ) {
-            const full = (parsed as { displayName: string }).displayName
-            // The displayName is a long comma-separated geocoder
-            // string. Take the first two meaningful segments
-            // for a compact label.
-            const parts = full.split(",").map((s) => s.trim())
-            const short = parts.length > 3 ? `${parts[0]}, ${parts[1]}` : full
-            return { short, full }
-        }
-    } catch {
-        // Not JSON — treat as plain string
+function formatLocation(raw: string): { short: string; full: string } {
+    const parsed = parseLocation(raw)
+    if (parsed.success && typeof parsed.value.displayName === "string") {
+        const full = parsed.value.displayName
+        // The displayName is a long comma-separated geocoder
+        // string. Take the first two meaningful segments
+        // for a compact label.
+        const parts = full.split(",").map((s) => s.trim())
+        const short = parts.length > 3 ? `${parts[0]}, ${parts[1]}` : full
+        return { short, full }
     }
     return { short: raw, full: raw }
 }
@@ -68,7 +52,7 @@ export default function AssociationCard({
     canApprove
 }: AssociationCardProps): React.JSX.Element {
     const location = association.location
-        ? parseLocation(association.location)
+        ? formatLocation(association.location)
         : null
     const isPending = association.approved === null
 

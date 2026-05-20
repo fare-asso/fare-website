@@ -10,6 +10,7 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
+import { tryCatch } from "@/lib/utils"
 
 interface Category {
     id: number
@@ -26,21 +27,26 @@ export default function CategorySelect({
 
     useEffect(() => {
         const fetchCategories = async () => {
-            try {
+            const result = await tryCatch(async () => {
                 const response = await fetch("/api/categories")
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`)
                 }
-                const data = await response.json()
-                const items = data.categories.map((category: Category) => (
-                    <SelectItem key={category.id} value={category.name}>
-                        {category.name}
-                    </SelectItem>
-                ))
-                setCategoryItems(items)
-            } catch (error) {
-                console.error(error)
+                return (await response.json()) as { categories: Category[] }
+            })
+            if (!result.success) {
+                console.error(result.error)
+                return
             }
+            setCategoryItems(
+                <>
+                    {result.value.categories.map((category: Category) => (
+                        <SelectItem key={category.id} value={category.name}>
+                            {category.name}
+                        </SelectItem>
+                    ))}
+                </>
+            )
         }
 
         void fetchCategories()

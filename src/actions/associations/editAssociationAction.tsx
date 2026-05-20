@@ -7,6 +7,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function editAssociationActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -109,8 +110,8 @@ async function editAssociationActionImpl(
 
     const logoPath: string = data.path
 
-    try {
-        const editedAssociation = await prisma.association.update({
+    const edited = await tryCatch(
+        prisma.association.update({
             where: {
                 id: id
             },
@@ -129,21 +130,24 @@ async function editAssociationActionImpl(
                 discord
             }
         })
-
-        if (editedAssociation) {
-            revalidatePath("/dashboard/associations")
-            revalidatePath("/reseau")
-            return { success: true }
-        } else {
-            return {
-                error: "La modification de l'association dans la base de données a échoué... Veuillez contacter un administrateur."
-            }
-        }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!edited.success) {
+        captureActionError(edited.error)
         const errorMessage =
-            error instanceof Error ? error.message : "Unknown error"
+            edited.error instanceof Error
+                ? edited.error.message
+                : "Unknown error"
         return { error: errorMessage }
+    }
+
+    if (edited.value) {
+        revalidatePath("/dashboard/associations")
+        revalidatePath("/reseau")
+        return { success: true }
+    } else {
+        return {
+            error: "La modification de l'association dans la base de données a échoué... Veuillez contacter un administrateur."
+        }
     }
 }
 

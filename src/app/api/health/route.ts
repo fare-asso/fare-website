@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
+import { tryCatch } from "@/lib/utils"
 
 type HealthStatus = {
     status: "ok" | "error"
@@ -20,28 +21,34 @@ export async function GET() {
     let supabaseHealthy = false
 
     // Check Prisma/DB connection
-    try {
-        await prisma.$queryRaw`SELECT 1`
+    const dbResult = await tryCatch(prisma.$queryRaw`SELECT 1`)
+    if (dbResult.success) {
         dbHealthy = true
-    } catch (error) {
+    } else {
         const message =
-            error instanceof Error ? error.message : "Unknown DB error"
+            dbResult.error instanceof Error
+                ? dbResult.error.message
+                : "Unknown DB error"
         errors.push(`DB: ${message}`)
     }
 
     // Check Supabase connection
-    try {
-        const supabase = await createClient()
-        const { error } = await supabase.auth.getSession()
-        if (error) {
-            errors.push(`Supabase: ${error.message}`)
-        } else {
-            supabaseHealthy = true
-        }
-    } catch (error) {
+    const supabaseResult = await tryCatch(
+        (async () => {
+            const supabase = await createClient()
+            return supabase.auth.getSession()
+        })()
+    )
+    if (!supabaseResult.success) {
         const message =
-            error instanceof Error ? error.message : "Unknown Supabase error"
+            supabaseResult.error instanceof Error
+                ? supabaseResult.error.message
+                : "Unknown Supabase error"
         errors.push(`Supabase: ${message}`)
+    } else if (supabaseResult.value.error) {
+        errors.push(`Supabase: ${supabaseResult.value.error.message}`)
+    } else {
+        supabaseHealthy = true
     }
 
     const allHealthy = dbHealthy && supabaseHealthy

@@ -26,19 +26,11 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { dateToString } from "@/helpers/date"
+import { parseLocation } from "@/helpers/location"
 
 function processLocationObject(value: string): string {
-    try {
-        const json: {
-            displayName: string
-            coordinates: { lat: string; lon: string }
-        } = JSON.parse(value)
-        return json.displayName
-    } catch {
-        if (typeof value === "string") {
-            return value
-        } else return "Non défini"
-    }
+    const parsed = parseLocation(value)
+    return parsed.success ? parsed.value.displayName : value
 }
 
 export type Event = {

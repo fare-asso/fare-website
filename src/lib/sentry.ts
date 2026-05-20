@@ -2,6 +2,8 @@ import * as Sentry from "@sentry/nextjs"
 import { headers } from "next/headers"
 import { unstable_rethrow } from "next/navigation"
 
+import { tryCatch } from "@/lib/utils"
+
 type WithServerActionOptions = {
     attachFormData?: boolean
 }
@@ -26,12 +28,10 @@ export function withServerAction<A extends unknown[], R>(
             }
         }
 
-        let requestHeaders: Awaited<ReturnType<typeof headers>> | undefined
-        try {
-            requestHeaders = await headers()
-        } catch {
-            requestHeaders = undefined
-        }
+        const headerResult = await tryCatch(headers())
+        const requestHeaders = headerResult.success
+            ? headerResult.value
+            : undefined
 
         return Sentry.withServerActionInstrumentation(
             name,

@@ -8,6 +8,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function createArticleActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -38,13 +39,10 @@ async function createArticleActionImpl(
 
     // Images
     const images = formData.getAll("images") as File[]
-    for (const image of images) {
-        console.log(image)
-    }
 
-    try {
-        // upload images to storage
-        const responses = await Promise.all(
+    // upload images to storage
+    const responsesResult = await tryCatch(
+        Promise.all(
             images.map(
                 async (file) =>
                     await supabase.storage
@@ -52,31 +50,42 @@ async function createArticleActionImpl(
                         .upload(file.name, file)
             )
         )
+    )
+    if (!responsesResult.success) {
+        captureActionError(responsesResult.error)
+        return { error: "Echec de la création de l'article" }
+    }
+    const responses = responsesResult.value
 
-        // check for errors
-        for (const response of responses) {
-            if (response.error) {
-                return {
-                    error: "L'upload des images a échoué. Veuillez réessayer"
-                }
+    // check for errors
+    for (const response of responses) {
+        if (response.error) {
+            return {
+                error: "L'upload des images a échoué. Veuillez réessayer"
             }
         }
+    }
 
-        const contentDelta: JSONContent = JSON.parse(content)
+    const parsedContent = tryCatch(() => JSON.parse(content) as JSONContent)
+    if (!parsedContent.success) {
+        return { error: "Le contenu de l'article est invalide" }
+    }
 
-        // insert article to database
-        await prisma.article.create({
+    // insert article to database
+    const created = await tryCatch(
+        prisma.article.create({
             data: {
                 title: title,
-                content: contentDelta,
+                content: parsedContent.value,
                 imagesPath: responses
                     .map((response) => response.data?.path)
                     .filter((path): path is string => path !== undefined),
                 authorId: user.id
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!created.success) {
+        captureActionError(created.error)
         return { error: "Echec de la création de l'article" }
     }
 

@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/use-toast"
 import type { Adhesion } from "@/generated/prisma/client"
+import { tryCatch } from "@/lib/utils"
 
 import LoadingRing from "../loadingRing"
 
@@ -95,69 +96,67 @@ export default function AdhesionCardActions({
 
     const handleDownload = async () => {
         setIsDownloading(true)
-        try {
-            const result = await downloadFolderAction(
-                undefined,
-                adhesion.folderPath
-            )
-            if (result.error) {
-                toast({
-                    variant: "destructive",
-                    title: "Erreur",
-                    description: result.error
-                })
-            } else if (result.success && result.zipData) {
-                downloadBase64Zip(
-                    result.zipData,
-                    result.filename || "download.zip"
-                )
-                toast({
-                    title: "Téléchargement",
-                    description: `Le dossier de ${displayName} a été téléchargé.`
-                })
-            }
-        } catch (error) {
-            console.error("Erreur lors du téléchargement:", error)
+        const call = await tryCatch(
+            downloadFolderAction(undefined, adhesion.folderPath)
+        )
+        if (!call.success) {
+            console.error("Erreur lors du téléchargement:", call.error)
             toast({
                 variant: "destructive",
                 title: "Erreur",
                 description: "Erreur lors du téléchargement du dossier."
             })
-        } finally {
             setIsDownloading(false)
+            return
         }
+        const result = call.value
+        if (result.error) {
+            toast({
+                variant: "destructive",
+                title: "Erreur",
+                description: result.error
+            })
+        } else if (result.success && result.zipData) {
+            downloadBase64Zip(result.zipData, result.filename || "download.zip")
+            toast({
+                title: "Téléchargement",
+                description: `Le dossier de ${displayName} a été téléchargé.`
+            })
+        }
+        setIsDownloading(false)
     }
 
     const handleGeneratePdf = async () => {
         setIsGeneratingPdf(true)
-        try {
-            const result = await downloadAdhesionPdfAction(adhesion.id)
-            if (result.error) {
-                toast({
-                    variant: "destructive",
-                    title: "Erreur",
-                    description: result.error
-                })
-            } else if (result.success && result.pdfData) {
-                downloadBase64Pdf(
-                    result.pdfData,
-                    result.filename || "formulaire-adhesion.pdf"
-                )
-                toast({
-                    title: "Téléchargement",
-                    description: `Le formulaire de ${displayName} a été généré.`
-                })
-            }
-        } catch (error) {
-            console.error("Erreur lors de la génération du PDF:", error)
+        const call = await tryCatch(downloadAdhesionPdfAction(adhesion.id))
+        if (!call.success) {
+            console.error("Erreur lors de la génération du PDF:", call.error)
             toast({
                 variant: "destructive",
                 title: "Erreur",
                 description: "Erreur lors de la génération du formulaire PDF."
             })
-        } finally {
             setIsGeneratingPdf(false)
+            return
         }
+        const result = call.value
+        if (result.error) {
+            toast({
+                variant: "destructive",
+                title: "Erreur",
+                description: result.error
+            })
+        } else if (result.success && result.pdfData) {
+            downloadBase64Pdf(
+                result.pdfData,
+                result.filename || "formulaire-adhesion.pdf"
+            )
+            toast({
+                title: "Téléchargement",
+                description: `Le formulaire de ${displayName} a été généré.`
+            })
+        }
+        setIsGeneratingPdf(false)
     }
 
     const handleArchiveToggle = async () => {

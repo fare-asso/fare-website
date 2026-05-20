@@ -113,8 +113,8 @@ describe("processAdhesion", () => {
         expect(h.captureActionError).toHaveBeenCalled()
     })
 
-    it("still succeeds when sending emails fails", async () => {
-        h.sendEmail.mockRejectedValue(new Error("smtp down"))
+    it("still succeeds when sending emails fails (handled inside sendEmail)", async () => {
+        h.sendEmail.mockResolvedValue({ success: false })
         const res = await processAdhesion(validAdhesionForm())
         expect(res.success).toBe(true)
         expect(h.create).toHaveBeenCalledOnce()

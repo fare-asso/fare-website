@@ -9,6 +9,7 @@ import { type ChangeEvent, useRef, useState } from "react"
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 
 import type { Association } from "@/generated/prisma/client"
+import { parseLocation } from "@/helpers/location"
 import { createClient } from "@/helpers/supabase/client"
 
 import AssociationMapSearchBar from "./associationMapSearchBar"
@@ -21,32 +22,6 @@ L.Icon.Default.mergeOptions({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
     shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png"
 })
-
-interface JsonLocation {
-    displayName: string
-    coordinates: Coordinates
-}
-
-interface Coordinates {
-    lat: string
-    lon: string
-}
-
-function processLocationData(value: string): {
-    json?: JsonLocation
-    string?: string
-} {
-    try {
-        const json = JSON.parse(value)
-        return {
-            json: json
-        }
-    } catch {
-        return {
-            string: value
-        }
-    }
-}
 
 export default function AssociationMap({
     associations
@@ -75,9 +50,9 @@ export default function AssociationMap({
 
         if (association) {
             setSearchError(undefined)
-            const locationData = processLocationData(association.location)
-            if (locationData.json) {
-                const { lat, lon } = locationData.json.coordinates
+            const parsed = parseLocation(association.location)
+            if (parsed.success) {
+                const { lat, lon } = parsed.value.coordinates
                 if (mapRef.current) {
                     const map = mapRef.current
                     map.setView([Number(lat), Number(lon)], 14) // Zoom niveau 14 par exemple
@@ -115,55 +90,50 @@ export default function AssociationMap({
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             {associations.map((association) => {
-                const locationData = processLocationData(association.location)
+                const parsed = parseLocation(association.location)
 
-                if (locationData.string) {
+                if (!parsed.success) {
                     return null
                 }
 
-                if (locationData.json) {
-                    return (
-                        <Marker
-                            key={association.id}
-                            position={[
-                                Number(locationData.json.coordinates.lat),
-                                Number(locationData.json.coordinates.lon)
-                            ]}
-                            alt={association.name}
-                        >
-                            <Popup>
-                                <div className="flex w-full flex-row">
-                                    <Image
-                                        src={
-                                            supabase.storage
-                                                .from("association-pictures")
-                                                .getPublicUrl(
-                                                    association.logoPath
-                                                ).data.publicUrl
-                                        }
-                                        width={100}
-                                        height={100}
-                                        alt={
-                                            "Logo de l'association " +
-                                            association.name
-                                        }
-                                        className="aspect-square rounded-md object-cover"
-                                    />
-                                    <div className="ml-3">
-                                        <h2 className="text-base font-semibold">
-                                            {association.name}
-                                        </h2>
-                                        <p className="text-xs opacity-80">
-                                            {locationData.json.displayName}
-                                        </p>
-                                    </div>
+                return (
+                    <Marker
+                        key={association.id}
+                        position={[
+                            Number(parsed.value.coordinates.lat),
+                            Number(parsed.value.coordinates.lon)
+                        ]}
+                        alt={association.name}
+                    >
+                        <Popup>
+                            <div className="flex w-full flex-row">
+                                <Image
+                                    src={
+                                        supabase.storage
+                                            .from("association-pictures")
+                                            .getPublicUrl(association.logoPath)
+                                            .data.publicUrl
+                                    }
+                                    width={100}
+                                    height={100}
+                                    alt={
+                                        "Logo de l'association " +
+                                        association.name
+                                    }
+                                    className="aspect-square rounded-md object-cover"
+                                />
+                                <div className="ml-3">
+                                    <h2 className="text-base font-semibold">
+                                        {association.name}
+                                    </h2>
+                                    <p className="text-xs opacity-80">
+                                        {parsed.value.displayName}
+                                    </p>
                                 </div>
-                            </Popup>
-                        </Marker>
-                    )
-                }
-
-                return null
+                            </div>
+                        </Popup>
+                    </Marker>
+                )
             })}
         </MapContainer>
     )

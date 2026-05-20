@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function createPasswordForRepresentativeActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -45,16 +46,14 @@ async function createPasswordForRepresentativeActionImpl(
     }
 
     // set password
-    try {
-        const { error } = await supabase.auth.updateUser({ password })
-
-        if (error) {
-            return {
-                error: "Echec de la création du mot de passe, veuillez contacter un administrateur"
-            }
+    const updated = await tryCatch(supabase.auth.updateUser({ password }))
+    if (!updated.success) {
+        captureActionError(updated.error)
+        return {
+            error: "Echec de la création du mot de passe, veuillez contacter un administrateur"
         }
-    } catch (error) {
-        captureActionError(error)
+    }
+    if (updated.value.error) {
         return {
             error: "Echec de la création du mot de passe, veuillez contacter un administrateur"
         }

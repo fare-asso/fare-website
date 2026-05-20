@@ -4,12 +4,13 @@ import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function archiveTutorApplicationImpl(
     id: number
 ): Promise<{ success?: boolean; error?: string }> {
-    try {
-        await prisma.bTPTutorApplication.update({
+    const result = await tryCatch(
+        prisma.bTPTutorApplication.update({
             where: {
                 id
             },
@@ -17,8 +18,9 @@ async function archiveTutorApplicationImpl(
                 archived: new Date()
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return { error: "Echec de l'archivage de la candidature" }
     }
 

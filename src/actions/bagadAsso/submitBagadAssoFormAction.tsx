@@ -12,6 +12,7 @@ import {
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 import NewBagadAssoTicket from "../../../emails/badagasso-ticket"
 
@@ -63,9 +64,8 @@ async function submitBagadAssoFormActionImpl(
     }
 
     // Create the ticket in the database
-    let ticketRecord: Awaited<ReturnType<typeof prisma.bagadAssoTicket.create>>
-    try {
-        ticketRecord = await prisma.bagadAssoTicket.create({
+    const ticket = await tryCatch(
+        prisma.bagadAssoTicket.create({
             data: {
                 assocation: validatedData.associationName,
                 associationEmail: validatedData.associationEmail,
@@ -82,27 +82,21 @@ async function submitBagadAssoFormActionImpl(
                 equipments: validatedData.equipment
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!ticket.success) {
+        captureActionError(ticket.error)
         return {
             error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
         }
     }
+    const ticketRecord = ticket.value
 
     // Email is best-effort: the ticket has already been persisted.
-    try {
-        const emailTransporterResponse = await sendEmail({
-            to: "evenement@fare-asso.fr",
-            subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
-            html: await render(<NewBagadAssoTicket data={ticketRecord} />)
-        })
-
-        if (emailTransporterResponse.error) {
-            console.error("[ERROR] Failed to send email notification")
-        }
-    } catch (error) {
-        captureActionError(error)
-    }
+    await sendEmail({
+        to: "evenement@fare-asso.fr",
+        subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
+        html: await render(<NewBagadAssoTicket data={ticketRecord} />)
+    })
 
     revalidatePath("/dashboard/bagadAsso")
     return { success: true }

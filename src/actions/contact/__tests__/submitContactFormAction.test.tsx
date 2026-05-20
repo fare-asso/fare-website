@@ -63,22 +63,13 @@ describe("submitContactFormAction", () => {
         expect(h.sendEmail).not.toHaveBeenCalled()
     })
 
-    it("returns an error when the email transporter reports a failure", async () => {
-        h.sendEmail.mockResolvedValue({ error: "smtp" })
+    it("returns an error when sending fails (sendEmail handles capture itself)", async () => {
+        h.sendEmail.mockResolvedValue({ success: false })
         const res = await submitContactFormAction(undefined, validContact())
         expect(res).toEqual({
             error: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer."
         })
         expect(h.captureActionError).not.toHaveBeenCalled()
-    })
-
-    it("captures and returns an error when sending throws", async () => {
-        h.sendEmail.mockRejectedValue(new Error("boom"))
-        const res = await submitContactFormAction(undefined, validContact())
-        expect(res).toEqual({
-            error: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer."
-        })
-        expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("sends the contact email and succeeds on the happy path", async () => {

@@ -10,6 +10,7 @@ import { verifyCaptcha } from "@/components/captcha/verify"
 import { getAssistanceConfig } from "@/helpers/assistanceConfig"
 import { sendEmail } from "@/helpers/email"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 import {
     AssistanceFormSchema,
@@ -51,70 +52,76 @@ async function processAssistanceImpl(
         }
     }
 
-    try {
-        const attachments = await Promise.all(
+    const attachmentsResult = await tryCatch(
+        Promise.all(
             pieces.map(async (file) => ({
                 filename: file.name,
                 content: Buffer.from(await file.arrayBuffer()),
                 contentType: file.type
             }))
         )
-
-        const config = await getAssistanceConfig()
-        const situationLabel = SITUATIONS[data.situation].label
-        const moyenContactLabel = MOYEN_CONTACT[data.moyenContact]
-
-        const internal = await sendEmail({
-            to: config.recipientEmail,
-            subject: `Défense des droits — ${situationLabel} — ${data.prenom} ${data.nom}`,
-            html: await render(
-                <AssistanceTemplate
-                    prenom={data.prenom}
-                    nom={data.nom}
-                    email={data.email}
-                    etablissement={data.etablissement}
-                    ufr={data.ufr}
-                    situationLabel={situationLabel}
-                    moyenContactLabel={moyenContactLabel}
-                    telephone={data.telephone}
-                    message={data.message}
-                    hasAttachments={attachments.length > 0}
-                />
-            ),
-            attachments
-        })
-
-        if (internal.error) {
-            return {
-                success: false,
-                error: "Échec de l'envoi de votre demande. Veuillez réessayer plus tard."
-            }
-        }
-
-        // Acknowledgement is best-effort: the request has already been sent.
-        try {
-            await sendEmail({
-                to: data.email,
-                subject: "Votre demande de défense des droits a bien été reçue",
-                html: await render(
-                    <AssistanceAck
-                        situationLabel={situationLabel}
-                        delay={config.delay}
-                    />
-                )
-            })
-        } catch (e) {
-            captureActionError(e)
-        }
-
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!attachmentsResult.success) {
+        captureActionError(attachmentsResult.error)
         return {
             success: false,
             error: "Échec de l'envoi de votre demande. Veuillez réessayer plus tard."
         }
     }
+    const attachments = attachmentsResult.value
+
+    const configResult = await tryCatch(getAssistanceConfig())
+    if (!configResult.success) {
+        captureActionError(configResult.error)
+        return {
+            success: false,
+            error: "Échec de l'envoi de votre demande. Veuillez réessayer plus tard."
+        }
+    }
+    const config = configResult.value
+    const situationLabel = SITUATIONS[data.situation].label
+    const moyenContactLabel = MOYEN_CONTACT[data.moyenContact]
+
+    const internal = await sendEmail({
+        to: config.recipientEmail,
+        subject: `Défense des droits — ${situationLabel} — ${data.prenom} ${data.nom}`,
+        html: await render(
+            <AssistanceTemplate
+                prenom={data.prenom}
+                nom={data.nom}
+                email={data.email}
+                etablissement={data.etablissement}
+                ufr={data.ufr}
+                situationLabel={situationLabel}
+                moyenContactLabel={moyenContactLabel}
+                telephone={data.telephone}
+                message={data.message}
+                hasAttachments={attachments.length > 0}
+            />
+        ),
+        attachments
+    })
+
+    if (!internal.success) {
+        return {
+            success: false,
+            error: "Échec de l'envoi de votre demande. Veuillez réessayer plus tard."
+        }
+    }
+
+    // Acknowledgement is best-effort: the request has already been sent.
+    await sendEmail({
+        to: data.email,
+        subject: "Votre demande de défense des droits a bien été reçue",
+        html: await render(
+            <AssistanceAck
+                situationLabel={situationLabel}
+                delay={config.delay}
+            />
+        )
+    })
+
+    return { success: true }
 }
 
 export const processAssistance = withServerAction(

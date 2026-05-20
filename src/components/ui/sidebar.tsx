@@ -23,7 +23,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { cn } from "@/lib/utils"
+import { cn, tryCatch } from "@/lib/utils"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
@@ -83,7 +83,10 @@ function SidebarProvider({
             }
 
             // This sets the cookie to keep the sidebar state.
-            try {
+            // CookieStore is not universally supported; failure is silently
+            // ignored (sync ReferenceError when missing, async rejection
+            // otherwise — neither is fatal here).
+            void tryCatch(() =>
                 cookieStore.set({
                     name: SIDEBAR_COOKIE_NAME,
                     value: String(openState),
@@ -91,9 +94,7 @@ function SidebarProvider({
                         Date.now() + SIDEBAR_COOKIE_MAX_AGE * 1000
                     ).valueOf()
                 })
-            } catch (_e) {
-                console.error("Probably doesn't support CookieStore API")
-            }
+            )
         },
         [setOpenProp, open]
     )
