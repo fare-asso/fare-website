@@ -1,6 +1,6 @@
 "use client"
 
-import type { Partenaire } from "@prisma/client"
+import type { Partenaire } from "@/generated/prisma/client"
 import Image from "next/image"
 import DeletePartenaireButton from "./deletePartenaireButton"
 import EditPartenaireButton from "./editPartenaireButton"

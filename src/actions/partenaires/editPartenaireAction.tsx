@@ -11,6 +11,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 type Result = { success: true } | { success: false; error: string }
 
@@ -47,22 +48,24 @@ async function editPartenaireActionImpl(
     let logoPath = current.logoPath
 
     if (data.logo) {
-        try {
-            const { data: uploaded, error } = await supabase.storage
+        const upload = await tryCatch(
+            supabase.storage
                 .from("partner-pictures")
                 .update(current.logoPath, data.logo)
-            if (error || !uploaded) {
-                return { success: false, error: "Échec de l'upload du logo." }
-            }
-            logoPath = uploaded.path
-        } catch (error) {
-            captureActionError(error)
+        )
+        if (!upload.success) {
+            captureActionError(upload.error)
             return { success: false, error: "Échec de l'upload du logo." }
         }
+        const { data: uploaded, error } = upload.value
+        if (error || !uploaded) {
+            return { success: false, error: "Échec de l'upload du logo." }
+        }
+        logoPath = uploaded.path
     }
 
-    try {
-        await prisma.partenaire.update({
+    const updated = await tryCatch(
+        prisma.partenaire.update({
             where: { id: data.id },
             data: {
                 name: data.name,
@@ -70,8 +73,9 @@ async function editPartenaireActionImpl(
                 logoPath
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!updated.success) {
+        captureActionError(updated.error)
         return {
             success: false,
             error: "Échec de la modification du partenaire."

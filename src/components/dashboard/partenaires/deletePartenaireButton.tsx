@@ -1,6 +1,6 @@
 "use client"
 
-import type { Partenaire } from "@prisma/client"
+import type { Partenaire } from "@/generated/prisma/client"
 import { Trash2Icon } from "lucide-react"
 import { startTransition, useActionState, useEffect, useState } from "react"
 import deletePartenaireAction from "@/actions/partenaires/deletePartenaireAction"

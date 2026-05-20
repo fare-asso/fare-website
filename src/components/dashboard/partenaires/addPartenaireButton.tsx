@@ -48,6 +48,7 @@ export default function AddPartenaireButton() {
             onChange: AddPartenaireSchema,
             onSubmit: AddPartenaireSchema
         },
+        // oxlint-disable-next-line require-await -- submission runs inside a transition
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
@@ -71,7 +72,7 @@ export default function AddPartenaireButton() {
                 <DialogHeader>
                     <DialogTitle>Nouveau Partenaire</DialogTitle>
                     <DialogDescription>
-                        {"Formulaire d'ajout d'un nouveau partenaire."}
+                        Formulaire d'ajout d'un nouveau partenaire.
                     </DialogDescription>
                 </DialogHeader>
 
