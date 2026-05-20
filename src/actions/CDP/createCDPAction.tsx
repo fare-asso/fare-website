@@ -8,6 +8,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 function isPresseType(value: string): value is PresseType {
     return value === "CDP" || value === "DDP"
@@ -80,9 +81,8 @@ async function createCDPActionImpl(
     }
 
     // Create a record for the new CDP (name, path, date?)
-    let createdCDP: Awaited<ReturnType<typeof prisma.communiqueDePresse.create>>
-    try {
-        createdCDP = await prisma.communiqueDePresse.create({
+    const created = await tryCatch(
+        prisma.communiqueDePresse.create({
             data: {
                 name: name,
                 filePath: file,
@@ -91,8 +91,9 @@ async function createCDPActionImpl(
                 type: type
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!created.success) {
+        captureActionError(created.error)
         const { error: removeError } = await supabase.storage
             .from("communique-de-presse")
             .remove([file])
@@ -103,6 +104,7 @@ async function createCDPActionImpl(
             error: `Echec de l'ajout du CDP dans la base de données`
         }
     }
+    const createdCDP = created.value
 
     if (createdCDP == null) {
         // failed to create the record

@@ -8,6 +8,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function editArticleActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -42,9 +43,9 @@ async function editArticleActionImpl(
         return { error: "Veuillez remplir tous les champs obligatoires." }
     }
 
-    try {
-        // Fetch current article
-        const article = await prisma.article.findUnique({
+    // Fetch current article
+    const articleResult = await tryCatch(
+        prisma.article.findUnique({
             where: {
                 id: articleId
             },
@@ -53,24 +54,29 @@ async function editArticleActionImpl(
                 imagesPath: true
             }
         })
+    )
+    if (!articleResult.success) {
+        captureActionError(articleResult.error)
+        return { error: "Echec de la modification de l'article" }
+    }
+    const article = articleResult.value
 
-        if (!article) {
-            return { error: "Article not found" }
-        }
+    if (!article) {
+        return { error: "Article not found" }
+    }
 
-        // Delete previous images from storage
-        await supabase.storage
-            .from("article-pictures")
-            .remove(article?.imagesPath)
+    // Delete previous images from storage
+    await supabase.storage.from("article-pictures").remove(article.imagesPath)
 
-        // Images
-        const images = formData.getAll("images") as File[]
-        for (const image of images) {
-            console.log(image)
-        }
+    // Images
+    const images = formData.getAll("images") as File[]
+    for (const image of images) {
+        console.log(image)
+    }
 
-        // upload images to storage
-        const responses = await Promise.all(
+    // upload images to storage
+    const responsesResult = await tryCatch(
+        Promise.all(
             images.map(
                 async (file) =>
                     await supabase.storage
@@ -78,33 +84,45 @@ async function editArticleActionImpl(
                         .upload(file.name, file)
             )
         )
+    )
+    if (!responsesResult.success) {
+        captureActionError(responsesResult.error)
+        return { error: "Echec de la modification de l'article" }
+    }
+    const responses = responsesResult.value
 
-        // check for errors
-        for (const response of responses) {
-            if (response.error) {
-                return {
-                    error: "L'upload des images a échoué. Veuillez réessayer"
-                }
+    // check for errors
+    for (const response of responses) {
+        if (response.error) {
+            return {
+                error: "L'upload des images a échoué. Veuillez réessayer"
             }
         }
+    }
 
-        const contentDelta: JSONContent = JSON.parse(content)
+    const parsedContent = tryCatch(() => JSON.parse(content) as JSONContent)
+    if (!parsedContent.success) {
+        captureActionError(parsedContent.error)
+        return { error: "Echec de la modification de l'article" }
+    }
 
-        // insert article to database
-        await prisma.article.update({
+    // insert article to database
+    const updated = await tryCatch(
+        prisma.article.update({
             where: {
                 id: articleId
             },
             data: {
                 title: title,
-                content: contentDelta,
+                content: parsedContent.value,
                 imagesPath: responses
                     .map((response) => response.data?.path)
                     .filter((path): path is string => path !== undefined)
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!updated.success) {
+        captureActionError(updated.error)
         return { error: "Echec de la modification de l'article" }
     }
 

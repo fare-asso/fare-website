@@ -1,6 +1,8 @@
 import { afterEach, vi } from "vitest"
 import { cleanup } from "vitest-browser-react"
 
+import { tryCatch } from "@/lib/utils"
+
 // Some Next.js client deps (e.g. next/image) and `src/env.ts` read
 // `process.env` at module scope. The browser has no `process`; provide a stub
 // populated with the same test values as the node project so module
@@ -30,10 +32,9 @@ afterEach(() => {
     vi.clearAllMocks()
     // Forms persist localStorage drafts (e.g. the assistance form) and the
     // browser page context is shared across tests — reset it between tests.
-    try {
+    // Storage may be unavailable in some contexts; ignore failure.
+    tryCatch(() => {
         window.localStorage.clear()
         window.sessionStorage.clear()
-    } catch {
-        // storage may be unavailable in some contexts; ignore
-    }
+    })
 })

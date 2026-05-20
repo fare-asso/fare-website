@@ -8,6 +8,7 @@ import { validateEmail } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function inviteRepresentativeActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -40,54 +41,62 @@ async function inviteRepresentativeActionImpl(
     }
 
     /* Invite Representative and Set User role to ASSO_OWNER */
-    try {
-        // Send Invitation By Email
-        const { data, error } = await supabase.auth.admin.inviteUserByEmail(
-            email,
-            {
-                redirectTo: "http://localhost:3000/espace-asso/create-password"
-            }
-        )
-
-        if (error) {
-            // failed to send invitation
-
-            if (error.code === "email_exists") {
-                return { error: "Cet utilisateur existe déjà" }
-            } else {
-                console.error(error)
-                return { error: "Echec de l'invitation du représentant" }
-            }
-        } else {
-            // invitation has been sent
-            const _currentUser = await prisma.user.update({
-                where: {
-                    id: data.user.id
-                },
-                data: {
-                    role: "ASSO_OWNER"
-                }
-            })
-
-            // update asso representative
-            const _updatedAsso = await prisma.association.update({
-                where: {
-                    id: Number(associationId)
-                },
-                data: {
-                    representativeId: data.user.id
-                }
-            })
-
-            revalidatePath("/dashboard/associations")
-            return {
-                success: true
-            }
-        }
-    } catch (error) {
-        captureActionError(error)
+    // Send Invitation By Email
+    const invited = await tryCatch(
+        supabase.auth.admin.inviteUserByEmail(email, {
+            redirectTo: "http://localhost:3000/espace-asso/create-password"
+        })
+    )
+    if (!invited.success) {
+        captureActionError(invited.error)
         return { error: "Echec de l'invitation du représentant" }
     }
+    const { data, error } = invited.value
+
+    if (error) {
+        // failed to send invitation
+        if (error.code === "email_exists") {
+            return { error: "Cet utilisateur existe déjà" }
+        } else {
+            console.error(error)
+            return { error: "Echec de l'invitation du représentant" }
+        }
+    }
+
+    // invitation has been sent
+    const userUpdate = await tryCatch(
+        prisma.user.update({
+            where: {
+                id: data.user.id
+            },
+            data: {
+                role: "ASSO_OWNER"
+            }
+        })
+    )
+    if (!userUpdate.success) {
+        captureActionError(userUpdate.error)
+        return { error: "Echec de l'invitation du représentant" }
+    }
+
+    // update asso representative
+    const assoUpdate = await tryCatch(
+        prisma.association.update({
+            where: {
+                id: Number(associationId)
+            },
+            data: {
+                representativeId: data.user.id
+            }
+        })
+    )
+    if (!assoUpdate.success) {
+        captureActionError(assoUpdate.error)
+        return { error: "Echec de l'invitation du représentant" }
+    }
+
+    revalidatePath("/dashboard/associations")
+    return { success: true }
 }
 
 export default withServerAction(

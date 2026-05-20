@@ -8,6 +8,7 @@ import { env } from "@/env"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function loginWithGoogleActionImpl() {
     const supabase = await createClient()
@@ -64,31 +65,32 @@ async function loginWithPasswordActionImpl(
         }
     }
 
-    try {
-        const { error } = await supabase.auth.signInWithPassword({
+    const signIn = await tryCatch(
+        supabase.auth.signInWithPassword({
             email,
             password
         })
-
-        // Check if the user is authenticated and handle errors
-        if (error) {
-            console.error(error.code)
-            switch (error.code) {
-                case "invalid_credentials":
-                    return {
-                        passwordError:
-                            "Mot de passe ou nom d'utilisateur invalide"
-                    }
-                default:
-                    return {
-                        passwordError: "Une erreur inattendue est survenue"
-                    }
-            }
-        }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!signIn.success) {
+        captureActionError(signIn.error)
         return {
             passwordError: "Une erreur inattendue est survenue"
+        }
+    }
+    const { error } = signIn.value
+
+    // Check if the user is authenticated and handle errors
+    if (error) {
+        console.error(error.code)
+        switch (error.code) {
+            case "invalid_credentials":
+                return {
+                    passwordError: "Mot de passe ou nom d'utilisateur invalide"
+                }
+            default:
+                return {
+                    passwordError: "Une erreur inattendue est survenue"
+                }
         }
     }
 

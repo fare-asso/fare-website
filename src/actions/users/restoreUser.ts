@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function restoreUserImpl(userId: string) {
     const currentUser = await getCurrentUserWithPermissions()
@@ -21,22 +22,23 @@ async function restoreUserImpl(userId: string) {
         return { success: false, error: "Permission insuffisante" }
     }
 
-    try {
-        // Restore: clear deletedAt timestamp
-        await prisma.user.update({
+    // Restore: clear deletedAt timestamp
+    const result = await tryCatch(
+        prisma.user.update({
             where: { id: userId },
             data: { deletedAt: null }
         })
-
-        revalidatePath("/dashboard/users")
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return {
             success: false,
             error: "Une erreur s'est produite lors de la restauration"
         }
     }
+
+    revalidatePath("/dashboard/users")
+    return { success: true }
 }
 
 export default withServerAction("restoreUser", restoreUserImpl)

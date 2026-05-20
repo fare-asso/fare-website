@@ -2,6 +2,7 @@ import { type CookieOptions, createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
 import { env } from "@/env"
+import { tryCatch } from "@/lib/utils"
 
 export async function createClient() {
     const cookieStore = await cookies()
@@ -15,22 +16,20 @@ export async function createClient() {
                     return cookieStore.get(name)?.value
                 },
                 set(name: string, value: string, options: CookieOptions) {
-                    try {
+                    // The `set` method may be called from a Server Component.
+                    // This can be ignored if you have middleware refreshing
+                    // user sessions.
+                    tryCatch(() =>
                         cookieStore.set({ name, value, ...options })
-                    } catch (_error) {
-                        // The `set` method was called from a Server Component.
-                        // This can be ignored if you have middleware refreshing
-                        // user sessions.
-                    }
+                    )
                 },
                 remove(name: string, options: CookieOptions) {
-                    try {
+                    // The `delete` method may be called from a Server Component.
+                    // This can be ignored if you have middleware refreshing
+                    // user sessions.
+                    tryCatch(() =>
                         cookieStore.set({ name, value: "", ...options })
-                    } catch (_error) {
-                        // The `delete` method was called from a Server Component.
-                        // This can be ignored if you have middleware refreshing
-                        // user sessions.
-                    }
+                    )
                 }
             }
         }
@@ -49,22 +48,20 @@ export async function createAdminClient() {
                     return cookieStore.get(name)?.value
                 },
                 set(name: string, value: string, options: CookieOptions) {
-                    try {
+                    // The `set` method may be called from a Server Component.
+                    // This can be ignored if you have middleware refreshing
+                    // user sessions.
+                    tryCatch(() =>
                         cookieStore.set({ name, value, ...options })
-                    } catch (_error) {
-                        // The `set` method was called from a Server Component.
-                        // This can be ignored if you have middleware refreshing
-                        // user sessions.
-                    }
+                    )
                 },
                 remove(name: string, options: CookieOptions) {
-                    try {
+                    // The `delete` method may be called from a Server Component.
+                    // This can be ignored if you have middleware refreshing
+                    // user sessions.
+                    tryCatch(() =>
                         cookieStore.set({ name, value: "", ...options })
-                    } catch (_error) {
-                        // The `delete` method was called from a Server Component.
-                        // This can be ignored if you have middleware refreshing
-                        // user sessions.
-                    }
+                    )
                 }
             }
         }

@@ -130,14 +130,14 @@ describe("submitTutorApplication", () => {
         expect(removed).toHaveLength(2)
     })
 
-    it("still succeeds when the notification email throws", async () => {
-        h.sendEmail.mockRejectedValue(new Error("smtp down"))
+    it("still succeeds when the notification email fails (handled inside sendEmail)", async () => {
+        h.sendEmail.mockResolvedValue({ success: false })
         const res = await submitTutorApplication(
             validTutorApplicationFormData()
         )
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledOnce()
-        expect(h.captureActionError).toHaveBeenCalled()
+        expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
     it("persists, emails and revalidates on the happy path", async () => {

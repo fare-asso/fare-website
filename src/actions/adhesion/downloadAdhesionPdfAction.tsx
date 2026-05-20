@@ -6,6 +6,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function downloadAdhesionPdfActionImpl(adhesionId: number): Promise<{
     success?: boolean
@@ -24,26 +25,32 @@ async function downloadAdhesionPdfActionImpl(adhesionId: number): Promise<{
         }
     }
 
-    try {
-        const adhesion = await prisma.adhesion.findUnique({
+    const adhesionResult = await tryCatch(
+        prisma.adhesion.findUnique({
             where: { id: adhesionId }
         })
-
-        if (!adhesion) {
-            return { error: "Demande d'adhésion introuvable" }
-        }
-
-        const pdf = await generateAdhesionPdfFromRecord(adhesion)
-        const slug = sanitizeString(adhesion.sigle) || `adhesion-${adhesion.id}`
-
-        return {
-            success: true,
-            pdfData: Buffer.from(pdf).toString("base64"),
-            filename: `formulaire-adhesion-${slug}.pdf`
-        }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!adhesionResult.success) {
+        captureActionError(adhesionResult.error)
         return { error: "Erreur lors de la génération du PDF" }
+    }
+    const adhesion = adhesionResult.value
+
+    if (!adhesion) {
+        return { error: "Demande d'adhésion introuvable" }
+    }
+
+    const pdfResult = await tryCatch(generateAdhesionPdfFromRecord(adhesion))
+    if (!pdfResult.success) {
+        captureActionError(pdfResult.error)
+        return { error: "Erreur lors de la génération du PDF" }
+    }
+    const slug = sanitizeString(adhesion.sigle) || `adhesion-${adhesion.id}`
+
+    return {
+        success: true,
+        pdfData: Buffer.from(pdfResult.value).toString("base64"),
+        filename: `formulaire-adhesion-${slug}.pdf`
     }
 }
 

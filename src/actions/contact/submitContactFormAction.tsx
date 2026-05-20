@@ -5,7 +5,7 @@ import { isDevelopment } from "std-env"
 
 import { verifyCaptcha } from "@/components/captcha/verify"
 import { sendEmail } from "@/helpers/email"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { withServerAction } from "@/lib/sentry"
 import { type Contact, ContactSchema } from "@/schemas/contact"
 
 import ContactTemplate from "../../../emails/contact"
@@ -54,27 +54,20 @@ async function submitContactFormActionImpl(
         }
     }
 
-    try {
-        const emailTransporterRes = await sendEmail({
-            to: "contact@fare-asso.fr",
-            subject: `${validatedData.firstName} ${validatedData.lastName} veut vous contacter`,
-            html: await render(
-                <ContactTemplate
-                    firstName={validatedData.firstName}
-                    lastName={validatedData.lastName}
-                    message={validatedData.message}
-                    email={validatedData.email}
-                />
-            )
-        })
+    const emailTransporterRes = await sendEmail({
+        to: "contact@fare-asso.fr",
+        subject: `${validatedData.firstName} ${validatedData.lastName} veut vous contacter`,
+        html: await render(
+            <ContactTemplate
+                firstName={validatedData.firstName}
+                lastName={validatedData.lastName}
+                message={validatedData.message}
+                email={validatedData.email}
+            />
+        )
+    })
 
-        if (emailTransporterRes.error) {
-            return {
-                error: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer."
-            }
-        }
-    } catch (error) {
-        captureActionError(error)
+    if (!emailTransporterRes.success) {
         return {
             error: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer."
         }

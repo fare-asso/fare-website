@@ -9,6 +9,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function addAssociationActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -93,8 +94,8 @@ async function addAssociationActionImpl(
     const logoPath: string = data.path
 
     // create new association record
-    try {
-        const newAssociation = await prisma.association.create({
+    const created = await tryCatch(
+        prisma.association.create({
             data: {
                 name,
                 major,
@@ -111,22 +112,25 @@ async function addAssociationActionImpl(
                 approved: new Date()
             }
         })
-
-        if (newAssociation) {
-            revalidatePath("/dashboard/associations")
-            revalidatePath("/reseau")
-            revalidatePath("/")
-            return { success: true }
-        } else {
-            return {
-                error: "La création de l'association dans la base de données a échoué... Veuillez contacter un administrateur."
-            }
-        }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!created.success) {
+        captureActionError(created.error)
         const errorMessage =
-            error instanceof Error ? error.message : "Unknown error"
+            created.error instanceof Error
+                ? created.error.message
+                : "Unknown error"
         return { error: errorMessage }
+    }
+
+    if (created.value) {
+        revalidatePath("/dashboard/associations")
+        revalidatePath("/reseau")
+        revalidatePath("/")
+        return { success: true }
+    } else {
+        return {
+            error: "La création de l'association dans la base de données a échoué... Veuillez contacter un administrateur."
+        }
     }
 }
 

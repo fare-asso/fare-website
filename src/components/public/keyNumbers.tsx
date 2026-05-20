@@ -1,7 +1,8 @@
 import type { ReactNode } from "react"
 
-import type { Association } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
+import { captureActionError } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 import { AutoAnimatedNumber } from "../ui/animated-number"
 
@@ -40,13 +41,11 @@ function Grid({
 }
 
 export default async function KeyNumbers() {
-    let associations: Association[] | undefined
-
-    try {
-        associations = await prisma.association.findMany()
-    } catch (_e) {
-        console.error("Failed to fetch associations")
+    const result = await tryCatch(prisma.association.findMany())
+    if (!result.success) {
+        captureActionError(result.error)
     }
+    const associations = result.success ? result.value : undefined
 
     return (
         <Grid

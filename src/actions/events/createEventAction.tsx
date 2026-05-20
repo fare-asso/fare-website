@@ -11,6 +11,7 @@ import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserId from "@/helpers/user/id"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 interface Event {
     name?: string
@@ -114,32 +115,26 @@ async function createEventActionImpl(
     if (category != null && typeof category === "string") {
         const categoryStr: string = category.toString()
 
-        // check if the category exists
-        try {
-            // Retrives a single data record or return NonFoundError (code : 'P2025')
-            const foundCategory = await prisma.category.findUniqueOrThrow({
+        // Retrives a single data record or return NonFoundError (code : 'P2025')
+        const found = await tryCatch(
+            prisma.category.findUniqueOrThrow({
                 where: {
                     name: categoryStr
                 }
             })
-
-            data.categoryId = foundCategory.id
-        } catch (error: unknown) {
-            if (
-                error instanceof Error &&
-                "code" in error &&
-                error.code === "P2025"
-            ) {
+        )
+        if (!found.success) {
+            if ("code" in found.error && found.error.code === "P2025") {
                 return {
                     error: `La catégorie ${categoryStr} n'existe pas`
                 }
-            } else {
-                captureActionError(error)
-                return {
-                    error: "Une erreur à eu lieu lors de la récupération de la catégorie"
-                }
+            }
+            captureActionError(found.error)
+            return {
+                error: "Une erreur à eu lieu lors de la récupération de la catégorie"
             }
         }
+        data.categoryId = found.value.id
     } else {
         return {
             error: "La catégorie n'est pas valide ou n'est pas du bon format"
@@ -273,8 +268,8 @@ async function createEventActionImpl(
     }
 
     // create event record in the DB
-    try {
-        const _record = await prisma.event.create({
+    const created = await tryCatch(
+        prisma.event.create({
             data: {
                 name: data.name,
                 desc: data.desc,
@@ -287,27 +282,25 @@ async function createEventActionImpl(
                 visibility: data.visibility
             }
         })
-
-        revalidatePath("/agenda")
-        revalidatePath("/dashboard/events")
-        return {
-            success: true
-        }
-    } catch (error) {
-        captureActionError(error)
-        const res = await supabase.storage
+    )
+    if (!created.success) {
+        captureActionError(created.error)
+        const cleanup = await supabase.storage
             .from("EventPictures")
             .remove([data.image])
-        if (res.error) {
+        if (cleanup.error) {
             console.error(
                 "Failed to delete the previously uploaded picture on the storage"
             )
         }
-
         return {
             error: "La création de l'évènement à échoué, veuillez réessayer"
         }
     }
+
+    revalidatePath("/agenda")
+    revalidatePath("/dashboard/events")
+    return { success: true }
 }
 
 export default withServerAction("createEventAction", createEventActionImpl, {

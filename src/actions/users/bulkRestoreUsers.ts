@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function bulkRestoreUsersImpl(userIds: string[]) {
     const currentUser = await getCurrentUserWithPermissions()
@@ -25,22 +26,23 @@ async function bulkRestoreUsersImpl(userIds: string[]) {
         return { success: false, error: "Aucun utilisateur sélectionné" }
     }
 
-    try {
-        // Restore: clear deletedAt timestamp for all selected users
-        await prisma.user.updateMany({
+    // Restore: clear deletedAt timestamp for all selected users
+    const result = await tryCatch(
+        prisma.user.updateMany({
             where: { id: { in: userIds } },
             data: { deletedAt: null }
         })
-
-        revalidatePath("/dashboard/users")
-        return { success: true, restoredCount: userIds.length }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return {
             success: false,
             error: "Une erreur s'est produite lors de la restauration"
         }
     }
+
+    revalidatePath("/dashboard/users")
+    return { success: true, restoredCount: userIds.length }
 }
 
 export default withServerAction("bulkRestoreUsers", bulkRestoreUsersImpl)

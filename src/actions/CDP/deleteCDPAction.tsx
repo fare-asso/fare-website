@@ -7,6 +7,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function deleteCDPActionImpl({ id }: { id: number }) {
     // Auth and permission verifications
@@ -24,21 +25,20 @@ async function deleteCDPActionImpl({ id }: { id: number }) {
     const supabase = await createClient()
 
     // Delete Record from DB
-    let deletedCdpRecord: Awaited<
-        ReturnType<typeof prisma.communiqueDePresse.delete>
-    >
-    try {
-        deletedCdpRecord = await prisma.communiqueDePresse.delete({
+    const deleted = await tryCatch(
+        prisma.communiqueDePresse.delete({
             where: {
                 id: id
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!deleted.success) {
+        captureActionError(deleted.error)
         return {
             error: "Echec de la suppression du communiqué de presse"
         }
     }
+    const deletedCdpRecord = deleted.value
 
     if (deletedCdpRecord == null) {
         return {

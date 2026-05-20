@@ -16,6 +16,7 @@ import clsx from "clsx"
 import { useRef } from "react"
 
 import { compressImage } from "@/helpers/image"
+import { tryCatch } from "@/lib/utils"
 
 import EditorBubbleMenu from "./bubbleMenu"
 
@@ -31,31 +32,36 @@ export default function RichTextEditor({
     const editorRef = useRef<HTMLDivElement>(null)
 
     const _processAndInsertImage = async (editor: Editor, file: File) => {
-        try {
-            // Compression de l'image
-            const compressedBlob = await compressImage(
+        // Compression de l'image
+        const compressed = await tryCatch(
+            compressImage(
                 file,
                 800, // Largeur maximale
                 600, // Hauteur maximale
                 0.8, // Qualité de compression
                 "image/webp" // Format cible
             )
-            const compressedFile = new File([compressedBlob], file.name, {
-                type: compressedBlob.type
-            })
-
-            // Convertir en base64 pour affichage immédiat
-            const reader = new FileReader()
-            reader.onload = (readerEvent) => {
-                const imageUrl = readerEvent.target?.result as string
-                if (imageUrl) {
-                    editor.chain().focus().setImage({ src: imageUrl }).run()
-                }
-            }
-            reader.readAsDataURL(compressedFile)
-        } catch (error) {
-            console.error("Erreur lors de la compression de l'image :", error)
+        )
+        if (!compressed.success) {
+            console.error(
+                "Erreur lors de la compression de l'image :",
+                compressed.error
+            )
+            return
         }
+        const compressedFile = new File([compressed.value], file.name, {
+            type: compressed.value.type
+        })
+
+        // Convertir en base64 pour affichage immédiat
+        const reader = new FileReader()
+        reader.onload = (readerEvent) => {
+            const imageUrl = readerEvent.target?.result as string
+            if (imageUrl) {
+                editor.chain().focus().setImage({ src: imageUrl }).run()
+            }
+        }
+        reader.readAsDataURL(compressedFile)
     }
 
     const editor = useEditor({

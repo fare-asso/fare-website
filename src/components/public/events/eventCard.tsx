@@ -6,32 +6,7 @@ import Link from "next/link"
 import { MdLocationPin } from "react-icons/md"
 
 import type { Event } from "@/generated/prisma/client"
-
-interface JsonLocation {
-    displayName: string
-    coordinates: Coordinates
-}
-
-interface Coordinates {
-    lat: string
-    lon: string
-}
-
-function processLocationData(value: string): {
-    json?: JsonLocation
-    string?: string
-} {
-    try {
-        const json = JSON.parse(value)
-        return {
-            json: json
-        }
-    } catch {
-        return {
-            string: value
-        }
-    }
-}
+import { parseLocation } from "@/helpers/location"
 
 export default function EventCard({
     event,
@@ -45,8 +20,7 @@ export default function EventCard({
     const fontColor: string = archive ? "#2B2B2B" : "#FFDAA5"
     const backgroundColor: string = archive ? "#C5C5C5" : "#E0832E"
 
-    const location: { json?: JsonLocation; string?: string } =
-        processLocationData(event.location)
+    const parsedLocation = parseLocation(event.location)
 
     return (
         <div
@@ -93,9 +67,9 @@ export default function EventCard({
                 >
                     <MdLocationPin size={20} className="min-h-4 min-w-4" />
                     <span className="mt-1 overflow-hidden text-sm text-nowrap text-ellipsis">
-                        {location.json
-                            ? location.json.displayName.split(",")[0]
-                            : location.string?.split(",")[0]}
+                        {parsedLocation.success
+                            ? parsedLocation.value.displayName.split(",")[0]
+                            : event.location.split(",")[0]}
                     </span>
                 </div>
             </div>

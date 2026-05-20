@@ -4,40 +4,12 @@ import Link from "next/link"
 import type { Association } from "@/generated/prisma/client"
 import { createClient } from "@/helpers/supabase/server"
 
-interface JsonLocation {
-    displayName: string
-    coordinates: Coordinates
-}
-
-interface Coordinates {
-    lat: string
-    lon: string
-}
-
-function processLocationData(value: string): {
-    json?: JsonLocation
-    string?: string
-} {
-    try {
-        const json = JSON.parse(value)
-        return {
-            json: json
-        }
-    } catch {
-        return {
-            string: value
-        }
-    }
-}
-
 export default async function AssociationCard({
     association
 }: {
     association: Association
 }) {
     const supabase = await createClient()
-
-    const _processedLocationData = processLocationData(association.location)
 
     return (
         <Link

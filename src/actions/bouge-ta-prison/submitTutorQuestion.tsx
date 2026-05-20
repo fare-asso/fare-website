@@ -8,6 +8,7 @@ import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 import {
     type BTPTutorQuestion,
     BTPTutorQuestionSchema
@@ -53,11 +54,8 @@ async function submitTutorQuestionImpl(
     }
 
     // Insert the data into the database
-    let createdQuestion: Awaited<
-        ReturnType<typeof prisma.bTPTutorQuestion.create>
-    >
-    try {
-        createdQuestion = await prisma.bTPTutorQuestion.create({
+    const created = await tryCatch(
+        prisma.bTPTutorQuestion.create({
             data: {
                 firstName: data.firstName,
                 lastName: data.lastName,
@@ -67,32 +65,31 @@ async function submitTutorQuestionImpl(
                 question: data.message
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!created.success) {
+        captureActionError(created.error)
         return {
             error: "Echec de l'enregistrement de la question. Veuillez réessayer."
         }
     }
+    const createdQuestion = created.value
 
     // Email is best-effort: the question has already been persisted.
+    // sendEmail reports its own failures to Sentry.
     if (!isDevelopment) {
-        try {
-            await sendEmail({
-                to: "intervention-carceral@fare-asso.fr",
-                subject: "Nouvelle question tutorat Bouge Ta Prison",
-                html: await render(
-                    <BtpContact
-                        firstName={data.firstName}
-                        lastName={data.lastName}
-                        email={data.email}
-                        message={data.message}
-                        id={createdQuestion.id}
-                    />
-                )
-            })
-        } catch (error) {
-            captureActionError(error)
-        }
+        await sendEmail({
+            to: "intervention-carceral@fare-asso.fr",
+            subject: "Nouvelle question tutorat Bouge Ta Prison",
+            html: await render(
+                <BtpContact
+                    firstName={data.firstName}
+                    lastName={data.lastName}
+                    email={data.email}
+                    message={data.message}
+                    id={createdQuestion.id}
+                />
+            )
+        })
     }
 
     revalidatePath("/dashboard/bouge-ta-prison")

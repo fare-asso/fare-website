@@ -7,6 +7,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient, createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function deleteAssociationActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -42,13 +43,11 @@ async function deleteAssociationActionImpl(
 
     /* Remove representative */
     if (association.representativeId) {
-        try {
-            const _removedRepresentative =
-                await supabaseAdmin.auth.admin.deleteUser(
-                    association.representativeId
-                )
-        } catch (error) {
-            captureActionError(error)
+        const removed = await tryCatch(
+            supabaseAdmin.auth.admin.deleteUser(association.representativeId)
+        )
+        if (!removed.success) {
+            captureActionError(removed.error)
             return {
                 error: "Echec de la suppression du compte représentant"
             }
@@ -70,22 +69,21 @@ async function deleteAssociationActionImpl(
     }
 
     // delete record
-    try {
-        const _deletedRecord = await prisma.association.delete({
+    const deleted = await tryCatch(
+        prisma.association.delete({
             where: {
                 id: id
             }
         })
-        revalidatePath("/dashboard/associations")
-        revalidatePath("/reseau")
-        revalidatePath("/")
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
-        return {
-            error: "Echec de la suppression de l'association"
-        }
+    )
+    if (!deleted.success) {
+        captureActionError(deleted.error)
+        return { error: "Echec de la suppression de l'association" }
     }
+    revalidatePath("/dashboard/associations")
+    revalidatePath("/reseau")
+    revalidatePath("/")
+    return { success: true }
 }
 
 export default withServerAction(

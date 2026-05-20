@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 interface MemberOrder {
     id: number
@@ -24,9 +25,9 @@ async function updateMemberOrderActionImpl(memberOrder: MemberOrder[]) {
         }
     }
 
-    try {
-        // Update all members' order in a transaction
-        await prisma.$transaction(
+    // Update all members' order in a transaction
+    const result = await tryCatch(
+        prisma.$transaction(
             memberOrder.map((item) =>
                 prisma.member.update({
                     where: { id: item.id },
@@ -34,18 +35,19 @@ async function updateMemberOrderActionImpl(memberOrder: MemberOrder[]) {
                 })
             )
         )
-
-        // Revalidate paths
-        revalidatePath("/dashboard/membres")
-        revalidatePath("/a-propos/bureau")
-
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return {
             error: "La mise à jour de l'ordre des membres a échoué. Veuillez réessayer."
         }
     }
+
+    // Revalidate paths
+    revalidatePath("/dashboard/membres")
+    revalidatePath("/a-propos/bureau")
+
+    return { success: true }
 }
 
 export default withServerAction(

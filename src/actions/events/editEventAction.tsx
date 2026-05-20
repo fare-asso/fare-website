@@ -10,6 +10,7 @@ import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserId from "@/helpers/user/id"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 interface Event {
     id?: number
@@ -176,32 +177,26 @@ async function editEventActionImpl(
     if (category != null && typeof category === "string") {
         const categoryStr: string = category.toString()
 
-        // check if the category exists
-        try {
-            // Retrives a single data record or return NonFoundError (code : 'P2025')
-            const foundCategory = await prisma.category.findUniqueOrThrow({
+        // Retrives a single data record or return NonFoundError (code : 'P2025')
+        const found = await tryCatch(
+            prisma.category.findUniqueOrThrow({
                 where: {
                     name: categoryStr
                 }
             })
-
-            data.categoryId = foundCategory.id
-        } catch (error: unknown) {
-            if (
-                error instanceof Error &&
-                "code" in error &&
-                error.code === "P2025"
-            ) {
+        )
+        if (!found.success) {
+            if ("code" in found.error && found.error.code === "P2025") {
                 return {
                     error: `La catégorie ${categoryStr} n'existe pas`
                 }
-            } else {
-                captureActionError(error)
-                return {
-                    error: "Une erreur à eu lieu lors de la récupération de la catégorie"
-                }
+            }
+            captureActionError(found.error)
+            return {
+                error: "Une erreur à eu lieu lors de la récupération de la catégorie"
             }
         }
+        data.categoryId = found.value.id
     } else {
         return {
             error: "La catégorie n'est pas valide ou n'est pas du bon format"
@@ -298,8 +293,8 @@ async function editEventActionImpl(
         }
     }
 
-    try {
-        const _record = await prisma.event.update({
+    const updated = await tryCatch(
+        prisma.event.update({
             where: {
                 id: data.id
             },
@@ -315,18 +310,17 @@ async function editEventActionImpl(
                 visibility: data.visibility
             }
         })
-
-        revalidatePath("/agenda")
-        revalidatePath("/dashboard/events")
-        return {
-            success: true
-        }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!updated.success) {
+        captureActionError(updated.error)
         return {
             error: "La modification de l'évènement à échoué, veuillez réessayer"
         }
     }
+
+    revalidatePath("/agenda")
+    revalidatePath("/dashboard/events")
+    return { success: true }
 }
 
 export default withServerAction("editEventAction", editEventActionImpl, {

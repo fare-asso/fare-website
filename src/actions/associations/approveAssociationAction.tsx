@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function approveAssociationActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -21,43 +22,57 @@ async function approveAssociationActionImpl(
         }
     }
 
-    try {
-        const association = await prisma.association.findUnique({
+    const associationResult = await tryCatch(
+        prisma.association.findUnique({
             where: { id }
         })
+    )
+    if (!associationResult.success) {
+        captureActionError(associationResult.error)
+        return { error: "Échec de l'approbation de l'association" }
+    }
+    const association = associationResult.value
 
-        if (!association) {
-            return { error: "Association introuvable" }
-        }
+    if (!association) {
+        return { error: "Association introuvable" }
+    }
 
-        if (association.approved) {
-            return { error: "Cette association est déjà approuvée" }
-        }
+    if (association.approved) {
+        return { error: "Cette association est déjà approuvée" }
+    }
 
-        // Approve the association
-        await prisma.association.update({
+    // Approve the association
+    const approved = await tryCatch(
+        prisma.association.update({
             where: { id },
             data: { approved: new Date() }
         })
+    )
+    if (!approved.success) {
+        captureActionError(approved.error)
+        return { error: "Échec de l'approbation de l'association" }
+    }
 
-        // Archive the linked adhesion if present
-        if (association.adhesionId) {
-            await prisma.adhesion.update({
+    // Archive the linked adhesion if present
+    if (association.adhesionId) {
+        const archived = await tryCatch(
+            prisma.adhesion.update({
                 where: { id: association.adhesionId },
                 data: { archived: new Date() }
             })
-            revalidatePath("/dashboard/adhesions")
+        )
+        if (!archived.success) {
+            captureActionError(archived.error)
+            return { error: "Échec de l'approbation de l'association" }
         }
-
-        revalidatePath("/dashboard/associations")
-        revalidatePath("/reseau")
-        revalidatePath("/")
-
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
-        return { error: "Échec de l'approbation de l'association" }
+        revalidatePath("/dashboard/adhesions")
     }
+
+    revalidatePath("/dashboard/associations")
+    revalidatePath("/reseau")
+    revalidatePath("/")
+
+    return { success: true }
 }
 
 export default withServerAction(

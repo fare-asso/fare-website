@@ -51,6 +51,7 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { tryCatch } from "@/lib/utils"
 
 import {
     AssistanceFormSchema,
@@ -85,12 +86,11 @@ type DraftValues = Omit<
 
 function loadDraft(): Partial<DraftValues> {
     if (typeof window === "undefined") return {}
-    try {
+    const result = tryCatch(() => {
         const raw = window.localStorage.getItem(DRAFT_KEY)
         return raw ? (JSON.parse(raw) as Partial<DraftValues>) : {}
-    } catch {
-        return {}
-    }
+    })
+    return result.success ? result.value : {}
 }
 
 interface CaptchaFieldProps {
@@ -142,11 +142,10 @@ export function AssistanceForm(): React.ReactNode {
                 moyenContact: values.moyenContact,
                 telephone: values.telephone
             }
-            try {
+            // ignore quota / unavailable storage
+            tryCatch(() =>
                 window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
-            } catch {
-                // ignore quota / unavailable storage
-            }
+            )
         }, 500)
         return () => clearTimeout(id)
     }, [values])
@@ -170,11 +169,8 @@ export function AssistanceForm(): React.ReactNode {
         submitForm(async () => {
             const res = await processAssistance(value)
             if (res.success) {
-                try {
-                    window.localStorage.removeItem(DRAFT_KEY)
-                } catch {
-                    // ignore
-                }
+                // ignore — best-effort cleanup
+                tryCatch(() => window.localStorage.removeItem(DRAFT_KEY))
                 setIsSubmitted(true)
             } else {
                 setSubmitError(res.error)

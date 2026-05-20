@@ -7,6 +7,7 @@ import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
     const currentUser = await getCurrentUserWithPermissions()
@@ -32,24 +33,25 @@ async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
         }
     }
 
-    try {
-        await prisma.user.updateMany({
+    const result = await tryCatch(
+        prisma.user.updateMany({
             where: { id: { in: filteredIds } },
             data: { role: newRole }
         })
-
-        revalidatePath("/dashboard/users")
-        return {
-            success: true,
-            updatedCount: filteredIds.length,
-            skippedSelf: userIds.length !== filteredIds.length
-        }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return {
             success: false,
             error: "Une erreur s'est produite lors de la modification des rôles"
         }
+    }
+
+    revalidatePath("/dashboard/users")
+    return {
+        success: true,
+        updatedCount: filteredIds.length,
+        skippedSelf: userIds.length !== filteredIds.length
     }
 }
 

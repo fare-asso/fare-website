@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function unarchiveBagadAssoTicketActionImpl(ticketId: number): Promise<{
     success?: boolean
@@ -22,8 +23,8 @@ async function unarchiveBagadAssoTicketActionImpl(ticketId: number): Promise<{
         }
     }
 
-    try {
-        await prisma.bagadAssoTicket.update({
+    const result = await tryCatch(
+        prisma.bagadAssoTicket.update({
             where: {
                 id: ticketId
             },
@@ -31,14 +32,15 @@ async function unarchiveBagadAssoTicketActionImpl(ticketId: number): Promise<{
                 deleted: null
             }
         })
-
-        revalidatePath("/dashboard/bagadAsso")
-
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return { error: "Echec de la désarchivation du ticket" }
     }
+
+    revalidatePath("/dashboard/bagadAsso")
+
+    return { success: true }
 }
 
 export default withServerAction(

@@ -6,6 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function archiveAdhesionActionImpl(adhesionId: number): Promise<{
     success?: boolean
@@ -22,8 +23,8 @@ async function archiveAdhesionActionImpl(adhesionId: number): Promise<{
         }
     }
 
-    try {
-        await prisma.adhesion.update({
+    const result = await tryCatch(
+        prisma.adhesion.update({
             where: {
                 id: adhesionId
             },
@@ -31,14 +32,15 @@ async function archiveAdhesionActionImpl(adhesionId: number): Promise<{
                 archived: new Date()
             }
         })
-
-        revalidatePath("/dashboard/adhesions")
-
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!result.success) {
+        captureActionError(result.error)
         return { error: "Echec de l'archivage de la demande d'adhésion" }
     }
+
+    revalidatePath("/dashboard/adhesions")
+
+    return { success: true }
 }
 
 export default withServerAction(

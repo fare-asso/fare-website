@@ -7,6 +7,7 @@ import type { BTPTutorApplication } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 import BtpApplicationAck from "../../../emails/btp-application-aknowledgement"
 
@@ -18,35 +19,27 @@ async function sendApprovalEmailImpl(
 }> {
     console.log("Sending approval email to", application.email)
 
-    try {
-        const { success } = await sendEmail({
-            to: application.email,
-            subject: "Bouge Ta Prison - Informations sur votre candidature",
-            html: await render(
-                <BtpApplicationAck
-                    firstName={application.firstName}
-                    lastName={application.lastName}
-                    email={application.email}
-                />
-            )
-        })
+    const email = await sendEmail({
+        to: application.email,
+        subject: "Bouge Ta Prison - Informations sur votre candidature",
+        html: await render(
+            <BtpApplicationAck
+                firstName={application.firstName}
+                lastName={application.lastName}
+                email={application.email}
+            />
+        )
+    })
 
-        if (!success) {
-            return {
-                success: false,
-                error: " L'email n'a pas pu être envoyé. Veuillez réessayer plus tard."
-            }
-        }
-    } catch (error) {
-        captureActionError(error)
+    if (!email.success) {
         return {
             success: false,
             error: "L'email n'a pas pu être envoyé. Veuillez réessayer plus tard."
         }
     }
 
-    try {
-        await prisma.bTPTutorApplication.update({
+    const updated = await tryCatch(
+        prisma.bTPTutorApplication.update({
             where: {
                 id: application.id
             },
@@ -54,8 +47,9 @@ async function sendApprovalEmailImpl(
                 approved: true
             }
         })
-    } catch (error) {
-        captureActionError(error)
+    )
+    if (!updated.success) {
+        captureActionError(updated.error)
         return {
             success: false,
             error: "Echec de la mise à jour de la candidature"

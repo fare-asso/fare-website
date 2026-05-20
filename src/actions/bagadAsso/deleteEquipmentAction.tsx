@@ -7,6 +7,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 async function deleteEquipmentActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
@@ -52,21 +53,20 @@ async function deleteEquipmentActionImpl(
     }
 
     // delete record
-    try {
-        const _deletedRecord = await prisma.bagadAssoEquipment.delete({
+    const deleted = await tryCatch(
+        prisma.bagadAssoEquipment.delete({
             where: {
                 id: equipmentId
             }
         })
-        revalidatePath("/dashboard/bagadAsso")
-        revalidatePath("/projets/bagad-asso")
-        return { success: true }
-    } catch (error) {
-        captureActionError(error)
-        return {
-            error: "Echec de la suppression de l'équipement"
-        }
+    )
+    if (!deleted.success) {
+        captureActionError(deleted.error)
+        return { error: "Echec de la suppression de l'équipement" }
     }
+    revalidatePath("/dashboard/bagadAsso")
+    revalidatePath("/projets/bagad-asso")
+    return { success: true }
 }
 
 export default withServerAction(
