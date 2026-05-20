@@ -2,6 +2,7 @@
 
 import { Trash2Icon } from "lucide-react"
 import { startTransition, useActionState, useEffect, useState } from "react"
+import { toast } from "sonner"
 
 import deletePartenaireAction from "@/actions/partenaires/deletePartenaireAction"
 import {
@@ -31,7 +32,7 @@ export default function DeletePartenaireButton({
     partenaire: Partenaire
 }) {
     const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
+        { success: true } | { success: false; error: string } | undefined,
         number
     >(deletePartenaireAction, undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -39,12 +40,13 @@ export default function DeletePartenaireButton({
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
-        if (formState?.success) {
-            setIsLoading(false)
-            setIsOpen(false)
-        }
-
+        if (formState === undefined) return
         setIsLoading(false)
+        if (formState.success) {
+            setIsOpen(false)
+        } else {
+            toast.error(formState.error)
+        }
     }, [formState])
 
     const handleDelete = (

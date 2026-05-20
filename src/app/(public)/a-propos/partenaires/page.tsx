@@ -18,8 +18,14 @@ export default async function Partenaires() {
         })
     )
 
-    if (partenaires.value === null) {
-        return { success: false, error: "Partenaires introuvable" }
+    if (!partenaires.success) {
+        return (
+            <div className="flex w-full flex-col items-center justify-center py-32">
+                <p className="text-destructive text-lg font-medium">
+                    Echec du chargement des partenaires
+                </p>
+            </div>
+        )
     }
 
     const partners = partenaires.value.map((p) => ({
