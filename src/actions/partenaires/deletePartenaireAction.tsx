@@ -5,27 +5,26 @@ import { revalidatePath } from "next/cache"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createAdminClient, createClient } from "@/helpers/supabase/server"
+import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deletePartenaireActionImpl(
     _prevState: { error?: string; success?: boolean } | undefined,
     id: number
-) {
+): Promise<{ success: true } | { success: false; error: string }> {
     const user = await getCurrentUserWithPermissions()
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "delete:partner")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de supprimer des partenaires"
         }
     }
 
     const supabase = await createClient()
-
-    const _supabaseAdmin = await createAdminClient()
 
     const partenaire = await prisma.partenaire.findUnique({
         where: {
@@ -34,7 +33,10 @@ async function deletePartenaireActionImpl(
     })
 
     if (partenaire == null) {
-        return { error: "Echec de la suppression du partenaire" }
+        return {
+            success: false,
+            error: "Echec de la suppression du partenaire"
+        }
     }
 
     if (partenaire.logoPath.length > 0) {
@@ -45,6 +47,7 @@ async function deletePartenaireActionImpl(
         if (error) {
             console.error(error.message)
             return {
+                success: false,
                 error: "Echec de la suppression du logo dans la base de données"
             }
         }
@@ -54,12 +57,15 @@ async function deletePartenaireActionImpl(
     if (!deleted.success) {
         captureActionError(deleted.error)
         return {
+            success: false,
             error: "Echec de la suppression du partenaire"
         }
     }
 
     revalidatePath("/dashboard/partenaires")
     revalidatePath("/a-propos/partenaires")
+
+    return { success: true }
 }
 
 export default withServerAction(

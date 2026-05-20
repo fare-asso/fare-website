@@ -38,21 +38,31 @@ async function editPartenaireActionImpl(
 
     const supabase = await createClient()
 
-    const current = await prisma.partenaire.findUnique({
-        where: { id: data.id },
-        select: { logoPath: true }
-    })
-    if (!current) {
+    const current = await tryCatch(
+        prisma.partenaire.findUnique({
+            where: { id: data.id },
+            select: { logoPath: true }
+        })
+    )
+    if (!current.success) {
+        captureActionError(current.error)
+        return {
+            success: false,
+            error: "Échec de la récupération du partenaire."
+        }
+    }
+
+    if (current.value === null) {
         return { success: false, error: "Partenaire introuvable." }
     }
 
-    let logoPath = current.logoPath
+    let logoPath = current.value.logoPath
 
     if (data.logo) {
         const upload = await tryCatch(
             supabase.storage
                 .from("partner-pictures")
-                .update(current.logoPath, data.logo)
+                .update(current.value.logoPath, data.logo)
         )
         if (!upload.success) {
             captureActionError(upload.error)

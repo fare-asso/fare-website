@@ -14,6 +14,7 @@ import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 
 import "./page.css"
+import { tryCatch } from "@/lib/utils"
 
 export const metadata: Metadata = {
     title: "Accueil"
@@ -21,10 +22,17 @@ export const metadata: Metadata = {
 
 export default async function Home() {
     const supabase = await createClient()
-    const partenaires = await prisma.partenaire.findMany({
-        orderBy: { name: "asc" }
-    })
-    const partners = partenaires.map((p) => ({
+    const partenaires = await tryCatch(
+        prisma.partenaire.findMany({
+            orderBy: { name: "asc" }
+        })
+    )
+
+    if (partenaires.success === false) {
+        return { success: false, error: "Partenaires introuvable" }
+    }
+
+    const partners = partenaires.value.map((p) => ({
         id: p.id,
         name: p.name,
         logoUrl: supabase.storage

@@ -3,6 +3,7 @@ import Image from "next/image"
 
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
+import { tryCatch } from "@/lib/utils"
 
 export const metadata: Metadata = {
     title: "Nos partenaires",
@@ -11,11 +12,17 @@ export const metadata: Metadata = {
 
 export default async function Partenaires() {
     const supabase = await createClient()
-    const partenaires = await prisma.partenaire.findMany({
-        orderBy: { name: "asc" }
-    })
+    const partenaires = await tryCatch(
+        prisma.partenaire.findMany({
+            orderBy: { name: "asc" }
+        })
+    )
 
-    const partners = partenaires.map((p) => ({
+    if (partenaires.value === null) {
+        return { success: false, error: "Partenaires introuvable" }
+    }
+
+    const partners = partenaires.value.map((p) => ({
         id: p.id,
         name: p.name,
         description: p.description,
