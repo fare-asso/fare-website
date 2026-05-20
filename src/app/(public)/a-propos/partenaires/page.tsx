@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
+
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 
@@ -25,7 +26,7 @@ export default async function Partenaires() {
 
     return (
         <div className="flex w-full flex-col items-center justify-start pb-20">
-            <h1 className="py-12 font-semibold text-[3rem] sm:py-24 md:py-32 lg:py-44">
+            <h1 className="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
                 Nos Partenaires
             </h1>
             {partners.length === 0 ? (
