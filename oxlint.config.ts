@@ -1,5 +1,4 @@
 import { defineConfig } from "oxlint"
-import { isCI } from "std-env"
 
 export default defineConfig({
     options: {
@@ -151,12 +150,7 @@ export default defineConfig({
 
         // local plugin (./tools/oxlint-rules) — nudges towards the
         // tryCatch helper from @/lib/utils in place of try/catch.
-        // Silence with `// oxlint-disable-next-line local/no-try-catch`
-        // for the rare best-effort case (see AGENTS.md → Error Handling).
-        // Set to "off" in CI (see top of file) until existing call sites
-        // are migrated, because oxlint 1.65 silently ignores CLI `-A` for
-        // jsPlugin rules and there's no narrower mechanism today.
-        "local/no-try-catch": isCI ? "off" : "warn",
+        "local/no-try-catch": "warn",
 
         // suspicious
         "vitest/no-duplicate-hooks": "error",
