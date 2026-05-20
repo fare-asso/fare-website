@@ -159,7 +159,7 @@ export default async function Home() {
                     {partners.map((partner) => (
                         <Link
                             key={partner.id}
-                            href={"/a-propos/partenaires"}
+                            href="/a-propos/partenaires"
                             className="flex h-24 w-60 items-center justify-center"
                         >
                             <Image
