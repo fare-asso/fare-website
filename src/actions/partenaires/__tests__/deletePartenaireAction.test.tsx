@@ -45,6 +45,7 @@ describe("deletePartenaireAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await deletePartenaireAction(undefined, 1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.findUnique).not.toHaveBeenCalled()
@@ -54,13 +55,15 @@ describe("deletePartenaireAction", () => {
     it("requires the delete:partner permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await deletePartenaireAction(undefined, 1)
-        expect(res?.error).toMatch(/permission/)
+        expect(res.success).toBe(false)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("errors when the partenaire does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
         expect(await deletePartenaireAction(undefined, 1)).toEqual({
+            success: false,
             error: "Echec de la suppression du partenaire"
         })
         expect(h.remove).not.toHaveBeenCalled()
@@ -70,6 +73,7 @@ describe("deletePartenaireAction", () => {
     it("errors when the logo removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "boom" } })
         expect(await deletePartenaireAction(undefined, 1)).toEqual({
+            success: false,
             error: "Echec de la suppression du logo dans la base de données"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -80,7 +84,7 @@ describe("deletePartenaireAction", () => {
             validPartenaireRecord({ logoPath: "" })
         )
         const res = await deletePartenaireAction(undefined, 4)
-        expect(res).toBeUndefined()
+        expect(res).toEqual({ success: true })
         expect(h.remove).not.toHaveBeenCalled()
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
         expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/partenaires")
@@ -90,6 +94,7 @@ describe("deletePartenaireAction", () => {
     it("captures and fails when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
         expect(await deletePartenaireAction(undefined, 1)).toEqual({
+            success: false,
             error: "Echec de la suppression du partenaire"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -101,7 +106,7 @@ describe("deletePartenaireAction", () => {
             validPartenaireRecord({ id: 9, logoPath: "uuid-abc.png" })
         )
         const res = await deletePartenaireAction(undefined, 9)
-        expect(res).toBeUndefined()
+        expect(res).toEqual({ success: true })
         expect(h.remove).toHaveBeenCalledWith(["uuid-abc.png"])
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 9 } })
         expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/partenaires")
