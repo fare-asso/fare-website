@@ -38,7 +38,7 @@ beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:partner"]))
     h.findUnique.mockResolvedValue(validPartenaireRecord())
     h.deleteFn.mockResolvedValue(validPartenaireRecord())
-    h.remove.mockResolvedValue({ error: null })
+    h.remove.mockResolvedValue({ data: [], error: null })
 })
 
 describe("deletePartenaireAction", () => {
@@ -64,18 +64,43 @@ describe("deletePartenaireAction", () => {
         h.findUnique.mockResolvedValue(null)
         expect(await deletePartenaireAction(undefined, 1)).toEqual({
             success: false,
-            error: "Echec de la suppression du partenaire"
+            error: "Partenaire introuvable."
         })
         expect(h.remove).not.toHaveBeenCalled()
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
-    it("errors when the logo removal fails", async () => {
-        h.remove.mockResolvedValue({ error: { message: "boom" } })
+    it("captures and fails when the findUnique throws", async () => {
+        h.findUnique.mockRejectedValue(new Error("db down"))
+        expect(await deletePartenaireAction(undefined, 1)).toEqual({
+            success: false,
+            error: "Echec de la suppression du partenaire"
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.remove).not.toHaveBeenCalled()
+        expect(h.deleteFn).not.toHaveBeenCalled()
+    })
+
+    it("captures and fails when the storage remove throws", async () => {
+        h.remove.mockRejectedValue(new Error("storage down"))
         expect(await deletePartenaireAction(undefined, 1)).toEqual({
             success: false,
             error: "Echec de la suppression du logo dans la base de données"
         })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.deleteFn).not.toHaveBeenCalled()
+    })
+
+    it("errors when the logo removal fails", async () => {
+        h.remove.mockResolvedValue({
+            data: null,
+            error: { message: "boom" }
+        })
+        expect(await deletePartenaireAction(undefined, 1)).toEqual({
+            success: false,
+            error: "Echec de la suppression du logo dans la base de données"
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 

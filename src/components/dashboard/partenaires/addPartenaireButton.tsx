@@ -30,7 +30,7 @@ import { FilePondInput } from "@/components/ui/filepond"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
-const MAX_FILE_SIZE = 15 * 1024 * 1024
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 const emptyForm: TAddPartenaire = {
     name: "",

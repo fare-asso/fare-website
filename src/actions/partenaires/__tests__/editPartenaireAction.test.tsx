@@ -15,11 +15,14 @@ const h = vi.hoisted(() => ({
     findUnique: vi.fn(),
     update: vi.fn(),
     getUser: vi.fn(),
-    storageUpdate: vi.fn(),
+    storageUpload: vi.fn(),
+    storageRemove: vi.fn(),
     revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
-const from = vi.hoisted(() => vi.fn(() => ({ update: h.storageUpdate })))
+const from = vi.hoisted(() =>
+    vi.fn(() => ({ upload: h.storageUpload, remove: h.storageRemove }))
+)
 
 vi.mock("@/helpers/db", () =>
     dbModule({
@@ -38,10 +41,10 @@ import editPartenaireAction from "../editPartenaireAction"
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:partner"]))
     h.findUnique.mockResolvedValue({ logoPath: "old-uuid.png" })
-    h.storageUpdate.mockResolvedValue({
-        data: { path: "old-uuid.png" },
-        error: null
-    })
+    h.storageUpload.mockImplementation((path: string) =>
+        Promise.resolve({ data: { path }, error: null })
+    )
+    h.storageRemove.mockResolvedValue({ data: [], error: null })
     h.update.mockResolvedValue({
         id: 1,
         name: "ACME",
@@ -121,10 +124,11 @@ describe("editPartenaireAction", () => {
         expect(h.update).not.toHaveBeenCalled()
     })
 
-    it("skips the storage update when no logo is provided", async () => {
+    it("skips the storage upload when no logo is provided", async () => {
         const res = await editPartenaireAction(validEditPartenaire())
         expect(res).toEqual({ success: true })
-        expect(h.storageUpdate).not.toHaveBeenCalled()
+        expect(h.storageUpload).not.toHaveBeenCalled()
+        expect(h.storageRemove).not.toHaveBeenCalled()
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 1 },
             data: {
@@ -137,8 +141,8 @@ describe("editPartenaireAction", () => {
         expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/partenaires")
     })
 
-    it("captures and fails when the storage update throws", async () => {
-        h.storageUpdate.mockRejectedValue(new Error("storage down"))
+    it("captures and fails when the storage upload throws", async () => {
+        h.storageUpload.mockRejectedValue(new Error("storage down"))
         const res = await editPartenaireAction(
             validEditPartenaire({ logo: imageFile("new.png") })
         )
@@ -148,10 +152,11 @@ describe("editPartenaireAction", () => {
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.update).not.toHaveBeenCalled()
+        expect(h.storageRemove).not.toHaveBeenCalled()
     })
 
-    it("returns an error when the storage update resolves with an error", async () => {
-        h.storageUpdate.mockResolvedValue({
+    it("returns an error when the storage upload resolves with an error", async () => {
+        h.storageUpload.mockResolvedValue({
             data: null,
             error: { message: "boom" }
         })
@@ -164,6 +169,7 @@ describe("editPartenaireAction", () => {
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.update).not.toHaveBeenCalled()
+        expect(h.storageRemove).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db update throws", async () => {
@@ -177,12 +183,8 @@ describe("editPartenaireAction", () => {
         expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
-    it("uploads a new logo and updates the partenaire on the happy path", async () => {
+    it("uploads a new logo, removes the old one and updates the partenaire on the happy path", async () => {
         const logo = imageFile("new.png")
-        h.storageUpdate.mockResolvedValue({
-            data: { path: "old-uuid.png" },
-            error: null
-        })
         const res = await editPartenaireAction(
             validEditPartenaire({
                 id: 7,
@@ -192,16 +194,32 @@ describe("editPartenaireAction", () => {
             })
         )
         expect(res).toEqual({ success: true })
-        expect(h.storageUpdate).toHaveBeenCalledWith("old-uuid.png", logo)
+        expect(h.storageUpload).toHaveBeenCalledTimes(1)
+        const [path, file, opts] = h.storageUpload.mock.calls[0]
+        expect(typeof path).toBe("string")
+        expect(path).toMatch(/\.png$/)
+        expect(file).toBe(logo)
+        expect(opts).toEqual({ contentType: logo.type })
+        expect(h.storageRemove).toHaveBeenCalledWith(["old-uuid.png"])
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 7 },
             data: {
                 name: "New ACME",
                 description: "New description",
-                logoPath: "old-uuid.png"
+                logoPath: path
             }
         })
         expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/partenaires")
         expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/partenaires")
+    })
+
+    it("skips the remove when the previous logoPath is empty", async () => {
+        h.findUnique.mockResolvedValue({ logoPath: "" })
+        const res = await editPartenaireAction(
+            validEditPartenaire({ logo: imageFile("new.png") })
+        )
+        expect(res).toEqual({ success: true })
+        expect(h.storageUpload).toHaveBeenCalledTimes(1)
+        expect(h.storageRemove).not.toHaveBeenCalled()
     })
 })

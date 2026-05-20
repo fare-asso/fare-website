@@ -9,10 +9,14 @@ import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
+type DeletePartenaireResult =
+    | { success: true }
+    | { success: false; error: string }
+
 async function deletePartenaireActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
+    _prevState: DeletePartenaireResult | undefined,
     id: number
-): Promise<{ success: true } | { success: false; error: string }> {
+): Promise<DeletePartenaireResult> {
     const user = await getCurrentUserWithPermissions()
     if (!user) {
         return { success: false, error: "Authentification requise" }
@@ -26,26 +30,28 @@ async function deletePartenaireActionImpl(
 
     const supabase = await createClient()
 
-    const partenaire = await prisma.partenaire.findUnique({
-        where: {
-            id: id
-        }
-    })
-
-    if (partenaire == null) {
+    const partenaire = await tryCatch(
+        prisma.partenaire.findUnique({ where: { id } })
+    )
+    if (!partenaire.success) {
+        captureActionError(partenaire.error)
         return {
             success: false,
             error: "Echec de la suppression du partenaire"
         }
     }
+    if (partenaire.value === null) {
+        return { success: false, error: "Partenaire introuvable." }
+    }
 
-    if (partenaire.logoPath.length > 0) {
-        const { error } = await supabase.storage
-            .from("partner-pictures")
-            .remove([partenaire.logoPath])
-
-        if (error) {
-            console.error(error.message)
+    if (partenaire.value.logoPath.length > 0) {
+        const removed = await tryCatch(
+            supabase.storage
+                .from("partner-pictures")
+                .remove([partenaire.value.logoPath])
+        )
+        if (!removed.success) {
+            captureActionError(removed.error)
             return {
                 success: false,
                 error: "Echec de la suppression du logo dans la base de données"

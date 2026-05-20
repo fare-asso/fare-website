@@ -37,10 +37,12 @@ async function addPartenaireActionImpl(
     }
 
     const supabase = await createClient()
+    const fileExt = data.logo.name.split(".").pop() ?? "bin"
+    const filePath = `${randomUUID()}.${fileExt}`
     const upload = await tryCatch(
         supabase.storage
             .from("partner-pictures")
-            .upload(randomUUID(), data.logo)
+            .upload(filePath, data.logo, { contentType: data.logo.type })
     )
     if (!upload.success) {
         captureActionError(upload.error)

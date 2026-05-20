@@ -167,27 +167,31 @@ export default async function Home() {
             </div>
 
             {/* Nos partenaires */}
-            <div className="my-10 flex w-full flex-col items-center">
-                <h2 className="mb-8 text-3xl font-semibold">Nos partenaires</h2>
-                <div className="flex flex-row items-center gap-8">
-                    {partners.map((partner) => (
-                        <Link
-                            key={partner.id}
-                            href="/a-propos/partenaires"
-                            className="flex h-24 w-60 items-center justify-center"
-                        >
-                            <Image
+            {partners.length > 0 && (
+                <div className="my-10 flex w-full flex-col items-center">
+                    <h2 className="mb-8 text-3xl font-semibold">
+                        Nos partenaires
+                    </h2>
+                    <div className="flex flex-row flex-wrap items-center justify-center gap-8">
+                        {partners.map((partner) => (
+                            <Link
                                 key={partner.id}
-                                src={partner.logoUrl}
-                                alt={"Logo de " + partner.name}
-                                width={160}
-                                height={80}
-                                className="h-full w-full object-contain"
-                            />
-                        </Link>
-                    ))}
+                                href="/a-propos/partenaires"
+                                className="flex h-24 w-60 items-center justify-center"
+                            >
+                                <Image
+                                    key={partner.id}
+                                    src={partner.logoUrl}
+                                    alt={"Logo de " + partner.name}
+                                    width={160}
+                                    height={80}
+                                    className="h-full w-full object-contain"
+                                />
+                            </Link>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     )
 }

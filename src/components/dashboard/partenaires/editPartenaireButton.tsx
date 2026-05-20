@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/tooltip"
 import type { Partenaire } from "@/generated/prisma/client"
 
-const MAX_FILE_SIZE = 15 * 1024 * 1024
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 export default function EditPartenaireButton({
     partenaire
@@ -59,7 +59,6 @@ export default function EditPartenaireButton({
             onChange: EditPartenaireSchema,
             onSubmit: EditPartenaireSchema
         },
-        // biome-ignore lint/suspicious/useAwait: submission runs inside a transition
         // oxlint-disable-next-line require-await -- submission runs inside a transition
         onSubmit: async ({ value }) => {
             setSubmitError(null)

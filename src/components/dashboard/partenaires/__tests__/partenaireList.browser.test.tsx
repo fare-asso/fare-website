@@ -47,8 +47,8 @@ describe("<PartenaireList />", () => {
             .toBeVisible()
     })
 
-    it("renders the error state when prisma returns null", async () => {
-        h.findMany.mockResolvedValue(null)
+    it("renders the error state when prisma throws", async () => {
+        h.findMany.mockRejectedValue(new Error("db down"))
         const ui = await PartenaireList({ canEdit: false, canDelete: false })
         const screen = await render(ui)
         await expect

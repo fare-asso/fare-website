@@ -1,5 +1,7 @@
 "use server"
 
+import { randomUUID } from "node:crypto"
+
 import { type } from "arktype"
 import { revalidatePath } from "next/cache"
 
@@ -59,16 +61,26 @@ async function editPartenaireActionImpl(
     let logoPath = current.value.logoPath
 
     if (data.logo) {
+        const fileExt = data.logo.name.split(".").pop() ?? "bin"
+        const newPath = `${randomUUID()}.${fileExt}`
         const upload = await tryCatch(
             supabase.storage
                 .from("partner-pictures")
-                .update(current.value.logoPath, data.logo)
+                .upload(newPath, data.logo, { contentType: data.logo.type })
         )
         if (!upload.success) {
             captureActionError(upload.error)
             return { success: false, error: "Échec de l'upload du logo." }
         }
         logoPath = upload.value.path
+
+        if (current.value.logoPath.length > 0) {
+            await tryCatch(
+                supabase.storage
+                    .from("partner-pictures")
+                    .remove([current.value.logoPath])
+            )
+        }
     }
 
     const updated = await tryCatch(

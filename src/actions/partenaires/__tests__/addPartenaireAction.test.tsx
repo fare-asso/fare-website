@@ -144,13 +144,15 @@ describe("addPartenaireAction", () => {
         const res = await addPartenaireAction(input)
         expect(res).toEqual({ success: true })
         expect(h.upload).toHaveBeenCalledOnce()
-        const [uploadName, uploadFile] = h.upload.mock.calls[0] as [
+        const [uploadName, uploadFile, uploadOpts] = h.upload.mock.calls[0] as [
             string,
-            File
+            File,
+            { contentType: string }
         ]
         expect(typeof uploadName).toBe("string")
-        expect(uploadName.length).toBeGreaterThan(0)
+        expect(uploadName).toMatch(/\.png$/)
         expect(uploadFile).toBe(input.logo)
+        expect(uploadOpts).toEqual({ contentType: input.logo.type })
         expect(h.create).toHaveBeenCalledWith({
             data: {
                 name: "ACME",

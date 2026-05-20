@@ -24,7 +24,6 @@ export const env = createEnv({
         NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: z.string().min(1),
         NEXT_PUBLIC_SENTRY_DSN: z.string()
     },
-    // biome-ignore lint/style/useNamingConvention: it's a lib
     experimental__runtimeEnv: {
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NEXT_PUBLIC_SUPABASE_ANON_KEY:
