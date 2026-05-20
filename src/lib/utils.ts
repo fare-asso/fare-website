@@ -5,11 +5,36 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
 
+/**
+ * Utility type that expands complex types (like intersections or mapped types)
+ * into a simpler, more readable structure in tooltips and error messages.
+ *
+ * It helps improve developer experience by showing the final computed shape
+ * of a type, making it easier to understand and debug. It doesn't change
+ * the actual structure of the type, only how TypeScript displays it.
+ *
+ * @template T The type to prettify.
+ *
+ * @example
+ * type A = { a: string };
+ * type B = { b: number };
+ * type C = A & B;
+ *
+ * // Without Prettify, hovering over 'myVar' might show 'C' or 'A & B'
+ * declare const myVar: C;
+ *
+ * // With Prettify, hovering over 'myPrettyVar' will show '{ a: string; b: number }'
+ * declare const myPrettyVar: Prettify<C>;
+ */
+export type Prettify<T> = {
+    [K in keyof T]: T[K]
+} & {}
+
 type SyncResult<T, E> =
     | { success: true; value: T; error: null }
     | { success: false; value: null; error: E }
 
-type AsyncResult<T, E> = Promise<SyncResult<T, E>>
+type AsyncResult<T, E> = Promise<Prettify<SyncResult<T, E>>>
 
 /**
  * Wrap a Promise, sync thunk, or async thunk in a try/catch and return a
