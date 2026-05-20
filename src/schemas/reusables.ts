@@ -37,7 +37,9 @@ export function fileSchema({
     typeErrorMessage,
     mimeType,
     optional = false
-}: FileSchemaOptions & { optional?: boolean } = {}): FileSchema | OptionalFileSchema {
+}: FileSchemaOptions & { optional?: boolean } = {}):
+    | FileSchema
+    | OptionalFileSchema {
     let keys: MimeKey[]
     if (!mimeType) {
         keys = ["pdf"]
