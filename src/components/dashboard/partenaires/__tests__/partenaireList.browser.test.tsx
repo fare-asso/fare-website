@@ -8,9 +8,7 @@ const h = vi.hoisted(() => ({
     getPublicUrl: vi.fn(),
     cardSpy: vi.fn()
 }))
-const from = vi.hoisted(() =>
-    vi.fn(() => ({ getPublicUrl: h.getPublicUrl }))
-)
+const from = vi.hoisted(() => vi.fn(() => ({ getPublicUrl: h.getPublicUrl })))
 
 vi.mock("@/helpers/db", () => ({
     default: { partenaire: { findMany: h.findMany } }
@@ -43,13 +41,9 @@ describe("<PartenaireList />", () => {
         h.findMany.mockResolvedValue([])
         const ui = await PartenaireList({ canEdit: true, canDelete: true })
         const screen = await render(ui)
+        await expect.element(screen.getByText("Aucun partenaire")).toBeVisible()
         await expect
-            .element(screen.getByText("Aucun partenaire"))
-            .toBeVisible()
-        await expect
-            .element(
-                screen.getByText("Ajoutez un partenaire pour commencer")
-            )
+            .element(screen.getByText("Ajoutez un partenaire pour commencer"))
             .toBeVisible()
     })
 
@@ -103,9 +97,7 @@ describe("<PartenaireList />", () => {
         ])
         const ui = await PartenaireList({ canEdit: false, canDelete: false })
         const screen = await render(ui)
-        await expect
-            .element(screen.getByText("3 partenaires"))
-            .toBeVisible()
+        await expect.element(screen.getByText("3 partenaires")).toBeVisible()
     })
 
     it("requests partenaires ordered by name asc", async () => {

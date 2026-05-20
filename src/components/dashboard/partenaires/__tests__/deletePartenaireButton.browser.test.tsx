@@ -27,9 +27,7 @@ describe("<DeletePartenaireButton />", () => {
         const screen = await render(
             <DeletePartenaireButton partenaire={partenaire} />
         )
-        await expect
-            .element(screen.getByRole("button").first())
-            .toBeVisible()
+        await expect.element(screen.getByRole("button").first()).toBeVisible()
     })
 
     it("opens the confirmation dialog with the partenaire name", async () => {
@@ -54,9 +52,7 @@ describe("<DeletePartenaireButton />", () => {
 
     it("invokes the delete action with the partenaire id on confirm", async () => {
         const screen = await render(
-            <DeletePartenaireButton
-                partenaire={{ ...partenaire, id: 42 }}
-            />
+            <DeletePartenaireButton partenaire={{ ...partenaire, id: 42 }} />
         )
         await screen.getByRole("button").first().click()
         await screen.getByRole("button", { name: /Supprimer/ }).click()

@@ -14,15 +14,8 @@ vi.mock("@/actions/partenaires/editPartenaireAction", () => ({
     default: h.action
 }))
 vi.mock("@/components/ui/filepond", () => ({
-    FilePondInput: ({
-        onChange
-    }: {
-        onChange?: (file: File) => void
-    }) => (
-        <button
-            type="button"
-            onClick={() => onChange?.(h.pickedFile)}
-        >
+    FilePondInput: ({ onChange }: { onChange?: (file: File) => void }) => (
+        <button type="button" onClick={() => onChange?.(h.pickedFile)}>
             choose logo
         </button>
     )
@@ -57,9 +50,7 @@ describe("<EditPartenaireButton />", () => {
         const screen = await render(
             <EditPartenaireButton partenaire={partenaire} />
         )
-        await expect
-            .element(screen.getByRole("button").first())
-            .toBeVisible()
+        await expect.element(screen.getByRole("button").first()).toBeVisible()
     })
 
     it("pre-fills the form with the partenaire's name and description", async () => {
@@ -121,7 +112,9 @@ describe("<EditPartenaireButton />", () => {
             .click()
 
         await expect
-            .element(screen.getByText("Échec de la modification du partenaire."))
+            .element(
+                screen.getByText("Échec de la modification du partenaire.")
+            )
             .toBeVisible()
     })
 })

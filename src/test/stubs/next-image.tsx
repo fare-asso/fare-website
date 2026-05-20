@@ -22,9 +22,8 @@ export default function NextImageStub(props: {
     )
 }
 
-export function getImageProps(props: {
-    src: string
-    alt: string
-}): { props: { src: string; alt: string } } {
+export function getImageProps(props: { src: string; alt: string }): {
+    props: { src: string; alt: string }
+} {
     return { props }
 }

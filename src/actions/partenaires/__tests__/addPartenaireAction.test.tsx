@@ -23,9 +23,7 @@ const from = vi.hoisted(() =>
     vi.fn(() => ({ upload: h.upload, remove: h.remove }))
 )
 
-vi.mock("@/helpers/db", () =>
-    dbModule({ partenaire: { create: h.create } })
-)
+vi.mock("@/helpers/db", () => dbModule({ partenaire: { create: h.create } }))
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
@@ -72,9 +70,7 @@ describe("addPartenaireAction", () => {
     })
 
     it("rejects an invalid payload (empty name)", async () => {
-        const res = await addPartenaireAction(
-            validAddPartenaire({ name: "" })
-        )
+        const res = await addPartenaireAction(validAddPartenaire({ name: "" }))
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."

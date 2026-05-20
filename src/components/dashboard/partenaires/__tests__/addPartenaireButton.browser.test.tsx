@@ -12,15 +12,8 @@ vi.mock("@/actions/partenaires/addPartenaireAction", () => ({
     default: h.action
 }))
 vi.mock("@/components/ui/filepond", () => ({
-    FilePondInput: ({
-        onChange
-    }: {
-        onChange?: (file: File) => void
-    }) => (
-        <button
-            type="button"
-            onClick={() => onChange?.(h.pickedFile)}
-        >
+    FilePondInput: ({ onChange }: { onChange?: (file: File) => void }) => (
+        <button type="button" onClick={() => onChange?.(h.pickedFile)}>
             choose logo
         </button>
     )
@@ -60,9 +53,7 @@ describe("<AddPartenaireButton />", () => {
         await expect
             .element(screen.getByLabelText("Nom du partenaire"))
             .toBeVisible()
-        await expect
-            .element(screen.getByLabelText("Description"))
-            .toBeVisible()
+        await expect.element(screen.getByLabelText("Description")).toBeVisible()
         await expect
             .element(screen.getByText("Logo", { exact: true }))
             .toBeVisible()
@@ -70,9 +61,7 @@ describe("<AddPartenaireButton />", () => {
 
     it("blocks an empty submit and does not call the action", async () => {
         const screen = await openDialog()
-        await screen
-            .getByRole("button", { name: /^\s*Ajouter\s*$/ })
-            .click()
+        await screen.getByRole("button", { name: /^\s*Ajouter\s*$/ }).click()
         expect(h.action).not.toHaveBeenCalled()
     })
 
@@ -83,9 +72,7 @@ describe("<AddPartenaireButton />", () => {
             .getByLabelText("Description")
             .fill("Un partenaire de la Federation.")
         await screen.getByRole("button", { name: "choose logo" }).click()
-        await screen
-            .getByRole("button", { name: /^\s*Ajouter\s*$/ })
-            .click()
+        await screen.getByRole("button", { name: /^\s*Ajouter\s*$/ }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
         const submitted = h.action.mock.calls[0][0]
@@ -107,9 +94,7 @@ describe("<AddPartenaireButton />", () => {
             .getByLabelText("Description")
             .fill("Un partenaire de la Federation.")
         await screen.getByRole("button", { name: "choose logo" }).click()
-        await screen
-            .getByRole("button", { name: /^\s*Ajouter\s*$/ })
-            .click()
+        await screen.getByRole("button", { name: /^\s*Ajouter\s*$/ }).click()
 
         await expect
             .element(screen.getByText("Échec de l'upload du logo."))

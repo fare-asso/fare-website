@@ -7,7 +7,10 @@ import {
     validEditPartenaire
 } from "@/test/factories/partenaires"
 
-import { AddPartenaireSchema, EditPartenaireSchema } from "../partenaires-schema"
+import {
+    AddPartenaireSchema,
+    EditPartenaireSchema
+} from "../partenaires-schema"
 
 const isErrors = (out: unknown): boolean => out instanceof type.errors
 
@@ -101,9 +104,7 @@ describe("EditPartenaireSchema", () => {
     it("accepts a payload with a valid logo", () => {
         expect(
             isErrors(
-                EditPartenaireSchema(
-                    validEditPartenaire({ logo: imageFile() })
-                )
+                EditPartenaireSchema(validEditPartenaire({ logo: imageFile() }))
             )
         ).toBe(false)
     })
@@ -133,9 +134,7 @@ describe("EditPartenaireSchema", () => {
     it("rejects an empty description", () => {
         expect(
             isErrors(
-                EditPartenaireSchema(
-                    validEditPartenaire({ description: "" })
-                )
+                EditPartenaireSchema(validEditPartenaire({ description: "" }))
             )
         ).toBe(true)
     })

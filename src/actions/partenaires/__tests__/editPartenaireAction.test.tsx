@@ -19,9 +19,7 @@ const h = vi.hoisted(() => ({
     revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
-const from = vi.hoisted(() =>
-    vi.fn(() => ({ update: h.storageUpdate }))
-)
+const from = vi.hoisted(() => vi.fn(() => ({ update: h.storageUpdate })))
 
 vi.mock("@/helpers/db", () =>
     dbModule({
@@ -72,9 +70,7 @@ describe("editPartenaireAction", () => {
     })
 
     it("rejects an invalid id", async () => {
-        const res = await editPartenaireAction(
-            validEditPartenaire({ id: 0 })
-        )
+        const res = await editPartenaireAction(validEditPartenaire({ id: 0 }))
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."

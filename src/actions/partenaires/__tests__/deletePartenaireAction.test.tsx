@@ -80,9 +80,7 @@ describe("deletePartenaireAction", () => {
     })
 
     it("skips the storage removal when logoPath is empty", async () => {
-        h.findUnique.mockResolvedValue(
-            validPartenaireRecord({ logoPath: "" })
-        )
+        h.findUnique.mockResolvedValue(validPartenaireRecord({ logoPath: "" }))
         const res = await deletePartenaireAction(undefined, 4)
         expect(res).toEqual({ success: true })
         expect(h.remove).not.toHaveBeenCalled()
