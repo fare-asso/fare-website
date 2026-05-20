@@ -66,13 +66,16 @@ async function editArticleActionImpl(
     }
 
     // Delete previous images from storage
-    await supabase.storage.from("article-pictures").remove(article.imagesPath)
+    const removed = await tryCatch(
+        supabase.storage.from("article-pictures").remove(article.imagesPath)
+    )
+    if (!removed.success) {
+        captureActionError(removed.error)
+        return { error: "Echec de la modification de l'article" }
+    }
 
     // Images
     const images = formData.getAll("images") as File[]
-    for (const image of images) {
-        console.log(image)
-    }
 
     // upload images to storage
     const responsesResult = await tryCatch(
@@ -102,8 +105,7 @@ async function editArticleActionImpl(
 
     const parsedContent = tryCatch(() => JSON.parse(content) as JSONContent)
     if (!parsedContent.success) {
-        captureActionError(parsedContent.error)
-        return { error: "Echec de la modification de l'article" }
+        return { error: "Le contenu de l'article est invalide" }
     }
 
     // insert article to database

@@ -25,7 +25,11 @@ export async function GET() {
     if (dbResult.success) {
         dbHealthy = true
     } else {
-        errors.push(`DB: ${dbResult.error.message}`)
+        const message =
+            dbResult.error instanceof Error
+                ? dbResult.error.message
+                : "Unknown DB error"
+        errors.push(`DB: ${message}`)
     }
 
     // Check Supabase connection
@@ -36,7 +40,11 @@ export async function GET() {
         })()
     )
     if (!supabaseResult.success) {
-        errors.push(`Supabase: ${supabaseResult.error.message}`)
+        const message =
+            supabaseResult.error instanceof Error
+                ? supabaseResult.error.message
+                : "Unknown Supabase error"
+        errors.push(`Supabase: ${message}`)
     } else if (supabaseResult.value.error) {
         errors.push(`Supabase: ${supabaseResult.value.error.message}`)
     } else {

@@ -39,9 +39,6 @@ async function createArticleActionImpl(
 
     // Images
     const images = formData.getAll("images") as File[]
-    for (const image of images) {
-        console.log(image)
-    }
 
     // upload images to storage
     const responsesResult = await tryCatch(
@@ -71,8 +68,7 @@ async function createArticleActionImpl(
 
     const parsedContent = tryCatch(() => JSON.parse(content) as JSONContent)
     if (!parsedContent.success) {
-        captureActionError(parsedContent.error)
-        return { error: "Echec de la création de l'article" }
+        return { error: "Le contenu de l'article est invalide" }
     }
 
     // insert article to database
