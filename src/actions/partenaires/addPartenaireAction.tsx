@@ -40,7 +40,7 @@ async function addPartenaireActionImpl(input: TAddPartenaire): Promise<Result> {
     const upload = await tryCatch(
         supabase.storage
             .from("partner-pictures")
-            .upload(randomUUID(), data.logo!)
+            .upload(randomUUID(), data.logo)
     )
     if (!upload.success) {
         captureActionError(upload.error)

@@ -10,6 +10,15 @@ const mimeTypes = {
 
 type MimeKey = "pdf" | "image"
 
+type FileSchemaOptions = {
+    errorMessage?: string
+    typeErrorMessage?: string
+    mimeType?: MimeKey | MimeKey[]
+}
+
+type FileSchema = ReturnType<typeof z.file>
+type OptionalFileSchema = ReturnType<typeof z.optional<FileSchema>>
+
 /**
  * Zod schema for a file input. Defaults to a required PDF file.
  * `mimeType` accepts a single group or an array to allow several
@@ -17,19 +26,18 @@ type MimeKey = "pdf" | "image"
  *
  * @returns the Zod schema for a file input
  */
+export function fileSchema(
+    opts?: FileSchemaOptions & { optional?: false }
+): FileSchema
+export function fileSchema(
+    opts: FileSchemaOptions & { optional: true }
+): OptionalFileSchema
 export function fileSchema({
     errorMessage,
     typeErrorMessage,
     mimeType,
-    optional
-}:
-    | {
-          errorMessage?: string
-          typeErrorMessage?: string
-          mimeType?: MimeKey | MimeKey[]
-          optional?: boolean
-      }
-    | undefined = {}) {
+    optional = false
+}: FileSchemaOptions & { optional?: boolean } = {}): FileSchema | OptionalFileSchema {
     let keys: MimeKey[]
     if (!mimeType) {
         keys = ["pdf"]
