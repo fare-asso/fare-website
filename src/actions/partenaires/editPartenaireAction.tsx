@@ -58,11 +58,7 @@ async function editPartenaireActionImpl(
             captureActionError(upload.error)
             return { success: false, error: "Échec de l'upload du logo." }
         }
-        const { data: uploaded, error } = upload.value
-        if (error || !uploaded) {
-            return { success: false, error: "Échec de l'upload du logo." }
-        }
-        logoPath = uploaded.path
+        logoPath = upload.value.path
     }
 
     const updated = await tryCatch(

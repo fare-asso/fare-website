@@ -16,9 +16,9 @@ import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-type Result = { success: true } | { success: false; error: string }
-
-async function addPartenaireActionImpl(input: TAddPartenaire): Promise<Result> {
+async function addPartenaireActionImpl(
+    input: TAddPartenaire
+): Promise<{ success: true } | { success: false; error: string }> {
     const user = await getCurrentUserWithPermissions()
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "create:partner")) {
@@ -46,14 +46,7 @@ async function addPartenaireActionImpl(input: TAddPartenaire): Promise<Result> {
         captureActionError(upload.error)
         return { success: false, error: "Échec de l'upload du logo." }
     }
-    const { data: uploaded, error: uploadError } = upload.value
-    if (uploadError || !uploaded) {
-        captureActionError(
-            uploadError ?? new Error("Supabase storage upload returned no data")
-        )
-        return { success: false, error: "Échec de l'upload du logo." }
-    }
-    const logoPath = uploaded.path
+    const logoPath = upload.value.path
 
     const created = await tryCatch(
         prisma.partenaire.create({

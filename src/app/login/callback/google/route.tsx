@@ -59,9 +59,7 @@ async function updateUserProfilePicture(
         captureActionError(userResult.error)
         return
     }
-    const {
-        data: { user }
-    } = userResult.value
+    const { user } = userResult.value
 
     if (!user?.id) return
 
@@ -126,9 +124,7 @@ async function handleNewUserNotification(
         captureActionError(userResult.error)
         return
     }
-    const {
-        data: { user }
-    } = userResult.value
+    const { user } = userResult.value
 
     if (!user?.id || !user.email || !user.created_at) return
 

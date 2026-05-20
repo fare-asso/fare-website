@@ -53,11 +53,6 @@ async function createPasswordForRepresentativeActionImpl(
             error: "Echec de la création du mot de passe, veuillez contacter un administrateur"
         }
     }
-    if (updated.value.error) {
-        return {
-            error: "Echec de la création du mot de passe, veuillez contacter un administrateur"
-        }
-    }
 
     redirect("/espace-asso")
 }
