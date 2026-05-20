@@ -19,9 +19,7 @@ export async function createClient() {
                     // The `set` method may be called from a Server Component.
                     // This can be ignored if you have middleware refreshing
                     // user sessions.
-                    tryCatch(() =>
-                        cookieStore.set({ name, value, ...options })
-                    )
+                    tryCatch(() => cookieStore.set({ name, value, ...options }))
                 },
                 remove(name: string, options: CookieOptions) {
                     // The `delete` method may be called from a Server Component.
@@ -51,9 +49,7 @@ export async function createAdminClient() {
                     // The `set` method may be called from a Server Component.
                     // This can be ignored if you have middleware refreshing
                     // user sessions.
-                    tryCatch(() =>
-                        cookieStore.set({ name, value, ...options })
-                    )
+                    tryCatch(() => cookieStore.set({ name, value, ...options }))
                 },
                 remove(name: string, options: CookieOptions) {
                     // The `delete` method may be called from a Server Component.

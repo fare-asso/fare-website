@@ -99,11 +99,12 @@ Always use `pnpm`, never use `npm`
 - **Server actions return a discriminated union:** `{ success: true; value: T } | { success: false; error: string }` (omit `value` when there is no payload: `{ success: true } | { success: false; error: string }`). Callers narrow on `success` — never optional `success?`/`error?` fields
 - **Every server action MUST be wrapped with `withServerAction()`** from `@/lib/sentry` (see [Server Actions](#server-actions))
 - **Use the `tryCatch` helper from `@/lib/utils` instead of `try/catch` blocks — everywhere, not just server actions.** `tryCatch` is overloaded so a single import covers every case:
-  - `await tryCatch(promise)` — wrap a Promise (DB call, fetch, etc.)
-  - `await tryCatch(() => asyncOp())` — async thunk, also catches synchronous throws inside the thunk
-  - `tryCatch(() => syncOp())` — sync thunk (`JSON.parse`, `localStorage`, cookie set, …); returns a sync `Result` (no `await`)
+    - `await tryCatch(promise)` — wrap a Promise (DB call, fetch, etc.)
+    - `await tryCatch(() => asyncOp())` — async thunk, also catches synchronous throws inside the thunk
+    - `tryCatch(() => syncOp())` — sync thunk (`JSON.parse`, `localStorage`, cookie set, …); returns a sync `Result` (no `await`)
 
-  In every form the result is the same Rust-style discriminated union `{ success: true; value } | { success: false; error }`. Narrow on `success`, call `captureActionError(result.error)` on the failure branch (for genuine exceptions), return a French error string.
+    In every form the result is the same Rust-style discriminated union `{ success: true; value } | { success: false; error }`. Narrow on `success`, call `captureActionError(result.error)` on the failure branch (for genuine exceptions), return a French error string.
+
 - **Plain `try/catch` is forbidden anywhere in the codebase** — the only exception is the one inside `tryCatch` itself in `src/lib/utils.ts`, which has an inline `oxlint-disable` comment. The local oxlint rule `local/no-try-catch` enforces this — silence it inline with `// oxlint-disable-next-line local/no-try-catch` only when there's a documented reason in a comment above
 - For pure-side-effect sync calls where you intentionally ignore failure (cookie set, `localStorage` write, best-effort `sendEmail`), call `tryCatch` as a void expression: `void tryCatch(() => cookieStore.set(...))` (or simply `await sendEmail(...)` since it has the same effect)
 - **Report genuine exceptions with `captureActionError(error)`** from `@/lib/sentry` on the `tryCatch` failure branch — never a bare `console.error()` (it already logs + sends to Sentry, and re-throws Next.js `redirect`/`notFound` control flow)

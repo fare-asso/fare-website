@@ -64,8 +64,7 @@ export default function LocationPicker({
 
         // Assuming the API returns an array of strings or objects with a 'name' property
         const locationNames = data.results.map(
-            (location) =>
-                location.fulltext || location.street || location.city
+            (location) => location.fulltext || location.street || location.city
         )
 
         setRecommendations(locationNames)
