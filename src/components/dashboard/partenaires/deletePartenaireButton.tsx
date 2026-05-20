@@ -1,8 +1,8 @@
 "use client"
 
-import type { Partenaire } from "@/generated/prisma/client"
 import { Trash2Icon } from "lucide-react"
 import { startTransition, useActionState, useEffect, useState } from "react"
+
 import deletePartenaireAction from "@/actions/partenaires/deletePartenaireAction"
 import {
     AlertDialog,
@@ -21,6 +21,8 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
+import type { Partenaire } from "@/generated/prisma/client"
+
 import LoadingRing from "../loadingRing"
 
 export default function DeletePartenaireButton({
@@ -65,7 +67,7 @@ export default function DeletePartenaireButton({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 w-8"
                         >
                             <Trash2Icon size={18} />
                         </Button>

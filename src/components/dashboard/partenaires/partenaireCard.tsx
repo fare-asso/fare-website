@@ -1,7 +1,9 @@
 "use client"
 
-import type { Partenaire } from "@/generated/prisma/client"
 import Image from "next/image"
+
+import type { Partenaire } from "@/generated/prisma/client"
+
 import DeletePartenaireButton from "./deletePartenaireButton"
 import EditPartenaireButton from "./editPartenaireButton"
 
@@ -19,9 +21,9 @@ export default function PartenaireCard({
     canDelete
 }: PartenaireCardProps): React.JSX.Element {
     return (
-        <div className="group flex flex-col rounded-lg border bg-card shadow-xs transition-shadow hover:shadow-md">
+        <div className="group bg-card flex flex-col rounded-lg border shadow-xs transition-shadow hover:shadow-md">
             {/* Logo area */}
-            <div className="relative flex items-center justify-center rounded-t-lg bg-muted/50 transition-colors group-hover:bg-muted">
+            <div className="bg-muted/50 group-hover:bg-muted relative flex items-center justify-center rounded-t-lg transition-colors">
                 <Image
                     src={logoUrl}
                     width={220}
@@ -34,12 +36,12 @@ export default function PartenaireCard({
             {/* Content area */}
             <div className="flex flex-1 flex-col gap-2 p-3">
                 {/* Name */}
-                <h3 className="line-clamp-1 font-medium text-sm leading-tight">
+                <h3 className="line-clamp-1 text-sm leading-tight font-medium">
                     {partenaire.name}
                 </h3>
 
                 {/* Description */}
-                <p className="line-clamp-3 text-muted-foreground text-xs">
+                <p className="text-muted-foreground line-clamp-3 text-xs">
                     {partenaire.description}
                 </p>
 

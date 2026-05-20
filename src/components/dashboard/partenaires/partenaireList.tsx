@@ -1,6 +1,8 @@
 import { HandshakeIcon } from "lucide-react"
+
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
+
 import PartenaireCard from "./partenaireCard"
 
 interface PartenaireListProps {
@@ -21,10 +23,10 @@ export default async function PartenaireList({
     if (partenaires == null) {
         return (
             <div className="flex h-full flex-col items-center justify-center gap-3 py-12">
-                <div className="rounded-full bg-destructive/10 p-3">
+                <div className="bg-destructive/10 rounded-full p-3">
                     <HandshakeIcon size={24} className="text-destructive" />
                 </div>
-                <p className="font-medium text-destructive text-sm">
+                <p className="text-destructive text-sm font-medium">
                     Echec du chargement des partenaires
                 </p>
                 <p className="text-muted-foreground text-xs">
@@ -36,12 +38,12 @@ export default async function PartenaireList({
 
     if (partenaires.length === 0) {
         return (
-            <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30">
-                <HandshakeIcon className="mb-3 h-12 w-12 text-muted-foreground/50" />
-                <p className="font-medium text-muted-foreground">
+            <div className="bg-muted/30 flex h-64 flex-col items-center justify-center rounded-lg border border-dashed">
+                <HandshakeIcon className="text-muted-foreground/50 mb-3 h-12 w-12" />
+                <p className="text-muted-foreground font-medium">
                     Aucun partenaire
                 </p>
-                <p className="mt-1 text-muted-foreground/70 text-sm">
+                <p className="text-muted-foreground/70 mt-1 text-sm">
                     Ajoutez un partenaire pour commencer
                 </p>
             </div>
@@ -49,8 +51,8 @@ export default async function PartenaireList({
     }
 
     return (
-        <div className="h-full w-full overflow-y-auto rounded-lg border bg-card p-4 text-card-foreground shadow-xs md:p-6">
-            <p className="mb-4 text-muted-foreground text-sm">
+        <div className="bg-card text-card-foreground h-full w-full overflow-y-auto rounded-lg border p-4 shadow-xs md:p-6">
+            <p className="text-muted-foreground mb-4 text-sm">
                 {partenaires.length} partenaire
                 {partenaires.length > 1 ? "s" : ""}
             </p>

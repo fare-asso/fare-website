@@ -2,6 +2,7 @@
 
 import { type } from "arktype"
 import { revalidatePath } from "next/cache"
+
 import {
     EditPartenaireSchema,
     type TEditPartenaire

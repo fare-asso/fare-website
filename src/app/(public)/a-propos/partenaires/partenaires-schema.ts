@@ -1,4 +1,5 @@
 import { type } from "arktype"
+
 import { fileSchema } from "@/schemas/reusables"
 
 const logoSchemaOptions = {

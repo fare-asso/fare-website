@@ -3,6 +3,7 @@
 import { useForm } from "@tanstack/react-form"
 import { Loader2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
+
 import addPartenaireAction from "@/actions/partenaires/addPartenaireAction"
 import {
     AddPartenaireSchema,
@@ -198,7 +199,7 @@ export default function AddPartenaireButton() {
                         {submitError && (
                             <p
                                 role="alert"
-                                className="rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-destructive text-sm"
+                                className="border-destructive bg-destructive/10 text-destructive rounded-md border px-4 py-3 text-sm"
                             >
                                 {submitError}
                             </p>

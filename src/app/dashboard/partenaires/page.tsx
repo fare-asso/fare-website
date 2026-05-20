@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
+
 import AddPartenaireButton from "@/components/dashboard/partenaires/addPartenaireButton"
 import PartenaireList from "@/components/dashboard/partenaires/partenaireList"
 import {
