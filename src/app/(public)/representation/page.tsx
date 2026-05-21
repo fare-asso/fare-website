@@ -21,22 +21,22 @@ export default function Representation() {
             <div className="flex w-full max-w-5xl flex-col items-center justify-center gap-12 md:flex-row md:gap-20">
                 <Link
                     href="/representation/fage"
-                    className="group flex h-64 w-full max-w-sm flex-row items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
+                    className="flex h-64 w-full max-w-sm min-w-64 flex-row items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
                 >
                     <span className="text-3xl font-bold md:text-4xl">LA</span>
                     <Image
                         src={logoFage}
                         alt="Logo de la FAGE"
-                        className="h-32 w-auto object-contain"
+                        className="h-24 w-auto object-contain md:h-32"
                         placeholder="empty"
                     />
                 </Link>
 
                 <Link
                     href="/representation/nos-elues"
-                    className="group flex h-64 w-full max-w-sm flex-col items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
+                    className="flex h-64 w-full max-w-sm min-w-64 flex-col items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
                 >
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center justify-center gap-3">
                         <Image
                             src={logoBTC}
                             alt="Logo Bouge Ton Crous"
