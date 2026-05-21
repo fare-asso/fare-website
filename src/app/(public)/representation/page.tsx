@@ -2,8 +2,11 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
-import gifElues from "#public/elues/elues.gif"
+import logoBTC from "#public/elues/logo-Bouge-Ton-Crous.png"
+import logoCrous from "#public/Logo_Crous_vectorisé.png"
 import logoFage from "#public/Logo_FAGE.png"
+import logoUR2 from "#public/univ/Logo_univ-rennes2-2016.png"
+import logoUR from "#public/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
 
 export const metadata: Metadata = {
     title: "Représentation"
@@ -11,36 +14,53 @@ export const metadata: Metadata = {
 
 export default function Representation() {
     return (
-        <div className="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
-            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
-                Représentation
+        <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
+            <h1 className="py-10 text-center text-4xl font-bold sm:py-16">
+                Représentations
             </h1>
-
-            <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-y-0 md:space-x-20">
+            <div className="flex w-full max-w-5xl flex-col items-center justify-center gap-12 md:flex-row md:gap-20">
                 <Link
                     href="/representation/fage"
-                    className="flex flex-col items-center transition-all hover:scale-105"
+                    className="flex h-64 w-full max-w-sm min-w-64 flex-row items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
                 >
+                    <span className="text-3xl font-bold md:text-4xl">LA</span>
                     <Image
                         src={logoFage}
                         alt="Logo de la FAGE"
-                        className="aspect-square h-auto w-52 object-contain"
+                        className="h-24 w-auto object-contain md:h-32"
                         placeholder="empty"
                     />
-                    <h2 className="text-center">La FAGE</h2>
                 </Link>
 
                 <Link
                     href="/representation/nos-elues"
-                    className="flex flex-col items-center transition-all hover:scale-105"
+                    className="flex h-64 w-full max-w-sm min-w-64 flex-col items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
                 >
-                    <Image
-                        src={gifElues}
-                        alt="Logo des élues"
-                        className="aspect-square h-auto w-52 object-contain"
-                    />
-                    {/* TODO: ajout de l'écriture inclusive */}
-                    <h2 className="text-center">Nos élues</h2>
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                        <Image
+                            src={logoBTC}
+                            alt="Logo Bouge Ton Crous"
+                            className="h-16 w-16 object-contain"
+                        />
+                        <Image
+                            src={logoCrous}
+                            alt="Logo les Crous"
+                            className="h-16 w-16 object-contain"
+                        />
+                        <Image
+                            src={logoUR}
+                            alt="Logo Université de Rennes"
+                            className="h-16 w-16 object-contain"
+                        />
+                        <Image
+                            src={logoUR2}
+                            alt="Logo Université Rennes 2"
+                            className="h-16 w-16 object-contain"
+                        />
+                    </div>
+                    <span className="text-3xl font-bold md:text-4xl">
+                        Nos éluEs
+                    </span>
                 </Link>
             </div>
         </div>
