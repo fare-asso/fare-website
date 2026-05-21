@@ -14,11 +14,14 @@ export const metadata: Metadata = {
 
 export default function Representation() {
     return (
-        <div className="flex min-h-screen w-full flex-col items-center justify-center px-4 md:px-8 lg:px-16">
+        <div className="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
+            <h1 className="py-10 text-center text-4xl font-bold sm:py-16">
+                Représentations
+            </h1>
             <div className="flex w-full max-w-5xl flex-col items-center justify-center gap-12 md:flex-row md:gap-20">
                 <Link
                     href="/representation/fage"
-                    className="group flex h-64 w-full max-w-sm flex-row items-center justify-center gap-4 rounded-2xl p-6 transition-all hover:bg-black/[0.04] md:h-72"
+                    className="group flex h-64 w-full max-w-sm flex-row items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
                 >
                     <span className="text-3xl font-bold md:text-4xl">LA</span>
                     <Image
@@ -31,7 +34,7 @@ export default function Representation() {
 
                 <Link
                     href="/representation/nos-elues"
-                    className="group flex h-64 w-full max-w-sm flex-col items-center justify-center gap-4 rounded-2xl p-6 transition-all hover:bg-black/[0.04] md:h-72"
+                    className="group flex h-64 w-full max-w-sm flex-col items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/75 p-6 transition-all hover:bg-black/[0.04] md:h-72"
                 >
                     <div className="flex items-center gap-3">
                         <Image
