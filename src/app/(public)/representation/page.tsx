@@ -34,7 +34,7 @@ export default function Representation() {
 
                 <Link
                     href="/representation/nos-elues"
-                    className="group flex h-64 w-full max-w-sm flex-col items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/75 p-6 transition-all hover:bg-black/[0.04] md:h-72"
+                    className="group flex h-64 w-full max-w-sm flex-col items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
                 >
                     <div className="flex items-center gap-3">
                         <Image
