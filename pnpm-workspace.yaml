@@ -19,3 +19,4 @@ overrides:
     "baseline-browser-mapping": "^2.10.31"
     "react-is": "^19.2.6"
     "reselect@5.1.1": "^5.2.0"
+    "typescript@^6": "npm:@typescript/native-preview@latest"
