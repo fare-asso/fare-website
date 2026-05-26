@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { render } from "react-email"
-import { isDevelopment } from "std-env"
 
 import NewGoogleUserTemplate from "@/../emails/new-google-user"
+import { env } from "@/env"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { createClient } from "@/helpers/supabase/server"
@@ -12,18 +12,20 @@ import { tryCatch } from "@/lib/utils"
 const NEW_USER_THRESHOLD_MS = 60_000 // 60 seconds
 
 export async function GET(request: Request) {
-    const host =
-        request.headers.get("x-forwarded-host") ??
-        request.headers.get("host")
+    // Only trust x-forwarded-host (set by the ingress); never the raw Host
+    // header, which is client-controllable. Fall back to the canonical URL.
+    const fallback = new URL(env.NEXT_PUBLIC_SITE_URL)
+    const host = request.headers.get("x-forwarded-host") ?? fallback.host
     const proto =
         request.headers.get("x-forwarded-proto") ??
-        (isDevelopment ? "http" : "https")
+        fallback.protocol.replace(":", "")
     const origin = `${proto}://${host}`
 
     const { searchParams } = new URL(request.url)
     const code = searchParams.get("code")
     let next = searchParams.get("next") ?? "/dashboard"
-    if (!next.startsWith("/")) {
+    // Reject absolute URLs and protocol-relative URLs (//attacker.com/...)
+    if (!next.startsWith("/") || next.startsWith("//")) {
         next = "/dashboard"
     }
 
@@ -63,11 +65,15 @@ async function upsertUserProfile(
     const upsertResult = await tryCatch(
         prisma.user.upsert({
             where: { id: user.id },
+            // Explicit role: schema default is ADMIN; we want first-time
+            // Google sign-ins to land as MEMBER (no UserPermission rows ⇒
+            // every permission-gated route bounces them to /unauthorized).
             create: {
                 id: user.id,
                 email: user.email,
                 name: fullName,
-                image: profilePicture
+                image: profilePicture,
+                role: "MEMBER"
             },
             update: {
                 ...(fullName ? { name: fullName } : {}),

@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { isDevelopment } from "std-env"
 
+import { env } from "@/env"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 import { captureActionError, withServerAction } from "@/lib/sentry"
@@ -13,10 +13,13 @@ import { tryCatch } from "@/lib/utils"
 async function loginWithGoogleActionImpl() {
     const supabase = await createClient()
 
+    // Only trust x-forwarded-host (set by the ingress); never the raw Host
+    // header, which is client-controllable. Fall back to the canonical URL.
+    const fallback = new URL(env.NEXT_PUBLIC_SITE_URL)
     const h = await headers()
-    const host = h.get("x-forwarded-host") ?? h.get("host")
+    const host = h.get("x-forwarded-host") ?? fallback.host
     const proto =
-        h.get("x-forwarded-proto") ?? (isDevelopment ? "http" : "https")
+        h.get("x-forwarded-proto") ?? fallback.protocol.replace(":", "")
     const origin = `${proto}://${host}`
 
     console.log(
