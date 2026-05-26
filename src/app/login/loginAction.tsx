@@ -1,10 +1,10 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { isDevelopment } from "std-env"
 
-import { env } from "@/env"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 import { captureActionError, withServerAction } from "@/lib/sentry"
@@ -13,11 +13,11 @@ import { tryCatch } from "@/lib/utils"
 async function loginWithGoogleActionImpl() {
     const supabase = await createClient()
 
-    // Get the origin from the request headers (works for both dev and preview deployments)
-    const url = new URL(env.NEXT_PUBLIC_SITE_URL)
-    const origin = isDevelopment
-        ? "http://localhost:3000"
-        : `${url.protocol}//${url.host}`
+    const h = await headers()
+    const host = h.get("x-forwarded-host") ?? h.get("host")
+    const proto =
+        h.get("x-forwarded-proto") ?? (isDevelopment ? "http" : "https")
+    const origin = `${proto}://${host}`
 
     console.log(
         "loginWithGoogleAction - redirectTo:",
