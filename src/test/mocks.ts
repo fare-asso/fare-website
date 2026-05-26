@@ -70,7 +70,7 @@ export function supabaseServerModule(client: {
 }) {
     return {
         createClient: vi.fn(async () => client),
-        createAdminClient: vi.fn(async () => client)
+        createAdminClient: vi.fn(() => client)
     }
 }
 

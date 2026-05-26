@@ -28,7 +28,7 @@ async function deleteAssociationActionImpl(
     const supabase = await createClient()
 
     // create supabase admin client (only on server)
-    const supabaseAdmin = await createAdminClient()
+    const supabaseAdmin = createAdminClient()
 
     // fetch association to delete
     const association = await prisma.association.findUnique({
