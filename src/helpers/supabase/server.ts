@@ -1,4 +1,5 @@
-import { type CookieOptions, createServerClient } from "@supabase/ssr"
+import { createServerClient } from "@supabase/ssr"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 
 import { env } from "@/env"
@@ -12,53 +13,33 @@ export async function createClient() {
         env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         {
             cookies: {
-                get(name: string) {
-                    return cookieStore.get(name)?.value
+                getAll() {
+                    return cookieStore.getAll()
                 },
-                set(name: string, value: string, options: CookieOptions) {
-                    // The `set` method may be called from a Server Component.
-                    // This can be ignored if you have middleware refreshing
-                    // user sessions.
-                    tryCatch(() => cookieStore.set({ name, value, ...options }))
-                },
-                remove(name: string, options: CookieOptions) {
-                    // The `delete` method may be called from a Server Component.
-                    // This can be ignored if you have middleware refreshing
-                    // user sessions.
-                    tryCatch(() =>
-                        cookieStore.set({ name, value: "", ...options })
-                    )
+                setAll(cookiesToSet) {
+                    tryCatch(() => {
+                        for (const { name, value, options } of cookiesToSet) {
+                            cookieStore.set(name, value, options)
+                        }
+                    })
                 }
             }
         }
     )
 }
 
-export async function createAdminClient() {
-    const cookieStore = await cookies()
-
-    return createServerClient(
+export function createAdminClient() {
+    // Bypass @supabase/ssr: it reads the user session from cookies and sends
+    // the user's JWT as Authorization, overriding the service-role key on
+    // PostgREST requests. The plain client sends the service-role key as
+    // both apikey and Authorization, so queries actually run as service_role.
+    return createSupabaseClient(
         env.NEXT_PUBLIC_SUPABASE_URL,
         env.SUPABASE_SERVICE_ROLE_KEY,
         {
-            cookies: {
-                get(name: string) {
-                    return cookieStore.get(name)?.value
-                },
-                set(name: string, value: string, options: CookieOptions) {
-                    // The `set` method may be called from a Server Component.
-                    // This can be ignored if you have middleware refreshing
-                    // user sessions.
-                    tryCatch(() => cookieStore.set({ name, value, ...options }))
-                },
-                remove(name: string, options: CookieOptions) {
-                    // The `delete` method may be called from a Server Component.
-                    // This can be ignored if you have middleware refreshing
-                    // user sessions.
-                    tryCatch(() =>
-                        cookieStore.set({ name, value: "", ...options })
-                    )
-                }
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
             }
         }
     )

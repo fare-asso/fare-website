@@ -27,7 +27,7 @@ async function inviteRepresentativeActionImpl(
     }
 
     // supabase Admin client
-    const supabase = await createAdminClient()
+    const supabase = createAdminClient()
 
     /* Data Validation */
     const email = formData.get("email")?.toString()

@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import type { Role } from "@/generated/prisma/client"
 import { updateSession } from "@/helpers/supabase/middleware"
 
-import { createClient } from "./helpers/supabase/server"
+import { createAdminClient, createClient } from "./helpers/supabase/server"
 
 const permissionProtectedRoutes: {
     pathIncludes: string
@@ -40,8 +40,11 @@ export async function proxy(request: NextRequest) {
 
     /* Authenticated */
 
-    // Fetch user role and check if soft-deleted
-    const userObject = await supabase
+    // Service-role client bypasses RLS / PostgREST grants. The user is
+    // already authenticated above; this only reads their own row.
+    const adminSupabase = createAdminClient()
+
+    const userObject = await adminSupabase
         .from("User")
         .select("role, deletedAt")
         .eq("id", data.user.id)
@@ -82,7 +85,7 @@ export async function proxy(request: NextRequest) {
     )
 
     if (matchedRoute) {
-        const permissionResult = await supabase
+        const permissionResult = await adminSupabase
             .from("UserPermission")
             .select("*, Permission( name )")
             .eq("userId", data.user.id)
