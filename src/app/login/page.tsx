@@ -109,7 +109,7 @@ function LoginPageContent() {
                     @fare-asso.fr)
                 </div>
 
-                <div className="flex w-96 max-w-full items-center justify-center py-6">
+                <div className="flex w-full items-center justify-center py-6">
                     <div className="flex-1 border-t border-gray-300"></div>
                     <span className="px-4 text-sm text-gray-500">ou</span>
                     <div className="flex-1 border-t border-gray-300"></div>
