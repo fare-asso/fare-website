@@ -65,15 +65,11 @@ async function upsertUserProfile(
     const upsertResult = await tryCatch(
         prisma.user.upsert({
             where: { id: user.id },
-            // Explicit role: schema default is ADMIN; we want first-time
-            // Google sign-ins to land as MEMBER (no UserPermission rows ⇒
-            // every permission-gated route bounces them to /unauthorized).
             create: {
                 id: user.id,
                 email: user.email,
                 name: fullName,
-                image: profilePicture,
-                role: "MEMBER"
+                image: profilePicture
             },
             update: {
                 ...(fullName ? { name: fullName } : {}),
