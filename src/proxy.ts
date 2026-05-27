@@ -51,7 +51,10 @@ export async function proxy(request: NextRequest) {
         .single()
 
     if (userObject.error || !userObject.data) {
-        console.error(userObject.error?.message || "User not found")
+        console.error(
+            "Supabase error:",
+            userObject.error?.message || "User not found"
+        )
         return NextResponse.redirect(new URL("/", request.url))
     }
 
