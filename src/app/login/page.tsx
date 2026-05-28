@@ -15,7 +15,7 @@ import { LoginWithGoogleButton, LoginWithPasswordButton } from "./LoginButton"
 export default async function LoginPage({
     searchParams
 }: {
-    searchParams: Promise<{ error: string }>
+    searchParams: Promise<{ error?: string }>
 }) {
     const { error } = await searchParams
 

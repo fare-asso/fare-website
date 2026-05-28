@@ -61,7 +61,7 @@ export function LoginWithPasswordButton() {
                     </div>
                 )}
 
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Mot de passe</Label>
                 <Input type="password" name="password" id="password" />
                 {passwordError?.passwordError && (
                     <div className="text-destructive text-sm font-medium">
@@ -71,7 +71,7 @@ export function LoginWithPasswordButton() {
                 <Button disabled={passwordPending} type="submit">
                     {passwordPending ? (
                         <>
-                            <LoaderIcon className="animation-duration-1500ms] animate-spin" />
+                            <LoaderIcon className="animation-duration-[1500ms] animate-spin" />
                             Connexion en cours
                         </>
                     ) : (
