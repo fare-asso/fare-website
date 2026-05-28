@@ -1,6 +1,5 @@
 import { ShieldUserIcon } from "lucide-react"
 import Image from "next/image"
-import { isDevelopment } from "std-env"
 
 import FARELogo from "#public/logo_fare.png"
 import {
@@ -49,19 +48,13 @@ export default async function LoginPage({
                     @fare-asso.fr)
                 </div>
 
-                {isDevelopment && (
-                    <>
-                        <div className="flex w-full items-center justify-center py-6">
-                            <div className="flex-1 border-t border-gray-300"></div>
-                            <span className="px-4 text-sm text-gray-500">
-                                ou
-                            </span>
-                            <div className="flex-1 border-t border-gray-300"></div>
-                        </div>
+                <div className="flex w-full items-center justify-center py-6">
+                    <div className="flex-1 border-t border-gray-300"></div>
+                    <span className="px-4 text-sm text-gray-500">ou</span>
+                    <div className="flex-1 border-t border-gray-300"></div>
+                </div>
 
-                        <LoginWithPasswordButton />
-                    </>
-                )}
+                <LoginWithPasswordButton />
             </CardContent>
         </Card>
     )
