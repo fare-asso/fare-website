@@ -12,7 +12,7 @@ import {
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
+import { createAdminClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -36,7 +36,7 @@ async function addPartenaireActionImpl(
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
     const fileExt = data.logo.name.split(".").pop() ?? "bin"
     const filePath = `${randomUUID()}.${fileExt}`
     const upload = await tryCatch(
