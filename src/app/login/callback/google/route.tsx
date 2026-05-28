@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs"
 import { NextResponse } from "next/server"
 import { render } from "react-email"
 
@@ -32,7 +33,10 @@ export async function GET(request: Request) {
     if (code) {
         const supabase = await createClient()
         const { error } = await supabase.auth.exchangeCodeForSession(code)
-        if (!error) {
+        if (error) {
+            console.error(error)
+            Sentry.captureException(error, { extra: { request } })
+        } else {
             console.log("User logged in successfully")
 
             await upsertUserProfile(supabase)

@@ -10,7 +10,6 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import { captureActionError } from "@/lib/sentry"
 
 import { LoginWithGoogleButton, LoginWithPasswordButton } from "./LoginButton"
 
@@ -20,10 +19,6 @@ export default async function LoginPage({
     searchParams: Promise<{ error?: string }>
 }) {
     const { error } = await searchParams
-
-    if (error) {
-        captureActionError(error, undefined, false)
-    }
 
     return (
         <Card className="mx-auto max-w-full min-w-1/3">
