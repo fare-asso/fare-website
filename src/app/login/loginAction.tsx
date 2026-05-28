@@ -1,8 +1,8 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
+import { isDevelopment } from "std-env"
 
 import { env } from "@/env"
 import { createClient } from "@/helpers/supabase/server"
@@ -50,6 +50,8 @@ async function loginWithPasswordActionImpl(
     _currentState: { emailError?: string; passwordError?: string } | undefined,
     formData: FormData
 ) {
+    if (!isDevelopment) return
+
     const supabase = await createClient()
 
     const email = formData.get("email")?.toString()
@@ -90,7 +92,7 @@ async function loginWithPasswordActionImpl(
     }
 
     // fetch user role
-    const { role, error: roleError } = await getCurrentUserRole()
+    const { error: roleError } = await getCurrentUserRole()
 
     if (roleError) {
         return {
@@ -99,21 +101,7 @@ async function loginWithPasswordActionImpl(
         }
     }
 
-    // Redirect user based on their role
-    switch (role) {
-        case "ADMIN":
-            revalidatePath("/dashboard")
-            redirect("/dashboard")
-            break
-        case "ASSO_OWNER":
-            revalidatePath("/espace-asso")
-            redirect("/espace-asso")
-            break
-        case "MEMBER":
-            revalidatePath("/dashboard")
-            redirect("/dashboard")
-            break
-    }
+    redirect("/dashboard")
 }
 
 export const loginWithGoogleAction = withServerAction(

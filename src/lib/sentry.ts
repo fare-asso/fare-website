@@ -47,9 +47,10 @@ export function withServerAction<A extends unknown[], R>(
 
 export function captureActionError(
     error: unknown,
-    context?: Record<string, string | number | boolean>
+    context?: Record<string, string | number | boolean>,
+    rethrow = true
 ): void {
-    unstable_rethrow(error)
+    if (rethrow) unstable_rethrow(error)
     console.error(error)
     Sentry.captureException(error, context ? { extra: context } : undefined)
 }
