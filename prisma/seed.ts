@@ -95,6 +95,58 @@ async function main() {
             description: "Retirer des membres du bureau"
         },
 
+        // Elus
+        {
+            name: "access:elus",
+            title: "Accès Elus",
+            category: "Elus",
+            description: "Voir la page de gestion des elus"
+        },
+        {
+            name: "create:elu",
+            title: "Créer Elus",
+            category: "Elus",
+            description: "Ajouter de nouveaux elus"
+        },
+        {
+            name: "edit:elu",
+            title: "Modifier Elus",
+            category: "Elus",
+            description: "Modifier les informations des elus"
+        },
+        {
+            name: "delete:elu",
+            title: "Supprimer Elus",
+            category: "Elus",
+            description: "Supprimer des elus"
+        },
+
+        // Instances
+        {
+            name: "access:instances",
+            title: "Accès Instances",
+            category: "Elus",
+            description: "Voir la page de gestion des instances"
+        },
+        {
+            name: "create:instance",
+            title: "Créer Instance",
+            category: "Elus",
+            description: "Ajouter de nouvelles instances"
+        },
+        {
+            name: "edit:instance",
+            title: "Modifier Instance",
+            category: "Elus",
+            description: "Modifier les informations des instances"
+        },
+        {
+            name: "delete:instance",
+            title: "Supprimer Instance",
+            category: "Elus",
+            description: "Supprimer des instances"
+        },
+
         // Associations
         {
             name: "create:association",
