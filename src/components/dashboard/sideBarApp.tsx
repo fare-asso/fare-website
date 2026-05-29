@@ -4,7 +4,10 @@ import {
     FileUserIcon,
     MessageCircleQuestionMarkIcon,
     NewspaperIcon,
-    ShieldIcon
+    ShieldIcon,
+    LucideLandmark,
+    LucideUsers,
+    Megaphone
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -88,6 +91,24 @@ export default function SideBarApp({
                     hidden: !permissions?.find(
                         (p) => p.name === "access:members"
                     )
+                },
+                {
+                    href: "/dashboard/elus",
+                    title: "Représentants",
+                    icon: <Megaphone />,
+                    hidden: !permissions?.find((p) => p.name === "access:elus"), // Permissions pas config, commente la ligne pour les voir
+                    children: [
+                        {
+                            href: "/dashboard/elus",
+                            title: "Liste des eluEs",
+                            icon: <LucideUsers />
+                        },
+                        {
+                            href: "/dashboard/elus/instances",
+                            title: "Instances",
+                            icon: <LucideLandmark />
+                        }
+                    ]
                 },
                 {
                     href: "/dashboard/articles",
