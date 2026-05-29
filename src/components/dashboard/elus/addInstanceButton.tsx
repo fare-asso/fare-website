@@ -1,0 +1,265 @@
+"use client"
+
+import { useForm } from "@tanstack/react-form"
+import { Loader2Icon } from "lucide-react"
+import { useState, useTransition } from "react"
+
+import addInstanceAction from "@/actions/instances/addInstanceAction"
+import { Button } from "@/components/ui/button"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from "@/components/ui/dialog"
+import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel
+} from "@/components/ui/field"
+import { FilePondInput } from "@/components/ui/filepond"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { AddInstanceSchema, type TAddInstance } from "@/schemas/instance"
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+
+const emptyForm: TAddInstance = {
+    name: "",
+    contactEmail: "",
+    description: "",
+    logo: undefined
+}
+
+export default function AddInstanceButton() {
+    const [open, setOpen] = useState(false)
+    const [isPending, submit] = useTransition()
+    const [submitError, setSubmitError] = useState<string | null>(null)
+
+    const form = useForm({
+        defaultValues: emptyForm,
+        validators: {
+            onChange: AddInstanceSchema,
+            onSubmit: AddInstanceSchema
+        },
+        // oxlint-disable-next-line require-await -- submission runs inside a transition
+        onSubmit: async ({ value }) => {
+            setSubmitError(null)
+            submit(async () => {
+                const res = await addInstanceAction(value)
+                if (res.success) {
+                    setOpen(false)
+                    form.reset()
+                } else {
+                    setSubmitError(res.error)
+                }
+            })
+        }
+    })
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button>Ajouter une Nouvelle Instance</Button>
+            </DialogTrigger>
+            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[60%] lg:max-w-[40%]">
+                <DialogHeader>
+                    <DialogTitle>Nouvelle Instance</DialogTitle>
+                    <DialogDescription>
+                        Formulaire d'ajout d'une nouvelle instance.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <form
+                    id="addInstanceForm"
+                    className="overflow-y-auto p-2"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        form.handleSubmit()
+                    }}
+                >
+                    <FieldGroup>
+                        <form.Field
+                            name="name"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Nom de l'instance
+                                        </FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
+                                            placeholder="Nom"
+                                        />
+                                        {isInvalid && (
+                                            <FieldError>
+                                                Le nom est requis.
+                                            </FieldError>
+                                        )}
+                                    </Field>
+                                )
+                            }}
+                        />
+
+                        <form.Field
+                            name="contactEmail"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Email de contact
+                                        </FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            type="email"
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
+                                            placeholder="contact@exemple.fr"
+                                        />
+                                        {isInvalid && (
+                                            <FieldError>
+                                                Un email de contact valide est
+                                                requis.
+                                            </FieldError>
+                                        )}
+                                    </Field>
+                                )
+                            }}
+                        />
+
+                        <form.Field
+                            name="description"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Description{" "}
+                                            <span className="text-muted-foreground">
+                                                (optionnel)
+                                            </span>
+                                        </FieldLabel>
+                                        <Textarea
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value ?? ""}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            maxLength={1000}
+                                            className="max-h-[170px]"
+                                            placeholder="(Max: 1000 caractères)"
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError>
+                                                La description ne peut pas
+                                                dépasser 1000 caractères.
+                                            </FieldError>
+                                        )}
+                                    </Field>
+                                )
+                            }}
+                        />
+
+                        <form.Field
+                            name="logo"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Logo{" "}
+                                            <span className="text-muted-foreground">
+                                                (optionnel)
+                                            </span>
+                                        </FieldLabel>
+                                        <FieldDescription>
+                                            Format : PNG, JPG, WebP, SVG.
+                                            Maximum{" "}
+                                            {MAX_FILE_SIZE / (1024 * 1024)} Mo.
+                                            Format recommandé : carré.
+                                        </FieldDescription>
+                                        <FilePondInput
+                                            maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
+                                            acceptedFileTypes={[
+                                                "image/png",
+                                                "image/jpeg",
+                                                "image/webp",
+                                                "image/svg+xml"
+                                            ]}
+                                            onChange={(file) =>
+                                                field.handleChange(file)
+                                            }
+                                        />
+                                        {isInvalid && (
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    </Field>
+                                )
+                            }}
+                        />
+
+                        {submitError && (
+                            <p
+                                role="alert"
+                                className="border-destructive bg-destructive/10 text-destructive rounded-md border px-4 py-3 text-sm"
+                            >
+                                {submitError}
+                            </p>
+                        )}
+                    </FieldGroup>
+                </form>
+
+                <DialogFooter>
+                    <Button
+                        type="submit"
+                        form="addInstanceForm"
+                        disabled={isPending}
+                    >
+                        {isPending ? (
+                            <Loader2Icon className="animate-spin" />
+                        ) : null}{" "}
+                        Ajouter
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
