@@ -14,7 +14,9 @@ export const env = createEnv({
         SMTP_SECURE: z.coerce.boolean().default(true),
         SMTP_USER: z.string(),
         SMTP_PASS: z.string(),
-        SMTP_FROM_EMAIL: z.email()
+        SMTP_FROM_EMAIL: z.email(),
+
+        DOKPLOY_DEPLOY_URL: z.string().optional()
     },
     client: {
         NEXT_PUBLIC_SUPABASE_URL: z.url(),
@@ -29,7 +31,8 @@ export const env = createEnv({
         NEXT_PUBLIC_SUPABASE_ANON_KEY:
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 
-        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+        NEXT_PUBLIC_SITE_URL:
+            process.env.DOKPLOY_DEPLOY_URL || process.env.NEXT_PUBLIC_SITE_URL,
         NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY:
             process.env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY,
         NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN
