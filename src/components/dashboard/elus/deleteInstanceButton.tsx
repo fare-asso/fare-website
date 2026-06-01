@@ -85,7 +85,8 @@ export default function DeleteInstanceButton({
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         Cette action est permanente et les données de l'instance
-                        ne peuvent être récupérées.
+                        ne peuvent être récupérées. Tous les conseils ET les
+                        éluEs de cette instance seront aussi suppriméEs.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

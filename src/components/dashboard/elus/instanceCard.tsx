@@ -3,6 +3,10 @@
 import { Building2Icon, MailIcon, UsersIcon } from "lucide-react"
 import Image from "next/image"
 
+import EditInstanceButton from "@/components/dashboard/elus/editInstanceButton"
+import DeleteInstanceButton from "@/components/dashboard/elus/deleteInstanceButton"
+
+
 import type { Instance } from "@/generated/prisma/client"
 
 type InstanceWithCount = Instance & {
@@ -70,7 +74,8 @@ export default function InstanceCard({
                 {/* Actions footer */}
                 {canDelete || canEdit ? (
                     <div className="mt-auto flex items-center gap-1 border-t pt-2">
-                        {/* TODO: EditInstanceButton / DeleteInstanceButton */}
+                      {canEdit ? <EditInstanceButton instance={instance} /> : null}
+                      {canDelete ? <DeleteInstanceButton instance={instance} /> : null}
                     </div>
                 ) : null}
             </div>

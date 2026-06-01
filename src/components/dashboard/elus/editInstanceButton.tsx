@@ -136,6 +136,42 @@ export default function EditInstanceButton({
                         />
 
                         <form.Field
+                            name="contactEmail"
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Email de contact
+                                        </FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            type="email"
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
+                                            placeholder="contact@exemple.fr"
+                                        />
+                                        {isInvalid && (
+                                            <FieldError>
+                                                Un email de contact valide est
+                                                requis.
+                                            </FieldError>
+                                        )}
+                                    </Field>
+                                )
+                            }}
+                        />
+
+                        <form.Field
                             name="description"
                             children={(field) => {
                                 const isInvalid =
@@ -144,12 +180,15 @@ export default function EditInstanceButton({
                                 return (
                                     <Field data-invalid={isInvalid}>
                                         <FieldLabel htmlFor={field.name}>
-                                            Description
+                                            Description{" "}
+                                            <span className="text-muted-foreground">
+                                                (optionnel)
+                                            </span>
                                         </FieldLabel>
                                         <Textarea
                                             id={field.name}
                                             name={field.name}
-                                            value={field.state.value}
+                                            value={field.state.value ?? ""}
                                             onBlur={field.handleBlur}
                                             onChange={(e) =>
                                                 field.handleChange(
@@ -163,8 +202,8 @@ export default function EditInstanceButton({
                                         />
                                         {isInvalid && (
                                             <FieldError>
-                                                La description est requise (max
-                                                1000 caractères).
+                                                La description ne peut pas
+                                                dépasser 1000 caractères.
                                             </FieldError>
                                         )}
                                     </Field>
