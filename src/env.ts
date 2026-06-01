@@ -14,7 +14,16 @@ export const env = createEnv({
         SMTP_SECURE: z.coerce.boolean().default(true),
         SMTP_USER: z.string(),
         SMTP_PASS: z.string(),
-        SMTP_FROM_EMAIL: z.email()
+        SMTP_FROM_EMAIL: z.email(),
+
+        DOKPLOY_DEPLOY_URL: z
+            .string()
+            .optional()
+            .transform((val) => {
+                if (!val) return undefined
+                if (val.startsWith("https://")) return val
+                return `https://${val}`
+            })
     },
     client: {
         NEXT_PUBLIC_SUPABASE_URL: z.url(),
