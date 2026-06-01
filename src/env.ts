@@ -31,8 +31,7 @@ export const env = createEnv({
         NEXT_PUBLIC_SUPABASE_ANON_KEY:
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 
-        NEXT_PUBLIC_SITE_URL:
-            process.env.DOKPLOY_DEPLOY_URL || process.env.NEXT_PUBLIC_SITE_URL,
+        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
         NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY:
             process.env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY,
         NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN
