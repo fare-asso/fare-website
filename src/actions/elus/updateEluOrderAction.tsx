@@ -51,4 +51,7 @@ async function updateEluOrderActionImpl(eluOrder: EluOrder[]) {
     return { success: true }
 }
 
-export default withServerAction("updateEluOrderAction", updateEluOrderActionImpl)
+export default withServerAction(
+    "updateEluOrderAction",
+    updateEluOrderActionImpl
+)

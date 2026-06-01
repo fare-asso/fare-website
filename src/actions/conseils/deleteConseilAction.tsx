@@ -8,9 +8,7 @@ import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-type DeleteConseilResult =
-    | { success: true }
-    | { success: false; error: string }
+type DeleteConseilResult = { success: true } | { success: false; error: string }
 
 async function deleteConseilActionImpl(
     _prevState: DeleteConseilResult | undefined,
