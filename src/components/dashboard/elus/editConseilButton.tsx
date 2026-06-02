@@ -164,10 +164,9 @@ export default function EditConseilButton({
                         field={field}
                         label="Description (optionnel)"
                         multiline
-                        maxLength={1000}
                         className="max-h-[170px]"
-                        placeholder="(Max: 1000 caractères)"
-                        error="La description ne peut pas dépasser 1000 caractères."
+                        placeholder="Description du conseil"
+                        error="La description est invalide."
                     />
                 )}
             />
