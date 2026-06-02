@@ -64,7 +64,10 @@ async function addInstanceActionImpl(
     if (!created.success) {
         captureActionError(created.error)
         if (logoPath) {
-            await supabase.storage.from("instance-pictures").remove([logoPath])
+            const cleanup = await tryCatch(
+                supabase.storage.from("instance-pictures").remove([logoPath])
+            )
+            if (!cleanup.success) captureActionError(cleanup.error)
         }
         return {
             success: false,

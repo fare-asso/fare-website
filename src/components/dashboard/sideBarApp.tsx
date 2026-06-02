@@ -96,7 +96,7 @@ export default function SideBarApp({
                     href: "/dashboard/elus",
                     title: "Représentants",
                     icon: <Megaphone />,
-                    hidden: !permissions?.find((p) => p.name === "access:elus"), // Permissions pas config, commente la ligne pour les voir
+                    hidden: !permissions?.find((p) => p.name === "access:elus"),
                     children: [
                         {
                             href: "/dashboard/elus",

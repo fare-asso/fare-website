@@ -70,11 +70,12 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
         logoPath = upload.value.path
 
         if (current.value.logoPath && current.value.logoPath.length > 0) {
-            await tryCatch(
+            const cleanup = await tryCatch(
                 supabase.storage
                     .from("instance-pictures")
                     .remove([current.value.logoPath])
             )
+            if (!cleanup.success) captureActionError(cleanup.error)
         }
     }
 

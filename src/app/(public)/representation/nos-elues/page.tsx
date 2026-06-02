@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 export const metadata: Metadata = {
@@ -48,6 +49,10 @@ export default async function Elues(): Promise<React.JSX.Element> {
             orderBy: { order: "asc" }
         })
     )
+
+    if (!result.success) {
+        captureActionError(result.error)
+    }
 
     const instances = (result.success ? result.value : []).map((instance) => ({
         ...instance,

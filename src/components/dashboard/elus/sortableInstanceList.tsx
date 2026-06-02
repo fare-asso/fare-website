@@ -68,6 +68,7 @@ export default function SortableInstanceList({
                 (i) => i.instance.id === over.id
             )
 
+            const previousInstances = instances
             const newInstances = arrayMove(instances, oldIndex, newIndex)
             setInstances(newInstances)
 
@@ -80,9 +81,9 @@ export default function SortableInstanceList({
 
                 const result = await updateInstanceOrderAction(instanceOrder)
 
-                if ("error" in result) {
+                if (!result.success) {
                     // Revert on error
-                    setInstances(instances)
+                    setInstances(previousInstances)
                     toast.error(result.error)
                 }
             })

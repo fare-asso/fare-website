@@ -1,7 +1,13 @@
 "use client"
 
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import {
+    startTransition,
+    useActionState,
+    useEffect,
+    useRef,
+    useState
+} from "react"
 import { toast } from "sonner"
 
 import deleteInstanceAction from "@/actions/instances/deleteInstanceAction"
@@ -37,10 +43,13 @@ export default function DeleteInstanceButton({
     >(deleteInstanceAction, undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
+    const handledState = useRef(formState)
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
         if (formState === undefined) return
+        if (handledState.current === formState) return
+        handledState.current = formState
         setIsLoading(false)
         if (formState.success) {
             setIsOpen(false)
@@ -48,6 +57,11 @@ export default function DeleteInstanceButton({
             toast.error(formState.error)
         }
     }, [formState])
+
+    const handleOpenChange = (open: boolean) => {
+        if (!open) setIsLoading(false)
+        setIsOpen(open)
+    }
 
     const handleDelete = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -62,7 +76,7 @@ export default function DeleteInstanceButton({
     }
 
     return (
-        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+        <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
             <Tooltip>
                 <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>

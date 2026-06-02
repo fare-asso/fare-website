@@ -63,6 +63,7 @@ export default function SortableEluList({
             const oldIndex = elus.findIndex((e) => e.id === active.id)
             const newIndex = elus.findIndex((e) => e.id === over.id)
 
+            const previousElus = elus
             const newElus = arrayMove(elus, oldIndex, newIndex)
             setElus(newElus)
 
@@ -75,9 +76,9 @@ export default function SortableEluList({
 
                 const result = await updateEluOrderAction(eluOrder)
 
-                if ("error" in result) {
+                if (!result.success) {
                     // Revert on error
-                    setElus(elus)
+                    setElus(previousElus)
                     toast.error(result.error)
                 }
             })

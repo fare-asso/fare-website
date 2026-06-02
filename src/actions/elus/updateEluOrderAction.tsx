@@ -13,14 +13,17 @@ interface EluOrder {
     order: number
 }
 
-async function updateEluOrderActionImpl(eluOrder: EluOrder[]) {
+async function updateEluOrderActionImpl(
+    eluOrder: EluOrder[]
+): Promise<{ success: true } | { success: false; error: string }> {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "edit:elu")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de modifier des élu·e·s"
         }
     }
@@ -39,6 +42,7 @@ async function updateEluOrderActionImpl(eluOrder: EluOrder[]) {
     if (!result.success) {
         captureActionError(result.error)
         return {
+            success: false,
             error: "La mise à jour de l'ordre des élu·e·s a échoué. Veuillez réessayer."
         }
     }
