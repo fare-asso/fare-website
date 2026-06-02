@@ -1,12 +1,14 @@
 "use client"
 
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import clsx from "clsx"
 import { Building2Icon, MailIcon, UsersIcon } from "lucide-react"
 import Image from "next/image"
+import { MdDragIndicator } from "react-icons/md"
 
-import EditInstanceButton from "@/components/dashboard/elus/editInstanceButton"
 import DeleteInstanceButton from "@/components/dashboard/elus/deleteInstanceButton"
-
-
+import EditInstanceButton from "@/components/dashboard/elus/editInstanceButton"
 import type { Instance } from "@/generated/prisma/client"
 
 type InstanceWithCount = Instance & {
@@ -28,8 +30,29 @@ export default function InstanceCard({
 }: InstanceCardProps): React.JSX.Element {
     const conseilCount = instance._count.conseils
 
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: instance.id })
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition
+    }
+
     return (
-        <div className="group bg-card flex flex-col rounded-lg border shadow-xs transition-shadow hover:shadow-md">
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={clsx(
+                "group bg-card flex flex-col rounded-lg border shadow-xs transition-shadow hover:shadow-md",
+                isDragging && "ring-primary/50 z-50 shadow-lg ring-2"
+            )}
+        >
             {/* Logo area */}
             <div className="bg-muted/50 group-hover:bg-muted relative flex aspect-square items-center justify-center rounded-t-lg transition-colors">
                 {logoUrl ? (
@@ -43,6 +66,20 @@ export default function InstanceCard({
                 ) : (
                     <Building2Icon className="text-muted-foreground/40 h-16 w-16" />
                 )}
+
+                {/* Drag handle */}
+                {canEdit ? (
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        className={clsx(
+                            "bg-muted/80 text-muted-foreground hover:bg-muted absolute top-1 left-1 flex h-7 w-7 cursor-grab items-center justify-center rounded-md opacity-0 transition-opacity group-hover:opacity-100",
+                            isDragging && "cursor-grabbing opacity-100"
+                        )}
+                    >
+                        <MdDragIndicator size={16} />
+                    </div>
+                ) : null}
             </div>
 
             {/* Content area */}
@@ -74,8 +111,12 @@ export default function InstanceCard({
                 {/* Actions footer */}
                 {canDelete || canEdit ? (
                     <div className="mt-auto flex items-center gap-1 border-t pt-2">
-                      {canEdit ? <EditInstanceButton instance={instance} /> : null}
-                      {canDelete ? <DeleteInstanceButton instance={instance} /> : null}
+                        {canEdit ? (
+                            <EditInstanceButton instance={instance} />
+                        ) : null}
+                        {canDelete ? (
+                            <DeleteInstanceButton instance={instance} />
+                        ) : null}
                     </div>
                 ) : null}
             </div>

@@ -4,7 +4,9 @@ import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
 import { tryCatch } from "@/lib/utils"
 
-import InstanceCard from "./instanceCard"
+import SortableInstanceList, {
+    type InstanceWithLogo
+} from "./sortableInstanceList"
 
 interface InstanceListProps {
     canEdit: boolean
@@ -51,30 +53,28 @@ export default async function InstanceList({
         )
     }
 
+    const instancesWithLogo: InstanceWithLogo[] = instances.value.map(
+        (instance) => ({
+            instance,
+            logoUrl: instance.logoPath
+                ? supabase.storage
+                      .from("instance-pictures")
+                      .getPublicUrl(instance.logoPath).data.publicUrl
+                : null
+        })
+    )
+
     return (
         <div className="bg-card text-card-foreground h-full w-full overflow-y-auto rounded-lg border p-4 shadow-xs md:p-6">
             <p className="text-muted-foreground mb-4 text-sm">
                 {instances.value.length} instance
                 {instances.value.length > 1 ? "s" : ""}
             </p>
-            <div className="grid h-auto w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {instances.value.map((instance) => (
-                    <InstanceCard
-                        key={instance.id}
-                        instance={instance}
-                        logoUrl={
-                            instance.logoPath
-                                ? supabase.storage
-                                      .from("instance-pictures")
-                                      .getPublicUrl(instance.logoPath).data
-                                      .publicUrl
-                                : null
-                        }
-                        canEdit={canEdit}
-                        canDelete={canDelete}
-                    />
-                ))}
-            </div>
+            <SortableInstanceList
+                initialInstances={instancesWithLogo}
+                canEdit={canEdit}
+                canDelete={canDelete}
+            />
         </div>
     )
 }
