@@ -6,6 +6,17 @@ interface TryStatementNode extends Ranged {
     finalizer: Ranged | null
 }
 
+interface TypeMember extends Ranged {
+    type: string
+    optional?: boolean
+    key?: { type: string; name?: string }
+}
+
+interface TSTypeLiteralNode extends Ranged {
+    type: "TSTypeLiteral"
+    members: TypeMember[]
+}
+
 interface Context {
     id: string
     filename: string
@@ -24,6 +35,7 @@ interface Rule {
     }
     create(context: Context): {
         TryStatement?: (node: TryStatementNode) => void
+        TSTypeLiteral?: (node: TSTypeLiteralNode) => void
     }
 }
 
@@ -67,11 +79,69 @@ const noTryCatch: Rule = {
     }
 }
 
+// --- Rule: local/no-optional-result -------------------------------------
+function isOptionalNamed(member: TypeMember, name: string): boolean {
+    return (
+        member.type === "TSPropertySignature" &&
+        member.optional === true &&
+        member.key?.type === "Identifier" &&
+        member.key.name === name
+    )
+}
+
+const noOptionalResult: Rule = {
+    meta: {
+        type: "problem",
+        docs: {
+            description:
+                "Disallow optional `success?`/`error?` fields on action result types; " +
+                "use a discriminated union `{ success: true; value } | { success: false; error }`."
+        },
+        messages: {
+            preferDiscriminatedResult:
+                "Action results must be a discriminated union " +
+                "`{ success: true; value: T } | { success: false; error: string }`, not " +
+                "an object with optional `success?`/`error?` fields. Callers narrow on " +
+                "`success`, so it must always be present and literal."
+        }
+    },
+    create(context) {
+        return {
+            TSTypeLiteral(node) {
+                // Only flag object types that look like an action result: the
+                // tell is an OPTIONAL `success` discriminant. A standalone
+                // optional `error?` (e.g. a component prop) is left alone to
+                // avoid false positives.
+                const members = node.members
+                const hasOptionalSuccess = members.some((member) =>
+                    isOptionalNamed(member, "success")
+                )
+                if (!hasOptionalSuccess) {
+                    return
+                }
+
+                for (const member of members) {
+                    if (
+                        isOptionalNamed(member, "success") ||
+                        isOptionalNamed(member, "error")
+                    ) {
+                        context.report({
+                            node: member,
+                            messageId: "preferDiscriminatedResult"
+                        })
+                    }
+                }
+            }
+        }
+    }
+}
+
 // --- Plugin -------------------------------------------------------------
 const plugin: Plugin = {
     meta: { name: "local" },
     rules: {
-        "no-try-catch": noTryCatch
+        "no-try-catch": noTryCatch,
+        "no-optional-result": noOptionalResult
     }
 }
 
