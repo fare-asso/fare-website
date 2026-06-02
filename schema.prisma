@@ -24,6 +24,7 @@ model UserPermission {
   permissionId Int
 
   @@unique([userId, permissionId])
+  @@index([permissionId])
 }
 
 model User {
@@ -103,6 +104,9 @@ model Event {
   visibility Boolean  @default(false)
   category   Category @relation(fields: [categoryId], references: [id])
   createdBy  User     @relation(fields: [creatorId], references: [id])
+
+  @@index([categoryId])
+  @@index([creatorId])
 }
 
 model Category {
@@ -125,6 +129,9 @@ model Article {
   validatedById String?
   validatedBy User? @relation("ValidatedArticles", fields: [validatedById], references: [id])
   validatedAt DateTime?
+
+  @@index([authorId])
+  @@index([validatedById])
 }
 
 model CommuniqueDePresse {
