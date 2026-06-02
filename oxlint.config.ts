@@ -148,9 +148,9 @@ export default defineConfig({
         "unicorn/throw-new-error": "error",
         "typescript/only-throw-error": "error",
 
-        // local plugin (./tools/oxlint-rules) — nudges towards the
-        // tryCatch helper from @/lib/utils in place of try/catch.
-        "local/no-try-catch": "warn",
+        // local plugin (./tools/oxlint-rules) — enforces the tryCatch
+        // helper from @/lib/utils in place of try/catch.
+        "local/no-try-catch": "error",
 
         // suspicious
         "vitest/no-duplicate-hooks": "error",
