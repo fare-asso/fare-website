@@ -56,7 +56,7 @@ export function DialogForm({
             {trigger}
             <DialogContent
                 className={cn(
-                    "h-[90%] max-h-[90%] sm:max-w-[60%] lg:max-w-[40%]",
+                    "max-h-[90%] grid-rows-[auto_minmax(0,1fr)_auto] sm:max-w-[60%] lg:max-w-[40%]",
                     contentClassName
                 )}
             >
@@ -67,7 +67,7 @@ export function DialogForm({
 
                 <form
                     id={formId}
-                    className="overflow-y-auto p-2"
+                    className="min-h-0 overflow-y-auto p-2"
                     onSubmit={(e) => {
                         e.preventDefault()
                         onSubmit()
