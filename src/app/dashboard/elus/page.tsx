@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Suspense } from "react"
 
 import AddEluButton from "@/components/dashboard/elus/addEluButton"
+import BulkImportElusButton from "@/components/dashboard/elus/bulkImportElusButton"
 import EluList from "@/components/dashboard/elus/eluList"
 import {
     Card,
@@ -74,8 +75,9 @@ export default async function Elues(): Promise<React.JSX.Element> {
                 </Suspense>
             </CardContent>
             {canCreateElu ? (
-                <CardFooter className="p-0">
+                <CardFooter className="flex gap-2 p-0">
                     <AddEluButton instances={instanceOptions} />
+                    <BulkImportElusButton instances={instanceOptions} />
                 </CardFooter>
             ) : null}
         </Card>
