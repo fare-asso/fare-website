@@ -67,7 +67,12 @@ async function addInstanceActionImpl(
             const cleanup = await tryCatch(
                 supabase.storage.from("instance-pictures").remove([logoPath])
             )
-            if (!cleanup.success) captureActionError(cleanup.error)
+            if (!cleanup.success)
+                captureActionError(
+                    new Error("Echec de la suppression du logo", {
+                        cause: created.error
+                    })
+                )
         }
         return {
             success: false,

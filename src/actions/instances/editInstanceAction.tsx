@@ -75,7 +75,12 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
                     .from("instance-pictures")
                     .remove([current.value.logoPath])
             )
-            if (!cleanup.success) captureActionError(cleanup.error)
+            if (!cleanup.success)
+                captureActionError(
+                    new Error("Echec de la suppression du logo", {
+                        cause: cleanup.error
+                    })
+                )
         }
     }
 
