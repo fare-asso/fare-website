@@ -38,11 +38,15 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
     const current = await tryCatch(
         prisma.instance.findUnique({
             where: { id: data.id },
-            select: { logoPath: true }
+            select: { logoPaths: true }
         })
     )
     if (!current.success) {
-        captureActionError(current.error)
+        captureActionError(
+            new Error("Echec de la récupération de l'instance", {
+                cause: current.error
+            })
+        )
         return {
             success: false,
             error: "Échec de la récupération de l'instance."
@@ -53,35 +57,66 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
         return { success: false, error: "Instance introuvable." }
     }
 
-    let logoPath = current.value.logoPath
+    let logoPaths = current.value.logoPaths
 
-    if (data.logo) {
-        const fileExt = data.logo.name.split(".").pop() ?? "bin"
-        const newPath = `${randomUUID()}.${fileExt}`
-        const upload = await tryCatch(
-            supabase.storage
-                .from("instance-pictures")
-                .upload(newPath, data.logo, { contentType: data.logo.type })
+    if (data.logos && data.logos.length > 0) {
+        const uploads = await tryCatch(
+            Promise.all(
+                data.logos.map((file) => {
+                    const fileExt = file.name.split(".").pop() ?? "bin"
+                    const newPath = `${randomUUID()}.${fileExt}`
+                    return supabase.storage
+                        .from("instance-pictures")
+                        .upload(newPath, file, { contentType: file.type })
+                })
+            )
         )
-        if (!upload.success) {
-            captureActionError(upload.error)
-            return { success: false, error: "Échec de l'upload du logo." }
+        if (!uploads.success) {
+            captureActionError(
+                new Error("Echec de l'upload des logos", {
+                    cause: uploads.error
+                })
+            )
+            return { success: false, error: "Échec de l'upload des logos." }
         }
-        logoPath = upload.value.path
 
-        if (current.value.logoPath && current.value.logoPath.length > 0) {
+        // tryCatch ne déballe pas un tableau de { data, error } : inspecter
+        // chaque résultat et nettoyer les uploads réussis si l'un d'eux échoue.
+        const succeeded = uploads.value
+            .map((response) => response.data?.path)
+            .filter((path): path is string => path !== undefined)
+        if (
+            uploads.value.some((response) => response.error || !response.data)
+        ) {
+            if (succeeded.length > 0) {
+                const cleanup = await tryCatch(
+                    supabase.storage.from("instance-pictures").remove(succeeded)
+                )
+                if (!cleanup.success)
+                    captureActionError(
+                        new Error("Echec du nettoyage des logos partiels", {
+                            cause: cleanup.error
+                        })
+                    )
+            }
+            return { success: false, error: "Échec de l'upload des logos." }
+        }
+
+        // Remplacement : supprimer l'ancien set uniquement après succès complet
+        if (current.value.logoPaths.length > 0) {
             const cleanup = await tryCatch(
                 supabase.storage
                     .from("instance-pictures")
-                    .remove([current.value.logoPath])
+                    .remove(current.value.logoPaths)
             )
             if (!cleanup.success)
                 captureActionError(
-                    new Error("Echec de la suppression du logo", {
+                    new Error("Echec de la suppression des anciens logos", {
                         cause: cleanup.error
                     })
                 )
         }
+        logoPaths = succeeded
     }
 
     const updated = await tryCatch(
@@ -91,12 +126,16 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
                 name: data.name,
                 contactEmail: data.contactEmail,
                 description: data.description ?? null,
-                logoPath
+                logoPaths
             }
         })
     )
     if (!updated.success) {
-        captureActionError(updated.error)
+        captureActionError(
+            new Error("Echec de la modification de l'instance", {
+                cause: updated.error
+            })
+        )
         return {
             success: false,
             error: "Échec de la modification de l'instance."

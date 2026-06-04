@@ -60,7 +60,7 @@ model Instance {
   name         String
   contactEmail String
   description  String?
-  logoPath     String?
+  logoPaths    String[]  @default([])
   order        Int       @default(0)
   conseils     Conseil[]
 }

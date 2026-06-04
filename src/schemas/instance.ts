@@ -1,18 +1,20 @@
 import { type } from "arktype"
+import { z } from "zod/mini"
 
 import { fileSchema } from "@/schemas/reusables"
 
-const logoSchemaOptions = {
-    mimeType: "image" as const,
-    errorMessage: "Veuillez fournir un logo.",
-    typeErrorMessage: "Le logo doit être au format PNG, JPG, WebP ou SVG."
-}
+const logosSchema = z.array(
+    fileSchema({
+        mimeType: "image",
+        typeErrorMessage: "Le logo doit être au format PNG, JPG, WebP ou SVG."
+    })
+)
 
 export const AddInstanceSchema = type({
     name: "string >= 1",
     contactEmail: "string.email >= 1",
     "description?": "string <= 1000",
-    "logo?": fileSchema({ ...logoSchemaOptions, optional: true })
+    "logos?": logosSchema
 })
 
 export const EditInstanceSchema = type({
@@ -20,7 +22,7 @@ export const EditInstanceSchema = type({
     name: "string >= 1",
     contactEmail: "string.email >= 1",
     "description?": "string <= 1000",
-    "logo?": fileSchema({ ...logoSchemaOptions, optional: true })
+    "logos?": logosSchema
 })
 
 export type TAddInstance = typeof AddInstanceSchema.infer

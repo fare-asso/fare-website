@@ -30,7 +30,7 @@ type InstanceWithCount = Instance & {
 
 export interface InstanceWithLogo {
     instance: InstanceWithCount
-    logoUrl: string | null
+    logoUrls: string[]
 }
 
 interface SortableInstanceListProps {
@@ -109,7 +109,7 @@ export default function SortableInstanceList({
                         <InstanceCard
                             key={item.instance.id}
                             instance={item.instance}
-                            logoUrl={item.logoUrl}
+                            logoUrls={item.logoUrls}
                             canEdit={canEdit}
                             canDelete={canDelete}
                         />

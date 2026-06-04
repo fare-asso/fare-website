@@ -56,11 +56,11 @@ export default async function Elues(): Promise<React.JSX.Element> {
 
     const instances = (result.success ? result.value : []).map((instance) => ({
         ...instance,
-        logoUrl: instance.logoPath
-            ? supabase.storage
-                  .from("instance-pictures")
-                  .getPublicUrl(instance.logoPath).data.publicUrl
-            : null
+        logoUrls: instance.logoPaths.map(
+            (path) =>
+                supabase.storage.from("instance-pictures").getPublicUrl(path)
+                    .data.publicUrl
+        )
     }))
 
     return (
@@ -88,15 +88,18 @@ export default async function Elues(): Promise<React.JSX.Element> {
                     instances.map((instance) => (
                         <section key={instance.id} className="space-y-6">
                             <div className="flex flex-col items-center space-y-6">
-                                {instance.logoUrl ? (
-                                    <div className="mt-20 flex w-full flex-row items-center justify-center space-x-6">
-                                        <Image
-                                            src={instance.logoUrl}
-                                            width={220}
-                                            height={220}
-                                            alt={`Logo de ${instance.name}`}
-                                            className="h-auto w-32 object-contain md:h-44 md:w-auto"
-                                        />
+                                {instance.logoUrls.length > 0 ? (
+                                    <div className="mt-20 flex w-full flex-row flex-wrap items-center justify-center gap-6">
+                                        {instance.logoUrls.map((url, index) => (
+                                            <Image
+                                                key={url}
+                                                src={url}
+                                                width={220}
+                                                height={220}
+                                                alt={`Logo ${index + 1} de ${instance.name}`}
+                                                className="h-auto w-32 object-contain md:h-44 md:w-auto"
+                                            />
+                                        ))}
                                     </div>
                                 ) : null}
 

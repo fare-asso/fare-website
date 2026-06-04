@@ -67,11 +67,12 @@ export default async function InstanceList({
     const instancesWithLogo: InstanceWithLogo[] = instances.value.map(
         (instance) => ({
             instance,
-            logoUrl: instance.logoPath
-                ? supabase.storage
-                      .from("instance-pictures")
-                      .getPublicUrl(instance.logoPath).data.publicUrl
-                : null
+            logoUrls: instance.logoPaths.map(
+                (path) =>
+                    supabase.storage
+                        .from("instance-pictures")
+                        .getPublicUrl(path).data.publicUrl
+            )
         })
     )
 

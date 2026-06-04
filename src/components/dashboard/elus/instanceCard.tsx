@@ -17,14 +17,14 @@ type InstanceWithCount = Instance & {
 
 interface InstanceCardProps {
     instance: InstanceWithCount
-    logoUrl: string | null
+    logoUrls: string[]
     canEdit: boolean
     canDelete: boolean
 }
 
 export default function InstanceCard({
     instance,
-    logoUrl,
+    logoUrls,
     canEdit,
     canDelete
 }: InstanceCardProps): React.JSX.Element {
@@ -55,14 +55,19 @@ export default function InstanceCard({
         >
             {/* Logo area */}
             <div className="bg-muted/50 group-hover:bg-muted relative flex aspect-square items-center justify-center rounded-t-lg transition-colors">
-                {logoUrl ? (
-                    <Image
-                        src={logoUrl}
-                        width={220}
-                        height={220}
-                        alt={`Logo de ${instance.name}`}
-                        className="aspect-square w-full rounded-md object-contain"
-                    />
+                {logoUrls.length > 0 ? (
+                    <div className="flex h-full w-full flex-row flex-wrap items-center justify-center gap-2 p-2">
+                        {logoUrls.map((url, index) => (
+                            <Image
+                                key={url}
+                                src={url}
+                                width={220}
+                                height={220}
+                                alt={`Logo ${index + 1} de ${instance.name}`}
+                                className="aspect-square max-h-full w-auto max-w-[45%] rounded-md object-contain"
+                            />
+                        ))}
+                    </div>
                 ) : (
                     <Building2Icon className="text-muted-foreground/40 h-16 w-16" />
                 )}

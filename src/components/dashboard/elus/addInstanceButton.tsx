@@ -33,7 +33,7 @@ const emptyForm: TAddInstance = {
     name: "",
     contactEmail: "",
     description: "",
-    logo: undefined
+    logos: []
 }
 
 export default function AddInstanceButton({
@@ -211,7 +211,7 @@ export default function AddInstanceButton({
                         />
 
                         <form.Field
-                            name="logo"
+                            name="logos"
                             children={(field) => {
                                 const isInvalid =
                                     field.state.meta.isTouched &&
@@ -219,18 +219,19 @@ export default function AddInstanceButton({
                                 return (
                                     <Field data-invalid={isInvalid}>
                                         <FieldLabel htmlFor={field.name}>
-                                            Logo{" "}
+                                            Logos{" "}
                                             <span className="text-muted-foreground">
                                                 (optionnel)
                                             </span>
                                         </FieldLabel>
                                         <FieldDescription>
-                                            Format : PNG, JPG, WebP, SVG.
+                                            Formats : PNG, JPG, WebP, SVG.
                                             Maximum{" "}
-                                            {MAX_FILE_SIZE / (1024 * 1024)} Mo.
-                                            Format recommandé : carré.
+                                            {MAX_FILE_SIZE / (1024 * 1024)} Mo
+                                            par logo. Format recommandé : carré.
                                         </FieldDescription>
                                         <FilePondInput
+                                            allowMultiple
                                             maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
                                             acceptedFileTypes={[
                                                 "image/png",
@@ -238,8 +239,8 @@ export default function AddInstanceButton({
                                                 "image/webp",
                                                 "image/svg+xml"
                                             ]}
-                                            onChange={(file) =>
-                                                field.handleChange(file)
+                                            onChangeMultiple={(files) =>
+                                                field.handleChange(files)
                                             }
                                         />
                                         {isInvalid && (

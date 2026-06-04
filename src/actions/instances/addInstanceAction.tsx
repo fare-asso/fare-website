@@ -35,20 +35,50 @@ async function addInstanceActionImpl(
 
     const supabase = await createClient()
 
-    let logoPath: string | null = null
-    if (data.logo) {
-        const fileExt = data.logo.name.split(".").pop() ?? "bin"
-        const filePath = `${randomUUID()}.${fileExt}`
-        const upload = await tryCatch(
-            supabase.storage
-                .from("instance-pictures")
-                .upload(filePath, data.logo, { contentType: data.logo.type })
+    const logoPaths: string[] = []
+    if (data.logos && data.logos.length > 0) {
+        const uploads = await tryCatch(
+            Promise.all(
+                data.logos.map((file) => {
+                    const fileExt = file.name.split(".").pop() ?? "bin"
+                    const filePath = `${randomUUID()}.${fileExt}`
+                    return supabase.storage
+                        .from("instance-pictures")
+                        .upload(filePath, file, { contentType: file.type })
+                })
+            )
         )
-        if (!upload.success) {
-            captureActionError(upload.error)
-            return { success: false, error: "Échec de l'upload du logo." }
+        if (!uploads.success) {
+            captureActionError(
+                new Error("Echec de l'upload des logos", {
+                    cause: uploads.error
+                })
+            )
+            return { success: false, error: "Échec de l'upload des logos." }
         }
-        logoPath = upload.value.path
+
+        // tryCatch ne déballe pas un tableau de { data, error }, du coup on inspecte
+        // chaque résultat et nettoie tout si l'un d'eux échoue.
+        const succeeded = uploads.value
+            .map((response) => response.data?.path)
+            .filter((path): path is string => path !== undefined)
+        if (
+            uploads.value.some((response) => response.error || !response.data)
+        ) {
+            if (succeeded.length > 0) {
+                const cleanup = await tryCatch(
+                    supabase.storage.from("instance-pictures").remove(succeeded)
+                )
+                if (!cleanup.success)
+                    captureActionError(
+                        new Error("Echec du nettoyage des logos partiels", {
+                            cause: cleanup.error
+                        })
+                    )
+            }
+            return { success: false, error: "Échec de l'upload des logos." }
+        }
+        logoPaths.push(...succeeded)
     }
 
     const created = await tryCatch(
@@ -57,20 +87,24 @@ async function addInstanceActionImpl(
                 name: data.name,
                 contactEmail: data.contactEmail,
                 description: data.description ?? null,
-                logoPath
+                logoPaths
             }
         })
     )
     if (!created.success) {
-        captureActionError(created.error)
-        if (logoPath) {
+        captureActionError(
+            new Error("Echec de la création de l'instance", {
+                cause: created.error
+            })
+        )
+        if (logoPaths.length > 0) {
             const cleanup = await tryCatch(
-                supabase.storage.from("instance-pictures").remove([logoPath])
+                supabase.storage.from("instance-pictures").remove(logoPaths)
             )
             if (!cleanup.success)
                 captureActionError(
-                    new Error("Echec de la suppression du logo", {
-                        cause: created.error
+                    new Error("Echec de la suppression des logos", {
+                        cause: cleanup.error
                     })
                 )
         }

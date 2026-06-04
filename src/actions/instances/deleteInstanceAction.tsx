@@ -34,7 +34,11 @@ async function deleteInstanceActionImpl(
         prisma.instance.findUnique({ where: { id } })
     )
     if (!instance.success) {
-        captureActionError(instance.error)
+        captureActionError(
+            new Error("Echec de la récupération de l'instance", {
+                cause: instance.error
+            })
+        )
         return {
             success: false,
             error: "Echec de la suppression de l'instance"
@@ -44,24 +48,32 @@ async function deleteInstanceActionImpl(
         return { success: false, error: "Instance introuvable." }
     }
 
-    if (instance.value.logoPath && instance.value.logoPath.length > 0) {
+    if (instance.value.logoPaths.length > 0) {
         const removed = await tryCatch(
             supabase.storage
                 .from("instance-pictures")
-                .remove([instance.value.logoPath])
+                .remove(instance.value.logoPaths)
         )
         if (!removed.success) {
-            captureActionError(removed.error)
+            captureActionError(
+                new Error("Echec de la suppression des logos de l'instance", {
+                    cause: removed.error
+                })
+            )
             return {
                 success: false,
-                error: "Echec de la suppression du logo de l'instance"
+                error: "Echec de la suppression des logos de l'instance"
             }
         }
     }
 
     const deleted = await tryCatch(prisma.instance.delete({ where: { id } }))
     if (!deleted.success) {
-        captureActionError(deleted.error)
+        captureActionError(
+            new Error("Echec de la suppression de l'instance", {
+                cause: deleted.error
+            })
+        )
         return {
             success: false,
             error: "Echec de la suppression de l'instance"

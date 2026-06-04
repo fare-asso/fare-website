@@ -51,7 +51,7 @@ export default function EditInstanceButton({
             name: instance.name,
             contactEmail: instance.contactEmail,
             description: instance.description ?? "",
-            logo: undefined
+            logos: []
         } as TEditInstance,
         validators: {
             onChange: EditInstanceSchema,
@@ -212,7 +212,7 @@ export default function EditInstanceButton({
                         />
 
                         <form.Field
-                            name="logo"
+                            name="logos"
                             children={(field) => {
                                 const isInvalid =
                                     field.state.meta.isTouched &&
@@ -220,18 +220,22 @@ export default function EditInstanceButton({
                                 return (
                                     <Field data-invalid={isInvalid}>
                                         <FieldLabel htmlFor={field.name}>
-                                            Logo{" "}
+                                            Logos{" "}
                                             <span className="text-muted-foreground">
                                                 (optionnel)
                                             </span>
                                         </FieldLabel>
                                         <FieldDescription>
-                                            Laissez vide pour conserver le logo
-                                            actuel. Format : PNG, JPG, WebP,
+                                            Laissez vide pour conserver les
+                                            logos actuels. Téléverser de
+                                            nouveaux logos remplacera
+                                            l'ensemble. Format : PNG, JPG, WebP,
                                             SVG. Maximum{" "}
-                                            {MAX_FILE_SIZE / (1024 * 1024)} Mo.
+                                            {MAX_FILE_SIZE / (1024 * 1024)} Mo
+                                            par logo.
                                         </FieldDescription>
                                         <FilePondInput
+                                            allowMultiple
                                             maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
                                             acceptedFileTypes={[
                                                 "image/png",
@@ -239,8 +243,8 @@ export default function EditInstanceButton({
                                                 "image/webp",
                                                 "image/svg+xml"
                                             ]}
-                                            onChange={(file) =>
-                                                field.handleChange(file)
+                                            onChangeMultiple={(files) =>
+                                                field.handleChange(files)
                                             }
                                         />
                                         {isInvalid && (
