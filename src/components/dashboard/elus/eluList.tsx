@@ -128,7 +128,6 @@ export default function EluList({
                                                 index={conseilIndex}
                                             />
                                         ) : null}
-
                                     </div>
 
                                     {conseil.elus.length === 0 ? (

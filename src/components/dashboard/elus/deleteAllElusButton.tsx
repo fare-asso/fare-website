@@ -73,16 +73,19 @@ export default function DeleteAllElusButton({
                         <span className="font-bold">{conseilName}</span> ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Cette action supprimera définitivement les {eluIds.length}{" "}
-                        éluE{eluIds.length > 1 ? "s" : ""} de ce conseil. Les
-                        données ne peuvent pas être récupérées.
+                        Cette action supprimera définitivement les{" "}
+                        {eluIds.length} éluE{eluIds.length > 1 ? "s" : ""} de ce
+                        conseil. Les données ne peuvent pas être récupérées.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={isPending}>
                         Annuler
                     </AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} disabled={isPending}>
+                    <AlertDialogAction
+                        onClick={handleDelete}
+                        disabled={isPending}
+                    >
                         {isPending ? <LoadingRing /> : null} Tout supprimer
                     </AlertDialogAction>
                 </AlertDialogFooter>
