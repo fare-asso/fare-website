@@ -34,13 +34,15 @@ interface SortableEluListProps {
     instanceOptions: InstanceOption[]
     canEdit: boolean
     canDelete: boolean
+    addCard?: React.ReactNode
 }
 
 export default function SortableEluList({
     initialElus,
     instanceOptions,
     canEdit,
-    canDelete
+    canDelete,
+    addCard
 }: SortableEluListProps) {
     const [elus, setElus] = useState(initialElus)
     const [, startTransition] = useTransition()
@@ -106,6 +108,7 @@ export default function SortableEluList({
                             canDelete={canDelete}
                         />
                     ))}
+                    {addCard}
                 </div>
             </SortableContext>
         </DndContext>

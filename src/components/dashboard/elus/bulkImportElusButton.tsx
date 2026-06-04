@@ -131,7 +131,9 @@ export default function BulkImportElusButton({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button disabled={!hasConseils}>Importer (CSV)</Button>
+                <Button variant="outline" disabled={!hasConseils}>
+                    Importer (CSV)
+                </Button>
             </DialogTrigger>
             <DialogContent className="max-h-[90%] sm:max-w-[60%] lg:max-w-[40%]">
                 <DialogHeader>

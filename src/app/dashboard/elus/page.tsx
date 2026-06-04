@@ -1,14 +1,12 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 
-import AddEluButton from "@/components/dashboard/elus/addEluButton"
 import BulkImportElusButton from "@/components/dashboard/elus/bulkImportElusButton"
 import EluList from "@/components/dashboard/elus/eluList"
 import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
@@ -55,17 +53,21 @@ export default async function Elues(): Promise<React.JSX.Element> {
 
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
-            <CardHeader className="p-0">
-                <CardTitle>Élu·e·s</CardTitle>
-                <CardDescription>
-                    Espace de gestion des élu·e·s de la Fédération
-                </CardDescription>
+            <CardHeader className="flex justify-between p-0">
+                <div>
+                    <CardTitle>Élu·e·s</CardTitle>
+                    <CardDescription>
+                        Espace de gestion des élu·e·s de la Fédération
+                    </CardDescription>
+                </div>
+                <BulkImportElusButton instances={instanceOptions} />
             </CardHeader>
             <CardContent className="h-1/2 flex-1 p-0">
                 <Suspense fallback={<p>Chargement...</p>}>
                     <EluList
                         instances={instances}
                         instanceOptions={instanceOptions}
+                        canCreateElu={canCreateElu}
                         canEditElu={canEditElu}
                         canDeleteElu={canDeleteElu}
                         canCreateConseil={canCreateConseil}
@@ -74,12 +76,6 @@ export default async function Elues(): Promise<React.JSX.Element> {
                     />
                 </Suspense>
             </CardContent>
-            {canCreateElu ? (
-                <CardFooter className="flex gap-2 p-0">
-                    <AddEluButton instances={instanceOptions} />
-                    <BulkImportElusButton instances={instanceOptions} />
-                </CardFooter>
-            ) : null}
         </Card>
     )
 }

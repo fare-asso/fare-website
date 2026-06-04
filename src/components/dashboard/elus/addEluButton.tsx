@@ -1,6 +1,7 @@
 "use client"
 
 import { useForm } from "@tanstack/react-form"
+import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
 import addEluAction from "@/actions/elus/addEluAction"
@@ -28,10 +29,12 @@ interface InstanceOption {
 
 export default function AddEluButton({
     instances,
-    defaultConseilId
+    defaultConseilId,
+    variant = "button"
 }: {
     instances: InstanceOption[]
     defaultConseilId?: number
+    variant?: "button" | "card"
 }) {
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
@@ -73,7 +76,22 @@ export default function AddEluButton({
             onOpenChange={setOpen}
             trigger={
                 <DialogTrigger asChild>
-                    <Button disabled={!hasConseils}>Ajouter un·e Élu·e</Button>
+                    {variant === "card" ? (
+                        <button
+                            type="button"
+                            disabled={!hasConseils}
+                            className="group text-muted-foreground hover:border-primary/50 hover:text-primary focus-visible:ring-ring disabled:hover:text-muted-foreground flex h-full min-h-[140px] w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed transition-colors hover:shadow-md focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-dashed disabled:hover:shadow-none"
+                        >
+                            <PlusIcon className="h-6 w-6" />
+                            <span className="text-sm font-medium">
+                                Ajouter un·e élu·e
+                            </span>
+                        </button>
+                    ) : (
+                        <Button disabled={!hasConseils}>
+                            Ajouter un·e Élu·e
+                        </Button>
+                    )}
                 </DialogTrigger>
             }
             title="Nouvel·le Élu·e"

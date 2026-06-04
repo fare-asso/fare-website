@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import type { Conseil, Elu, Instance } from "@/generated/prisma/client"
 
 import AddConseilButton from "./addConseilButton"
+import AddEluButton from "./addEluButton"
 import DeleteConseilButton from "./deleteConseilButton"
 import EditConseilButton from "./editConseilButton"
+import MoveConseilButtons from "./moveConseilButtons"
 import SortableEluList from "./sortableEluList"
 
 type InstanceTree = Instance & {
@@ -22,6 +24,7 @@ interface InstanceOption {
 interface EluListProps {
     instances: InstanceTree[]
     instanceOptions: InstanceOption[]
+    canCreateElu: boolean
     canEditElu: boolean
     canDeleteElu: boolean
     canCreateConseil: boolean
@@ -32,6 +35,7 @@ interface EluListProps {
 export default function EluList({
     instances,
     instanceOptions,
+    canCreateElu,
     canEditElu,
     canDeleteElu,
     canCreateConseil,
@@ -66,17 +70,11 @@ export default function EluList({
                         <h2 className="text-lg font-semibold">
                             {instance.name}
                         </h2>
-                        <span className="text-muted-foreground text-sm">
-                            {instance.conseils.length} conseil
-                            {instance.conseils.length > 1 ? "s" : ""}
-                        </span>
-                    </div>
-
-                    {instance.conseils.length === 0 ? (
-                        <div className="bg-muted/30 flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-8">
-                            <p className="text-muted-foreground text-sm">
-                                Aucun conseil pour cette instance.
-                            </p>
+                        <div>
+                            <span className="text-muted-foreground mr-5 text-sm">
+                                {instance.conseils.length} conseil
+                                {instance.conseils.length > 1 ? "s" : ""}
+                            </span>
                             {canCreateConseil ? (
                                 <AddConseilButton
                                     instances={instanceOptions}
@@ -84,9 +82,17 @@ export default function EluList({
                                 />
                             ) : null}
                         </div>
+                    </div>
+
+                    {instance.conseils.length === 0 ? (
+                        <div className="bg-muted/30 flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-8">
+                            <p className="text-muted-foreground text-sm">
+                                Aucun conseil pour cette instance.
+                            </p>
+                        </div>
                     ) : (
                         <div className="space-y-8">
-                            {instance.conseils.map((conseil) => (
+                            {instance.conseils.map((conseil, conseilIndex) => (
                                 <div key={conseil.id} className="space-y-3">
                                     <div className="flex items-center gap-1">
                                         <h3 className="text-base font-medium">
@@ -103,31 +109,58 @@ export default function EluList({
                                                 conseil={conseil}
                                             />
                                         ) : null}
+                                        {canEditConseil &&
+                                        instance.conseils.length > 1 ? (
+                                            <MoveConseilButtons
+                                                conseilIds={instance.conseils.map(
+                                                    (c) => c.id
+                                                )}
+                                                index={conseilIndex}
+                                            />
+                                        ) : null}
                                     </div>
 
                                     {conseil.elus.length === 0 ? (
-                                        <p className="text-muted-foreground text-sm">
-                                            Aucun·e élu·e
-                                        </p>
+                                        canCreateElu ? (
+                                            <div className="grid h-auto w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                                <AddEluButton
+                                                    instances={instanceOptions}
+                                                    defaultConseilId={
+                                                        conseil.id
+                                                    }
+                                                    variant="card"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <p className="text-muted-foreground text-sm">
+                                                Aucun·e élu·e
+                                            </p>
+                                        )
                                     ) : (
                                         <SortableEluList
                                             initialElus={conseil.elus}
                                             instanceOptions={instanceOptions}
                                             canEdit={canEditElu}
                                             canDelete={canDeleteElu}
+                                            addCard={
+                                                canCreateElu ? (
+                                                    <AddEluButton
+                                                        instances={
+                                                            instanceOptions
+                                                        }
+                                                        defaultConseilId={
+                                                            conseil.id
+                                                        }
+                                                        variant="card"
+                                                    />
+                                                ) : null
+                                            }
                                         />
                                     )}
                                 </div>
                             ))}
                         </div>
                     )}
-
-                    {instance.conseils.length > 0 && canCreateConseil ? (
-                        <AddConseilButton
-                            instances={instanceOptions}
-                            defaultInstanceId={instance.id}
-                        />
-                    ) : null}
                 </section>
             ))}
         </div>
