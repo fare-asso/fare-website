@@ -6,6 +6,7 @@ import type { Conseil, Elu, Instance } from "@/generated/prisma/client"
 
 import AddConseilButton from "./addConseilButton"
 import AddEluButton from "./addEluButton"
+import DeleteAllElusButton from "./deleteAllElusButton"
 import DeleteConseilButton from "./deleteConseilButton"
 import EditConseilButton from "./editConseilButton"
 import MoveConseilButtons from "./moveConseilButtons"
@@ -70,8 +71,8 @@ export default function EluList({
                         <h2 className="text-lg font-semibold">
                             {instance.name}
                         </h2>
-                        <div>
-                            <span className="text-muted-foreground mr-5 text-sm">
+                        <div className="flex items-center gap-5">
+                            <span className="text-muted-foreground text-sm">
                                 {instance.conseils.length} conseil
                                 {instance.conseils.length > 1 ? "s" : ""}
                             </span>
@@ -109,6 +110,15 @@ export default function EluList({
                                                 conseil={conseil}
                                             />
                                         ) : null}
+                                        {canDeleteElu &&
+                                        conseil.elus.length > 0 ? (
+                                            <DeleteAllElusButton
+                                                conseilName={conseil.name}
+                                                eluIds={conseil.elus.map(
+                                                    (e) => e.id
+                                                )}
+                                            />
+                                        ) : null}
                                         {canEditConseil &&
                                         instance.conseils.length > 1 ? (
                                             <MoveConseilButtons
@@ -118,6 +128,7 @@ export default function EluList({
                                                 index={conseilIndex}
                                             />
                                         ) : null}
+
                                     </div>
 
                                     {conseil.elus.length === 0 ? (
