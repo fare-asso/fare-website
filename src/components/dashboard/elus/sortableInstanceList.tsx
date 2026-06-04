@@ -21,6 +21,7 @@ import { toast } from "sonner"
 import updateInstanceOrderAction from "@/actions/instances/updateInstanceOrderAction"
 import type { Instance } from "@/generated/prisma/client"
 
+import AddInstanceButton from "./addInstanceButton"
 import InstanceCard from "./instanceCard"
 
 type InstanceWithCount = Instance & {
@@ -34,12 +35,14 @@ export interface InstanceWithLogo {
 
 interface SortableInstanceListProps {
     initialInstances: InstanceWithLogo[]
+    canCreate: boolean
     canEdit: boolean
     canDelete: boolean
 }
 
 export default function SortableInstanceList({
     initialInstances,
+    canCreate,
     canEdit,
     canDelete
 }: SortableInstanceListProps) {
@@ -111,6 +114,7 @@ export default function SortableInstanceList({
                             canDelete={canDelete}
                         />
                     ))}
+                    {canCreate ? <AddInstanceButton variant="card" /> : null}
                 </div>
             </SortableContext>
         </DndContext>

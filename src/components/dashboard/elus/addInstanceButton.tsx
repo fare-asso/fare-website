@@ -1,7 +1,7 @@
 "use client"
 
 import { useForm } from "@tanstack/react-form"
-import { Loader2Icon } from "lucide-react"
+import { Loader2Icon, PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
 import addInstanceAction from "@/actions/instances/addInstanceAction"
@@ -36,7 +36,11 @@ const emptyForm: TAddInstance = {
     logo: undefined
 }
 
-export default function AddInstanceButton() {
+export default function AddInstanceButton({
+    variant = "button"
+}: {
+    variant?: "button" | "card"
+}) {
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -65,7 +69,19 @@ export default function AddInstanceButton() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>Ajouter une Nouvelle Instance</Button>
+                {variant === "card" ? (
+                    <button
+                        type="button"
+                        className="group text-muted-foreground hover:border-primary/50 hover:text-primary focus-visible:ring-ring flex h-full min-h-[160px] w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed transition-colors hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
+                    >
+                        <PlusIcon className="h-6 w-6" />
+                        <span className="text-sm font-medium">
+                            Ajouter une instance
+                        </span>
+                    </button>
+                ) : (
+                    <Button>Ajouter une Nouvelle Instance</Button>
+                )}
             </DialogTrigger>
             <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[60%] lg:max-w-[40%]">
                 <DialogHeader>
