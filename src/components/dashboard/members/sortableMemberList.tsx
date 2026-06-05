@@ -16,9 +16,9 @@ import {
     sortableKeyboardCoordinates
 } from "@dnd-kit/sortable"
 import { useState, useTransition } from "react"
+import { toast } from "sonner"
 
 import updateMemberOrderAction from "@/actions/members/updateMemberOrderAction"
-import { useToast } from "@/components/ui/use-toast"
 
 import SortableMemberCard from "./sortableMemberCard"
 
@@ -51,7 +51,6 @@ export default function SortableMemberList({
     canEdit,
     canDelete
 }: SortableMemberListProps) {
-    const { toast } = useToast()
     const [members, setMembers] = useState(initialMembers)
     const [, startTransition] = useTransition()
 
@@ -88,11 +87,7 @@ export default function SortableMemberList({
                 if (result.error) {
                     // Revert on error
                     setMembers(members)
-                    toast({
-                        title: "Erreur",
-                        variant: "destructive",
-                        description: result.error
-                    })
+                    toast.error(result.error)
                 }
             })
         }

@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import archiveTutorQuestion from "@/actions/bouge-ta-prison/archiveTutorQuestion"
 import unarchiveTutorQuestion from "@/actions/bouge-ta-prison/unarchiveTutorQuestion"
@@ -34,7 +35,6 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useToast } from "@/components/ui/use-toast"
 import type { BTPTutorQuestion } from "@/generated/prisma/client"
 
 export default function QuestionCard({
@@ -43,7 +43,6 @@ export default function QuestionCard({
     question: BTPTutorQuestion
 }) {
     const [isLoading, setIsLoading] = useState(false)
-    const { toast } = useToast()
 
     const isArchived = question.archived !== null
 
@@ -52,17 +51,9 @@ export default function QuestionCard({
         const response = await archiveTutorQuestion(question.id)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
         } else {
-            toast({
-                variant: "default",
-                description: "La question a été archivée.",
-                title: "Succès"
-            })
+            toast.success("La question a été archivée.")
         }
         setIsLoading(false)
     }
@@ -72,17 +63,9 @@ export default function QuestionCard({
         const response = await unarchiveTutorQuestion(question.id)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
         } else {
-            toast({
-                variant: "default",
-                description: "La question a été désarchivée.",
-                title: "Succès"
-            })
+            toast.success("La question a été désarchivée.")
         }
         setIsLoading(false)
     }

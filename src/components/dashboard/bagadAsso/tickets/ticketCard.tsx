@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction"
 import unarchiveBagadAssoTicketAction from "@/actions/bagadAsso/unarchiveTicketAction"
@@ -40,7 +41,6 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useToast } from "@/components/ui/use-toast"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
 
 import LoadingRing from "../../loadingRing"
@@ -51,7 +51,6 @@ export default function BagadAssoTicketCard({
     ticket: BagadAssoTicket
 }) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const { toast } = useToast()
 
     const isArchived = ticket.deleted !== null
     const isExpired = isBefore(new Date(ticket.eventDate), new Date())
@@ -62,17 +61,9 @@ export default function BagadAssoTicketCard({
         const response = await deleteBagadAssoTicketAction(ticket.id)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: `${response.error}`,
-                title: "Erreur"
-            })
+            toast.error(`${response.error}`)
         } else {
-            toast({
-                variant: "default",
-                description: "Le ticket a été archivé.",
-                title: "Succès"
-            })
+            toast.success("Le ticket a été archivé.")
         }
         setIsLoading(false)
     }
@@ -83,17 +74,9 @@ export default function BagadAssoTicketCard({
         const response = await unarchiveBagadAssoTicketAction(ticket.id)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: `${response.error}`,
-                title: "Erreur"
-            })
+            toast.error(`${response.error}`)
         } else {
-            toast({
-                variant: "default",
-                description: "Le ticket a été désarchivé.",
-                title: "Succès"
-            })
+            toast.success("Le ticket a été désarchivé.")
         }
         setIsLoading(false)
     }

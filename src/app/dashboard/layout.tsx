@@ -5,7 +5,7 @@ import CurrentRoute from "@/components/dashboard/currentRoute"
 import SideBarApp from "@/components/dashboard/sideBarApp"
 import { Separator } from "@/components/ui/separator"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/sonner"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
 import "../globals.css"

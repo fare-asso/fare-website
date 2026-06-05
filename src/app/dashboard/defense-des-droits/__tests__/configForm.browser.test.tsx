@@ -1,19 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render } from "vitest-browser-react"
 
-const h = vi.hoisted(() => ({ action: vi.fn(), toast: vi.fn() }))
+const h = vi.hoisted(() => ({
+    action: vi.fn(),
+    toastSuccess: vi.fn(),
+    toastError: vi.fn()
+}))
 
 vi.mock("@/app/dashboard/defense-des-droits/actions", () => ({
     updateAssistanceConfig: h.action
 }))
-vi.mock("@/components/ui/use-toast", () => ({
-    useToast: () => ({ toast: h.toast }),
-    toast: h.toast
+vi.mock("sonner", () => ({
+    toast: { success: h.toastSuccess, error: h.toastError }
 }))
 
 import ConfigForm from "../configForm"
 
 beforeEach(() => {
+    vi.clearAllMocks()
     h.action.mockResolvedValue({ success: true })
 })
 
@@ -51,13 +55,13 @@ describe("<ConfigForm />", () => {
             delay: "72h"
         })
         await vi.waitFor(() =>
-            expect(h.toast).toHaveBeenCalledWith(
-                expect.objectContaining({ title: "Enregistré" })
+            expect(h.toastSuccess).toHaveBeenCalledWith(
+                "La configuration a bien été enregistrée."
             )
         )
     })
 
-    it("toasts a destructive error when the action fails", async () => {
+    it("toasts an error when the action fails", async () => {
         h.action.mockResolvedValue({ success: false, error: "Boum" })
         const screen = await render(
             <ConfigForm recipientEmail="x@fare-asso.fr" delay="48h" />
@@ -65,13 +69,7 @@ describe("<ConfigForm />", () => {
         await screen.getByRole("button", { name: "Enregistrer" }).click()
 
         await vi.waitFor(() =>
-            expect(h.toast).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    title: "Erreur",
-                    variant: "destructive",
-                    description: "Boum"
-                })
-            )
+            expect(h.toastError).toHaveBeenCalledWith("Boum")
         )
     })
 })

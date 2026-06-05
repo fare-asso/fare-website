@@ -6,11 +6,11 @@ import Link from "next/link"
 // import EditArticleButton from "./editArticleButton";
 import { startTransition, useActionState, useEffect, useState } from "react"
 import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
+import { toast } from "sonner"
 
 import deleteArticleAction from "@/actions/articles/deleteArticleAction"
 import switchVisibilityAction from "@/actions/articles/switchVisibilityAction"
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
 import type { Article } from "@/generated/prisma/client"
 
 import LoadingRing from "../loadingRing"
@@ -29,8 +29,6 @@ export default function ArticleCard({
     canDelete,
     canPublish
 }: ArticleCardProps) {
-    const { toast } = useToast()
-
     const [formState, formAction] = useActionState<
         { error?: string; success?: boolean } | undefined,
         number
@@ -52,18 +50,12 @@ export default function ArticleCard({
 
     useEffect(() => {
         if (formState?.success) {
-            toast({
-                description: `L'article ${article.title} a bien été supprimé`
-            })
+            toast.success(`L'article ${article.title} a bien été supprimé`)
         } else if (formState?.error) {
-            toast({
-                title: "Erreur",
-                variant: "destructive",
-                description: formState?.error
-            })
+            toast.error(formState.error)
         }
         setIsLoading(false)
-    }, [formState, article.title, toast])
+    }, [formState, article.title])
 
     async function HandleVisibility() {
         setIsSwitchingVisibility(true)

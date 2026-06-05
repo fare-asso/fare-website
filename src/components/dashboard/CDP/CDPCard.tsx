@@ -7,6 +7,7 @@ import { useState } from "react"
 import { FaRegFilePdf } from "react-icons/fa"
 import { FaRegFolderOpen } from "react-icons/fa6"
 import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
+import { toast } from "sonner"
 
 import deleteCDPAction from "@/actions/CDP/deleteCDPAction"
 import {
@@ -27,7 +28,6 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useToast } from "@/components/ui/use-toast"
 import type { CommuniqueDePresse } from "@/generated/prisma/client"
 
 import LoadingRing from "../loadingRing"
@@ -48,23 +48,16 @@ interface CdpCardProps {
 }
 
 export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
-    const { toast } = useToast()
     const [isDeleting, setIsDeleting] = useState(false)
 
     const handleDelete = async () => {
         setIsDeleting(true)
         const res = await deleteCDPAction({ id: cdp.id })
         if (res.error) {
-            toast({
-                title: "Erreur",
-                variant: "destructive",
-                description: res.error
-            })
+            toast.error(res.error)
             setIsDeleting(false)
         } else {
-            toast({
-                description: `Le communique ${cdp.name} a bien ete supprime`
-            })
+            toast.success(`Le communique ${cdp.name} a bien ete supprime`)
         }
     }
 

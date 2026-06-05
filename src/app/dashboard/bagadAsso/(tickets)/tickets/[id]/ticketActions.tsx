@@ -3,6 +3,7 @@
 import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction"
 import hardDeleteBagadAssoTicketAction from "@/actions/bagadAsso/hardDeleteTicketAction"
@@ -20,7 +21,6 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
 
 interface TicketActionsProps {
     ticketId: number
@@ -39,7 +39,6 @@ export default function TicketActions({
 }: TicketActionsProps) {
     const [isArchiveLoading, setIsArchiveLoading] = useState(false)
     const [isDeleteLoading, setIsDeleteLoading] = useState(false)
-    const { toast } = useToast()
     const router = useRouter()
 
     const onArchive = async () => {
@@ -48,17 +47,9 @@ export default function TicketActions({
         const response = await deleteBagadAssoTicketAction(ticketId)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
         } else {
-            toast({
-                variant: "default",
-                description: "Le ticket a été archivé.",
-                title: "Succès"
-            })
+            toast.success("Le ticket a été archivé.")
         }
         setIsArchiveLoading(false)
     }
@@ -69,17 +60,9 @@ export default function TicketActions({
         const response = await unarchiveBagadAssoTicketAction(ticketId)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
         } else {
-            toast({
-                variant: "default",
-                description: "Le ticket a été désarchivé.",
-                title: "Succès"
-            })
+            toast.success("Le ticket a été désarchivé.")
         }
         setIsArchiveLoading(false)
     }
@@ -90,18 +73,10 @@ export default function TicketActions({
         const response = await hardDeleteBagadAssoTicketAction(ticketId)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
             setIsDeleteLoading(false)
         } else {
-            toast({
-                variant: "default",
-                description: "Le ticket a été supprimé définitivement.",
-                title: "Succès"
-            })
+            toast.success("Le ticket a été supprimé définitivement.")
             router.push("/dashboard/bagadAsso")
         }
     }
