@@ -34,7 +34,12 @@ export default async function Elues(): Promise<React.JSX.Element> {
             include: {
                 conseils: {
                     orderBy: { order: "asc" },
-                    include: { elus: { orderBy: { order: "asc" } } }
+                    include: {
+                        elus: {
+                            where: { deletedAt: null },
+                            orderBy: { order: "asc" }
+                        }
+                    }
                 }
             },
             orderBy: { order: "asc" }

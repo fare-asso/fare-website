@@ -44,11 +44,7 @@ async function bulkImportElusActionImpl(
     )
 
     if (!conseil.success) {
-        captureActionError(
-            new Error("Erreur lors de la recherche du conseil", {
-                cause: conseil.error
-            })
-        )
+        captureActionError(conseil.error)
         return { success: false, error: "Échec de l'import des éluEs" }
     }
 
@@ -59,17 +55,13 @@ async function bulkImportElusActionImpl(
     const maxOrder = await tryCatch(
         prisma.elu.aggregate({
             // Parmi les élus, on récupère le plus grand numéro d'ordre pour coller les nouveaux élus à la suite
-            where: { conseilId: data.conseilId },
+            where: { conseilId: data.conseilId, deletedAt: null },
             _max: { order: true }
         })
     )
 
     if (!maxOrder.success) {
-        captureActionError(
-            new Error("Erreur lors de la recherche du dernier élu", {
-                cause: maxOrder.error
-            })
-        )
+        captureActionError(maxOrder.error)
         return {
             success: false,
             error: "Erreur lors de la recherche du dernier élu"
@@ -90,11 +82,7 @@ async function bulkImportElusActionImpl(
     )
 
     if (!created.success) {
-        captureActionError(
-            new Error("Erreur lors de la création des élus", {
-                cause: created.error
-            })
-        )
+        captureActionError(created.error)
         return { success: false, error: "Erreur lors de la création des élus" }
     }
 

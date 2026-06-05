@@ -81,6 +81,7 @@ model Elu {
   position    String
   description String?
   order       Int     @default(0)
+  deletedAt   DateTime?
   conseilId   Int
   conseil     Conseil @relation(fields: [conseilId], references: [id], onDelete: Cascade)
 }

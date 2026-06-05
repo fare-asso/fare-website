@@ -8,12 +8,9 @@ import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-type DeleteEluResult = { success: true } | { success: false; error: string }
+type RestoreEluResult = { success: true } | { success: false; error: string }
 
-async function deleteEluActionImpl(
-    _prevState: DeleteEluResult | undefined,
-    id: number
-): Promise<DeleteEluResult> {
+async function restoreEluActionImpl(id: number): Promise<RestoreEluResult> {
     const user = await getCurrentUserWithPermissions()
     if (!user) {
         return { success: false, error: "Authentification requise" }
@@ -25,29 +22,17 @@ async function deleteEluActionImpl(
         }
     }
 
-    const elu = await tryCatch(prisma.elu.findUnique({ where: { id } }))
-    if (!elu.success) {
-        captureActionError(elu.error)
-        return {
-            success: false,
-            error: "Echec de la suppression de l'élu·e"
-        }
-    }
-    if (elu.value === null) {
-        return { success: false, error: "Élu·e introuvable." }
-    }
-
-    const deleted = await tryCatch(
+    const restored = await tryCatch(
         prisma.elu.update({
             where: { id },
-            data: { deletedAt: new Date() }
+            data: { deletedAt: null }
         })
     )
-    if (!deleted.success) {
-        captureActionError(deleted.error)
+    if (!restored.success) {
+        captureActionError(restored.error)
         return {
             success: false,
-            error: "Echec de la suppression de l'élu·e"
+            error: "Echec de la restauration de l'élu·e"
         }
     }
 
@@ -58,4 +43,4 @@ async function deleteEluActionImpl(
     return { success: true }
 }
 
-export default withServerAction("deleteEluAction", deleteEluActionImpl)
+export default withServerAction("restoreEluAction", restoreEluActionImpl)

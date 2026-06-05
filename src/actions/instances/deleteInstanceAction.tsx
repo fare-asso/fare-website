@@ -34,11 +34,7 @@ async function deleteInstanceActionImpl(
         prisma.instance.findUnique({ where: { id } })
     )
     if (!instance.success) {
-        captureActionError(
-            new Error("Echec de la récupération de l'instance", {
-                cause: instance.error
-            })
-        )
+        captureActionError(instance.error)
         return {
             success: false,
             error: "Echec de la suppression de l'instance"
@@ -48,6 +44,23 @@ async function deleteInstanceActionImpl(
         return { success: false, error: "Instance introuvable." }
     }
 
+    const conseilCount = await tryCatch(
+        prisma.conseil.count({ where: { instanceId: id } })
+    )
+    if (!conseilCount.success) {
+        captureActionError(conseilCount.error)
+        return {
+            success: false,
+            error: "Echec de la suppression de l'instance"
+        }
+    }
+    if (conseilCount.value > 0) {
+        return {
+            success: false,
+            error: "Supprimez d'abord les conseils de cette instance avant de la supprimer."
+        }
+    }
+
     if (instance.value.logoPaths.length > 0) {
         const removed = await tryCatch(
             supabase.storage
@@ -55,11 +68,7 @@ async function deleteInstanceActionImpl(
                 .remove(instance.value.logoPaths)
         )
         if (!removed.success) {
-            captureActionError(
-                new Error("Echec de la suppression des logos de l'instance", {
-                    cause: removed.error
-                })
-            )
+            captureActionError(removed.error)
             return {
                 success: false,
                 error: "Echec de la suppression des logos de l'instance"
@@ -69,11 +78,7 @@ async function deleteInstanceActionImpl(
 
     const deleted = await tryCatch(prisma.instance.delete({ where: { id } }))
     if (!deleted.success) {
-        captureActionError(
-            new Error("Echec de la suppression de l'instance", {
-                cause: deleted.error
-            })
-        )
+        captureActionError(deleted.error)
         return {
             success: false,
             error: "Echec de la suppression de l'instance"

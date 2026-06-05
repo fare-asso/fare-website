@@ -12,7 +12,7 @@ type Result =
     | { success: true; value: { count: number } }
     | { success: false; error: string }
 
-async function bulkDeleteElusActionImpl(ids: number[]): Promise<Result> {
+async function bulkRestoreElusActionImpl(ids: number[]): Promise<Result> {
     const user = await getCurrentUserWithPermissions()
     if (!user) {
         return { success: false, error: "Authentification requise" }
@@ -26,20 +26,20 @@ async function bulkDeleteElusActionImpl(ids: number[]): Promise<Result> {
     }
 
     if (ids.length === 0) {
-        return { success: false, error: "AucunE éluE à supprimer" }
+        return { success: false, error: "AucunE éluE à restaurer" }
     }
 
-    const deleted = await tryCatch(
+    const restored = await tryCatch(
         prisma.elu.updateMany({
             where: { id: { in: ids } },
-            data: { deletedAt: new Date() }
+            data: { deletedAt: null }
         })
     )
-    if (!deleted.success) {
-        captureActionError(deleted.error)
+    if (!restored.success) {
+        captureActionError(restored.error)
         return {
             success: false,
-            error: "Erreur lors de la suppression des élus"
+            error: "Erreur lors de la restauration des élus"
         }
     }
 
@@ -47,10 +47,10 @@ async function bulkDeleteElusActionImpl(ids: number[]): Promise<Result> {
     revalidatePath("/dashboard/elus/instances")
     revalidatePath("/representation/nos-elues")
 
-    return { success: true, value: { count: deleted.value.count } }
+    return { success: true, value: { count: restored.value.count } }
 }
 
 export default withServerAction(
-    "bulkDeleteElusAction",
-    bulkDeleteElusActionImpl
+    "bulkRestoreElusAction",
+    bulkRestoreElusActionImpl
 )

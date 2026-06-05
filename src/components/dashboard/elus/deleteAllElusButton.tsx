@@ -5,6 +5,7 @@ import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
 import bulkDeleteElusAction from "@/actions/elus/bulkDeleteElusAction"
+import bulkRestoreElusAction from "@/actions/elus/bulkRestoreElusAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -42,7 +43,21 @@ export default function DeleteAllElusButton({
         startTransition(async () => {
             const res = await bulkDeleteElusAction(eluIds)
             if (res.success) {
-                toast.success(`${res.value.count} éluEs suppriméEs.`)
+                toast.success(`${res.value.count} éluEs suppriméEs.`, {
+                    duration: 10000,
+                    action: {
+                        label: "Annuler",
+                        onClick: () => {
+                            startTransition(async () => {
+                                const restore =
+                                    await bulkRestoreElusAction(eluIds)
+                                if (!restore.success) {
+                                    toast.error(restore.error)
+                                }
+                            })
+                        }
+                    }
+                })
                 setIsOpen(false)
             } else {
                 toast.error(res.error)
@@ -73,9 +88,9 @@ export default function DeleteAllElusButton({
                         <span className="font-bold">{conseilName}</span> ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Cette action supprimera définitivement les{" "}
-                        {eluIds.length} éluE{eluIds.length > 1 ? "s" : ""} de ce
-                        conseil. Les données ne peuvent pas être récupérées.
+                        Cette action supprimera les {eluIds.length} éluE
+                        {eluIds.length > 1 ? "s" : ""} de ce conseil. Vous
+                        pourrez annuler cette action.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
