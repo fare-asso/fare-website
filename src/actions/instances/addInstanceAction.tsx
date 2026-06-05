@@ -65,12 +65,10 @@ async function addInstanceActionImpl(
                 const cleanup = await tryCatch(
                     supabase.storage.from("instance-pictures").remove(succeeded)
                 )
-                if (!cleanup.success)
-                    captureActionError(
-                        new Error("Echec du nettoyage des logos partiels", {
-                            cause: cleanup.error
-                        })
-                    )
+                if (!cleanup.success) {
+                    cleanup.error.cause = uploads.error
+                    captureActionError(cleanup.error)
+                }
             }
             return { success: false, error: "Échec de l'upload des logos." }
         }
@@ -93,12 +91,10 @@ async function addInstanceActionImpl(
             const cleanup = await tryCatch(
                 supabase.storage.from("instance-pictures").remove(logoPaths)
             )
-            if (!cleanup.success)
-                captureActionError(
-                    new Error("Echec de la suppression des logos", {
-                        cause: cleanup.error
-                    })
-                )
+            if (!cleanup.success) {
+                cleanup.error.cause = created.error
+                captureActionError(cleanup.error)
+            }
         }
         return {
             success: false,
