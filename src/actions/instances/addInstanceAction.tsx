@@ -49,11 +49,7 @@ async function addInstanceActionImpl(
             )
         )
         if (!uploads.success) {
-            captureActionError(
-                new Error("Echec de l'upload des logos", {
-                    cause: uploads.error
-                })
-            )
+            captureActionError(uploads.error)
             return { success: false, error: "Échec de l'upload des logos." }
         }
 
@@ -92,11 +88,7 @@ async function addInstanceActionImpl(
         })
     )
     if (!created.success) {
-        captureActionError(
-            new Error("Echec de la création de l'instance", {
-                cause: created.error
-            })
-        )
+        captureActionError(created.error)
         if (logoPaths.length > 0) {
             const cleanup = await tryCatch(
                 supabase.storage.from("instance-pictures").remove(logoPaths)

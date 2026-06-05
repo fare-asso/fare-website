@@ -42,11 +42,7 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
         })
     )
     if (!current.success) {
-        captureActionError(
-            new Error("Echec de la récupération de l'instance", {
-                cause: current.error
-            })
-        )
+        captureActionError(current.error)
         return {
             success: false,
             error: "Échec de la récupération de l'instance."
@@ -72,11 +68,7 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
             )
         )
         if (!uploads.success) {
-            captureActionError(
-                new Error("Echec de l'upload des logos", {
-                    cause: uploads.error
-                })
-            )
+            captureActionError(uploads.error)
             return { success: false, error: "Échec de l'upload des logos." }
         }
 
@@ -131,11 +123,7 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
         })
     )
     if (!updated.success) {
-        captureActionError(
-            new Error("Echec de la modification de l'instance", {
-                cause: updated.error
-            })
-        )
+        captureActionError(updated.error)
         return {
             success: false,
             error: "Échec de la modification de l'instance."
