@@ -85,9 +85,9 @@ export default function DeleteConseilButton({ conseil }: { conseil: Conseil }) {
                         <span className="font-bold">{conseil.name}</span> ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Cette action est permanente et les données du conseil ne
-                        peuvent être récupérées. Tous les élu·e·s de ce conseil
-                        seront aussi supprimé·e·s.
+                        Cette action est permanente. Vous devez d'abord
+                        supprimer tous les éluEs de ce conseil avant de pouvoir
+                        le supprimer.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
