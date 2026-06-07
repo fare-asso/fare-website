@@ -57,7 +57,7 @@ describe("AddEluSchema", () => {
         ).toBe(true)
     })
 
-    it("rejects an empty description when present", () => {
+    it("accepts an empty description", () => {
         expect(
             isError(
                 AddEluSchema({
@@ -65,6 +65,19 @@ describe("AddEluSchema", () => {
                     name: "Jean",
                     position: "P",
                     description: ""
+                })
+            )
+        ).toBe(false)
+    })
+
+    it("rejects a description longer than 1000 chars", () => {
+        expect(
+            isError(
+                AddEluSchema({
+                    conseilId: 1,
+                    name: "Jean",
+                    position: "P",
+                    description: "x".repeat(1001)
                 })
             )
         ).toBe(true)
