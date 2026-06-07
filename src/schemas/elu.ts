@@ -12,13 +12,13 @@ export const EditEluSchema = type({
     conseilId: "number.integer >= 1",
     name: "string >= 1",
     position: "string >= 1",
-    "description?": "string >= 1"
+    "description?": "string <= 1000"
 })
 
 export const ImportEluRowSchema = type({
     name: "string >= 1",
     position: "string >= 1",
-    "description?": "string >= 1"
+    "description?": "string <= 1000"
 })
 
 export const BulkImportEluSchema = type({
