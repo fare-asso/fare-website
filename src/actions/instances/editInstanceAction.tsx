@@ -53,7 +53,9 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
         return { success: false, error: "Instance introuvable." }
     }
 
-    let logoPaths = current.value.logoPaths
+    const oldLogoPaths = current.value.logoPaths
+    let logoPaths = oldLogoPaths
+    let uploadedNew = false
 
     if (data.logos && data.logos.length > 0) {
         const uploads = await tryCatch(
@@ -94,21 +96,8 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
             return { success: false, error: "Échec de l'upload des logos." }
         }
 
-        // Remplacement : supprimer l'ancien set uniquement après succès complet
-        if (current.value.logoPaths.length > 0) {
-            const cleanup = await tryCatch(
-                supabase.storage
-                    .from("instance-pictures")
-                    .remove(current.value.logoPaths)
-            )
-            if (!cleanup.success)
-                captureActionError(
-                    new Error("Echec de la suppression des anciens logos", {
-                        cause: cleanup.error
-                    })
-                )
-        }
         logoPaths = succeeded
+        uploadedNew = true
     }
 
     const updated = await tryCatch(
@@ -124,10 +113,35 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
     )
     if (!updated.success) {
         captureActionError(updated.error)
+        // Nettoyer les nouveaux logos orphelins, conserver l'ancien set intact
+        if (uploadedNew && logoPaths.length > 0) {
+            const cleanup = await tryCatch(
+                supabase.storage.from("instance-pictures").remove(logoPaths)
+            )
+            if (!cleanup.success)
+                captureActionError(
+                    new Error("Echec du nettoyage des nouveaux logos", {
+                        cause: cleanup.error
+                    })
+                )
+        }
         return {
             success: false,
             error: "Échec de la modification de l'instance."
         }
+    }
+
+    // Remplacement : supprimer l'ancien set uniquement après le succès du update
+    if (uploadedNew && oldLogoPaths.length > 0) {
+        const cleanup = await tryCatch(
+            supabase.storage.from("instance-pictures").remove(oldLogoPaths)
+        )
+        if (!cleanup.success)
+            captureActionError(
+                new Error("Echec de la suppression des anciens logos", {
+                    cause: cleanup.error
+                })
+            )
     }
 
     revalidatePath("/dashboard/elus")
