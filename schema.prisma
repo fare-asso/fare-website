@@ -73,6 +73,8 @@ model Conseil {
   instanceId  Int
   instance    Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
   elus        Elu[]
+
+  @@index([instanceId])
 }
 
 model Elu {
@@ -84,6 +86,8 @@ model Elu {
   deletedAt   DateTime?
   conseilId   Int
   conseil     Conseil @relation(fields: [conseilId], references: [id], onDelete: Cascade)
+
+  @@index([conseilId])
 }
 
 model Association {
