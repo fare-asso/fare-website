@@ -372,6 +372,20 @@ async function main() {
     console.log(
         `✅ Seeded ${createdCount} new permissions, updated ${updatedCount} existing permissions`
     )
+
+    // Codebase is the source of truth: drop permissions that no longer exist
+    // here. Their assignments must go first — the UserPermission FK is Restrict.
+    const canonicalNames = permissions.map((p) => p.name)
+    const removedAssignments = await prisma.userPermission.deleteMany({
+        where: { permission: { name: { notIn: canonicalNames } } }
+    })
+    const removedPermissions = await prisma.permission.deleteMany({
+        where: { name: { notIn: canonicalNames } }
+    })
+    console.log(
+        `🧹 Removed ${removedPermissions.count} obsolete permissions (${removedAssignments.count} assignments)`
+    )
+
     console.log(`📊 Total permissions in database: ${permissions.length}`)
 }
 
