@@ -2,6 +2,7 @@
 
 import {
     FileUserIcon,
+    LinkIcon,
     MessageCircleQuestionMarkIcon,
     NewspaperIcon,
     ShieldIcon,
@@ -133,6 +134,12 @@ export default function SideBarApp({
                     hidden: !permissions?.find(
                         (p) => p.name === "access:events"
                     )
+                },
+                {
+                    href: "/dashboard/liens",
+                    title: "Liens",
+                    icon: <LinkIcon />,
+                    hidden: !permissions?.find((p) => p.name === "access:liens")
                 }
             ]
         },

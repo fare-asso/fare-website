@@ -44,10 +44,10 @@ export default function SocialLinks() {
                 <FaTiktok size={25} />
             </Link> */}
 
-            {/* Linktree - caché sur mobile */}
+            {/* Page des liens - caché sur mobile */}
             <Link
-                href="https://linktr.ee/fare_hautebretagne"
-                title="Linktree"
+                href="/liens"
+                title="Tous nos liens"
                 className="hidden md:inline-block"
             >
                 <TbBrandLinktree size={25} />
