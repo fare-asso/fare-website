@@ -1,16 +1,29 @@
-import * as Sentry from "@sentry/nextjs"
+import {
+    init,
+    captureRouterTransitionStart,
+    replayIntegration
+} from "@sentry/nextjs"
 import { isDevelopment } from "std-env"
 
-Sentry.init({
-    dsn: "https://32ebb0ac44a287a1add0b6dcc51185e0@o4511404536233984.ingest.de.sentry.io/4511404541083728",
+import { env } from "./env"
+
+init({
+    dsn: env.NEXT_PUBLIC_SENTRY_DSN,
+    // Only send events in production
+    enabled: !isDevelopment,
     // Adds request headers and IP for users
     sendDefaultPii: true,
     // Capture 100% in dev, 10% in production
     // Adjust based on your traffic volume
     tracesSampleRate: isDevelopment ? 1.0 : 0.1,
     // Enable logs to be sent to Sentry
-    enableLogs: true
+    enableLogs: true,
+
+    integrations: [replayIntegration()],
+    // Session Replay
+    replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+    replaysOnErrorSampleRate: 1.0 // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
 })
 
 // This export will instrument router navigations
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart // oxlint-disable-line import/namespace
+export const onRouterTransitionStart = captureRouterTransitionStart
