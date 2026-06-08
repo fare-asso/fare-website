@@ -2,6 +2,7 @@ type Ranged = { start: number; end: number }
 
 export interface Node extends Ranged {
     type: string
+    parent?: Node | null
     body?: Node[]
     declaration?: Node | null
     declarations?: Node[]

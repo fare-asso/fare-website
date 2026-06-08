@@ -1,4 +1,14 @@
-import type { Rule } from "../types.ts"
+import type { Node, Rule } from "../types.ts"
+
+const BUILTIN_PARSE = new Set(["JSON", "Date", "path"])
+
+function isBuiltinParse(object: Node | undefined): boolean {
+    return (
+        object?.type === "Identifier" &&
+        object.name !== undefined &&
+        BUILTIN_PARSE.has(object.name)
+    )
+}
 
 const rule: Rule = {
     meta: {
@@ -23,10 +33,7 @@ const rule: Rule = {
                     callee.property?.type === "Identifier" &&
                     (callee.property.name === "parse" ||
                         callee.property.name === "parseAsync") &&
-                    !(
-                        callee.object?.type === "Identifier" &&
-                        callee.object.name === "JSON"
-                    )
+                    !isBuiltinParse(callee.object)
                 ) {
                     context.report({ node, messageId: "preferSafeParse" })
                 }

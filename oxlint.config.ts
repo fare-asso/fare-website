@@ -160,6 +160,7 @@ export default defineConfig({
         "local/no-console-in-actions": "off",
         "local/require-action-name-matches": "error",
         "local/prefer-safe-parse": "error",
+        "local/no-unwrapped-throwing-builtin": "off",
 
         // suspicious
         "vitest/no-duplicate-hooks": "error",
