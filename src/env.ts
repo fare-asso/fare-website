@@ -16,6 +16,8 @@ export const env = createEnv({
         SMTP_PASS: z.string(),
         SMTP_FROM_EMAIL: z.email(),
 
+        SENTRY_DSN: z.string().optional(),
+
         DOKPLOY_DEPLOY_URL: z
             .string()
             .optional()

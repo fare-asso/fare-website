@@ -148,14 +148,19 @@ export default defineConfig({
         "unicorn/throw-new-error": "error",
         "typescript/only-throw-error": "error",
 
-        // local plugin (./tools/oxlint-rules) — enforces the tryCatch
-        // helper from @/lib/utils in place of try/catch.
         "local/no-try-catch": "error",
+        "local/require-server-action-wrapper": "error",
 
         // Flags non-discriminated action results (optional `success?`/`error?`).
         // Kept "off" until the actions are migrated to discriminated unions
         // (TODO.md #3); the follow-up PR flips this to "error" to enforce it.
         "local/no-optional-result": "off",
+
+        // Further CLAUDE.md conventions kept "off" until opted in.
+        "local/no-console-in-actions": "off",
+        "local/require-action-name-matches": "error",
+        "local/prefer-safe-parse": "error",
+        "local/no-unwrapped-throwing-builtin": "off",
 
         // suspicious
         "vitest/no-duplicate-hooks": "error",

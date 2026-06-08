@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
+import { useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
 type HealthStatus = {
@@ -15,7 +16,8 @@ type HealthStatus = {
     errors?: string[]
 }
 
-export async function GET() {
+export const GET = withEvlog(async () => {
+    const log = useLogger()
     const errors: string[] = []
     let dbHealthy = false
     let supabaseHealthy = false
@@ -66,7 +68,9 @@ export async function GET() {
         response.errors = errors
     }
 
+    log.set({ db: dbHealthy, supabase: supabaseHealthy, healthy: allHealthy })
+
     return NextResponse.json(response, {
         status: allHealthy ? 200 : 503
     })
-}
+})
