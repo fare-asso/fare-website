@@ -58,7 +58,9 @@ ENV SMTP_PORT=$SMTP_PORT
 ARG SMTP_SECURE
 ENV SMTP_SECURE=$SMTP_SECURE
 
-# Migrate + build with secrets exposed only for this RUN via BuildKit env-mounted secrets.
+# Migrate + seed permissions + build with secrets exposed only for this RUN via BuildKit env-mounted secrets.
+# `prisma db seed` makes the codebase the source of truth for permissions
+# (upserts the canonical set and prunes any that were removed from the code).
 RUN --mount=type=secret,id=SUPABASE_POSTGRES_PRISMA_URL,env=SUPABASE_POSTGRES_PRISMA_URL \
     --mount=type=secret,id=SUPABASE_POSTGRES_PRISMA_DIRECT_URL,env=SUPABASE_POSTGRES_PRISMA_DIRECT_URL \
     --mount=type=secret,id=SUPABASE_SERVICE_ROLE_KEY,env=SUPABASE_SERVICE_ROLE_KEY \
@@ -67,7 +69,7 @@ RUN --mount=type=secret,id=SUPABASE_POSTGRES_PRISMA_URL,env=SUPABASE_POSTGRES_PR
     --mount=type=secret,id=SMTP_USER,env=SMTP_USER \
     --mount=type=secret,id=SMTP_PASS,env=SMTP_PASS \
     --mount=type=secret,id=SMTP_FROM_EMAIL,env=SMTP_FROM_EMAIL \
-    pnpm exec prisma migrate deploy && pnpm run build
+    pnpm exec prisma migrate deploy && pnpm exec prisma db seed && pnpm run build
 
 ####################
 ### RUNNER STAGE ###

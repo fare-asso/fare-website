@@ -7,6 +7,7 @@ import {
     FileTextIcon
 } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import archiveAdhesionAction from "@/actions/adhesion/archiveAdhesionAction"
 import downloadAdhesionPdfAction from "@/actions/adhesion/downloadAdhesionPdfAction"
@@ -29,7 +30,6 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useToast } from "@/components/ui/use-toast"
 import type { Adhesion } from "@/generated/prisma/client"
 import { tryCatch } from "@/lib/utils"
 
@@ -89,7 +89,6 @@ export default function AdhesionCardActions({
     const [isDownloading, setIsDownloading] = useState(false)
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
-    const { toast } = useToast()
 
     const isArchived = adhesion.archived !== null
     const displayName = adhesion.nomComplet || adhesion.association
@@ -101,27 +100,16 @@ export default function AdhesionCardActions({
         )
         if (!call.success) {
             console.error("Erreur lors du téléchargement:", call.error)
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "Erreur lors du téléchargement du dossier."
-            })
+            toast.error("Erreur lors du téléchargement du dossier.")
             setIsDownloading(false)
             return
         }
         const result = call.value
         if (result.error) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: result.error
-            })
+            toast.error(result.error)
         } else if (result.success && result.zipData) {
             downloadBase64Zip(result.zipData, result.filename || "download.zip")
-            toast({
-                title: "Téléchargement",
-                description: `Le dossier de ${displayName} a été téléchargé.`
-            })
+            toast.success(`Le dossier de ${displayName} a été téléchargé.`)
         }
         setIsDownloading(false)
     }
@@ -131,30 +119,19 @@ export default function AdhesionCardActions({
         const call = await tryCatch(downloadAdhesionPdfAction(adhesion.id))
         if (!call.success) {
             console.error("Erreur lors de la génération du PDF:", call.error)
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "Erreur lors de la génération du formulaire PDF."
-            })
+            toast.error("Erreur lors de la génération du formulaire PDF.")
             setIsGeneratingPdf(false)
             return
         }
         const result = call.value
         if (result.error) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: result.error
-            })
+            toast.error(result.error)
         } else if (result.success && result.pdfData) {
             downloadBase64Pdf(
                 result.pdfData,
                 result.filename || "formulaire-adhesion.pdf"
             )
-            toast({
-                title: "Téléchargement",
-                description: `Le formulaire de ${displayName} a été généré.`
-            })
+            toast.success(`Le formulaire de ${displayName} a été généré.`)
         }
         setIsGeneratingPdf(false)
     }
@@ -166,18 +143,13 @@ export default function AdhesionCardActions({
             : archiveAdhesionAction
         const response = await action(adhesion.id)
         if (response.error) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: response.error
-            })
+            toast.error(response.error)
         } else {
-            toast({
-                title: "Succès",
-                description: isArchived
+            toast.success(
+                isArchived
                     ? "La demande d'adhésion a été désarchivée."
                     : "La demande d'adhésion a été archivée."
-            })
+            )
         }
         setIsArchiving(false)
     }

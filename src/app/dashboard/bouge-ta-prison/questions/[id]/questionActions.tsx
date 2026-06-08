@@ -3,6 +3,7 @@
 import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import archiveTutorQuestion from "@/actions/bouge-ta-prison/archiveTutorQuestion"
 import deleteTutorQuestion from "@/actions/bouge-ta-prison/deleteTutorQuestion"
@@ -20,7 +21,6 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
 
 export default function QuestionActions({
     questionId,
@@ -33,7 +33,6 @@ export default function QuestionActions({
 }) {
     const [isArchiveLoading, setIsArchiveLoading] = useState(false)
     const [isDeleteLoading, setIsDeleteLoading] = useState(false)
-    const { toast } = useToast()
     const router = useRouter()
 
     const onArchive = async () => {
@@ -42,17 +41,9 @@ export default function QuestionActions({
         const response = await archiveTutorQuestion(questionId)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
         } else {
-            toast({
-                variant: "default",
-                description: "La question a été archivée.",
-                title: "Succès"
-            })
+            toast.success("La question a été archivée.")
         }
         setIsArchiveLoading(false)
     }
@@ -63,17 +54,9 @@ export default function QuestionActions({
         const response = await unarchiveTutorQuestion(questionId)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
         } else {
-            toast({
-                variant: "default",
-                description: "La question a été désarchivée.",
-                title: "Succès"
-            })
+            toast.success("La question a été désarchivée.")
         }
         setIsArchiveLoading(false)
     }
@@ -84,18 +67,10 @@ export default function QuestionActions({
         const response = await deleteTutorQuestion(questionId)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
             setIsDeleteLoading(false)
         } else {
-            toast({
-                variant: "default",
-                description: "La question a été supprimée définitivement.",
-                title: "Succès"
-            })
+            toast.success("La question a été supprimée définitivement.")
             router.push("/dashboard/bouge-ta-prison/questions")
         }
     }

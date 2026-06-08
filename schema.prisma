@@ -8,19 +8,19 @@ datasource db {
 }
 
 model Permission {
-  id          Int               @id @default(autoincrement())
-  title       String            @default("Permission")
-  name        String            @unique
-  category    String            @default("")
+  id          Int              @id @default(autoincrement())
+  title       String           @default("Permission")
+  name        String           @unique
+  category    String           @default("")
   description String?
   users       UserPermission[]
 }
 
 model UserPermission {
-  id           Int         @id @default(autoincrement())
-  user         User        @relation(fields: [userId], references: [id])
+  id           Int        @id @default(autoincrement())
+  user         User       @relation(fields: [userId], references: [id])
   userId       String
-  permission   Permission  @relation(fields: [permissionId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
   permissionId Int
 
   @@unique([userId, permissionId])
@@ -28,18 +28,18 @@ model UserPermission {
 }
 
 model User {
-  id              String       @id @default(uuid())
-  name            String?
-  email           String
-  image           String?
-  createdAt       DateTime     @default(now())
-  deletedAt       DateTime?
-  role            Role         @default(ADMIN)
-  writtenArticles Article[]
-  association     Association?
-  createdEvents   Event[]
-  validatedArticles Article[] @relation("ValidatedArticles")
-  permissions     UserPermission[]
+  id                String           @id @default(uuid())
+  name              String?
+  email             String
+  image             String?
+  createdAt         DateTime         @default(now())
+  deletedAt         DateTime?
+  role              Role             @default(ADMIN)
+  writtenArticles   Article[]
+  association       Association?
+  createdEvents     Event[]
+  validatedArticles Article[]        @relation("ValidatedArticles")
+  permissions       UserPermission[]
 }
 
 model Member {
@@ -53,6 +53,41 @@ model Member {
   picturePath  String
   position     String  @default("membre actif")
   order        Int     @default(0)
+}
+
+model Instance {
+  id           Int       @id @default(autoincrement())
+  name         String
+  contactEmail String
+  description  String?
+  logoPaths    String[]  @default([])
+  order        Int       @default(0)
+  conseils     Conseil[]
+}
+
+model Conseil {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  order       Int      @default(0)
+  instanceId  Int
+  instance    Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  elus        Elu[]
+
+  @@index([instanceId])
+}
+
+model Elu {
+  id          Int     @id @default(autoincrement())
+  name        String
+  position    String
+  description String?
+  order       Int     @default(0)
+  deletedAt   DateTime?
+  conseilId   Int
+  conseil     Conseil @relation(fields: [conseilId], references: [id], onDelete: Cascade)
+
+  @@index([conseilId])
 }
 
 model Association {
@@ -78,7 +113,7 @@ model Association {
 }
 
 model Partenaire {
-  id          Int      @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   name        String
   description String
   logoPath    String
@@ -125,10 +160,10 @@ model Article {
   published  Boolean  @default(false)
   author     User     @relation(fields: [authorId], references: [id])
 
-  status ArticleStatus @default(DRAFT)
+  status        ArticleStatus @default(DRAFT)
   validatedById String?
-  validatedBy User? @relation("ValidatedArticles", fields: [validatedById], references: [id])
-  validatedAt DateTime?
+  validatedBy   User?         @relation("ValidatedArticles", fields: [validatedById], references: [id])
+  validatedAt   DateTime?
 
   @@index([authorId])
   @@index([validatedById])
@@ -152,18 +187,18 @@ model BagadAssoEquipment {
 }
 
 model BagadAssoTicket {
-  id                    Int      @id @default(autoincrement())
+  id                    Int       @id @default(autoincrement())
   assocation            String
   firstName             String
   lastName              String
-  position              String   @default("")
+  position              String    @default("")
   phoneNumber           String?
   eventName             String
   eventType             String
   eventDate             DateTime
   eventAddr             String
-  estimatedParticipants Int      @default(0)
-  creationDate          DateTime @default(now())
+  estimatedParticipants Int       @default(0)
+  creationDate          DateTime  @default(now())
   equipments            Json
   associationEmail      String
   representativeEmail   String
@@ -171,62 +206,62 @@ model BagadAssoTicket {
 }
 
 model Adhesion {
-  id                          Int          @id @default(autoincrement())
-  createdAt                   DateTime     @default(now())
-  archived                    DateTime?
-  association                 String
-  folderPath                  String
-  nomComplet                  String       @default("")
-  sigle                       String       @default("")
-  email                       String       @default("")
-  telephonePortable           String       @default("")
-  telephoneFixe               String?
-  college                     String       @default("")
-  objetPrincipal              String       @default("")
-  adresseAdministrative       String       @default("")
-  dateAG                      DateTime?
-  nombreAdherents             Int          @default(0)
-  nombreEtudiantsRepresentes  Int          @default(0)
-  filiere                     String       @default("")
-  siegeSocial                 String       @default("")
-  numeroSalle                 String       @default("")
-  engagementCotisation        Boolean      @default(false)
-  logoPath                    String       @default("")
-  statutsPath                 String       @default("")
-  recepissePath               String       @default("")
-  extraitPVPath               String       @default("")
-  lettreEngagementPath        String?
-  reglementInterieurPath      String?
-  bilanFinancierPath          String?
-  bureau                      Json?
-  linkedAssociation           Association?
+  id                         Int          @id @default(autoincrement())
+  createdAt                  DateTime     @default(now())
+  archived                   DateTime?
+  association                String
+  folderPath                 String
+  nomComplet                 String       @default("")
+  sigle                      String       @default("")
+  email                      String       @default("")
+  telephonePortable          String       @default("")
+  telephoneFixe              String?
+  college                    String       @default("")
+  objetPrincipal             String       @default("")
+  adresseAdministrative      String       @default("")
+  dateAG                     DateTime?
+  nombreAdherents            Int          @default(0)
+  nombreEtudiantsRepresentes Int          @default(0)
+  filiere                    String       @default("")
+  siegeSocial                String       @default("")
+  numeroSalle                String       @default("")
+  engagementCotisation       Boolean      @default(false)
+  logoPath                   String       @default("")
+  statutsPath                String       @default("")
+  recepissePath              String       @default("")
+  extraitPVPath              String       @default("")
+  lettreEngagementPath       String?
+  reglementInterieurPath     String?
+  bilanFinancierPath         String?
+  bureau                     Json?
+  linkedAssociation          Association?
 }
 
 model BTPTutorApplication {
-  id          Int       @id @default(autoincrement())
-  createdAt   DateTime  @default(now())
-  firstName   String
-  lastName    String
-  email       String
-  major       String
-  studyYear   String
-  mlPath      String
-  cvPath      String
-  approved    Boolean   @default(false)
-  archived    DateTime?
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  firstName String
+  lastName  String
+  email     String
+  major     String
+  studyYear String
+  mlPath    String
+  cvPath    String
+  approved  Boolean   @default(false)
+  archived  DateTime?
 }
 
 model BTPTutorQuestion {
-  id          Int       @id @default(autoincrement())
-  firstName   String
-  lastName    String
-  email       String
-  major       String
-  studyYear   String
-  question    String
-  createdAt   DateTime  @default(now())
-  read        Boolean   @default(false)
-  archived    DateTime?
+  id        Int       @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
+  major     String
+  studyYear String
+  question  String
+  createdAt DateTime  @default(now())
+  read      Boolean   @default(false)
+  archived  DateTime?
 }
 
 model LocationCache {

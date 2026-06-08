@@ -25,6 +25,18 @@ This document lists all permissions required for the FARE Website application. T
 - `edit:member` - Edit member information and reorder members
 - `delete:member` - Remove bureau members
 
+### Elus / Instances / Conseils
+
+- `access:elus` - View the elus management dashboard page
+- `create:elu` - Add new elus
+- `edit:elu` - Edit elu information
+- `delete:elu` - Soft delete elus
+- `access:instances` - View the instances management dashboard page
+- `create:instance` - Add new instances
+- `edit:instance` - Edit instance information
+- `delete:instance` - Delete instances
+- Note: Conseils have no dedicated permissions; they are governed by the `*:instance` permissions (`create:instance`, `edit:instance`, `delete:instance`).
+
 ### Associations
 
 - `create:association` - Add new associations to the network
@@ -132,6 +144,16 @@ INSERT INTO "Permission" (name, title, category, description) VALUES
 ('create:member', 'Créer Membre', 'Membres', 'Ajouter de nouveaux membres du bureau'),
 ('edit:member', 'Modifier Membre', 'Membres', 'Modifier les informations des membres'),
 ('delete:member', 'Supprimer Membre', 'Membres', 'Retirer des membres du bureau'),
+
+-- Elus / Instances / Conseils (conseils reuse the *:instance permissions)
+('access:elus', 'Accès Elus', 'Elus', 'Voir la page de gestion des elus'),
+('create:elu', 'Créer Elus', 'Elus', 'Ajouter de nouveaux elus'),
+('edit:elu', 'Modifier Elus', 'Elus', 'Modifier les informations des elus'),
+('delete:elu', 'Supprimer Elus', 'Elus', 'Supprimer des elus'),
+('access:instances', 'Accès Instances', 'Elus', 'Voir la page de gestion des instances'),
+('create:instance', 'Créer Instance', 'Elus', 'Ajouter de nouvelles instances'),
+('edit:instance', 'Modifier Instance', 'Elus', 'Modifier les informations des instances'),
+('delete:instance', 'Supprimer Instance', 'Elus', 'Supprimer des instances'),
 
 -- Associations
 ('create:association', 'Créer Association', 'Associations', 'Ajouter de nouvelles associations'),

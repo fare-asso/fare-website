@@ -6,10 +6,10 @@ import clsx from "clsx"
 import Image from "next/image"
 import { type MouseEvent, useState } from "react"
 import { MdDelete, MdDragIndicator } from "react-icons/md"
+import { toast } from "sonner"
 
 import deleteMemberAction from "@/actions/members/deleteMemberAction"
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
 
 import EditMemberButton from "./editMemberButton"
 
@@ -39,7 +39,6 @@ export default function SortableMemberCard({
     canEdit,
     canDelete
 }: SortableMemberCardProps) {
-    const { toast } = useToast()
     const [hidden, setIsHidden] = useState<boolean>(false)
 
     const {
@@ -64,15 +63,11 @@ export default function SortableMemberCard({
         const res = await deleteMemberAction({ id: member.id })
         if (res.error) {
             setIsHidden(false)
-            toast({
-                title: "Erreur",
-                variant: "destructive",
-                description: res.error
-            })
+            toast.error(res.error)
         } else {
-            toast({
-                description: `Le membre ${member.firstName} ${member.lastName} a bien été supprimé`
-            })
+            toast.success(
+                `Le membre ${member.firstName} ${member.lastName} a bien été supprimé`
+            )
         }
     }
 

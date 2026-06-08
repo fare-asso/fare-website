@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import archiveTutorApplication from "@/actions/bouge-ta-prison/archiveTutorApplication"
 import unarchiveTutorApplication from "@/actions/bouge-ta-prison/unarchiveTutorApplication"
@@ -33,7 +34,6 @@ import {
     TooltipContent,
     TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useToast } from "@/components/ui/use-toast"
 import type { BTPTutorApplication } from "@/generated/prisma/client"
 
 export default function ApplicationCard({
@@ -42,7 +42,6 @@ export default function ApplicationCard({
     application: BTPTutorApplication
 }) {
     const [isLoading, setIsLoading] = useState(false)
-    const { toast } = useToast()
 
     const isArchived = application.archived !== null
 
@@ -51,17 +50,9 @@ export default function ApplicationCard({
         const response = await archiveTutorApplication(application.id)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
         } else {
-            toast({
-                variant: "default",
-                description: "La candidature a été archivée.",
-                title: "Succès"
-            })
+            toast.success("La candidature a été archivée.")
         }
         setIsLoading(false)
     }
@@ -71,17 +62,9 @@ export default function ApplicationCard({
         const response = await unarchiveTutorApplication(application.id)
 
         if (response.error) {
-            toast({
-                variant: "destructive",
-                description: response.error,
-                title: "Erreur"
-            })
+            toast.error(response.error)
         } else {
-            toast({
-                variant: "default",
-                description: "La candidature a été désarchivée.",
-                title: "Succès"
-            })
+            toast.success("La candidature a été désarchivée.")
         }
         setIsLoading(false)
     }

@@ -2,6 +2,7 @@
 
 import { Loader2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -11,7 +12,6 @@ import {
     FieldLabel
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/components/ui/use-toast"
 
 import { updateAssistanceConfig } from "./actions"
 
@@ -25,7 +25,6 @@ export default function ConfigForm({
     const [email, setEmail] = useState(recipientEmail)
     const [delayValue, setDelayValue] = useState(delay)
     const [isPending, startTransition] = useTransition()
-    const { toast } = useToast()
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
         e.preventDefault()
@@ -35,16 +34,9 @@ export default function ConfigForm({
                 delay: delayValue
             })
             if (res.success) {
-                toast({
-                    title: "Enregistré",
-                    description: "La configuration a bien été enregistrée."
-                })
+                toast.success("La configuration a bien été enregistrée.")
             } else {
-                toast({
-                    title: "Erreur",
-                    variant: "destructive",
-                    description: res.error
-                })
+                toast.error(res.error)
             }
         })
     }
