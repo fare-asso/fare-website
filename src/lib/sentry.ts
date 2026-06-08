@@ -9,8 +9,8 @@ type WithServerActionOptions = {
     attachFormData?: boolean
 }
 
-// Next redirect()/notFound() work by throwing a control-flow error. It is normal
-// flow, not a 500, so we must not let `withEvlog` log it as one.
+// Carries a Next redirect()/notFound() throw past withEvlog so it is not logged
+// as a 500.
 const CONTROL_FLOW = Symbol("evlog.controlFlow")
 
 function isNextControlFlow(error: unknown): boolean {
@@ -36,16 +36,12 @@ export function withServerAction<A extends unknown[], R>(
     handler: (...args: A) => Promise<R>,
     options: WithServerActionOptions = {}
 ): (...args: A) => Promise<R> {
-    // Emit one evlog wide event per action call (action name, success, timing),
-    // drained to Sentry Logs. Carry Next control-flow throws out cleanly so the
-    // wide event records the real outcome, then rethrow past `withEvlog`.
     const instrumented = withEvlog(
         async (...args: A): Promise<R | { [CONTROL_FLOW]: Error }> => {
             const log = useLogger()
             log.set({ action: name })
 
-            // Wrap in `{ value }` so tryCatch skips its Supabase {data,error}
-            // unwrap on the generic action return type.
+            // `{ value }` wrap stops tryCatch unwrapping a {data,error} shape.
             const settled = await tryCatch(async () => ({
                 value: await handler(...args)
             }))

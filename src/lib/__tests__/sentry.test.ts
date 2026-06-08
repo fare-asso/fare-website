@@ -8,8 +8,6 @@ const h = vi.hoisted(() => ({
     )
 }))
 
-// withEvlog is a passthrough here so the test exercises withServerAction's own
-// control-flow logic (sentinel round-trip), not evlog's wide-event emission.
 vi.mock("@/lib/evlog", () => ({
     withEvlog:
         <A extends unknown[], R>(handler: (...args: A) => R) =>
