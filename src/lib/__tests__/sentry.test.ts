@@ -68,9 +68,9 @@ describe("withServerAction", () => {
     })
 
     it("forwards all arguments to the handler", async () => {
-        const handler = vi.fn(async (..._args: unknown[]) => undefined)
-        const action = withServerAction("argsAction", handler)
+        const argsActionImpl = vi.fn(async (..._args: unknown[]) => undefined)
+        const action = withServerAction("argsAction", argsActionImpl)
         await action("a", 2, { c: true })
-        expect(handler).toHaveBeenCalledWith("a", 2, { c: true })
+        expect(argsActionImpl).toHaveBeenCalledWith("a", 2, { c: true })
     })
 })
