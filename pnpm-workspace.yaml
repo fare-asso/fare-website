@@ -17,6 +17,6 @@ allowBuilds:
     unrs-resolver: true
 
 overrides:
-    "baseline-browser-mapping": "^2.10.33"
-    "react-is": "^19.2.6"
+    "baseline-browser-mapping": "^2.10.34"
+    "react-is": "^19.2.7"
     "reselect@5.1.1": "^5.2.0"
