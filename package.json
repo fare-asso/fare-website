@@ -47,6 +47,7 @@
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "date-fns": "^4.4.0",
+        "evlog": "^2.18.1",
         "fflate": "^0.8.3",
         "filepond": "^4.32.12",
         "filepond-plugin-file-validate-size": "^2.2.8",

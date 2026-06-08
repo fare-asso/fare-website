@@ -2,10 +2,33 @@ import * as Sentry from "@sentry/nextjs"
 import { headers } from "next/headers"
 import { unstable_rethrow } from "next/navigation"
 
+import { useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
 type WithServerActionOptions = {
     attachFormData?: boolean
+}
+
+// Next redirect()/notFound() work by throwing a control-flow error. It is normal
+// flow, not a 500, so we must not let `withEvlog` log it as one.
+const CONTROL_FLOW = Symbol("evlog.controlFlow")
+
+function isNextControlFlow(error: unknown): boolean {
+    if (typeof error !== "object" || error === null) return false
+    const digest = (error as { digest?: unknown }).digest
+    return (
+        typeof digest === "string" &&
+        (digest.startsWith("NEXT_REDIRECT") ||
+            digest.startsWith("NEXT_NOT_FOUND"))
+    )
+}
+
+function isControlFlowResult(
+    result: unknown
+): result is { [CONTROL_FLOW]: Error } {
+    return (
+        typeof result === "object" && result !== null && CONTROL_FLOW in result
+    )
 }
 
 export function withServerAction<A extends unknown[], R>(
@@ -13,6 +36,34 @@ export function withServerAction<A extends unknown[], R>(
     handler: (...args: A) => Promise<R>,
     options: WithServerActionOptions = {}
 ): (...args: A) => Promise<R> {
+    // Emit one evlog wide event per action call (action name, success, timing),
+    // drained to Sentry Logs. Carry Next control-flow throws out cleanly so the
+    // wide event records the real outcome, then rethrow past `withEvlog`.
+    const instrumented = withEvlog(
+        async (...args: A): Promise<R | { [CONTROL_FLOW]: Error }> => {
+            const log = useLogger()
+            log.set({ action: name })
+
+            // Wrap in `{ value }` so tryCatch skips its Supabase {data,error}
+            // unwrap on the generic action return type.
+            const settled = await tryCatch(async () => ({
+                value: await handler(...args)
+            }))
+            if (!settled.success) {
+                if (isNextControlFlow(settled.error)) {
+                    return { [CONTROL_FLOW]: settled.error }
+                }
+                throw settled.error
+            }
+
+            const { value } = settled.value
+            if (value && typeof value === "object" && "success" in value) {
+                log.set({ success: (value as { success: unknown }).success })
+            }
+            return value
+        }
+    )
+
     return async (...args: A): Promise<R> => {
         let formData: FormData | undefined
         if (options.attachFormData) {
@@ -33,15 +84,20 @@ export function withServerAction<A extends unknown[], R>(
             ? headerResult.value
             : undefined
 
-        return Sentry.withServerActionInstrumentation(
+        const result = await Sentry.withServerActionInstrumentation(
             name,
             {
                 ...(requestHeaders ? { headers: requestHeaders } : {}),
                 ...(formData ? { formData } : {}),
                 recordResponse: false
             },
-            () => handler(...args)
+            () => instrumented(...args)
         )
+
+        if (isControlFlowResult(result)) {
+            throw result[CONTROL_FLOW]
+        }
+        return result
     }
 }
 

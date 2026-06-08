@@ -1,3 +1,4 @@
+import { createError, useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
 import type { AutocompleteResponse } from "./types"
@@ -5,29 +6,31 @@ import type { AutocompleteResponse } from "./types"
 /**
  * An API request which gives autocompletion for an address query.
  */
-export async function GET(request: Request) {
+export const GET = withEvlog(async (request: Request) => {
+    const log = useLogger()
     const { searchParams } = new URL(request.url)
     const query = searchParams.get("query")
 
     if (!query) {
-        return new Response(
-            JSON.stringify({ error: "Erreur: Requête nulle" }),
-            {
-                status: 400
-            }
-        )
+        throw createError({
+            status: 400,
+            message: "Erreur: Requête nulle",
+            why: "Le paramètre `query` est manquant",
+            fix: "Fournir un paramètre `query` non vide"
+        })
     }
 
-    // Validate the query length
     // The minimum length is set to 3 characters to avoid unnecessary requests
     if (query.length < 3) {
-        return new Response(
-            JSON.stringify({ error: "Erreur: Requête trop courte" }),
-            {
-                status: 400
-            }
-        )
+        throw createError({
+            status: 400,
+            message: "Erreur: Requête trop courte",
+            why: "La requête doit contenir au moins 3 caractères",
+            fix: "Saisir au moins 3 caractères"
+        })
     }
+
+    log.set({ query })
 
     // Fetch response from autocompletion service (https://adresse.data.gouv.fr/)
     const fetched = await tryCatch(
@@ -42,31 +45,37 @@ export async function GET(request: Request) {
         )
     )
     if (!fetched.success) {
-        console.error("Error fetching location data:", fetched.error)
-        return new Response(
-            JSON.stringify({ error: "Internal Server Error" }),
-            { status: 500 }
-        )
+        throw createError({
+            status: 502,
+            message: "Internal Server Error",
+            why: "Le service de géocodage est injoignable",
+            fix: "Réessayer plus tard",
+            cause: fetched.error
+        })
     }
 
     if (!fetched.value.ok) {
-        console.error("Error fetching location data: non-OK response")
-        return new Response(
-            JSON.stringify({ error: "Internal Server Error" }),
-            { status: 500 }
-        )
+        throw createError({
+            status: 502,
+            message: "Internal Server Error",
+            why: `Le service de géocodage a répondu ${fetched.value.status}`,
+            fix: "Réessayer plus tard"
+        })
     }
 
     const jsonData = await tryCatch(
         fetched.value.json() as Promise<AutocompleteResponse>
     )
     if (!jsonData.success) {
-        console.error("Error parsing location data:", jsonData.error)
-        return new Response(
-            JSON.stringify({ error: "Internal Server Error" }),
-            { status: 500 }
-        )
+        throw createError({
+            status: 502,
+            message: "Internal Server Error",
+            why: "Réponse du service de géocodage illisible",
+            fix: "Réessayer plus tard",
+            cause: jsonData.error
+        })
     }
 
+    log.set({ resultCount: jsonData.value.results.length })
     return Response.json(jsonData.value)
-}
+})
