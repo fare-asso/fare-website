@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { redirect } from "next/navigation"
 import { Suspense } from "react"
 
 import InstanceList from "@/components/dashboard/elus/instanceList"
@@ -18,6 +19,12 @@ export const metadata: Metadata = {
 
 export default async function Instances() {
     const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        redirect("/login")
+    }
+    if (!hasPermission(user, "access:instances")) {
+        redirect("/dashboard/unauthorized")
+    }
     const canCreate = !!user && hasPermission(user, "create:instance")
     const canEdit = !!user && hasPermission(user, "edit:instance")
     const canDelete = !!user && hasPermission(user, "delete:instance")

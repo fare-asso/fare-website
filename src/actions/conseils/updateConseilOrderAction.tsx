@@ -1,5 +1,6 @@
 "use server"
 
+import { type } from "arktype"
 import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
@@ -7,14 +8,10 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
-
-interface ConseilOrder {
-    id: number
-    order: number
-}
+import { OrderSchema, type TOrder } from "@/schemas/elu"
 
 async function updateConseilOrderActionImpl(
-    conseilOrder: ConseilOrder[]
+    conseilOrder: TOrder
 ): Promise<{ success: true } | { success: false; error: string }> {
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -27,9 +24,17 @@ async function updateConseilOrderActionImpl(
         }
     }
 
+    const data = OrderSchema(conseilOrder)
+    if (data instanceof type.errors) {
+        return {
+            success: false,
+            error: "Un ou plusieurs champs sont invalides"
+        }
+    }
+
     const result = await tryCatch(
         prisma.$transaction(
-            conseilOrder.map((item) =>
+            data.map((item) =>
                 prisma.conseil.update({
                     where: { id: item.id },
                     data: { order: item.order }

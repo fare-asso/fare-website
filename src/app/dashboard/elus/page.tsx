@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { redirect } from "next/navigation"
 import { Suspense } from "react"
 
 import BulkImportElusButton from "@/components/dashboard/elus/bulkImportElusButton"
@@ -21,6 +22,12 @@ export const metadata: Metadata = {
 
 export default async function Elues(): Promise<React.JSX.Element> {
     const user = await getCurrentUserWithPermissions()
+    if (!user) {
+        redirect("/login")
+    }
+    if (!hasPermission(user, "access:elus")) {
+        redirect("/dashboard/unauthorized")
+    }
 
     const canCreateElu = !!user && hasPermission(user, "create:elu")
     const canEditElu = !!user && hasPermission(user, "edit:elu")

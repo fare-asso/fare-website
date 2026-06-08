@@ -1,5 +1,6 @@
 "use server"
 
+import { type } from "arktype"
 import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
@@ -7,14 +8,10 @@ import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
-
-interface InstanceOrder {
-    id: number
-    order: number
-}
+import { OrderSchema, type TOrder } from "@/schemas/elu"
 
 async function updateInstanceOrderActionImpl(
-    instanceOrder: InstanceOrder[]
+    instanceOrder: TOrder
 ): Promise<{ success: true } | { success: false; error: string }> {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
@@ -28,10 +25,19 @@ async function updateInstanceOrderActionImpl(
         }
     }
 
+    // Validate the untrusted client input before touching the database
+    const data = OrderSchema(instanceOrder)
+    if (data instanceof type.errors) {
+        return {
+            success: false,
+            error: "Un ou plusieurs champs sont invalides"
+        }
+    }
+
     // Update all instances' order in a transaction
     const result = await tryCatch(
         prisma.$transaction(
-            instanceOrder.map((item) =>
+            data.map((item) =>
                 prisma.instance.update({
                     where: { id: item.id },
                     data: { order: item.order }
