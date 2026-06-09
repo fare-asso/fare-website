@@ -121,8 +121,8 @@ export default function QuestionForm(): React.ReactNode {
                     Vous avez une question sur le tutorat Bouge Ta Prison ?
                 </CardTitle>
                 <CardDescription>
-                    Posez votre question en remplissant le formulaire ci-dessous.
-                    Nous vous répondrons dans les plus brefs délais.
+                    Posez votre question en remplissant le formulaire
+                    ci-dessous. Nous vous répondrons dans les plus brefs délais.
                 </CardDescription>
             </CardHeader>
             <CardContent>
