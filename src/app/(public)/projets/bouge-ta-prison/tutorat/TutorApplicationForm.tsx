@@ -181,10 +181,12 @@ export default function TutorApplicationForm(): React.ReactNode {
                                                         placeholder="Jean"
                                                     />
                                                     {isInvalid && (
-                                                        <FieldError>
-                                                            Le prénom est
-                                                            obligatoire.
-                                                        </FieldError>
+                                                        <FieldError
+                                                            errors={
+                                                                field.state.meta
+                                                                    .errors
+                                                            }
+                                                        />
                                                     )}
                                                 </Field>
                                             )
@@ -219,13 +221,15 @@ export default function TutorApplicationForm(): React.ReactNode {
                                                             )
                                                         }
                                                         aria-invalid={isInvalid}
-                                                        placeholder="Pierre"
+                                                        placeholder="Dupont"
                                                     />
                                                     {isInvalid && (
-                                                        <FieldError>
-                                                            Le nom est
-                                                            obligatoire.
-                                                        </FieldError>
+                                                        <FieldError
+                                                            errors={
+                                                                field.state.meta
+                                                                    .errors
+                                                            }
+                                                        />
                                                     )}
                                                 </Field>
                                             )
@@ -258,13 +262,15 @@ export default function TutorApplicationForm(): React.ReactNode {
                                                         )
                                                     }
                                                     aria-invalid={isInvalid}
-                                                    placeholder="jean.pierre@example.com"
+                                                    placeholder="jean.dupont@example.com"
                                                 />
                                                 {isInvalid && (
-                                                    <FieldError>
-                                                        L'adresse email n'est
-                                                        pas valide.
-                                                    </FieldError>
+                                                    <FieldError
+                                                        errors={
+                                                            field.state.meta
+                                                                .errors
+                                                        }
+                                                    />
                                                 )}
                                             </Field>
                                         )
@@ -302,10 +308,12 @@ export default function TutorApplicationForm(): React.ReactNode {
                                                     placeholder="Droit, Psychologie, etc."
                                                 />
                                                 {isInvalid && (
-                                                    <FieldError>
-                                                        La filière est
-                                                        obligatoire.
-                                                    </FieldError>
+                                                    <FieldError
+                                                        errors={
+                                                            field.state.meta
+                                                                .errors
+                                                        }
+                                                    />
                                                 )}
                                             </Field>
                                         )
@@ -362,10 +370,12 @@ export default function TutorApplicationForm(): React.ReactNode {
                                                     </SelectContent>
                                                 </Select>
                                                 {isInvalid && (
-                                                    <FieldError>
-                                                        Le renseignement du
-                                                        cursus est obligatoire.
-                                                    </FieldError>
+                                                    <FieldError
+                                                        errors={
+                                                            field.state.meta
+                                                                .errors
+                                                        }
+                                                    />
                                                 )}
                                             </Field>
                                         )
@@ -474,9 +484,9 @@ export default function TutorApplicationForm(): React.ReactNode {
                                             !field.state.meta.isValid
                                         if (!isInvalid) return null
                                         return (
-                                            <FieldError>
-                                                Veuillez valider le captcha.
-                                            </FieldError>
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
                                         )
                                     }}
                                 />
