@@ -1,24 +1,26 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { memo, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm } from "@tanstack/react-form"
+import { Loader2Icon } from "lucide-react"
+import { memo, useCallback, useState, useTransition } from "react"
 
 import submitTutorQuestion from "@/actions/bouge-ta-prison/submitTutorQuestion"
 import { Captcha } from "@/components/captcha"
-import LoadingRing from "@/components/dashboard/loadingRing"
-import { Alert } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
-} from "@/components/ui/form"
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
+import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
     Select,
@@ -33,264 +35,393 @@ import {
     BTPTutorQuestionSchema
 } from "@/schemas/bougeTaPrison"
 
+// --- Constants ---
+
+const emptyForm: BTPTutorQuestion = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    major: "",
+    studyYear: "L3",
+    message: "",
+    captchaToken: ""
+}
+
+// --- Captcha widget (memoized to avoid re-renders) ---
+
+interface CaptchaFieldProps {
+    onTokenChange: (token: string) => void
+}
+
 const CaptchaWidget = memo(function CaptchaWidget({
     onTokenChange
-}: {
-    onTokenChange: (token: string) => void
-}) {
+}: CaptchaFieldProps): React.ReactNode {
     return <Captcha onComplete={onTokenChange} />
 })
 
-export default function QuestionForm() {
-    const [isLoading, setIsLoading] = useState(false)
-    const [success, setSuccess] = useState<boolean | undefined>(undefined)
+export default function QuestionForm(): React.ReactNode {
+    const [isPending, submitForm] = useTransition()
+    const [isSubmitted, setIsSubmitted] = useState(false)
+    const [submitError, setSubmitError] = useState<string | null>(null)
 
-    const form = useForm<BTPTutorQuestion>({
-        resolver: zodResolver(BTPTutorQuestionSchema),
-        defaultValues: {
-            firstName: "",
-            lastName: "",
-            email: "",
-            major: "",
-            studyYear: "L3",
-            message: "",
-            captchaToken: ""
+    const form = useForm({
+        defaultValues: emptyForm,
+        validators: {
+            onChange: BTPTutorQuestionSchema,
+            onSubmit: BTPTutorQuestionSchema
+        },
+        // oxlint-disable-next-line require-await -- submission runs inside a transition
+        onSubmit: async ({ value }) => {
+            setSubmitError(null)
+            submitForm(async () => {
+                const res = await submitTutorQuestion(value)
+                if (res.success) {
+                    setIsSubmitted(true)
+                } else {
+                    setSubmitError(
+                        res.error ??
+                            "Une erreur est survenue lors de l'envoi de votre question. Veuillez réessayer."
+                    )
+                }
+            })
         }
     })
 
-    const onSubmit = async (data: BTPTutorQuestion) => {
-        setIsLoading(true)
-        const res = await submitTutorQuestion(data)
+    const handleCaptchaComplete = useCallback(
+        (token: string) => {
+            form.setFieldValue("captchaToken", token)
+            form.setFieldMeta("captchaToken", (prev) => ({
+                ...prev,
+                isTouched: true
+            }))
+        },
+        [form]
+    )
 
-        if (res.fieldErrors) {
-            for (const [field, errors] of Object.entries(res.fieldErrors)) {
-                form.setError(field as keyof BTPTutorQuestion, {
-                    message: errors[0]
-                })
-            }
-        }
-        setSuccess(res.success)
-        if (res.success) {
-            form.reset()
-        }
-        setIsLoading(false)
+    if (isSubmitted) {
+        return (
+            <Card className="w-full sm:max-w-3xl" variant="ghost">
+                <CardHeader>
+                    <CardTitle>Merci pour votre question !</CardTitle>
+                </CardHeader>
+                <CardDescription className="w-full px-4">
+                    <p>
+                        Votre question a bien été envoyée. Nous vous répondrons
+                        dans les plus brefs délais.
+                    </p>
+                </CardDescription>
+            </Card>
+        )
     }
 
     return (
-        <Card>
+        <Card className="w-full sm:max-w-3xl" variant="ghost">
             <CardHeader>
-                <h2>Vous avez une question sur le tutorat Bouge Ta Prison ?</h2>
-                <p className="text-sm">
-                    Si vous avez des questions concernant le tutorat Bouge Ta
-                    Prison, n'hésitez pas à nous les poser en remplissant le
-                    formulaire ci-dessous. Nous vous répondrons dans les plus
-                    brefs délais.
-                </p>
+                <CardTitle>
+                    Vous avez une question sur le tutorat Bouge Ta Prison ?
+                </CardTitle>
+                <CardDescription>
+                    Posez votre question en remplissant le formulaire ci-dessous.
+                    Nous vous répondrons dans les plus brefs délais.
+                </CardDescription>
             </CardHeader>
             <CardContent>
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-4"
-                    >
-                        <FormField
-                            name="firstName"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Prénom</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Jean" {...field} />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {
-                                            form.formState.errors.firstName
-                                                ?.message
-                                        }
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="lastName"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nom</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Martin"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {
-                                            form.formState.errors.lastName
-                                                ?.message
-                                        }
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
+                <form
+                    id="tutor-question-form"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        form.handleSubmit()
+                    }}
+                >
+                    <FieldGroup>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <form.Field
+                                name="firstName"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched &&
+                                        !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>
+                                                Prénom
+                                            </FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) =>
+                                                    field.handleChange(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                aria-invalid={isInvalid}
+                                                placeholder="Jean"
+                                            />
+                                            {isInvalid && (
+                                                <FieldError
+                                                    errors={
+                                                        field.state.meta.errors
+                                                    }
+                                                />
+                                            )}
+                                        </Field>
+                                    )
+                                }}
+                            />
+
+                            <form.Field
+                                name="lastName"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched &&
+                                        !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>
+                                                Nom
+                                            </FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) =>
+                                                    field.handleChange(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                aria-invalid={isInvalid}
+                                                placeholder="Martin"
+                                            />
+                                            {isInvalid && (
+                                                <FieldError
+                                                    errors={
+                                                        field.state.meta.errors
+                                                    }
+                                                />
+                                            )}
+                                        </Field>
+                                    )
+                                }}
+                            />
+                        </div>
+
+                        <form.Field
                             name="email"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Email
+                                        </FieldLabel>
                                         <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            type="email"
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
                                             placeholder="jean.martin@example.com"
-                                            {...field}
                                         />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {form.formState.errors.email?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
+                                        {isInvalid && (
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    </Field>
+                                )
+                            }}
                         />
-                        <FormField
+
+                        <form.Field
                             name="major"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Filière</FormLabel>
-                                    <FormControl>
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Filière
+                                        </FieldLabel>
+                                        <FieldDescription>
+                                            Votre filière d'études actuelle.
+                                        </FieldDescription>
                                         <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
                                             placeholder="Droit, Psychologie, etc."
-                                            {...field}
                                         />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Votre filière d'études actuelle
-                                    </FormDescription>
-                                    <FormMessage>
-                                        {form.formState.errors.major?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
+                                        {isInvalid && (
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    </Field>
+                                )
+                            }}
                         />
-                        <FormField
+
+                        <form.Field
                             name="studyYear"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Année d'étude</FormLabel>
-                                    <FormControl>
-                                        <Select>
-                                            <FormControl>
-                                                <SelectTrigger className="w-full md:w-1/2">
-                                                    <SelectValue
-                                                        placeholder="Veuillez selectionner une année d'étude"
-                                                        {...field}
-                                                    />
-                                                </SelectTrigger>
-                                            </FormControl>
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Année d'étude
+                                        </FieldLabel>
+                                        <Select
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onValueChange={(value) => {
+                                                field.handleChange(
+                                                    value as
+                                                        | "L3"
+                                                        | "M1"
+                                                        | "M2"
+                                                        | "other"
+                                                )
+                                                field.handleBlur()
+                                            }}
+                                        >
+                                            <SelectTrigger
+                                                id={field.name}
+                                                aria-invalid={isInvalid}
+                                                className="w-full"
+                                            >
+                                                <SelectValue placeholder="Sélectionnez une année d'étude" />
+                                            </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="L3">
                                                     Licence 3
                                                 </SelectItem>
                                                 <SelectItem value="M1">
-                                                    M1
+                                                    Master 1
                                                 </SelectItem>
                                                 <SelectItem value="M2">
-                                                    M2
+                                                    Master 2
                                                 </SelectItem>
                                                 <SelectItem value="other">
-                                                    Autres
+                                                    Autre
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
-                                    </FormControl>
-                                    <FormDescription>
-                                        Votre année d'étude prévue pour
-                                        2026-2027
-                                    </FormDescription>
-                                    <FormMessage>
-                                        {
-                                            form.formState.errors.studyYear
-                                                ?.message
-                                        }
-                                    </FormMessage>
-                                </FormItem>
-                            )}
+                                        {isInvalid && (
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    </Field>
+                                )
+                            }}
                         />
 
-                        <FormField
+                        <form.Field
                             name="message"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Message</FormLabel>
-                                    <FormControl>
+                            children={(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            Message
+                                        </FieldLabel>
+                                        <FieldDescription>
+                                            1000 caractères maximum.
+                                        </FieldDescription>
                                         <Textarea
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            aria-invalid={isInvalid}
                                             placeholder="Vous pouvez écrire votre message ici."
-                                            className="h-32 max-h-52"
-                                            {...field}
+                                            className="min-h-32"
                                         />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {form.formState.errors.message?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
+                                        {isInvalid && (
+                                            <FieldError
+                                                errors={field.state.meta.errors}
+                                            />
+                                        )}
+                                    </Field>
+                                )
+                            }}
                         />
 
-                        <FormField
-                            name="captchaToken"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Vérification CAPTCHA</FormLabel>
-                                    <FormControl>
-                                        <CaptchaWidget
-                                            onTokenChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {
-                                            form.formState.errors.captchaToken
-                                                ?.message
-                                        }
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
+                        {/* ===== Captcha ===== */}
+                        <div className="pt-2">
+                            <Field>
+                                <CaptchaWidget
+                                    onTokenChange={handleCaptchaComplete}
+                                />
+                                <form.Field
+                                    name="captchaToken"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        if (!isInvalid) return null
+                                        return (
+                                            <FieldError>
+                                                Veuillez valider le captcha.
+                                            </FieldError>
+                                        )
+                                    }}
+                                />
+                            </Field>
+                        </div>
 
-                        <Button
-                            type="submit"
-                            variant="default"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? <LoadingRing /> : null}
-                            Envoyer
-                        </Button>
-                    </form>
-                </Form>
-
-                {success === true ? (
-                    <Alert
-                        variant="default"
-                        className="mt-4 flex flex-row items-center border-green-500 bg-green-100 text-green-900"
-                    >
-                        <span>
-                            Votre question a bien été envoyée. Merci pour votre
-                            intérêt!
-                        </span>
-                    </Alert>
-                ) : null}
-                {success === false ? (
-                    <Alert
-                        variant="destructive"
-                        className="mt-4 flex flex-row items-center"
-                    >
-                        <span>
-                            Une erreur est survenue lors de l'envoi de votre
-                            question. Veuillez réessayer.
-                        </span>
-                    </Alert>
-                ) : null}
+                        {/* ===== Submit ===== */}
+                        {submitError && (
+                            <p
+                                role="alert"
+                                className="border-destructive bg-destructive/10 text-destructive rounded-md border px-4 py-3 text-sm"
+                            >
+                                {submitError}
+                            </p>
+                        )}
+                        <div className="flex justify-end gap-4 pt-4">
+                            <Button
+                                type="submit"
+                                className="min-w-32"
+                                disabled={isPending}
+                            >
+                                {isPending ? (
+                                    <Loader2Icon className="animate-spin" />
+                                ) : (
+                                    "Envoyer"
+                                )}
+                            </Button>
+                        </div>
+                    </FieldGroup>
+                </form>
             </CardContent>
         </Card>
     )

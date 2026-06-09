@@ -1,24 +1,30 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { memo, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm } from "@tanstack/react-form"
+import { Loader2Icon } from "lucide-react"
+import { memo, useCallback, useState, useTransition } from "react"
 
 import submitTutorApplication from "@/actions/bouge-ta-prison/submitTutorApplication"
 import { Captcha } from "@/components/captcha"
-import LoadingRing from "@/components/dashboard/loadingRing"
-import { Alert } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
-} from "@/components/ui/form"
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
+import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+    FieldLegend,
+    FieldSeparator,
+    FieldSet
+} from "@/components/ui/field"
+import { FilePondInput } from "@/components/ui/filepond"
 import { Input } from "@/components/ui/input"
 import {
     Select,
@@ -32,307 +38,475 @@ import {
     BTPTutorApplicationSchema
 } from "@/schemas/bougeTaPrison"
 
+// --- Constants ---
+
+/** Max file size: 5 MB (in bytes) */
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+
+const emptyForm: BTPTutorApplication = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    major: "",
+    studyYear: "L3",
+    cv: undefined as unknown as File,
+    motivationLetter: undefined as unknown as File,
+    captchaToken: ""
+}
+
+// --- Captcha widget (memoized to avoid re-renders) ---
+
+interface CaptchaFieldProps {
+    onTokenChange: (token: string) => void
+}
+
 const CaptchaWidget = memo(function CaptchaWidget({
     onTokenChange
-}: {
-    onTokenChange: (token: string) => void
-}) {
+}: CaptchaFieldProps): React.ReactNode {
     return <Captcha onComplete={onTokenChange} />
 })
 
-export default function TutorApplicationForm() {
-    const [isLoading, setIsLoading] = useState(false)
-    const [success, setSuccess] = useState<boolean | undefined>(undefined)
+export default function TutorApplicationForm(): React.ReactNode {
+    const [isPending, submitForm] = useTransition()
+    const [isSubmitted, setIsSubmitted] = useState(false)
+    const [submitError, setSubmitError] = useState<string | null>(null)
 
-    const form = useForm<BTPTutorApplication>({
-        resolver: zodResolver(BTPTutorApplicationSchema),
-        defaultValues: {
-            firstName: "",
-            lastName: "",
-            email: "",
-            major: "",
-            studyYear: "L3",
-            cv: undefined,
-            motivationLetter: undefined,
-            captchaToken: ""
+    const form = useForm({
+        defaultValues: emptyForm,
+        validators: {
+            onChange: BTPTutorApplicationSchema,
+            onSubmit: BTPTutorApplicationSchema
+        },
+        // oxlint-disable-next-line require-await -- submission runs inside a transition
+        onSubmit: async ({ value }) => {
+            setSubmitError(null)
+            submitForm(async () => {
+                const formData = new FormData()
+                for (const [key, val] of Object.entries(value)) {
+                    formData.append(key, val)
+                }
+
+                const res = await submitTutorApplication(formData)
+                if (res.success) {
+                    setIsSubmitted(true)
+                } else {
+                    setSubmitError(
+                        res.error ??
+                            "Une erreur est survenue lors de l'envoi de votre candidature. Veuillez réessayer."
+                    )
+                }
+            })
         }
     })
 
-    const onSubmit = async (data: BTPTutorApplication) => {
-        // Do something with the data...
-        setIsLoading(true)
+    const handleCaptchaComplete = useCallback(
+        (token: string) => {
+            form.setFieldValue("captchaToken", token)
+            form.setFieldMeta("captchaToken", (prev) => ({
+                ...prev,
+                isTouched: true
+            }))
+        },
+        [form]
+    )
 
-        const formData = new FormData()
-
-        for (const [key, value] of Object.entries(data)) {
-            formData.append(key, value)
-        }
-
-        const res = await submitTutorApplication(formData)
-
-        if (res.fieldErrors) {
-            for (const [field, errors] of Object.entries(res.fieldErrors)) {
-                form.setError(field as keyof BTPTutorApplication, {
-                    message: errors[0]
-                })
-            }
-        }
-        setSuccess(res.success)
-        if (res.success) {
-            form.reset()
-        }
-        setIsLoading(false)
+    if (isSubmitted) {
+        return (
+            <Card className="w-full sm:max-w-3xl" variant="ghost">
+                <CardHeader>
+                    <CardTitle>Merci pour votre candidature !</CardTitle>
+                </CardHeader>
+                <CardDescription className="w-full px-4">
+                    <p>
+                        Votre candidature a bien été enregistrée. Nous
+                        reviendrons vers vous rapidement.
+                    </p>
+                </CardDescription>
+            </Card>
+        )
     }
 
     return (
-        <Card>
+        <Card className="w-full sm:max-w-3xl" variant="ghost">
             <CardHeader>
-                <h2>Formulaire de candidature</h2>
-                <p className="text-sm">
-                    Pour candidater, veuillez remplir le formulaire ci-dessous.
-                </p>
+                <CardTitle>Formulaire de candidature</CardTitle>
+                <CardDescription>
+                    Pour candidater, veuillez remplir le formulaire ci-dessous
+                    et déposer obligatoirement votre CV et votre lettre de
+                    motivation.
+                </CardDescription>
             </CardHeader>
             <CardContent>
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-4"
-                    >
-                        <FormField
-                            name="firstName"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Prénom</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Jean" {...field} />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {
-                                            form.formState.errors.firstName
-                                                ?.message
-                                        }
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="lastName"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nom</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Martin"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {
-                                            form.formState.errors.lastName
-                                                ?.message
-                                        }
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="email"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="jean.martin@example.com"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {form.formState.errors.email?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="major"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Filière</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Droit, Psychologie, etc."
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Votre filière d'études actuelle
-                                    </FormDescription>
-                                    <FormMessage>
-                                        {form.formState.errors.major?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="studyYear"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Année d'étude</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger className="w-full md:w-1/2">
-                                                <SelectValue placeholder="Veuillez selectionner une année d'étude" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="L3">
-                                                Licence 3
-                                            </SelectItem>
-                                            <SelectItem value="M1">
-                                                M1
-                                            </SelectItem>
-                                            <SelectItem value="M2">
-                                                M2
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormDescription>
-                                        Votre année d'étude prévue pour
-                                        2026-2027
-                                    </FormDescription>
-                                    <FormMessage>
-                                        {
-                                            form.formState.errors.studyYear
-                                                ?.message
-                                        }
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="cv"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>CV</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="file"
-                                            accept="application/pdf"
-                                            onChange={(e) =>
-                                                field.onChange(
-                                                    e.target.files?.[0]
-                                                )
-                                            }
-                                            onBlur={field.onBlur}
-                                            name={field.name}
-                                            ref={field.ref}
-                                            className="w-full md:w-1/2"
-                                        />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Votre CV au format PDF (max 5 Mo)
-                                    </FormDescription>
-                                    <FormMessage>
-                                        {form.formState.errors.cv?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="motivationLetter"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Lettre de motivation</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="file"
-                                            accept="application/pdf"
-                                            onChange={(e) =>
-                                                field.onChange(
-                                                    e.target.files?.[0]
-                                                )
-                                            }
-                                            onBlur={field.onBlur}
-                                            name={field.name}
-                                            ref={field.ref}
-                                            className="w-full md:w-1/2"
-                                        />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Votre lettre de motivation au format PDF
-                                        (max 5 Mo)
-                                    </FormDescription>
-                                    <FormMessage>
-                                        {
-                                            form.formState.errors
-                                                .motivationLetter?.message
-                                        }
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="captchaToken"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Vérification CAPTCHA</FormLabel>
-                                    <FormControl>
-                                        <CaptchaWidget
-                                            onTokenChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {
-                                            form.formState.errors.captchaToken
-                                                ?.message
-                                        }
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-                        <Button
-                            type="submit"
-                            variant="default"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? <LoadingRing /> : null}
-                            Soumettre
-                        </Button>
-                    </form>
-                </Form>
+                <form
+                    id="tutor-application-form"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        form.handleSubmit()
+                    }}
+                >
+                    <FieldGroup>
+                        {/* ===== Section: Informations personnelles ===== */}
+                        <FieldSet>
+                            <FieldLegend>Informations générales</FieldLegend>
+                            <FieldGroup>
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <form.Field
+                                        name="firstName"
+                                        children={(field) => {
+                                            const isInvalid =
+                                                field.state.meta.isTouched &&
+                                                !field.state.meta.isValid
+                                            return (
+                                                <Field data-invalid={isInvalid}>
+                                                    <FieldLabel
+                                                        htmlFor={field.name}
+                                                    >
+                                                        Prénom
+                                                    </FieldLabel>
+                                                    <Input
+                                                        id={field.name}
+                                                        name={field.name}
+                                                        value={
+                                                            field.state.value
+                                                        }
+                                                        onBlur={
+                                                            field.handleBlur
+                                                        }
+                                                        onChange={(e) =>
+                                                            field.handleChange(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        aria-invalid={isInvalid}
+                                                        placeholder="Jean"
+                                                    />
+                                                    {isInvalid && (
+                                                        <FieldError>
+                                                            Le prénom est
+                                                            obligatoire.
+                                                        </FieldError>
+                                                    )}
+                                                </Field>
+                                            )
+                                        }}
+                                    />
 
-                {success === true ? (
-                    <Alert
-                        variant="default"
-                        className="mt-4 flex flex-row items-center border-green-500 bg-green-100 text-green-900"
-                    >
-                        <span>
-                            Votre candidature a bien été soumise. Merci pour
-                            votre intérêt!
-                        </span>
-                    </Alert>
-                ) : null}
-                {success === false ? (
-                    <Alert
-                        variant="destructive"
-                        className="mt-4 flex flex-row items-center"
-                    >
-                        <span>
-                            Une erreur est survenue lors de la soumission de la
-                            candidature. Veuillez réessayer.
-                        </span>
-                    </Alert>
-                ) : null}
+                                    <form.Field
+                                        name="lastName"
+                                        children={(field) => {
+                                            const isInvalid =
+                                                field.state.meta.isTouched &&
+                                                !field.state.meta.isValid
+                                            return (
+                                                <Field data-invalid={isInvalid}>
+                                                    <FieldLabel
+                                                        htmlFor={field.name}
+                                                    >
+                                                        Nom
+                                                    </FieldLabel>
+                                                    <Input
+                                                        id={field.name}
+                                                        name={field.name}
+                                                        value={
+                                                            field.state.value
+                                                        }
+                                                        onBlur={
+                                                            field.handleBlur
+                                                        }
+                                                        onChange={(e) =>
+                                                            field.handleChange(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        aria-invalid={isInvalid}
+                                                        placeholder="Pierre"
+                                                    />
+                                                    {isInvalid && (
+                                                        <FieldError>
+                                                            Le nom est
+                                                            obligatoire.
+                                                        </FieldError>
+                                                    )}
+                                                </Field>
+                                            )
+                                        }}
+                                    />
+                                </div>
+
+                                <form.Field
+                                    name="email"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        return (
+                                            <Field data-invalid={isInvalid}>
+                                                <FieldLabel
+                                                    htmlFor={field.name}
+                                                >
+                                                    Email
+                                                </FieldLabel>
+                                                <Input
+                                                    id={field.name}
+                                                    name={field.name}
+                                                    type="email"
+                                                    value={field.state.value}
+                                                    onBlur={field.handleBlur}
+                                                    onChange={(e) =>
+                                                        field.handleChange(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    aria-invalid={isInvalid}
+                                                    placeholder="jean.pierre@example.com"
+                                                />
+                                                {isInvalid && (
+                                                    <FieldError>
+                                                        L'adresse email n'est
+                                                        pas valide.
+                                                    </FieldError>
+                                                )}
+                                            </Field>
+                                        )
+                                    }}
+                                />
+
+                                <form.Field
+                                    name="major"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        return (
+                                            <Field data-invalid={isInvalid}>
+                                                <FieldLabel
+                                                    htmlFor={field.name}
+                                                >
+                                                    Filière
+                                                </FieldLabel>
+                                                <FieldDescription>
+                                                    Votre filière d'études
+                                                    actuelle.
+                                                </FieldDescription>
+                                                <Input
+                                                    id={field.name}
+                                                    name={field.name}
+                                                    value={field.state.value}
+                                                    onBlur={field.handleBlur}
+                                                    onChange={(e) =>
+                                                        field.handleChange(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    aria-invalid={isInvalid}
+                                                    placeholder="Droit, Psychologie, etc."
+                                                />
+                                                {isInvalid && (
+                                                    <FieldError>
+                                                        La filière est
+                                                        obligatoire.
+                                                    </FieldError>
+                                                )}
+                                            </Field>
+                                        )
+                                    }}
+                                />
+
+                                <form.Field
+                                    name="studyYear"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        return (
+                                            <Field data-invalid={isInvalid}>
+                                                <FieldLabel
+                                                    htmlFor={field.name}
+                                                >
+                                                    Année d'étude
+                                                </FieldLabel>
+                                                <FieldDescription>
+                                                    Votre cursus au cours de
+                                                    cette année.
+                                                </FieldDescription>
+                                                <Select
+                                                    name={field.name}
+                                                    value={field.state.value}
+                                                    onValueChange={(value) => {
+                                                        field.handleChange(
+                                                            value as
+                                                                | "L3"
+                                                                | "M1"
+                                                                | "M2"
+                                                        )
+                                                        field.handleBlur()
+                                                    }}
+                                                >
+                                                    <SelectTrigger
+                                                        id={field.name}
+                                                        aria-invalid={isInvalid}
+                                                        className="w-full"
+                                                    >
+                                                        <SelectValue placeholder="Sélectionnez une année d'étude" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="L3">
+                                                            Licence 3
+                                                        </SelectItem>
+                                                        <SelectItem value="M1">
+                                                            Master 1
+                                                        </SelectItem>
+                                                        <SelectItem value="M2">
+                                                            Master 2
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                {isInvalid && (
+                                                    <FieldError>
+                                                        Le renseignement du
+                                                        cursus est obligatoire.
+                                                    </FieldError>
+                                                )}
+                                            </Field>
+                                        )
+                                    }}
+                                />
+                            </FieldGroup>
+                        </FieldSet>
+
+                        <FieldSeparator />
+
+                        {/* ===== Section: Documents à fournir ===== */}
+                        <FieldSet>
+                            <FieldLegend>Documents à fournir</FieldLegend>
+                            <FieldGroup>
+                                <form.Field
+                                    name="cv"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        return (
+                                            <Field data-invalid={isInvalid}>
+                                                <FieldLabel
+                                                    htmlFor={field.name}
+                                                >
+                                                    CV
+                                                </FieldLabel>
+                                                <FieldDescription>
+                                                    Format PDF. Maximum 5 Mo.
+                                                </FieldDescription>
+                                                <FilePondInput
+                                                    maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
+                                                    acceptedFileTypes={[
+                                                        "application/pdf"
+                                                    ]}
+                                                    onChange={(file) =>
+                                                        field.handleChange(file)
+                                                    }
+                                                />
+                                                {isInvalid && (
+                                                    <FieldError
+                                                        errors={
+                                                            field.state.meta
+                                                                .errors
+                                                        }
+                                                    />
+                                                )}
+                                            </Field>
+                                        )
+                                    }}
+                                />
+
+                                <form.Field
+                                    name="motivationLetter"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        return (
+                                            <Field data-invalid={isInvalid}>
+                                                <FieldLabel
+                                                    htmlFor={field.name}
+                                                >
+                                                    Lettre de motivation
+                                                </FieldLabel>
+                                                <FieldDescription>
+                                                    Format PDF. Maximum 5 Mo.
+                                                </FieldDescription>
+                                                <FilePondInput
+                                                    maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
+                                                    acceptedFileTypes={[
+                                                        "application/pdf"
+                                                    ]}
+                                                    onChange={(file) =>
+                                                        field.handleChange(file)
+                                                    }
+                                                />
+                                                {isInvalid && (
+                                                    <FieldError
+                                                        errors={
+                                                            field.state.meta
+                                                                .errors
+                                                        }
+                                                    />
+                                                )}
+                                            </Field>
+                                        )
+                                    }}
+                                />
+                            </FieldGroup>
+                        </FieldSet>
+
+                        <FieldSeparator />
+
+                        {/* ===== Section: Captcha ===== */}
+                        <div className="pt-4">
+                            <Field>
+                                <CaptchaWidget
+                                    onTokenChange={handleCaptchaComplete}
+                                />
+                                <form.Field
+                                    name="captchaToken"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        if (!isInvalid) return null
+                                        return (
+                                            <FieldError>
+                                                Veuillez valider le captcha.
+                                            </FieldError>
+                                        )
+                                    }}
+                                />
+                            </Field>
+                        </div>
+
+                        {/* ===== Submit ===== */}
+                        {submitError && (
+                            <p
+                                role="alert"
+                                className="border-destructive bg-destructive/10 text-destructive rounded-md border px-4 py-3 text-sm"
+                            >
+                                {submitError}
+                            </p>
+                        )}
+                        <div className="flex justify-end gap-4 pt-4">
+                            <Button
+                                type="submit"
+                                className="min-w-32"
+                                disabled={isPending}
+                            >
+                                {isPending ? (
+                                    <Loader2Icon className="animate-spin" />
+                                ) : (
+                                    "Envoyer ma candidature"
+                                )}
+                            </Button>
+                        </div>
+                    </FieldGroup>
+                </form>
             </CardContent>
         </Card>
     )
