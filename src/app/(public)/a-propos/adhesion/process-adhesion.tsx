@@ -23,7 +23,7 @@ const logoExtensionByMime: Record<string, string> = {
     "image/png": "png",
     "image/jpeg": "jpg",
     "image/webp": "webp",
-    "image/svg+xml": "svg"
+    "application/pdf": "pdf"
 }
 
 type Result = { success: true } | { success: false; message: string }
@@ -131,6 +131,37 @@ async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
         }
     }
 
+    const photoUploads = await tryCatch(
+        Promise.all(
+            (data.photos ?? []).map((photo, i) => {
+                const ext = logoExtensionByMime[photo.type]
+                return ext
+                    ? upload(`photo-${i + 1}.${ext}`, photo)
+                    : Promise.resolve(null)
+            })
+        )
+    )
+    if (!photoUploads.success) {
+        captureActionError(photoUploads.error)
+        await cleanup()
+        return {
+            success: false,
+            message:
+                "Échec de l'envoi des fichiers. Veuillez réessayer plus tard."
+        }
+    }
+    if (photoUploads.value.some((path) => !path)) {
+        await cleanup()
+        return {
+            success: false,
+            message:
+                "Échec de l'envoi des fichiers. Veuillez réessayer plus tard."
+        }
+    }
+    const photosPaths = photoUploads.value.filter(
+        (path): path is string => !!path
+    )
+
     const created = await tryCatch(
         prisma.adhesion.create({
             data: {
@@ -158,7 +189,8 @@ async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
                 extraitPVPath,
                 lettreEngagementPath,
                 reglementInterieurPath,
-                bilanFinancierPath
+                bilanFinancierPath,
+                photosPaths
             }
         })
     )

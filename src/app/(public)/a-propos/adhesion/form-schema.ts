@@ -14,6 +14,10 @@ export const bureauMemberSchema = type({
     adresse: "string >= 1"
 })
 
+const photosSchema = type(fileSchema({ mimeType: ["image", "pdf"] }))
+    .array()
+    .atMostLength(15)
+
 export const AdhesionFormSchema = type({
     // Basic info
     sigle: "string >= 2",
@@ -51,6 +55,7 @@ export const AdhesionFormSchema = type({
     "lettreEngagement?": fileSchema({ optional: true }),
     "reglementInterieur?": fileSchema({ optional: true }),
     "bilanFinancier?": fileSchema({ optional: true }),
+    "photos?": photosSchema,
 
     // Captcha
     captchaToken: "string >= 1"

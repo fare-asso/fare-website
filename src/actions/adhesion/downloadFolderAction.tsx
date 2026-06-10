@@ -57,7 +57,8 @@ async function downloadFolderActionImpl(
         adhesion.value.extraitPVPath,
         adhesion.value.lettreEngagementPath,
         adhesion.value.reglementInterieurPath,
-        adhesion.value.bilanFinancierPath
+        adhesion.value.bilanFinancierPath,
+        ...adhesion.value.photosPaths
     ].filter((path): path is string => Boolean(path))
 
     const supabase = await createClient()
