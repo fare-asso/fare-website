@@ -1393,18 +1393,22 @@ export function AdhesionForm(): React.ReactNode {
                                             !field.state.meta.isValid
                                         return (
                                             <Field data-invalid={isInvalid}>
-                                                <FieldLabel htmlFor={field.name}>
+                                                <FieldLabel
+                                                    htmlFor={field.name}
+                                                >
                                                     Photos des membres du bureau{" "}
                                                     <span className="text-muted-foreground">
                                                         (optionnel)
                                                     </span>
                                                 </FieldLabel>
                                                 <FieldDescription>
-                                                    Ce n'est pas obligatoire, mais
-                                                    c'est fortement recommandé. Formats acceptés
-                                                    : images (PNG, JPG, WebP, SVG)
-                                                    ou PDF. Jusqu'à 15 fichiers, 5
-                                                    Mo maximum par fichier.
+                                                    Ce n'est pas obligatoire,
+                                                    mais c'est fortement
+                                                    recommandé. Formats acceptés
+                                                    : images (PNG, JPG, WebP,
+                                                    SVG) ou PDF. Jusqu'à 15
+                                                    fichiers, 5 Mo maximum par
+                                                    fichier.
                                                 </FieldDescription>
                                                 <FilePondInput
                                                     allowMultiple
@@ -1418,7 +1422,9 @@ export function AdhesionForm(): React.ReactNode {
                                                         "application/pdf"
                                                     ]}
                                                     onChangeMultiple={(files) =>
-                                                        field.handleChange(files)
+                                                        field.handleChange(
+                                                            files
+                                                        )
                                                     }
                                                 />
                                                 {isInvalid && (

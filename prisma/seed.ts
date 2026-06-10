@@ -282,13 +282,13 @@ async function main() {
             title: "Modifier Adhésion",
             category: "Adhésions",
             description: "Archiver/désarchiver des demandes"
-      },
-      {
-                  name: "download:adhesion-folder",
-                  title: "Télécharger Dossier",
-                  category: "Adhésions",
-                  description: "Télécharger les dossiers d'adhésion"
-              },
+        },
+        {
+            name: "download:adhesion-folder",
+            title: "Télécharger Dossier",
+            category: "Adhésions",
+            description: "Télécharger les dossiers d'adhésion"
+        },
         {
             name: "download:adhesion-folder",
             title: "Télécharger Dossier",
