@@ -1,7 +1,20 @@
-import { ExternalLinkIcon, MailIcon } from "lucide-react"
+import {
+    ExternalLinkIcon,
+    FileTextIcon,
+    LinkIcon,
+    type LucideIcon,
+    MailIcon
+} from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
-import { FaDiscord, FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa6"
+import type { IconType } from "react-icons"
+import {
+    FaDiscord,
+    FaEnvelope,
+    FaFacebook,
+    FaInstagram,
+    FaLinkedin
+} from "react-icons/fa6"
 
 import prisma from "@/helpers/db"
 import { captureActionError } from "@/lib/sentry"
@@ -12,51 +25,51 @@ export const metadata: Metadata = {
     description: " Les liens utiles de la FARE"
 }
 
-const socialLinks = [
-    {
-        name: "Email",
-        description: "contact@fare-asso.fr",
-        href: "mailto:contact@fare-asso.fr",
-        icon: MailIcon,
-        iconColor: "text-[#4B6CB7]",
-        borderColor: "border-[#4B6CB7]/40 hover:border-[#4B6CB7]"
-    },
+const socialLinks: { name: string; href: string; icon: IconType }[] = [
     {
         name: "Instagram",
-        description: "@fare_hautebretagne",
         href: "https://www.instagram.com/fare_hautebretagne",
-        icon: FaInstagram,
-        iconColor: "text-[#E1306C]",
-        borderColor: "border-[#E1306C]/40 hover:border-[#E1306C]"
+        icon: FaInstagram
+    },
+    {
+        name: "Email",
+        href: "mailto:contact@fare-asso.fr",
+        icon: FaEnvelope
     },
     {
         name: "Facebook",
-        description: "fare.hautebretagne",
         href: "https://www.facebook.com/fare.hautebretagne",
-        icon: FaFacebook,
-        iconColor: "text-[#1877F2]",
-        borderColor: "border-[#1877F2]/40 hover:border-[#1877F2]"
+        icon: FaFacebook
     },
     {
         name: "Linkedin",
-        description: "fare-haute-bretagne",
         href: "https://www.linkedin.com/company/fare-haute-bretagne",
-        icon: FaLinkedin,
-        iconColor: "text-[#0077B5]",
-        borderColor: "border-[#0077B5]/40 hover:border-[#0077B5]"
+        icon: FaLinkedin
     },
     {
         name: "Discord",
-        description: "Fare",
         href: "https://discord.gg/4DaBP3Vw59",
-        icon: FaDiscord,
-        iconColor: "text-[#7289DA]",
-        borderColor: "border-[#7289DA]/40 hover:border-[#7289DA]"
+        icon: FaDiscord
     }
-] as const
+]
 
 function isExternal(url: string): boolean {
     return /^(https?:|mailto:|tel:)/.test(url)
+}
+
+// Fonction auxiliaire pour ouvrir les liens dans une nouvelle fenetre
+function newTabProps(url: string): { target?: string; rel?: string } {
+    return /^https?:/.test(url)
+        ? { target: "_blank", rel: "noopener noreferrer" }
+        : {}
+}
+
+// Icone adaptatif en fonction de l'url
+function getLinkIcon(url: string): LucideIcon {
+    if (url.startsWith("mailto:")) return MailIcon
+    if (/\.pdf(\?|#|$)/i.test(url)) return FileTextIcon
+    if (isExternal(url)) return ExternalLinkIcon
+    return LinkIcon
 }
 
 export default async function Liens() {
@@ -78,74 +91,56 @@ export default async function Liens() {
         : []
 
     return (
-        <div className="flex w-full flex-col items-center">
-            <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
-                Vous souhaitez nous contacter ?
-            </h1>
+        <div className="flex w-full max-w-lg flex-col items-center gap-8 py-8 sm:py-12">
+            <header className="flex flex-col items-center gap-3 text-center">
+                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                    @fare_hautebretagne
+                </h1>
+                <p className="text-muted-foreground max-w-xs text-sm font-medium">
+                    Fédération des Associations du Réseau Étudiant de Haute
+                    Bretagne (FARE)
+                </p>
+            </header>
 
             {/* Social links */}
-            <div className="flex flex-wrap justify-center gap-3">
-                {socialLinks.map((link) => (
+            <nav className="flex flex-wrap items-center justify-center gap-6">
+                {socialLinks.map((social) => (
                     <Link
-                        key={link.name}
-                        className={`group bg-card hover:bg-accent flex w-50 flex-col items-center gap-2 rounded-xl border-2 p-5 text-center transition-colors ${link.borderColor}`}
-                        href={link.href}
-                        target={
-                            link.href.startsWith("mailto:")
-                                ? undefined
-                                : "_blank"
-                        }
-                        rel={
-                            link.href.startsWith("mailto:")
-                                ? undefined
-                                : "noopener noreferrer"
-                        }
+                        key={social.name}
+                        href={social.href}
+                        title={social.name}
+                        aria-label={social.name}
+                        className="text-foreground transition-transform hover:scale-110 hover:opacity-70"
+                        {...newTabProps(social.href)}
                     >
-                        <link.icon
-                            className={`size-8 ${link.iconColor} transition-transform group-hover:scale-110`}
-                        />
-                        <span className="text-sm font-medium">{link.name}</span>
-                        <span className="text-muted-foreground flex items-center gap-1 text-xs">
-                            {link.description}
-                            {!link.href.startsWith("mailto:") && (
-                                <ExternalLinkIcon className="size-3" />
-                            )}
-                        </span>
+                        <social.icon className="size-6" />
                     </Link>
                 ))}
-            </div>
-
+            </nav>
             {categories.length > 0 ? (
-                <div className="mt-16 flex w-full max-w-md flex-col gap-10">
+                <div className="flex w-full flex-col gap-8">
                     {categories.map((category) => (
                         <section
                             key={category.id}
                             className="flex flex-col gap-3"
                         >
-                            <h2 className="text-center text-xl font-semibold">
+                            <h2 className="text-center text-lg font-semibold">
                                 {category.name}
                             </h2>
                             <div className="flex flex-col gap-3">
                                 {category.liens.map((link) => {
-                                    const external = isExternal(link.url)
+                                    const Icon = getLinkIcon(link.url)
                                     return (
                                         <Link
                                             key={link.id}
                                             href={link.url}
-                                            target={
-                                                external ? "_blank" : undefined
-                                            }
-                                            rel={
-                                                external
-                                                    ? "noopener noreferrer"
-                                                    : undefined
-                                            }
-                                            className="group bg-card hover:bg-accent flex items-center justify-center gap-2 rounded-xl border-2 p-4 text-center font-medium transition-colors"
+                                            className="group bg-card relative flex items-center rounded-xl border p-4 shadow-sm transition-all hover:scale-[1.02] hover:shadow-md"
+                                            {...newTabProps(link.url)}
                                         >
-                                            {link.label}
-                                            {external ? (
-                                                <ExternalLinkIcon className="text-muted-foreground size-4" />
-                                            ) : null}
+                                            <Icon className="text-muted-foreground absolute left-4 size-5" />
+                                            <span className="flex-1 px-9 text-center font-medium">
+                                                {link.label}
+                                            </span>
                                         </Link>
                                     )
                                 })}
