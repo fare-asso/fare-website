@@ -18,10 +18,12 @@ const buttonVariants = cva(
                 secondary:
                     "bg-secondary text-secondary-foreground hover:bg-secondary/80",
                 ghost: "hover:bg-accent hover:text-accent-foreground",
-                link: "text-primary underline-offset-4 hover:underline"
+                link: "text-primary underline-offset-4 hover:underline",
+                card: "group text-muted-foreground hover:border-primary/50 hover:text-primary disabled:hover:text-muted-foreground flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-dashed disabled:hover:shadow-none"
             },
             size: {
                 default: "h-10 px-4 py-2",
+                tiny: "h-4 px-0.5 text-xs",
                 sm: "h-9 rounded-md px-3",
                 lg: "h-11 rounded-md px-8",
                 icon: "h-10 w-10"

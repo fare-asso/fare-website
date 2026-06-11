@@ -272,6 +272,24 @@ model LocationCache {
   lastAccessedAt DateTime @default(now())
 }
 
+model LinkCategory {
+  id  Int @id @default(autoincrement())
+  name  String
+  order Int @default(0)
+  liens LinkItem[]
+}
+
+model LinkItem {
+  id  Int @id @default(autoincrement())
+  label String
+  url String
+  order Int @default(0)
+  categoryId  Int
+  category  LinkCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+}
+
 enum Role {
   MEMBER
   ADMIN

@@ -1,6 +1,5 @@
 import Link from "next/link"
-import { FaFacebook, FaInstagram } from "react-icons/fa6"
-import { TbBrandLinktree } from "react-icons/tb"
+import { FaFacebook, FaInstagram, FaCompass } from "react-icons/fa6"
 
 export default function SocialLinks() {
     return (
@@ -44,13 +43,13 @@ export default function SocialLinks() {
                 <FaTiktok size={25} />
             </Link> */}
 
-            {/* Linktree - caché sur mobile */}
+            {/* Page des liens - caché sur mobile */}
             <Link
-                href="https://linktr.ee/fare_hautebretagne"
-                title="Linktree"
+                href="/liens"
+                title="Tous nos liens"
                 className="hidden md:inline-block"
             >
-                <TbBrandLinktree size={25} />
+                <FaCompass size={25} />
             </Link>
         </div>
     )

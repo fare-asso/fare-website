@@ -351,6 +351,32 @@ async function main() {
             title: "Créer Mot de Passe",
             category: "Espace Asso",
             description: "Créer un mot de passe pour les représentants"
+        },
+
+        // Liens
+        {
+            name: "access:liens",
+            title: "Accès Liens",
+            category: "Liens",
+            description: "Voir la page de gestion des liens"
+        },
+        {
+            name: "create:lien",
+            title: "Créer Lien",
+            category: "Liens",
+            description: "Ajouter de nouveaux liens"
+        },
+        {
+            name: "edit:lien",
+            title: "Modifier Lien",
+            category: "Liens",
+            description: "Modifier les informations des liens"
+        },
+        {
+            name: "delete:lien",
+            title: "Supprimer Lien",
+            category: "Liens",
+            description: "Supprimer des liens"
         }
     ]
 
