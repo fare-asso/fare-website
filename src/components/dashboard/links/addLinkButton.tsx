@@ -53,11 +53,7 @@ export default function ({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button
-                    variant="card"
-                    className="flex-row justify-start"
-                    disabled={false}
-                >
+                <Button variant="card" className="flex-row justify-start">
                     <PlusIcon className="w-6!" />
                     <span className="text-sm font-medium">
                         Ajouter un {first && "premier "}lien
