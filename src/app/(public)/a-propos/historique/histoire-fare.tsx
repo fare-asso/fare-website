@@ -81,7 +81,7 @@ export function HistoireFare(): React.JSX.Element {
     return (
         <>
             <section className="flex w-full flex-col items-center gap-6 px-4 pt-20">
-                <h1 className="py-12 text-[3rem] font-semibold sm:py-15">
+                <h1 className="py-12 text-[3rem] font-semibold sm:py-15 text-center">
                     Quel est le lore de la FARE ?
                 </h1>
                 <p className="max-w-2xl text-center">
