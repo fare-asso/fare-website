@@ -20,7 +20,7 @@ import { toast } from "sonner"
 
 import updateLinkOrderAction from "@/actions/links/updateLinkOrderAction"
 import SortableLinkCard from "@/components/dashboard/links/sortableLinkCard"
-import type { LinkItem } from "@/generated/prisma/client"
+import type { LinkItem, PresseType } from "@/generated/prisma/client"
 
 import AddLinkButton from "./addLinkButton"
 
@@ -30,7 +30,9 @@ interface SortableLinkListProps {
     canDelete: boolean
     canCreate: boolean
     catId: number
-    files: { url: string; name: string }[]
+    files: Partial<
+        Record<PresseType, { url: string; name: string; type: PresseType }[]>
+    >
 }
 
 export default function SortableLinkList({

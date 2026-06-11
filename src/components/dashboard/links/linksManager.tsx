@@ -5,13 +5,19 @@ import EditLinkCategoryButton from "@/components/dashboard/links/editLinkCategor
 import MoveLinkCategoryButtons from "@/components/dashboard/links/moveLinkCategoryButtons"
 import SortableLinkList from "@/components/dashboard/links/sortableLinkList"
 import { ButtonGroup } from "@/components/ui/button-group"
-import type { LinkCategory, LinkItem } from "@/generated/prisma/client"
+import type {
+    LinkCategory,
+    LinkItem,
+    PresseType
+} from "@/generated/prisma/client"
 
 type CategoryWithLinks = LinkCategory & { liens: LinkItem[] }
 
 interface LinksManagerProps {
     categories: CategoryWithLinks[]
-    files: { url: string; name: string }[]
+    files: Partial<
+        Record<PresseType, { url: string; name: string; type: PresseType }[]>
+    >
     canCreate: boolean
     canEdit: boolean
     canDelete: boolean

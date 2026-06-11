@@ -1,7 +1,7 @@
 "use client"
 
 import { useForm } from "@tanstack/react-form"
-import { Loader2Icon, PlusIcon } from "lucide-react"
+import { FileTextIcon, Loader2Icon, PlusIcon } from "lucide-react"
 import type { Dispatch, SetStateAction } from "react"
 import { useState, useTransition } from "react"
 
@@ -25,12 +25,16 @@ import {
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
+    SelectLabel,
+    SelectSeparator,
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TextField } from "@/components/ui/text-field"
+import type { PresseType } from "@/generated/prisma/client"
 import { AddLinkSchema, type TAddLink } from "@/schemas/link"
 
 export default function ({
@@ -40,7 +44,9 @@ export default function ({
 }: {
     categoryId: number
     first: boolean
-    files: { url: string; name: string }[]
+    files: Partial<
+        Record<PresseType, { url: string; name: string; type: PresseType }[]>
+    >
 }) {
     const [open, setOpen] = useState(false)
 
@@ -185,7 +191,9 @@ function AddFile({
 }: {
     categoryId: number
     setOpen: Dispatch<SetStateAction<boolean>>
-    files: { url: string; name: string }[]
+    files: Partial<
+        Record<PresseType, { url: string; name: string; type: PresseType }[]>
+    >
 }) {
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -234,9 +242,9 @@ function AddFile({
                         </FieldLabel>
                         <Select
                             onValueChange={(value) => {
-                                const file = files.find(
-                                    (file) => file.url === value
-                                )
+                                const file = Object.values(files)
+                                    .flat()
+                                    .find((f) => f.url === value)
                                 if (!file) {
                                     field.setErrorMap({
                                         onChange: [
@@ -257,18 +265,33 @@ function AddFile({
                                     placeholder="Fichier"
                                 />
                             </SelectTrigger>
-                            <SelectContent className="max-w-(--radix-select-trigger-width)">
-                                {files.map((file) => (
-                                    <SelectItem
-                                        key={file.url}
-                                        value={file.url}
-                                        className="*:[span]:last:min-w-0"
-                                    >
-                                        <span className="min-w-0 truncate">
-                                            {file.name}
-                                        </span>
-                                    </SelectItem>
-                                ))}
+                            <SelectContent className="max-h-[min(20rem,var(--radix-select-content-available-height))] max-w-(--radix-select-trigger-width) rounded-lg">
+                                {(Object.keys(files) as PresseType[]).map(
+                                    (type, index) => (
+                                        <SelectGroup key={type}>
+                                            {index > 0 && <SelectSeparator />}
+                                            <SelectLabel className="font-medium">
+                                                {type === "DDP"
+                                                    ? "Dossier de Presse"
+                                                    : "Communiqué de Presse"}
+                                            </SelectLabel>
+                                            {files[type]?.map((file) => (
+                                                <SelectItem
+                                                    key={file.url}
+                                                    value={file.url}
+                                                    className="py-2 *:[span]:last:min-w-0"
+                                                >
+                                                    <span className="bg-muted/80 text-muted-foreground flex size-6 shrink-0 items-center justify-center rounded-md">
+                                                        <FileTextIcon className="size-3.5" />
+                                                    </span>
+                                                    <span className="min-w-0 truncate font-medium">
+                                                        {file.name}
+                                                    </span>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    )
+                                )}
                             </SelectContent>
                         </Select>
                         {!field.state.meta.isValid && (

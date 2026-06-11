@@ -56,10 +56,13 @@ export default async function Liens() {
         )
     ])
     const categories = result[0].success ? result[0].value : []
-    const files = (result[1].success ? result[1].value : []).map((file) => ({
+    const allfiles = (result[1].success ? result[1].value : []).map((file) => ({
         url: su.from("communique-de-presse").getPublicUrl(file.filePath, false),
-        name: file.name
+        name: file.name,
+        type: file.type
     }))
+
+    const files = { ...Object.groupBy(allfiles, ({ type }) => type) }
 
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
