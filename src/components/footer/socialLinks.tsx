@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { FaFacebook, FaInstagram, FaCompass } from "react-icons/fa6"
-import { TbBrandLinktree } from "react-icons/tb"
 
 export default function SocialLinks() {
     return (
