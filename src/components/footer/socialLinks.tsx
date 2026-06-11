@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { FaFacebook, FaInstagram } from "react-icons/fa6"
+import { FaFacebook, FaInstagram, FaCompass } from "react-icons/fa6"
 import { TbBrandLinktree } from "react-icons/tb"
 
 export default function SocialLinks() {
@@ -50,7 +50,7 @@ export default function SocialLinks() {
                 title="Tous nos liens"
                 className="hidden md:inline-block"
             >
-                <TbBrandLinktree size={25} />
+                <FaCompass size={25} />
             </Link>
         </div>
     )
