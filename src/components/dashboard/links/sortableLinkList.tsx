@@ -22,16 +22,22 @@ import updateLinkOrderAction from "@/actions/links/updateLinkOrderAction"
 import SortableLinkCard from "@/components/dashboard/links/sortableLinkCard"
 import type { LinkItem } from "@/generated/prisma/client"
 
+import AddLinkButton from "./addLinkButton"
+
 interface SortableLinkListProps {
     initialLinks: LinkItem[]
     canEdit: boolean
     canDelete: boolean
+    canCreate: boolean
+    catId: number
 }
 
 export default function SortableLinkList({
     initialLinks,
     canEdit,
-    canDelete
+    canDelete,
+    canCreate,
+    catId
 }: SortableLinkListProps) {
     const [links, setLinks] = useState(initialLinks)
     const [, startTransition] = useTransition()
@@ -94,6 +100,12 @@ export default function SortableLinkList({
                             canDelete={canDelete}
                         />
                     ))}
+                    {canCreate && (
+                        <AddLinkButton
+                            categoryId={catId}
+                            first={links.length === 0}
+                        />
+                    )}
                 </div>
             </SortableContext>
         </DndContext>

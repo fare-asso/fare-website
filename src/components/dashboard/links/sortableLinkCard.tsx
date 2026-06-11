@@ -15,7 +15,7 @@ interface SortableLinkCardProps {
     canDelete: boolean
 }
 
-export default function SortableLinkCard({
+export default function ({
     link,
     canEdit,
     canDelete
@@ -69,7 +69,7 @@ export default function SortableLinkCard({
 
             {/* Actions */}
             {canEdit || canDelete ? (
-                <div className="flex shrink-0 items-center gap-1">
+                <div className="hidden shrink-0 items-center gap-1 group-focus-within:flex group-hover:flex">
                     {canEdit ? <EditLinkButton link={link} /> : null}
                     {canDelete ? <DeleteLinkButton link={link} /> : null}
                 </div>

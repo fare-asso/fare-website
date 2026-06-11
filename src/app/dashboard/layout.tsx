@@ -60,7 +60,7 @@ export default async function RootLayout({
                     </header>
 
                     {/* Zone de contenu scrollable */}
-                    <main className="mx-4 mt-12 mb-4 flex-1 overflow-y-auto rounded-lg border bg-white p-4 shadow-md">
+                    <main className="@container mx-4 mt-12 mb-4 flex-1 overflow-y-auto rounded-lg border bg-white p-4 shadow-md">
                         {children}
                     </main>
                 </div>

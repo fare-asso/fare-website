@@ -11,7 +11,8 @@ interface TextFieldProps {
     field: AnyFieldApi
     label: ReactNode
     /** Message shown when the field is touched and invalid. */
-    error: ReactNode
+    errors?: ({ message?: string } | string | undefined)[]
+    error?: ReactNode
     placeholder?: string
     /** Render a `Textarea` instead of an `Input`. */
     multiline?: boolean
@@ -27,6 +28,7 @@ interface TextFieldProps {
 export function TextField({
     field,
     label,
+    errors,
     error,
     placeholder,
     multiline,
@@ -63,7 +65,11 @@ export function TextField({
                     aria-invalid={isInvalid}
                 />
             )}
-            {isInvalid && <FieldError>{error}</FieldError>}
+            {isInvalid && (
+                <FieldError
+                    errors={error ? [error.toString()] : errors}
+                ></FieldError>
+            )}
         </Field>
     )
 }

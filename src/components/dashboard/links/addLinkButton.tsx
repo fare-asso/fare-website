@@ -11,7 +11,13 @@ import { DialogForm } from "@/components/ui/dialog-form"
 import { TextField } from "@/components/ui/text-field"
 import { AddLinkSchema, type TAddLink } from "@/schemas/link"
 
-export default function AddLinkButton({ categoryId }: { categoryId: number }) {
+export default function AddLinkButton({
+    categoryId,
+    first
+}: {
+    categoryId: number
+    first: boolean
+}) {
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -49,9 +55,15 @@ export default function AddLinkButton({ categoryId }: { categoryId: number }) {
             onOpenChange={setOpen}
             trigger={
                 <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">
-                        <PlusIcon size={16} />
-                        Ajouter un lien
+                    <Button
+                        variant="card"
+                        className="flex-row justify-start"
+                        disabled={false}
+                    >
+                        <PlusIcon className="w-6!" />
+                        <span className="text-sm font-medium">
+                            Ajouter un {first && "premier"} lien
+                        </span>
                     </Button>
                 </DialogTrigger>
             }
@@ -70,7 +82,7 @@ export default function AddLinkButton({ categoryId }: { categoryId: number }) {
                         field={field}
                         label="Libellé"
                         placeholder="ex. Notre Instagram"
-                        error="Le libellé est requis."
+                        errors={field.state.meta.errors}
                     />
                 )}
             />
@@ -82,7 +94,7 @@ export default function AddLinkButton({ categoryId }: { categoryId: number }) {
                         field={field}
                         label="URL"
                         placeholder="ex. https://instagram.com/... ou /projets/agorae"
-                        error="L'URL est requise."
+                        errors={field.state.meta.errors}
                     />
                 )}
             />

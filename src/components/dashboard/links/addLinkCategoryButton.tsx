@@ -1,6 +1,7 @@
 "use client"
 
 import { useForm } from "@tanstack/react-form"
+import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
 import addLinkCategoryAction from "@/actions/links/addLinkCategoryAction"
@@ -46,7 +47,10 @@ export default function AddLinkCategoryButton() {
             onOpenChange={setOpen}
             trigger={
                 <DialogTrigger asChild>
-                    <Button>Ajouter une catégorie</Button>
+                    <Button>
+                        <PlusIcon />
+                        <span>Catégorie</span>
+                    </Button>
                 </DialogTrigger>
             }
             title="Nouvelle catégorie"
@@ -64,7 +68,7 @@ export default function AddLinkCategoryButton() {
                         field={field}
                         label="Nom de la catégorie"
                         placeholder="ex. Nos réseaux sociaux"
-                        error="Le nom est requis."
+                        errors={field.state.meta.errors}
                     />
                 )}
             />

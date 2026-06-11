@@ -6,6 +6,7 @@ import { toast } from "sonner"
 
 import updateLinkCategoryOrderAction from "@/actions/links/updateLinkCategoryOrderAction"
 import { Button } from "@/components/ui/button"
+import { ButtonGroup } from "@/components/ui/button-group"
 import {
     Tooltip,
     TooltipContent,
@@ -44,13 +45,16 @@ export default function MoveLinkCategoryButtons({
     }
 
     return (
-        <>
+        <ButtonGroup
+            orientation="vertical"
+            aria-label="Media controls"
+            className="h-fit"
+        >
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
+                        size="tiny"
                         disabled={!canMoveUp || isPending}
                         onClick={() => move("up")}
                     >
@@ -63,16 +67,15 @@ export default function MoveLinkCategoryButtons({
                 <TooltipTrigger asChild>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
+                        size="tiny"
                         disabled={!canMoveDown || isPending}
                         onClick={() => move("down")}
                     >
                         <ChevronDownIcon size={18} />
                     </Button>
                 </TooltipTrigger>
-                <TooltipContent>Descendre</TooltipContent>
+                <TooltipContent side="bottom">Descendre</TooltipContent>
             </Tooltip>
-        </>
+        </ButtonGroup>
     )
 }
