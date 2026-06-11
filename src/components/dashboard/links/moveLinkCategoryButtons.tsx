@@ -1,10 +1,7 @@
 "use client"
 
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
-import { useTransition } from "react"
-import { toast } from "sonner"
 
-import updateLinkCategoryOrderAction from "@/actions/links/updateLinkCategoryOrderAction"
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
 import {
@@ -14,36 +11,16 @@ import {
 } from "@/components/ui/tooltip"
 
 interface MoveLinkCategoryButtonsProps {
-    categoryIds: number[]
-    index: number
+    canMoveUp: boolean
+    canMoveDown: boolean
+    onMove: (direction: "up" | "down") => void
 }
 
 export default function MoveLinkCategoryButtons({
-    categoryIds,
-    index
+    canMoveUp,
+    canMoveDown,
+    onMove
 }: MoveLinkCategoryButtonsProps) {
-    const [isPending, startTransition] = useTransition()
-
-    const canMoveUp = index > 0
-    const canMoveDown = index < categoryIds.length - 1
-
-    const move = (direction: "up" | "down") => {
-        const targetIndex = direction === "up" ? index - 1 : index + 1
-        if (targetIndex < 0 || targetIndex >= categoryIds.length) return
-
-        const newIds = [...categoryIds]
-        const [moved] = newIds.splice(index, 1)
-        newIds.splice(targetIndex, 0, moved)
-
-        startTransition(async () => {
-            const categoryOrder = newIds.map((id, order) => ({ id, order }))
-            const res = await updateLinkCategoryOrderAction(categoryOrder)
-            if (!res.success) {
-                toast.error(res.error)
-            }
-        })
-    }
-
     return (
         <ButtonGroup
             orientation="vertical"
@@ -55,8 +32,9 @@ export default function MoveLinkCategoryButtons({
                     <Button
                         variant="ghost"
                         size="tiny"
-                        disabled={!canMoveUp || isPending}
-                        onClick={() => move("up")}
+                        aria-label="Monter"
+                        disabled={!canMoveUp}
+                        onClick={() => onMove("up")}
                     >
                         <ChevronUpIcon size={18} />
                     </Button>
@@ -68,8 +46,9 @@ export default function MoveLinkCategoryButtons({
                     <Button
                         variant="ghost"
                         size="tiny"
-                        disabled={!canMoveDown || isPending}
-                        onClick={() => move("down")}
+                        aria-label="Descendre"
+                        disabled={!canMoveDown}
+                        onClick={() => onMove("down")}
                     >
                         <ChevronDownIcon size={18} />
                     </Button>

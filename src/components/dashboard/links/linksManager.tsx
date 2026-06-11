@@ -1,5 +1,10 @@
-import { LinkIcon } from "lucide-react"
+"use client"
 
+import { LinkIcon } from "lucide-react"
+import { useOptimistic, useTransition } from "react"
+import { toast } from "sonner"
+
+import updateLinkCategoryOrderAction from "@/actions/links/updateLinkCategoryOrderAction"
 import DeleteLinkCategoryButton from "@/components/dashboard/links/deleteLinkCategoryButton"
 import EditLinkCategoryButton from "@/components/dashboard/links/editLinkCategoryButton"
 import MoveLinkCategoryButtons from "@/components/dashboard/links/moveLinkCategoryButtons"
@@ -30,6 +35,34 @@ export default function LinksManager({
     canEdit,
     canDelete
 }: LinksManagerProps): React.JSX.Element {
+    const [orderedCategories, setOptimisticCategories] = useOptimistic(
+        categories,
+        (_current, next: CategoryWithLinks[]) => next
+    )
+    const [, startTransition] = useTransition()
+
+    const moveCategory = (index: number, direction: "up" | "down") => {
+        const targetIndex = direction === "up" ? index - 1 : index + 1
+        if (targetIndex < 0 || targetIndex >= orderedCategories.length) return
+
+        const next = [...orderedCategories]
+        const [moved] = next.splice(index, 1)
+        next.splice(targetIndex, 0, moved)
+
+        startTransition(async () => {
+            setOptimisticCategories(next)
+
+            const categoryOrder = next.map((c, order) => ({
+                id: c.id,
+                order
+            }))
+            const res = await updateLinkCategoryOrderAction(categoryOrder)
+            if (!res.success) {
+                toast.error(res.error)
+            }
+        })
+    }
+
     if (categories.length === 0) {
         return (
             <div className="bg-muted/30 flex h-64 flex-col items-center justify-center gap-3 rounded-lg border border-dashed">
@@ -44,18 +77,21 @@ export default function LinksManager({
         )
     }
 
-    const categoryIds = categories.map((category) => category.id)
-
     return (
         <>
-            {categories.map((category, index) => (
+            {orderedCategories.map((category, index) => (
                 <section key={category.id} className="mb-10 space-y-4">
                     <div className="flex items-center justify-between gap-2 border-b pb-2">
                         <div className="flex flex-row items-center gap-4">
                             {canEdit && (
                                 <MoveLinkCategoryButtons
-                                    categoryIds={categoryIds}
-                                    index={index}
+                                    canMoveUp={index > 0}
+                                    canMoveDown={
+                                        index < orderedCategories.length - 1
+                                    }
+                                    onMove={(direction) =>
+                                        moveCategory(index, direction)
+                                    }
                                 />
                             )}
                             <h2 className="m-0 text-lg font-semibold">
