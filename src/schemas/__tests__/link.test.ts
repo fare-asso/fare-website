@@ -86,9 +86,9 @@ describe("AddLinkSchema", () => {
     })
 
     it("rejects a non-integer categoryId", () => {
-        expect(
-            isError(AddLinkSchema(validAddLink({ categoryId: 1.5 })))
-        ).toBe(true)
+        expect(isError(AddLinkSchema(validAddLink({ categoryId: 1.5 })))).toBe(
+            true
+        )
     })
 })
 
