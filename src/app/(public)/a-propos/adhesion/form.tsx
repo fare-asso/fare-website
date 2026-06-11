@@ -1402,12 +1402,13 @@ export function AdhesionForm(): React.ReactNode {
                                                     </span>
                                                 </FieldLabel>
                                                 <FieldDescription>
-                                                    Ajoutez une photo de votre bureau pour qu'on apprenne à vous reconnaître !
-                                                    Formats acceptés
-                                                    : images (PNG, JPG, WebP,
-                                                    SVG) ou PDF. Jusqu'à 15
-                                                    fichiers, 5 Mo maximum par
-                                                    fichier.
+                                                    Ajoutez une photo de votre
+                                                    bureau pour qu'on apprenne à
+                                                    vous reconnaître ! Formats
+                                                    acceptés : images (PNG, JPG,
+                                                    WebP, SVG) ou PDF. Jusqu'à
+                                                    15 fichiers, 5 Mo maximum
+                                                    par fichier.
                                                 </FieldDescription>
                                                 <FilePondInput
                                                     allowMultiple
