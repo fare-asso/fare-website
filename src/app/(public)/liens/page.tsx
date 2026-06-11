@@ -57,9 +57,13 @@ function isExternal(url: string): boolean {
     return !url.startsWith("https://fare-asso.fr/")
 }
 
+function isPdf(url: string): boolean {
+    return /\.pdf(\?|#|$)/i.test(url)
+}
+
 function getLinkIcon(url: string): LucideIcon {
     if (url.startsWith("mailto:")) return MailIcon
-    if (/\.pdf(\?|#|$)/i.test(url)) return FileTextIcon
+    if (isPdf(url)) return FileTextIcon
     if (isExternal(url)) return ExternalLinkIcon
     return LinkIcon
 }
@@ -102,7 +106,7 @@ export default async function Liens() {
                         href={social.href}
                         title={social.name}
                         aria-label={social.name}
-                        className="text-foreground transition-transform hover:scale-110 hover:opacity-70"
+                        className="text-foreground transition-transform hover:opacity-70"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -127,15 +131,22 @@ export default async function Liens() {
                                         <Link
                                             key={link.id}
                                             href={link.url}
-                                            className="group bg-card relative flex items-center rounded-xl border p-4 shadow-sm transition-all hover:scale-[1.02] hover:shadow-md"
+                                            className="group bg-card hover:bg-accent/20 relative flex items-center rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
                                             {...(isExternal(link.url) && {
                                                 target: "_blank",
                                                 rel: "noopener noreferrer"
                                             })}
                                         >
-                                            <Icon className="text-muted-foreground absolute left-4 size-5" />
-                                            <span className="flex-1 px-9 text-center font-medium">
-                                                {link.label}
+                                            <span className="flex w-full flex-row items-center justify-between gap-4 px-9 text-center font-medium">
+                                                <Icon className="text-muted-foreground absolute left-4 size-5" />
+                                                <span className="flex w-full flex-col items-center justify-center">
+                                                    {link.label}
+                                                    {isPdf(link.url) && (
+                                                        <span className="text-muted-foreground text-xs">
+                                                            Document PDF
+                                                        </span>
+                                                    )}
+                                                </span>
                                             </span>
                                         </Link>
                                     )

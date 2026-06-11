@@ -30,6 +30,7 @@ interface SortableLinkListProps {
     canDelete: boolean
     canCreate: boolean
     catId: number
+    files: { url: string; name: string }[]
 }
 
 export default function SortableLinkList({
@@ -37,7 +38,8 @@ export default function SortableLinkList({
     canEdit,
     canDelete,
     canCreate,
-    catId
+    catId,
+    files
 }: SortableLinkListProps) {
     const [links, setLinks] = useState(initialLinks)
     const [, startTransition] = useTransition()
@@ -104,6 +106,7 @@ export default function SortableLinkList({
                         <AddLinkButton
                             categoryId={catId}
                             first={links.length === 0}
+                            files={files}
                         />
                     )}
                 </div>

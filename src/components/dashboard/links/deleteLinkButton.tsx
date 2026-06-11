@@ -26,6 +26,10 @@ import type { LinkItem } from "@/generated/prisma/client"
 
 import LoadingRing from "../loadingRing"
 
+function isPdf(url: string): boolean {
+    return /\.pdf(\?|#|$)/i.test(url)
+}
+
 export default function DeleteLinkButton({ link }: { link: LinkItem }) {
     const [formState, formAction] = useActionState<
         { success: true } | { success: false; error: string } | undefined,
@@ -85,6 +89,8 @@ export default function DeleteLinkButton({ link }: { link: LinkItem }) {
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         Cette action est permanente.
+                        {isPdf(link.url) &&
+                            " Le document ne sera pas supprimé, uniquement le lien."}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

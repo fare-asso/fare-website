@@ -8,7 +8,9 @@ vi.mock("@/actions/links/addLinkAction", () => ({ default: h.action }))
 import AddLinkButton from "../addLinkButton"
 
 async function openDialog(): Promise<Awaited<ReturnType<typeof render>>> {
-    const screen = await render(<AddLinkButton categoryId={3} first={false} />)
+    const screen = await render(
+        <AddLinkButton categoryId={3} first={false} files={[]} />
+    )
     await screen.getByRole("button", { name: "Ajouter un lien" }).click()
     await expect
         .element(screen.getByRole("heading", { name: "Nouveau lien" }))
@@ -32,7 +34,7 @@ beforeEach(() => {
 describe("<AddLinkButton />", () => {
     it("renders the trigger button", async () => {
         const screen = await render(
-            <AddLinkButton categoryId={3} first={false} />
+            <AddLinkButton categoryId={3} first={false} files={[]} />
         )
         await expect
             .element(screen.getByRole("button", { name: "Ajouter un lien" }))
@@ -41,7 +43,7 @@ describe("<AddLinkButton />", () => {
 
     it("renders the 'premier lien' label for an empty category", async () => {
         const screen = await render(
-            <AddLinkButton categoryId={3} first={true} />
+            <AddLinkButton categoryId={3} first={true} files={[]} />
         )
         await expect
             .element(

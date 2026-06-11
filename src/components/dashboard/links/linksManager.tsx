@@ -11,6 +11,7 @@ type CategoryWithLinks = LinkCategory & { liens: LinkItem[] }
 
 interface LinksManagerProps {
     categories: CategoryWithLinks[]
+    files: { url: string; name: string }[]
     canCreate: boolean
     canEdit: boolean
     canDelete: boolean
@@ -18,6 +19,7 @@ interface LinksManagerProps {
 
 export default function LinksManager({
     categories,
+    files,
     canCreate,
     canEdit,
     canDelete
@@ -74,6 +76,7 @@ export default function LinksManager({
                         canDelete={canDelete}
                         canCreate={canCreate}
                         catId={category.id}
+                        files={files}
                     />
                 </section>
             ))}

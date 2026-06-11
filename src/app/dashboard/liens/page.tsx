@@ -14,13 +14,14 @@ import {
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import { tryCatch } from "@/lib/utils"
 
 export const metadata: Metadata = {
     title: "Liens"
 }
 
-export default async function Liens(): Promise<React.JSX.Element> {
+export default async function Liens() {
     const user = await getCurrentUserWithPermissions()
     if (!user) {
         redirect("/login")
@@ -33,17 +34,32 @@ export default async function Liens(): Promise<React.JSX.Element> {
     const canEdit = hasPermission(user, "edit:lien")
     const canDelete = hasPermission(user, "delete:lien")
 
-    const result = await tryCatch(
-        prisma.linkCategory.findMany({
-            include: {
-                liens: {
-                    orderBy: { order: "asc" }
+    const su = new StorageUtils()
+
+    const result = await Promise.all([
+        tryCatch(
+            prisma.linkCategory.findMany({
+                include: {
+                    liens: {
+                        orderBy: { order: "asc" }
+                    }
+                },
+                orderBy: { order: "asc" }
+            })
+        ),
+        tryCatch(
+            prisma.communiqueDePresse.findMany({
+                orderBy: {
+                    createdAt: "desc"
                 }
-            },
-            orderBy: { order: "asc" }
-        })
-    )
-    const categories = result.success ? result.value : []
+            })
+        )
+    ])
+    const categories = result[0].success ? result[0].value : []
+    const files = (result[1].success ? result[1].value : []).map((file) => ({
+        url: su.from("communique-de-presse").getPublicUrl(file.filePath, false),
+        name: file.name
+    }))
 
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
@@ -60,6 +76,7 @@ export default async function Liens(): Promise<React.JSX.Element> {
                 <Suspense fallback={<p>Chargement...</p>}>
                     <LinksManager
                         categories={categories}
+                        files={files}
                         canCreate={canCreate}
                         canEdit={canEdit}
                         canDelete={canDelete}

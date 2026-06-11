@@ -15,6 +15,10 @@ interface SortableLinkCardProps {
     canDelete: boolean
 }
 
+function isPdf(url: string): boolean {
+    return /\.pdf(\?|#|$)/i.test(url)
+}
+
 export default function SortableLinkCard({
     link,
     canEdit,
@@ -63,14 +67,16 @@ export default function SortableLinkCard({
                     {link.label}
                 </span>
                 <span className="text-muted-foreground truncate text-xs">
-                    {link.url}
+                    {isPdf(link.url) ? "Document PDF" : link.url}
                 </span>
             </div>
 
             {/* Actions */}
             {canEdit || canDelete ? (
                 <div className="hidden shrink-0 items-center gap-1 group-focus-within:flex group-hover:flex">
-                    {canEdit ? <EditLinkButton link={link} /> : null}
+                    {!isPdf(link.url) && canEdit ? (
+                        <EditLinkButton link={link} />
+                    ) : null}
                     {canDelete ? <DeleteLinkButton link={link} /> : null}
                 </div>
             ) : null}
