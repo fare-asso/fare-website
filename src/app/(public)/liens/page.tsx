@@ -106,7 +106,7 @@ export default async function Liens() {
                         href={social.href}
                         title={social.name}
                         aria-label={social.name}
-                        className="text-foreground transition-transform hover:opacity-70"
+                        className="text-foreground hover:text-fare-accent transition-colors"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -121,8 +121,12 @@ export default async function Liens() {
                             key={category.id}
                             className="flex flex-col gap-3"
                         >
-                            <h2 className="text-center text-lg font-semibold">
+                            <h2 className="flex flex-col items-center gap-1.5 text-center text-lg font-semibold">
                                 {category.name}
+                                <span
+                                    aria-hidden
+                                    className="bg-fare-accent/40 h-1 w-8 rounded-full"
+                                />
                             </h2>
                             <div className="flex flex-col gap-3">
                                 {category.liens.map((link) => {
@@ -131,14 +135,16 @@ export default async function Liens() {
                                         <Link
                                             key={link.id}
                                             href={link.url}
-                                            className="group bg-card hover:bg-accent/20 relative flex items-center rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
+                                            className="group bg-card hover:border-fare-accent/30 hover:bg-fare-accent/5 relative flex items-center rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
                                             {...(isExternal(link.url) && {
                                                 target: "_blank",
                                                 rel: "noopener noreferrer"
                                             })}
                                         >
-                                            <span className="flex w-full flex-row items-center justify-between gap-4 px-9 text-center font-medium">
-                                                <Icon className="text-muted-foreground absolute left-4 size-5" />
+                                            <span className="flex w-full flex-row items-center justify-between gap-4 px-10 text-center font-medium">
+                                                <span className="bg-fare-accent/10 text-fare-accent group-hover:bg-fare-accent/20 absolute left-3 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors">
+                                                    <Icon className="size-4.5" />
+                                                </span>
                                                 <span className="flex w-full flex-col items-center justify-center">
                                                     {link.label}
                                                     {isPdf(link.url) && (
