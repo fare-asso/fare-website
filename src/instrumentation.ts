@@ -1,8 +1,9 @@
 import * as Sentry from "@sentry/nextjs"
-import { env } from "std-env"
 
 export async function register() {
-    if (env.NEXT_RUNTIME === "nodejs") {
+    // process.env.NEXT_RUNTIME is statically replaced at build time, so the
+    // nodejs branch is tree-shaken from the edge bundle (std-env's `env` isn't).
+    if (process.env.NEXT_RUNTIME === "nodejs") {
         await import("./sentry.server.config")
 
         // Flush buffered evlog events on shutdown (Next drains then exits).
@@ -10,7 +11,7 @@ export async function register() {
         process.once("SIGTERM", () => void flushEvlog())
         process.once("SIGINT", () => void flushEvlog())
     }
-    if (env.NEXT_RUNTIME === "edge") {
+    if (process.env.NEXT_RUNTIME === "edge") {
         await import("./sentry.edge.config")
     }
 }

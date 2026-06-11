@@ -46,9 +46,7 @@ export default defineConfig({
             }
         },
         {
-            // src/env.ts is the sanctioned env-access file (t3-env pattern);
-            // biome suppressed noProcessEnv here via biome-ignore-all.
-            files: ["src/env.ts"],
+            files: ["src/env.ts", "src/instrumentation.ts"],
             rules: { "node/no-process-env": "off" }
         },
         {
