@@ -56,7 +56,9 @@ describe("<AddLinkButton />", () => {
 
     it("blocks an empty submit and does not call the action", async () => {
         const screen = await openDialog()
-        await screen.getByRole("button", { name: /^\s*Enregistrer\s*$/ }).click()
+        await screen
+            .getByRole("button", { name: /^\s*Enregistrer\s*$/ })
+            .click()
         await expect
             .element(screen.getByText("URL requise").first())
             .toBeVisible()
@@ -67,7 +69,9 @@ describe("<AddLinkButton />", () => {
         const screen = await openDialog()
         await screen.getByLabelText("Libellé").fill("Notre Instagram")
         await screen.getByLabelText("URL").fill("pas-une-url")
-        await screen.getByRole("button", { name: /^\s*Enregistrer\s*$/ }).click()
+        await screen
+            .getByRole("button", { name: /^\s*Enregistrer\s*$/ })
+            .click()
         await expect
             .element(screen.getByText("URL invalide").first())
             .toBeVisible()
@@ -77,7 +81,9 @@ describe("<AddLinkButton />", () => {
     it("submits the parsed payload on a valid form", async () => {
         const screen = await openDialog()
         await fillValidForm(screen)
-        await screen.getByRole("button", { name: /^\s*Enregistrer\s*$/ }).click()
+        await screen
+            .getByRole("button", { name: /^\s*Enregistrer\s*$/ })
+            .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
         expect(h.action).toHaveBeenCalledWith({
@@ -94,7 +100,9 @@ describe("<AddLinkButton />", () => {
         })
         const screen = await openDialog()
         await fillValidForm(screen)
-        await screen.getByRole("button", { name: /^\s*Enregistrer\s*$/ }).click()
+        await screen
+            .getByRole("button", { name: /^\s*Enregistrer\s*$/ })
+            .click()
 
         await expect
             .element(screen.getByText("Échec de la création du lien."))
