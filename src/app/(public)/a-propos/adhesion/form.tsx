@@ -1396,15 +1396,14 @@ export function AdhesionForm(): React.ReactNode {
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
-                                                    Photos des membres du bureau{" "}
+                                                    Trombinoscope{" "}
                                                     <span className="text-muted-foreground">
                                                         (optionnel)
                                                     </span>
                                                 </FieldLabel>
                                                 <FieldDescription>
-                                                    Ce n'est pas obligatoire,
-                                                    mais c'est fortement
-                                                    recommandé. Formats acceptés
+                                                    Ajoutez une photo de votre bureau pour qu'on apprenne à vous reconnaître !
+                                                    Formats acceptés
                                                     : images (PNG, JPG, WebP,
                                                     SVG) ou PDF. Jusqu'à 15
                                                     fichiers, 5 Mo maximum par
