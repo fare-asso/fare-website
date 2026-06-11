@@ -15,7 +15,7 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy
 } from "@dnd-kit/sortable"
-import { useState, useTransition } from "react"
+import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
 import updateLinkOrderAction from "@/actions/links/updateLinkOrderAction"
@@ -43,7 +43,10 @@ export default function SortableLinkList({
     catId,
     files
 }: SortableLinkListProps) {
-    const [links, setLinks] = useState(initialLinks)
+    const [links, setOptimisticLinks] = useOptimistic(
+        initialLinks,
+        (_current, next: LinkItem[]) => next
+    )
     const [, startTransition] = useTransition()
 
     const sensors = useSensors(
@@ -64,11 +67,11 @@ export default function SortableLinkList({
             const oldIndex = links.findIndex((l) => l.id === active.id)
             const newIndex = links.findIndex((l) => l.id === over.id)
 
-            const previousLinks = links
             const newLinks = arrayMove(links, oldIndex, newIndex)
-            setLinks(newLinks)
 
             startTransition(async () => {
+                setOptimisticLinks(newLinks)
+
                 const linkOrder = newLinks.map((l, index) => ({
                     id: l.id,
                     order: index
@@ -77,7 +80,6 @@ export default function SortableLinkList({
                 const result = await updateLinkOrderAction(linkOrder)
 
                 if (!result.success) {
-                    setLinks(previousLinks)
                     toast.error(result.error)
                 }
             })
