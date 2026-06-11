@@ -55,6 +55,9 @@ import { processAdhesion } from "./process-adhesion"
 /** Max file size: 2 MB (in bytes) */
 const MAX_FILE_SIZE = 2 * 1024 * 1024
 
+/** Max photo size: 5 MB (in bytes) */
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024
+
 const emptyBureauMember: BureauMember = {
     isAdmin: false,
     poste: "",
@@ -91,6 +94,7 @@ const emptyForm = {
     lettreEngagement: undefined as unknown as File,
     reglementInterieur: undefined as unknown as File,
     bilanFinancier: undefined as unknown as File,
+    photos: [] as File[],
     captchaToken: ""
 }
 
@@ -1366,6 +1370,61 @@ export function AdhesionForm(): React.ReactNode {
                                                     ]}
                                                     onChange={(file) =>
                                                         field.handleChange(file)
+                                                    }
+                                                />
+                                                {isInvalid && (
+                                                    <FieldError
+                                                        errors={
+                                                            field.state.meta
+                                                                .errors
+                                                        }
+                                                    />
+                                                )}
+                                            </Field>
+                                        )
+                                    }}
+                                />
+
+                                <form.Field
+                                    name="photos"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        return (
+                                            <Field data-invalid={isInvalid}>
+                                                <FieldLabel
+                                                    htmlFor={field.name}
+                                                >
+                                                    Trombinoscope{" "}
+                                                    <span className="text-muted-foreground">
+                                                        (optionnel)
+                                                    </span>
+                                                </FieldLabel>
+                                                <FieldDescription>
+                                                    Ajoutez une photo de votre
+                                                    bureau pour qu'on apprenne à
+                                                    vous reconnaître !<br />
+                                                    Formats acceptés : images
+                                                    (PNG, JPG, WebP, SVG) ou
+                                                    PDF. Jusqu'à 15 fichiers, 5
+                                                    Mo maximum par fichier.
+                                                </FieldDescription>
+                                                <FilePondInput
+                                                    allowMultiple
+                                                    maxFiles={15}
+                                                    maxFileSize={`${MAX_PHOTO_SIZE / (1024 * 1024)}MB`}
+                                                    acceptedFileTypes={[
+                                                        "image/png",
+                                                        "image/jpeg",
+                                                        "image/webp",
+                                                        "image/svg+xml",
+                                                        "application/pdf"
+                                                    ]}
+                                                    onChangeMultiple={(files) =>
+                                                        field.handleChange(
+                                                            files
+                                                        )
                                                     }
                                                 />
                                                 {isInvalid && (

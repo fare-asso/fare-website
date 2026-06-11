@@ -233,6 +233,7 @@ model Adhesion {
   lettreEngagementPath       String?
   reglementInterieurPath     String?
   bilanFinancierPath         String?
+  photosPaths                String[]
   bureau                     Json?
   linkedAssociation          Association?
 }

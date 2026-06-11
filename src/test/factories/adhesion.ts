@@ -78,6 +78,7 @@ export function validAdhesionRecord(
         lettreEngagementPath: null,
         reglementInterieurPath: null,
         bilanFinancierPath: null,
+        photosPaths: [],
         bureau: [bureauMember],
         ...overrides
     }

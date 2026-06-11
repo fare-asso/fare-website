@@ -289,6 +289,12 @@ async function main() {
             category: "Adhésions",
             description: "Télécharger les dossiers d'adhésion"
         },
+        {
+            name: "download:adhesion-folder",
+            title: "Télécharger Dossier",
+            category: "Adhésions",
+            description: "Télécharger les dossiers d'adhésion"
+        },
 
         // Bouge Ta Prison
         {
