@@ -62,7 +62,7 @@ export default function AddLinkButton({
                     >
                         <PlusIcon className="w-6!" />
                         <span className="text-sm font-medium">
-                            Ajouter un {first && "premier"} lien
+                            Ajouter un {first && "premier "}lien
                         </span>
                     </Button>
                 </DialogTrigger>
@@ -93,7 +93,7 @@ export default function AddLinkButton({
                     <TextField
                         field={field}
                         label="URL"
-                        placeholder="ex. https://instagram.com/... ou /projets/agorae"
+                        placeholder="ex. https://instagram.com/..."
                         errors={field.state.meta.errors}
                     />
                 )}

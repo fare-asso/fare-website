@@ -93,7 +93,7 @@ export default function EditLinkButton({ link }: { link: LinkItem }) {
                     <TextField
                         field={field}
                         label="URL"
-                        placeholder="https://instagram.com/... ou /projets/agorae"
+                        placeholder="https://instagram.com/..."
                         error="L'URL est requise."
                     />
                 )}

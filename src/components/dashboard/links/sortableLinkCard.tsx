@@ -15,7 +15,7 @@ interface SortableLinkCardProps {
     canDelete: boolean
 }
 
-export default function ({
+export default function SortableLinkCard({
     link,
     canEdit,
     canDelete

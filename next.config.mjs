@@ -10,6 +10,7 @@ await jiti.import("./src/env")
 const nextConfig = {
     output: "standalone",
     transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
+    allowedDevOrigins: ["192.168.1.13"],
 
     reactCompiler: true,
     experimental: {

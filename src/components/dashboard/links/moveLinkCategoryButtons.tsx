@@ -47,7 +47,7 @@ export default function MoveLinkCategoryButtons({
     return (
         <ButtonGroup
             orientation="vertical"
-            aria-label="Media controls"
+            aria-label="Réordonner la catégorie"
             className="h-fit"
         >
             <Tooltip>

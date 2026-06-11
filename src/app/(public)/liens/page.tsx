@@ -54,17 +54,9 @@ const socialLinks: { name: string; href: string; icon: IconType }[] = [
 ]
 
 function isExternal(url: string): boolean {
-    return /^(https?:|mailto:|tel:)/.test(url)
+    return !url.startsWith("https://fare-asso.fr/")
 }
 
-// Fonction auxiliaire pour ouvrir les liens dans une nouvelle fenetre
-function newTabProps(url: string): { target?: string; rel?: string } {
-    return /^https?:/.test(url)
-        ? { target: "_blank", rel: "noopener noreferrer" }
-        : {}
-}
-
-// Icone adaptatif en fonction de l'url
 function getLinkIcon(url: string): LucideIcon {
     if (url.startsWith("mailto:")) return MailIcon
     if (/\.pdf(\?|#|$)/i.test(url)) return FileTextIcon
@@ -111,7 +103,8 @@ export default async function Liens() {
                         title={social.name}
                         aria-label={social.name}
                         className="text-foreground transition-transform hover:scale-110 hover:opacity-70"
-                        {...newTabProps(social.href)}
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         <social.icon className="size-6" />
                     </Link>
@@ -135,7 +128,10 @@ export default async function Liens() {
                                             key={link.id}
                                             href={link.url}
                                             className="group bg-card relative flex items-center rounded-xl border p-4 shadow-sm transition-all hover:scale-[1.02] hover:shadow-md"
-                                            {...newTabProps(link.url)}
+                                            {...(isExternal(link.url) && {
+                                                target: "_blank",
+                                                rel: "noopener noreferrer"
+                                            })}
                                         >
                                             <Icon className="text-muted-foreground absolute left-4 size-5" />
                                             <span className="flex-1 px-9 text-center font-medium">
