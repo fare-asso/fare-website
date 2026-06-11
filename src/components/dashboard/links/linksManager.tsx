@@ -39,29 +39,37 @@ export default function LinksManager({
     const categoryIds = categories.map((category) => category.id)
 
     return (
-        <div className="bg-card text-card-foreground h-full w-full space-y-10 overflow-y-auto rounded-lg border p-4 shadow-xs md:p-6">
+        <div className="@container h-full w-full space-y-10 overflow-y-auto">
             {categories.map((category, index) => (
                 <section key={category.id} className="space-y-4">
-                    <div className="flex items-center justify-between gap-2 border-b pb-2">
-                        <div className="flex items-center gap-1">
-                            <h2 className="text-lg font-semibold">
+                    <div className="flex items-start justify-between gap-2 border-b pb-2 @md:items-center">
+                        <div className="flex flex-col items-start gap-1 @md:flex-row @md:items-center">
+                            <h2 className="m-0 text-lg font-semibold">
                                 {category.name}
                             </h2>
-                            {canEdit ? (
-                                <MoveLinkCategoryButtons
-                                    categoryIds={categoryIds}
-                                    index={index}
-                                />
-                            ) : null}
-                            {canEdit ? (
-                                <EditLinkCategoryButton category={category} />
-                            ) : null}
-                            {canDelete ? (
-                                <DeleteLinkCategoryButton category={category} />
+                            {canEdit || canDelete ? (
+                                <div className="flex shrink-0 items-center gap-1">
+                                    {canEdit ? (
+                                        <MoveLinkCategoryButtons
+                                            categoryIds={categoryIds}
+                                            index={index}
+                                        />
+                                    ) : null}
+                                    {canEdit ? (
+                                        <EditLinkCategoryButton
+                                            category={category}
+                                        />
+                                    ) : null}
+                                    {canDelete ? (
+                                        <DeleteLinkCategoryButton
+                                            category={category}
+                                        />
+                                    ) : null}
+                                </div>
                             ) : null}
                         </div>
-                        <div className="flex items-center gap-5">
-                            <span className="text-muted-foreground text-sm">
+                        <div className="flex shrink-0 items-center gap-5">
+                            <span className="text-muted-foreground hidden text-sm @md:block">
                                 {category.liens.length} lien
                                 {category.liens.length > 1 ? "s" : ""}
                             </span>
