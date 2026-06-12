@@ -33,6 +33,7 @@ import {
     joinTicketAndEquipment
 } from "@/helpers/bagadAsso"
 import prisma from "@/helpers/db"
+import { locationDisplayName, parseLocation } from "@/helpers/location"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
@@ -107,6 +108,12 @@ export default async function Page({
     }
 
     const totalDeposit = await computeTotalDeposit(ticket)
+
+    const eventAddrLabel = locationDisplayName(ticket.eventAddr)
+    const parsedEventAddr = parseLocation(ticket.eventAddr)
+    const mapsHref = parsedEventAddr.success
+        ? `https://www.google.com/maps/search/?api=1&query=${parsedEventAddr.value.coordinates.lat},${parsedEventAddr.value.coordinates.lon}`
+        : `https://www.google.fr/maps/search/${encodeURIComponent(ticket.eventAddr)}`
 
     const allEquipments: {
         id: number
@@ -251,13 +258,13 @@ export default async function Page({
                                     </span>
                                 </div>
                                 <a
-                                    href={`https://www.google.fr/maps/search/${ticket.eventAddr}`}
+                                    href={mapsHref}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="hover:text-primary flex items-start gap-2 text-sm transition-colors"
                                 >
                                     <FaMapMarkerAlt className="text-muted-foreground mt-0.5" />
-                                    <span>{ticket.eventAddr}</span>
+                                    <span>{eventAddrLabel}</span>
                                 </a>
                                 <div className="flex items-center gap-2 text-sm">
                                     <FaUsers className="text-muted-foreground" />

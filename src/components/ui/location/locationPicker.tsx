@@ -1,264 +1,299 @@
-import { MapPin } from "lucide-react"
-import type React from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
+"use client"
 
-import type { AutocompleteResponse } from "@/app/api/searchLocation/types"
+import { Check, MapPin } from "lucide-react"
+import type React from "react"
+import { useEffect, useId, useRef, useState } from "react"
+
+import type {
+    LocationSuggestion,
+    SearchLocationResponse
+} from "@/app/api/searchLocation/types"
 import { Input } from "@/components/ui/input"
-import { tryCatch } from "@/lib/utils"
+import { type JsonLocation, parseLocation } from "@/helpers/location"
+import { cn, tryCatch } from "@/lib/utils"
 
 interface LocationPickerProps {
-    name: string
+    name?: string
     defaultValue?: string
+    value?: string
+    onChange?: (value: string) => void
+    onBlur?: () => void
+    id?: string
+    placeholder?: string
+    disabled?: boolean
+    "aria-invalid"?: boolean
+    className?: string
+}
+
+function fromStored(stored: string): {
+    inputText: string
+    selected: JsonLocation | null
+} {
+    const parsed = parseLocation(stored)
+    return parsed.success
+        ? { inputText: parsed.value.displayName, selected: parsed.value }
+        : { inputText: stored, selected: null }
 }
 
 export default function LocationPicker({
     name,
-    defaultValue
-}: LocationPickerProps) {
-    // State to manage the input value, recommendations
-    const [query, setQuery] = useState(defaultValue || "")
-    const [recommendations, setRecommendations] = useState<string[]>([])
+    defaultValue,
+    value,
+    onChange,
+    onBlur,
+    id,
+    placeholder = "Rechercher une adresse…",
+    disabled,
+    "aria-invalid": ariaInvalid,
+    className
+}: LocationPickerProps): React.ReactElement {
+    const initial = fromStored(value ?? defaultValue ?? "")
+    const [inputText, setInputText] = useState(initial.inputText)
+    const [selected, setSelected] = useState<JsonLocation | null>(
+        initial.selected
+    )
+    const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([])
+    const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [showRecommendations, setShowRecommendations] = useState(false)
-    const [selectedIndex, setSelectedIndex] = useState(-1)
+    const [activeIndex, setActiveIndex] = useState(-1)
 
-    // Refs for better focus management
     const inputRef = useRef<HTMLInputElement>(null)
-    const containerRef = useRef<HTMLFieldSetElement>(null)
-    const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
+    const lastEmittedRef = useRef(value ?? defaultValue ?? "")
 
-    const fetchRecommendations = useCallback(async (searchQuery: string) => {
-        if (!searchQuery.trim() || searchQuery.trim().length < 3) {
-            setRecommendations([])
-            setShowRecommendations(false)
-            return
-        }
+    const reactId = useId()
+    const listboxId = `${reactId}-listbox`
+    const optionId = (index: number): string => `${reactId}-option-${index}`
 
-        setIsLoading(true)
+    const storedValue = selected ? JSON.stringify(selected) : inputText
 
-        const result = await tryCatch(async () => {
-            const response = await fetch(
-                `/api/searchLocation?query=${encodeURIComponent(searchQuery)}`
-            )
-            if (!response.ok) {
-                throw new Error(`API request failed: ${response.status}`)
-            }
-            return (await response.json()) as AutocompleteResponse
-        })
-        if (!result.success) {
-            console.error("Failed to fetch recommendations:", result.error)
-            setRecommendations([])
-            setShowRecommendations(false)
-            setIsLoading(false)
-            return
-        }
-        const data = result.value
-
-        if (!data || data.status !== "OK") {
-            console.error("Invalid response from API:", data)
-            setRecommendations([])
-            setShowRecommendations(false)
-            setIsLoading(false)
-            return
-        }
-
-        // Assuming the API returns an array of strings or objects with a 'name' property
-        const locationNames = data.results.map(
-            (location) => location.fulltext || location.street || location.city
-        )
-
-        setRecommendations(locationNames)
-        setShowRecommendations(locationNames.length > 0)
-        setSelectedIndex(-1) // Reset selection when new results arrive
-        setIsLoading(false)
-    }, [])
-
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            void fetchRecommendations(query)
-        }, 300) // Debounce API calls by 300ms
-
-        return () => clearTimeout(timeoutId)
-    }, [query, fetchRecommendations])
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setQuery(e.target.value)
-        setSelectedIndex(-1) // Reset keyboard selection
+    const emit = (stored: string): void => {
+        lastEmittedRef.current = stored
+        onChange?.(stored)
     }
 
-    const handleRecommendationClick = (location: string) => {
-        setQuery(location)
-        setShowRecommendations(false)
-        setSelectedIndex(-1)
-        // Return focus to input after selection
+    useEffect(() => {
+        if (value === undefined || value === lastEmittedRef.current) {
+            return
+        }
+        lastEmittedRef.current = value
+        const derived = fromStored(value)
+        setInputText(derived.inputText)
+        setSelected(derived.selected)
+    }, [value])
+
+    useEffect(() => {
+        const query = inputText.trim()
+        if (query.length < 3 || query === selected?.displayName) {
+            setSuggestions([])
+            setIsOpen(false)
+            setIsLoading(false)
+            return
+        }
+
+        const controller = new AbortController()
+        const timeoutId = setTimeout(async () => {
+            if (document.activeElement !== inputRef.current) {
+                return
+            }
+            setIsLoading(true)
+            setIsOpen(true)
+
+            const result = await tryCatch(async () => {
+                const response = await fetch(
+                    `/api/searchLocation?query=${encodeURIComponent(query)}`,
+                    { signal: controller.signal }
+                )
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`)
+                }
+                return (await response.json()) as SearchLocationResponse
+            })
+            if (controller.signal.aborted) {
+                return
+            }
+
+            setIsLoading(false)
+            if (!result.success) {
+                setSuggestions([])
+                setIsOpen(false)
+                return
+            }
+            setSuggestions(result.value.suggestions)
+            setActiveIndex(-1)
+        }, 300)
+
+        return () => {
+            clearTimeout(timeoutId)
+            controller.abort()
+        }
+    }, [inputText, selected])
+
+    const selectSuggestion = (suggestion: LocationSuggestion): void => {
+        const location: JsonLocation = {
+            displayName: suggestion.label,
+            coordinates: { lat: suggestion.lat, lon: suggestion.lon }
+        }
+        setInputText(suggestion.label)
+        setSelected(location)
+        setIsOpen(false)
+        setActiveIndex(-1)
+        emit(JSON.stringify(location))
         inputRef.current?.focus()
     }
 
-    const handleInputFocus = () => {
-        // Clear any pending blur timeout
-        if (blurTimeoutRef.current) {
-            clearTimeout(blurTimeoutRef.current)
-            blurTimeoutRef.current = null
-        }
+    const handleInputChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ): void => {
+        const text = e.target.value
+        setInputText(text)
+        setSelected(null)
+        setActiveIndex(-1)
+        emit(text)
+    }
 
-        if (recommendations.length > 0) {
-            setShowRecommendations(true)
+    const handleFocus = (): void => {
+        if (
+            suggestions.length > 0 &&
+            inputText.trim() !== selected?.displayName
+        ) {
+            setIsOpen(true)
         }
     }
 
-    const handleInputBlur = (e: React.FocusEvent) => {
-        // Check if the focus is moving to an element within our container
+    const handleBlur = (e: React.FocusEvent): void => {
         if (containerRef.current?.contains(e.relatedTarget as Node)) {
-            return // Don't hide recommendations if focus stays within component
+            return
         }
-
-        // Delay hiding recommendations to allow click events to process
-        blurTimeoutRef.current = setTimeout(() => {
-            setShowRecommendations(false)
-            setSelectedIndex(-1)
-        }, 200)
+        setIsOpen(false)
+        setActiveIndex(-1)
+        onBlur?.()
     }
 
-    // Handle keyboard navigation
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (!showRecommendations || recommendations.length === 0) return
-
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+        if (e.key === "Escape") {
+            setIsOpen(false)
+            setActiveIndex(-1)
+            return
+        }
+        if (!isOpen) {
+            return
+        }
         switch (e.key) {
             case "ArrowDown":
                 e.preventDefault()
-                setSelectedIndex((prev) =>
-                    prev < recommendations.length - 1 ? prev + 1 : 0
-                )
+                if (suggestions.length > 0) {
+                    setActiveIndex((prev) => (prev + 1) % suggestions.length)
+                }
                 break
             case "ArrowUp":
                 e.preventDefault()
-                setSelectedIndex((prev) =>
-                    prev > 0 ? prev - 1 : recommendations.length - 1
-                )
+                if (suggestions.length > 0) {
+                    setActiveIndex((prev) =>
+                        prev <= 0 ? suggestions.length - 1 : prev - 1
+                    )
+                }
                 break
             case "Enter":
                 e.preventDefault()
-                if (
-                    selectedIndex >= 0 &&
-                    selectedIndex < recommendations.length
-                ) {
-                    handleRecommendationClick(recommendations[selectedIndex])
+                if (activeIndex >= 0 && activeIndex < suggestions.length) {
+                    selectSuggestion(suggestions[activeIndex])
+                } else {
+                    setIsOpen(false)
                 }
                 break
-            case "Escape":
-                setShowRecommendations(false)
-                setSelectedIndex(-1)
+            case "Tab":
+                setIsOpen(false)
+                setActiveIndex(-1)
                 break
         }
     }
 
-    // Handle container focus/blur for better UX
-    const handleContainerFocus = () => {
-        if (blurTimeoutRef.current) {
-            clearTimeout(blurTimeoutRef.current)
-            blurTimeoutRef.current = null
-        }
-    }
-
-    const handleContainerBlur = (e: React.FocusEvent) => {
-        // Only hide if focus leaves the entire component
-        if (!containerRef.current?.contains(e.relatedTarget as Node)) {
-            blurTimeoutRef.current = setTimeout(() => {
-                setShowRecommendations(false)
-                setSelectedIndex(-1)
-            }, 200)
-        }
-    }
-
-    // Cleanup timeout on unmount
-    useEffect(() => {
-        return () => {
-            if (blurTimeoutRef.current) {
-                clearTimeout(blurTimeoutRef.current)
-            }
-        }
-    }, [])
-
     return (
-        <fieldset
-            className="relative m-0 border-0 p-0"
-            ref={containerRef}
-            onFocus={handleContainerFocus}
-            onBlur={handleContainerBlur}
-        >
-            <label
-                htmlFor={name}
-                className="block text-sm font-medium text-gray-700"
-            >
-                {name}
-            </label>
+        <div className={cn("relative", className)} ref={containerRef}>
+            {name ? (
+                <input type="hidden" name={name} value={storedValue} />
+            ) : null}
             <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <MapPin className="h-4 w-4 text-gray-400" />
+                    <MapPin
+                        className={cn(
+                            "h-4 w-4",
+                            selected ? "text-primary" : "text-muted-foreground"
+                        )}
+                    />
                 </div>
                 <Input
                     ref={inputRef}
-                    id={name}
-                    name={name}
-                    value={query}
+                    id={id ?? name}
+                    value={inputText}
                     onChange={handleInputChange}
-                    onFocus={handleInputFocus}
-                    onBlur={handleInputBlur}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
-                    placeholder="Enter location..."
+                    placeholder={placeholder}
+                    disabled={disabled}
                     className="pl-10"
                     autoComplete="off"
-                    tabIndex={0}
                     role="combobox"
-                    aria-expanded={showRecommendations}
+                    aria-expanded={isOpen}
                     aria-haspopup="listbox"
                     aria-autocomplete="list"
-                    aria-controls={`${name}-listbox`}
+                    aria-controls={listboxId}
+                    aria-activedescendant={
+                        activeIndex >= 0 ? optionId(activeIndex) : undefined
+                    }
+                    aria-invalid={ariaInvalid}
                 />
             </div>
 
-            {showRecommendations && (
+            {selected ? (
+                <p className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
+                    <Check className="text-primary h-3 w-3" />
+                    Lieu géolocalisé
+                </p>
+            ) : null}
+
+            {isOpen ? (
                 <div
-                    id={`${name}-listbox`}
-                    className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg"
+                    id={listboxId}
                     role="listbox"
+                    className="bg-popover text-popover-foreground absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border shadow-md"
                 >
-                    {isLoading && (
-                        <div className="px-3 py-2 text-sm text-gray-500">
-                            Loading...
+                    {isLoading ? (
+                        <div className="text-muted-foreground px-3 py-2 text-sm">
+                            Recherche…
                         </div>
-                    )}
-                    {!isLoading && recommendations.length === 0 && (
-                        <div className="px-3 py-2 text-sm text-gray-500">
-                            No locations found
+                    ) : null}
+                    {!isLoading && suggestions.length === 0 ? (
+                        <div className="text-muted-foreground px-3 py-2 text-sm">
+                            Aucun résultat
                         </div>
-                    )}
+                    ) : null}
                     {!isLoading &&
-                        recommendations.map((location, index) => (
+                        suggestions.map((suggestion, index) => (
                             <div
-                                key={index}
-                                className={`cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 ${
-                                    selectedIndex === index ? "bg-blue-100" : ""
-                                }`}
-                                onClick={() =>
-                                    handleRecommendationClick(location)
-                                }
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter" || e.key === " ") {
-                                        handleRecommendationClick(location)
-                                    }
-                                }}
-                                onMouseDown={(e) => e.preventDefault()} // Prevent blur when clicking
-                                onMouseEnter={() => setSelectedIndex(index)}
+                                key={`${suggestion.lat},${suggestion.lon},${suggestion.label}`}
+                                id={optionId(index)}
                                 role="option"
-                                tabIndex={0}
-                                aria-selected={selectedIndex === index}
+                                aria-selected={activeIndex === index}
+                                tabIndex={-1}
+                                className={cn(
+                                    "cursor-pointer px-3 py-2 text-sm",
+                                    activeIndex === index &&
+                                        "bg-accent text-accent-foreground"
+                                )}
+                                onMouseDown={(e) => {
+                                    e.preventDefault()
+                                    selectSuggestion(suggestion)
+                                }}
+                                onMouseEnter={() => setActiveIndex(index)}
                             >
-                                {location}
+                                {suggestion.label}
                             </div>
                         ))}
                 </div>
-            )}
-        </fieldset>
+            ) : null}
+        </div>
     )
 }
