@@ -107,12 +107,7 @@ export default function SortableMemberCard({
 
                     {/* Action buttons */}
                     <div className="flex items-center gap-1 pr-1">
-                        {canEdit ? (
-                            <EditMemberButton
-                                member={member}
-                                pictureUrl={pictureUrl}
-                            />
-                        ) : null}
+                        {canEdit ? <EditMemberButton member={member} /> : null}
                         {canDelete ? (
                             <Button
                                 id="deleteButton"

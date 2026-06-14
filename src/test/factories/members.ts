@@ -1,21 +1,38 @@
 import type { Member } from "@/generated/prisma/client"
+import type { TAddMember, TEditMember } from "@/schemas/members"
 
-export function validMemberFormData(
-    overrides: Record<string, string> = {}
-): FormData {
-    const fd = new FormData()
-    fd.set("lastName", "Martin")
-    fd.set("firstName", "Lea")
-    fd.set("position", "Tresoriere")
-    fd.set("picturePath", "members/lea.png")
-    fd.set("email", "lea@example.com")
-    fd.set("facebook", "")
-    fd.set("instagram", "")
-    fd.set("twitter", "")
-    for (const [key, value] of Object.entries(overrides)) {
-        fd.set(key, value)
+import { imageFile } from "./files"
+
+export function validAddMember(
+    overrides: Partial<TAddMember> = {}
+): TAddMember {
+    return {
+        firstName: "Lea",
+        lastName: "Martin",
+        position: "Tresoriere",
+        email: "lea@example.com",
+        facebook: "",
+        instagram: "",
+        twitter: "",
+        picture: imageFile("lea.png"),
+        ...overrides
     }
-    return fd
+}
+
+export function validEditMember(
+    overrides: Partial<TEditMember> = {}
+): TEditMember {
+    return {
+        id: 1,
+        firstName: "Lea",
+        lastName: "Martin",
+        position: "Tresoriere",
+        email: "lea@example.com",
+        facebook: "",
+        instagram: "",
+        twitter: "",
+        ...overrides
+    }
 }
 
 export function validMemberRecord(overrides: Partial<Member> = {}): Member {
