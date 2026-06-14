@@ -15,25 +15,14 @@ import {
     SortableContext,
     sortableKeyboardCoordinates
 } from "@dnd-kit/sortable"
-import { useState, useTransition } from "react"
+import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
+import deleteMemberAction from "@/actions/members/deleteMemberAction"
 import updateMemberOrderAction from "@/actions/members/updateMemberOrderAction"
+import type { Member } from "@/generated/prisma/client"
 
 import SortableMemberCard from "./sortableMemberCard"
-
-interface Member {
-    id: number
-    firstName: string
-    lastName: string
-    position: string
-    picturePath: string
-    email: string
-    facebookUrl: string | null
-    instagramUrl: string | null
-    twitterUrl: string | null
-    order: number
-}
 
 interface MemberWithPicture {
     member: Member
@@ -51,7 +40,10 @@ export default function SortableMemberList({
     canEdit,
     canDelete
 }: SortableMemberListProps) {
-    const [members, setMembers] = useState(initialMembers)
+    const [members, setOptimisticMembers] = useOptimistic(
+        initialMembers,
+        (_current, next: MemberWithPicture[]) => next
+    )
     const [, startTransition] = useTransition()
 
     const sensors = useSensors(
@@ -67,30 +59,39 @@ export default function SortableMemberList({
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event
+        if (!over || active.id === over.id) return
 
-        if (over && active.id !== over.id) {
-            const oldIndex = members.findIndex((m) => m.member.id === active.id)
-            const newIndex = members.findIndex((m) => m.member.id === over.id)
+        const oldIndex = members.findIndex((m) => m.member.id === active.id)
+        const newIndex = members.findIndex((m) => m.member.id === over.id)
+        const newMembers = arrayMove(members, oldIndex, newIndex)
 
-            const newMembers = arrayMove(members, oldIndex, newIndex)
-            setMembers(newMembers)
+        startTransition(async () => {
+            setOptimisticMembers(newMembers)
 
-            // Persist the new order to the database
-            startTransition(async () => {
-                const memberOrder = newMembers.map((m, index) => ({
-                    id: m.member.id,
-                    order: index
-                }))
+            const result = await updateMemberOrderAction(
+                newMembers.map((m, order) => ({ id: m.member.id, order }))
+            )
+            if (result.error) {
+                toast.error(result.error)
+            }
+        })
+    }
 
-                const result = await updateMemberOrderAction(memberOrder)
+    const handleDelete = (member: Member) => {
+        startTransition(async () => {
+            setOptimisticMembers(
+                members.filter((m) => m.member.id !== member.id)
+            )
 
-                if (result.error) {
-                    // Revert on error
-                    setMembers(members)
-                    toast.error(result.error)
-                }
-            })
-        }
+            const result = await deleteMemberAction({ id: member.id })
+            if (result.error) {
+                toast.error(result.error)
+            } else {
+                toast.success(
+                    `Le membre ${member.firstName} ${member.lastName} a bien été supprimé`
+                )
+            }
+        })
     }
 
     return (
@@ -113,6 +114,7 @@ export default function SortableMemberList({
                                 pictureUrl={item.pictureUrl}
                                 canEdit={canEdit}
                                 canDelete={canDelete}
+                                onDelete={handleDelete}
                             />
                         ))}
                     </div>
