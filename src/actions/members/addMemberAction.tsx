@@ -1,96 +1,75 @@
 "use server"
 
+import { type } from "arktype"
 import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
+import { uniqueFileName } from "@/helpers/storage"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
+import { createAdminClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
-import { MemberServerSchema } from "@/schemas/members"
+import { AddMemberSchema, type TAddMember } from "@/schemas/members"
 
 async function addMemberActionImpl(
-    formData: FormData
-): Promise<{ success?: boolean; error?: string }> {
-    // Auth and permission verifications
+    input: TAddMember
+): Promise<{ success: true } | { success: false; error: string }> {
     const user = await getCurrentUserWithPermissions()
-    if (!user) {
-        return { error: "Authentification requise" }
-    }
+    if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "create:member")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de créer des membres"
         }
     }
 
-    // Create supabase client
-    const supabase = await createClient()
-
-    // Retrieve form data fields
-    const memberData = {
-        lastName: formData.get("lastName"),
-        firstName: formData.get("firstName"),
-        position: formData.get("position"),
-        picturePath: formData.get("picturePath"),
-        email: formData.get("email"),
-        facebook: formData.get("facebook"),
-        instagram: formData.get("instagram"),
-        twitter: formData.get("twitter")
-    }
-
-    // Validate form data with zod
-    const parsed = MemberServerSchema.safeParse(memberData)
-    if (!parsed.success) {
-        console.log("Error: ", parsed.error.toString())
+    const data = AddMemberSchema(input)
+    if (data instanceof type.errors) {
         return {
             success: false,
-            error: "Un ou plusieurs champs sont invalides"
+            error: "Un ou plusieurs champs sont invalides."
         }
     }
 
-    // Fetch picture info
-    const { error: pictureError } = await supabase.storage
-        .from("member-pictures")
-        .info(parsed.data.picturePath)
-
-    if (pictureError) {
-        return {
-            success: false,
-            error: "Erreur lors de la récupération de l'image"
-        }
+    const supabase = createAdminClient()
+    const filePath = uniqueFileName(data.picture.name)
+    const upload = await tryCatch(
+        supabase.storage
+            .from("member-pictures")
+            .upload(filePath, data.picture, {
+                contentType: data.picture.type
+            })
+    )
+    if (!upload.success) {
+        captureActionError(upload.error)
+        return { success: false, error: "Échec de l'upload de la photo." }
     }
+    const picturePath = upload.value.path
 
-    // Create record
     const created = await tryCatch(
         prisma.member.create({
             data: {
-                firstName: parsed.data.firstName,
-                lastName: parsed.data.lastName,
-                position: parsed.data.position,
-                picturePath: parsed.data.picturePath,
-                email: parsed.data.email,
-                facebookUrl: parsed.data.facebook,
-                instagramUrl: parsed.data.instagram,
-                twitterUrl: parsed.data.twitter
+                firstName: data.firstName,
+                lastName: data.lastName,
+                position: data.position,
+                picturePath,
+                email: data.email,
+                facebookUrl: data.facebook || null,
+                instagramUrl: data.instagram || null,
+                twitterUrl: data.twitter || null
             }
         })
     )
     if (!created.success) {
         captureActionError(created.error)
-        return {
-            success: false,
-            error: "La création du membre dans la base de données a échoué... Veuillez contacter un administrateur"
-        }
+        await supabase.storage.from("member-pictures").remove([picturePath])
+        return { success: false, error: "Échec de la création du membre." }
     }
 
-    // Revalidate path
     revalidatePath("/dashboard/membres")
     revalidatePath("/a-propos/bureau")
-
     return { success: true }
 }
 
-export default withServerAction("addMemberAction", addMemberActionImpl, {
-    attachFormData: true
-})
+export default withServerAction("addMemberAction", addMemberActionImpl)

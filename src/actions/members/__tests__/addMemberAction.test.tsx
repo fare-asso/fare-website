@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { validMemberFormData } from "@/test/factories/members"
+import { imageFile, pdfFile } from "@/test/factories/files"
+import { validAddMember } from "@/test/factories/members"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
@@ -13,11 +14,14 @@ import {
 const h = vi.hoisted(() => ({
     create: vi.fn(),
     getUser: vi.fn(),
-    info: vi.fn(),
+    upload: vi.fn(),
+    remove: vi.fn(),
     revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
-const from = vi.hoisted(() => vi.fn(() => ({ info: h.info })))
+const from = vi.hoisted(() =>
+    vi.fn(() => ({ upload: h.upload, remove: h.remove }))
+)
 
 vi.mock("@/helpers/db", () => dbModule({ member: { create: h.create } }))
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
@@ -31,68 +35,108 @@ import addMemberAction from "../addMemberAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:member"]))
-    h.info.mockResolvedValue({ data: { name: "x" }, error: null })
+    h.upload.mockResolvedValue({
+        data: { path: "uuid-lea.png" },
+        error: null
+    })
     h.create.mockResolvedValue({ id: 1 })
+    h.remove.mockResolvedValue({ error: null })
 })
 
 describe("addMemberAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await addMemberAction(validMemberFormData())).toEqual({
+        const res = await addMemberAction(validAddMember())
+        expect(res).toEqual({
+            success: false,
             error: "Authentification requise"
         })
+        expect(h.upload).not.toHaveBeenCalled()
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("requires the create:member permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await addMemberAction(validMemberFormData())
-        expect(res.error).toMatch(/permission/)
+        const res = await addMemberAction(validAddMember())
+        expect(res.success).toBe(false)
+        if (!res.success) expect(res.error).toMatch(/permission/)
+        expect(h.upload).not.toHaveBeenCalled()
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid payload", async () => {
         const res = await addMemberAction(
-            validMemberFormData({ email: "not-an-email" })
+            validAddMember({ email: "not-an-email" })
         )
         expect(res).toEqual({
             success: false,
-            error: "Un ou plusieurs champs sont invalides"
+            error: "Un ou plusieurs champs sont invalides."
         })
+        expect(h.upload).not.toHaveBeenCalled()
         expect(h.create).not.toHaveBeenCalled()
     })
 
-    it("errors when the picture cannot be found in storage", async () => {
-        h.info.mockResolvedValue({ data: null, error: { message: "gone" } })
-        const res = await addMemberAction(validMemberFormData())
+    it("rejects a non-image picture", async () => {
+        const res = await addMemberAction(
+            validAddMember({ picture: pdfFile("x.pdf") })
+        )
         expect(res).toEqual({
             success: false,
-            error: "Erreur lors de la récupération de l'image"
+            error: "Un ou plusieurs champs sont invalides."
         })
+        expect(h.upload).not.toHaveBeenCalled()
+    })
+
+    it("captures and returns an error when the upload throws", async () => {
+        h.upload.mockRejectedValue(new Error("storage down"))
+        const res = await addMemberAction(validAddMember())
+        expect(res).toEqual({
+            success: false,
+            error: "Échec de l'upload de la photo."
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.create).not.toHaveBeenCalled()
     })
 
-    it("captures and fails when the db insert throws", async () => {
+    it("removes the uploaded picture when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await addMemberAction(validMemberFormData())
-        expect(res.success).toBe(false)
-        expect(res.error).toMatch(/base de données a échoué/)
+        const res = await addMemberAction(validAddMember())
+        expect(res).toEqual({
+            success: false,
+            error: "Échec de la création du membre."
+        })
         expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.remove).toHaveBeenCalledWith(["uuid-lea.png"])
+        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("creates the member and revalidates on the happy path", async () => {
-        const res = await addMemberAction(validMemberFormData())
+        const input = validAddMember({ picture: imageFile("lea.png") })
+        const res = await addMemberAction(input)
         expect(res).toEqual({ success: true })
+        expect(h.upload).toHaveBeenCalledOnce()
+        const [uploadName, uploadFile, uploadOpts] = h.upload.mock.calls[0] as [
+            string,
+            File,
+            { contentType: string }
+        ]
+        expect(uploadName).toMatch(/^lea-[0-9a-f]{8}\.png$/)
+        expect(uploadFile).toBe(input.picture)
+        expect(uploadOpts).toEqual({ contentType: input.picture.type })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({
                 firstName: "Lea",
                 lastName: "Martin",
                 position: "Tresoriere",
-                picturePath: "members/lea.png",
-                email: "lea@example.com"
+                picturePath: "uuid-lea.png",
+                email: "lea@example.com",
+                facebookUrl: null,
+                instagramUrl: null,
+                twitterUrl: null
             })
         })
         expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/membres")
         expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/bureau")
+        expect(h.captureActionError).not.toHaveBeenCalled()
     })
 })

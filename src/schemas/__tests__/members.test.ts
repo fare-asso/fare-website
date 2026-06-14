@@ -1,62 +1,80 @@
+import { type } from "arktype"
 import { describe, expect, it } from "vitest"
 
-import { MemberServerSchema } from "../members"
+import { imageFile, pdfFile } from "@/test/factories/files"
+import { validAddMember, validEditMember } from "@/test/factories/members"
 
-const validMember = () => ({
-    lastName: "Martin",
-    firstName: "Lea",
-    position: "Tresoriere",
-    email: "lea@example.com",
-    facebook: "",
-    instagram: "",
-    twitter: "",
-    picturePath: "members/lea.png"
-})
+import { AddMemberSchema, EditMemberSchema } from "../members"
 
-describe("MemberServerSchema", () => {
+const ok = (out: unknown) => !(out instanceof type.errors)
+
+describe("AddMemberSchema", () => {
     it("accepts a fully valid payload", () => {
-        expect(MemberServerSchema.safeParse(validMember()).success).toBe(true)
+        expect(ok(AddMemberSchema(validAddMember()))).toBe(true)
     })
 
     it("rejects an invalid email", () => {
-        const res = MemberServerSchema.safeParse({
-            ...validMember(),
-            email: "not-an-email"
-        })
-        expect(res.success).toBe(false)
+        expect(ok(AddMemberSchema(validAddMember({ email: "nope" })))).toBe(
+            false
+        )
     })
 
-    it("rejects an empty picture path", () => {
-        const res = MemberServerSchema.safeParse({
-            ...validMember(),
-            picturePath: ""
-        })
-        expect(res.success).toBe(false)
+    it("rejects a missing picture", () => {
+        const { picture: _p, ...rest } = validAddMember()
+        expect(ok(AddMemberSchema(rest))).toBe(false)
+    })
+
+    it("rejects a non-image picture", () => {
+        expect(
+            ok(AddMemberSchema(validAddMember({ picture: pdfFile("x.pdf") })))
+        ).toBe(false)
     })
 
     it("accepts an empty string for optional social URLs", () => {
-        const res = MemberServerSchema.safeParse({
-            ...validMember(),
-            facebook: "",
-            instagram: "",
-            twitter: ""
-        })
-        expect(res.success).toBe(true)
+        expect(
+            ok(
+                AddMemberSchema(
+                    validAddMember({ facebook: "", instagram: "", twitter: "" })
+                )
+            )
+        ).toBe(true)
     })
 
     it("rejects a malformed social URL", () => {
-        const res = MemberServerSchema.safeParse({
-            ...validMember(),
-            facebook: "not-a-url"
-        })
-        expect(res.success).toBe(false)
+        expect(
+            ok(AddMemberSchema(validAddMember({ facebook: "not-a-url" })))
+        ).toBe(false)
     })
 
     it("accepts a valid social URL", () => {
-        const res = MemberServerSchema.safeParse({
-            ...validMember(),
-            facebook: "https://facebook.com/lea"
-        })
-        expect(res.success).toBe(true)
+        expect(
+            ok(
+                AddMemberSchema(
+                    validAddMember({ facebook: "https://facebook.com/lea" })
+                )
+            )
+        ).toBe(true)
+    })
+})
+
+describe("EditMemberSchema", () => {
+    it("accepts a valid payload without a picture", () => {
+        expect(ok(EditMemberSchema(validEditMember()))).toBe(true)
+    })
+
+    it("accepts a valid payload with a picture", () => {
+        expect(
+            ok(EditMemberSchema(validEditMember({ picture: imageFile() })))
+        ).toBe(true)
+    })
+
+    it("rejects an invalid id", () => {
+        expect(ok(EditMemberSchema(validEditMember({ id: 0 })))).toBe(false)
+    })
+
+    it("rejects a non-image picture", () => {
+        expect(
+            ok(EditMemberSchema(validEditMember({ picture: pdfFile("x.pdf") })))
+        ).toBe(false)
     })
 })

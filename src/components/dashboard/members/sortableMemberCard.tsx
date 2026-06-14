@@ -4,43 +4,29 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import clsx from "clsx"
 import Image from "next/image"
-import { type MouseEvent, useState } from "react"
+import type { MouseEvent } from "react"
 import { MdDelete, MdDragIndicator } from "react-icons/md"
-import { toast } from "sonner"
 
-import deleteMemberAction from "@/actions/members/deleteMemberAction"
 import { Button } from "@/components/ui/button"
+import type { Member } from "@/generated/prisma/client"
 
 import EditMemberButton from "./editMemberButton"
-
-interface Member {
-    id: number
-    firstName: string
-    lastName: string
-    position: string
-    picturePath: string
-    email: string
-    facebookUrl: string | null
-    instagramUrl: string | null
-    twitterUrl: string | null
-    order: number
-}
 
 interface SortableMemberCardProps {
     member: Member
     pictureUrl: string
     canEdit: boolean
     canDelete: boolean
+    onDelete: (member: Member) => void
 }
 
 export default function SortableMemberCard({
     member,
     pictureUrl,
     canEdit,
-    canDelete
+    canDelete,
+    onDelete
 }: SortableMemberCardProps) {
-    const [hidden, setIsHidden] = useState<boolean>(false)
-
     const {
         attributes,
         listeners,
@@ -55,20 +41,10 @@ export default function SortableMemberCard({
         transition
     }
 
-    const handleDelete = async (event: MouseEvent<HTMLButtonElement>) => {
+    const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
         event.stopPropagation()
-
-        setIsHidden(true)
-        const res = await deleteMemberAction({ id: member.id })
-        if (res.error) {
-            setIsHidden(false)
-            toast.error(res.error)
-        } else {
-            toast.success(
-                `Le membre ${member.firstName} ${member.lastName} a bien été supprimé`
-            )
-        }
+        onDelete(member)
     }
 
     return (
@@ -77,8 +53,7 @@ export default function SortableMemberCard({
             style={style}
             className={clsx(
                 "group relative flex h-full w-full flex-col rounded-lg border bg-card text-card-foreground shadow-xs transition-shadow",
-                isDragging && "z-50 shadow-lg ring-2 ring-primary/50",
-                hidden && "hidden"
+                isDragging && "z-50 shadow-lg ring-2 ring-primary/50"
             )}
         >
             {/* Toolbar with drag handle and action buttons */}
@@ -107,12 +82,7 @@ export default function SortableMemberCard({
 
                     {/* Action buttons */}
                     <div className="flex items-center gap-1 pr-1">
-                        {canEdit ? (
-                            <EditMemberButton
-                                member={member}
-                                pictureUrl={pictureUrl}
-                            />
-                        ) : null}
+                        {canEdit ? <EditMemberButton member={member} /> : null}
                         {canDelete ? (
                             <Button
                                 id="deleteButton"
