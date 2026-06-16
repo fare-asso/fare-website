@@ -25,26 +25,25 @@ export const links: NavLink[] = [
                 href: "/a-propos/reseau"
             },
             {
+                title: "Nos partenaires",
+                href: "/a-propos/partenaires"
+            },
+            {
                 title: "Rejoindre la FARE",
                 href: "/a-propos/adhesion",
                 desc: "Conditions & démarche"
             },
             {
-                title: "Nos partenaires",
-                href: "/a-propos/partenaires",
-                hidden: false
-            },
-            {
                 title: "Nous contacter",
                 href: "/a-propos/contact",
-                desc: "Écrire à la fédération",
-                hidden: false
+                desc: "Écrire à la fédération"
             }
         ]
     },
     {
         title: "Actualités",
-        href: "/actualites"
+        href: "/actualites",
+        hidden: true
     },
     {
         title: "Presse",
@@ -158,6 +157,7 @@ export const links: NavLink[] = [
     },
     {
         title: "Agenda",
-        href: "/agenda"
+        href: "/agenda",
+        hidden: true
     }
 ]
