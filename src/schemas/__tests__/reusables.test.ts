@@ -117,4 +117,29 @@ describe("fileSchema combined mime types", () => {
         })
         expect(z.safeParse(schema, undefined).success).toBe(true)
     })
+
+    it("uses an explicit `mimes` allow-list over the groups", () => {
+        const gif = new File([new Uint8Array([1])], "a.gif", {
+            type: "image/gif"
+        })
+        const svg = new File([new Uint8Array([1])], "a.svg", {
+            type: "image/svg+xml"
+        })
+        const schema = fileSchema({
+            mimes: ["image/png", "image/gif"]
+        })
+        expect(z.safeParse(schema, gif).success).toBe(true)
+        expect(z.safeParse(schema, png).success).toBe(true)
+        expect(z.safeParse(schema, svg).success).toBe(false)
+    })
+
+    it("enforces `maxSize`", () => {
+        const schema = fileSchema({ mimeType: "image", maxSize: 1024 })
+        const big = new File([new Uint8Array([1])], "big.png", {
+            type: "image/png"
+        })
+        Object.defineProperty(big, "size", { value: 2048 })
+        expect(z.safeParse(schema, big).success).toBe(false)
+        expect(z.safeParse(schema, png).success).toBe(true)
+    })
 })

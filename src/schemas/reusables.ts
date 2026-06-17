@@ -14,6 +14,11 @@ type FileSchemaOptions = {
     errorMessage?: string
     typeErrorMessage?: string
     mimeType?: MimeKey | MimeKey[]
+    /** Explicit MIME allow-list; overrides the `mimeType` groups when set. */
+    mimes?: string[]
+    /** Maximum file size in bytes. Adds a server-side size guard when set. */
+    maxSize?: number
+    sizeErrorMessage?: string
 }
 
 type FileSchema = ReturnType<typeof z.file>
@@ -36,6 +41,9 @@ export function fileSchema({
     errorMessage,
     typeErrorMessage,
     mimeType,
+    mimes,
+    maxSize,
+    sizeErrorMessage,
     optional = false
 }: FileSchemaOptions & { optional?: boolean } = {}):
     | FileSchema
@@ -49,7 +57,7 @@ export function fileSchema({
         keys = [mimeType]
     }
 
-    const mimes = keys.flatMap((key) => mimeTypes[key])
+    const allowedMimes = mimes ?? keys.flatMap((key) => mimeTypes[key])
     const onlyPdf = keys.length === 1 && keys[0] === "pdf"
     const onlyImage = keys.length === 1 && keys[0] === "image"
 
@@ -69,15 +77,20 @@ export function fileSchema({
         }
     }
 
-    const schema = z
-        .file({
-            error: errorMessage
-        })
-        .check(
-            z.mime(mimes, {
-                error: typeErrorMessage
-            })
-        )
+    const base = z.file({ error: errorMessage })
+    const mimeCheck = z.mime(allowedMimes, { error: typeErrorMessage })
+
+    const schema =
+        maxSize === undefined
+            ? base.check(mimeCheck)
+            : base.check(
+                  mimeCheck,
+                  z.maxSize(maxSize, {
+                      error:
+                          sizeErrorMessage ??
+                          "Le fichier dépasse la taille maximale autorisée."
+                  })
+              )
 
     return optional ? z.optional(schema) : schema
 }

@@ -1,10 +1,70 @@
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { tryCatch } from "@/lib/utils"
 
 import prisma from "./db"
 
 interface Equipement {
     id: number
     quantity: number
+}
+
+export interface EquipmentNextBooking {
+    ticketId: number
+    association: string
+    eventName: string
+    eventDate: Date
+    quantity: number
+}
+
+/**
+ * Map each equipment id to its soonest upcoming, non-archived booking.
+ * Tickets are scanned in ascending event-date order, so the first one that
+ * references an equipment is its next reservation.
+ */
+export async function getNextBookingsByEquipment(): Promise<
+    Map<number, EquipmentNextBooking>
+> {
+    const tickets = await prisma.bagadAssoTicket.findMany({
+        where: { deleted: null, eventDate: { gte: new Date() } },
+        orderBy: { eventDate: "asc" },
+        select: {
+            id: true,
+            assocation: true,
+            eventName: true,
+            eventDate: true,
+            equipments: true
+        }
+    })
+
+    const bookings = new Map<number, EquipmentNextBooking>()
+    for (const ticket of tickets) {
+        const parsed = tryCatch(
+            () =>
+                JSON.parse(
+                    ticket.equipments?.toString() ?? "[]"
+                ) as Equipement[]
+        )
+        if (!parsed.success || !Array.isArray(parsed.value)) continue
+
+        for (const entry of parsed.value) {
+            if (
+                typeof entry?.id !== "number" ||
+                typeof entry?.quantity !== "number"
+            ) {
+                continue
+            }
+            if (bookings.has(entry.id)) continue
+            bookings.set(entry.id, {
+                ticketId: ticket.id,
+                association: ticket.assocation,
+                eventName: ticket.eventName,
+                eventDate: ticket.eventDate,
+                quantity: entry.quantity
+            })
+        }
+    }
+
+    return bookings
 }
 
 export async function computeTotalDeposit(

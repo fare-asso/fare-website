@@ -1,4 +1,9 @@
 import type { BagadAssoFormData } from "@/components/public/bagadAsso/form-schema"
+import type {
+    BagadAssoEquipment,
+    BagadAssoTicket
+} from "@/generated/prisma/client"
+import type { TAddEquipment, TEditEquipment } from "@/schemas/bagadEquipment"
 
 export function validBagadAssoForm(
     overrides: Partial<BagadAssoFormData> = {}
@@ -19,6 +24,67 @@ export function validBagadAssoForm(
         equipment: JSON.stringify([{ id: 1, quantity: 2 }]),
         termsAccepted: true,
         captchaToken: "token-123",
+        ...overrides
+    }
+}
+
+export function validEquipmentInput(
+    overrides: Partial<TAddEquipment> = {}
+): TAddEquipment {
+    return {
+        name: "Barnum",
+        quantity: 2,
+        deposit: 50,
+        ...overrides
+    }
+}
+
+export function validEditEquipmentInput(
+    overrides: Partial<TEditEquipment> = {}
+): TEditEquipment {
+    return {
+        id: 1,
+        name: "Barnum",
+        quantity: 2,
+        deposit: 50,
+        removeImage: false,
+        ...overrides
+    }
+}
+
+export function bagadAssoEquipmentRecord(
+    overrides: Partial<BagadAssoEquipment> = {}
+): BagadAssoEquipment {
+    return {
+        id: 1,
+        name: "Barnum",
+        imagePath: "old.png",
+        deposit: 50,
+        quantity: 2,
+        ...overrides
+    }
+}
+
+export function bagadAssoTicketRecord(
+    overrides: Partial<BagadAssoTicket> = {}
+): BagadAssoTicket {
+    return {
+        id: 1,
+        assocation: "Asso Test",
+        firstName: "Lea",
+        lastName: "Martin",
+        position: "Presidente",
+        phoneNumber: "0612345678",
+        eventName: "Gala annuel",
+        eventType: "Soirée",
+        eventDate: new Date("2026-09-01T00:00:00Z"),
+        eventAddr: "1 rue de la Paix, 35000 Rennes",
+        estimatedParticipants: 120,
+        creationDate: new Date("2026-01-01T00:00:00Z"),
+        equipments: JSON.stringify([{ id: 1, quantity: 2 }]),
+        associationEmail: "asso@example.com",
+        representativeEmail: "lea@example.com",
+        deleted: null,
         ...overrides
     }
 }

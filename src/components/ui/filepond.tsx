@@ -6,7 +6,7 @@ import type { FilePondFile } from "filepond"
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size"
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
 import FilePondPluginImagePreview from "filepond-plugin-image-preview"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
     FilePond as ReactFilePond,
     type FilePondProps as ReactFilePondProps,
@@ -27,6 +27,16 @@ interface FilePondInputProps extends Omit<
     onChange?: (file: File) => void
     /** Called with every selected File (multi mode). */
     onChangeMultiple?: (files: File[]) => void
+    /**
+     * Existing remote image to preview as an already-uploaded item (edit forms).
+     * Switches the component to edit mode and reports changes via `onEditChange`.
+     */
+    initialImageUrl?: string
+    /**
+     * Edit-mode reporter: `file` is a newly picked replacement (if any), and
+     * `cleared` is true when the existing image was removed without replacement.
+     */
+    onEditChange?: (state: { file?: File; cleared: boolean }) => void
 }
 
 /**
@@ -39,22 +49,64 @@ interface FilePondInputProps extends Omit<
 export function FilePondInput({
     onChange = () => undefined,
     onChangeMultiple,
+    onEditChange,
+    initialImageUrl,
     labelIdle = 'Glissez-déposez un fichier ou <span class="filepond--label-action">parcourir</span>',
     ...props
 }: FilePondInputProps): React.ReactNode {
-    const [files, setFiles] = useState<FilePondFile[]>([])
+    const editMode = initialImageUrl !== undefined
+    const [files, setFiles] = useState<File[]>([])
+    // The existing image, fetched into a File so it lives entirely client-side.
+    // Compared by reference to tell "untouched" from a user replacement.
+    const originalFile = useRef<File | null>(null)
+
+    useEffect(() => {
+        if (initialImageUrl === undefined) return
+        const controller = new AbortController()
+        void fetch(initialImageUrl, { signal: controller.signal })
+            .then((res) =>
+                res.ok ? res.blob() : Promise.reject(new Error("load failed"))
+            )
+            .then((blob) => {
+                const name = initialImageUrl.split("/").pop() || "image"
+                const file = new File([blob], name, { type: blob.type })
+                originalFile.current = file
+                setFiles([file])
+            })
+            .catch(() => undefined)
+        return () => controller.abort()
+    }, [initialImageUrl])
 
     const handleUpdateFiles = useCallback(
         (fileItems: FilePondFile[]) => {
-            setFiles(fileItems)
-            if (onChangeMultiple) {
-                onChangeMultiple(fileItems.map((item) => item.file as File))
+            const nextFiles = fileItems.map((item) => item.file as File)
+            setFiles(nextFiles)
+
+            if (editMode) {
+                const current = nextFiles[0]
+                const original = originalFile.current
+                // Treat the seeded image as unchanged even if FilePond hands
+                // back a cloned File (reference match OR same name/size/type).
+                const isUnchanged =
+                    !!current &&
+                    !!original &&
+                    (current === original ||
+                        (current.name === original.name &&
+                            current.size === original.size &&
+                            current.type === original.type))
+                onEditChange?.({
+                    file: current && !isUnchanged ? current : undefined,
+                    cleared: nextFiles.length === 0
+                })
                 return
             }
-            const file = fileItems[0]?.file as File
-            onChange(file)
+            if (onChangeMultiple) {
+                onChangeMultiple(nextFiles)
+                return
+            }
+            onChange(nextFiles[0] as File)
         },
-        [onChange, onChangeMultiple]
+        [onChange, onChangeMultiple, onEditChange, editMode]
     )
 
     return (
@@ -160,7 +212,7 @@ export function FilePondInput({
                 `}
             </style>
             <ReactFilePond
-                files={files.map((f) => f.file)}
+                files={files}
                 onupdatefiles={handleUpdateFiles}
                 labelIdle={labelIdle}
                 labelInvalidField="Le champ contient des fichiers invalides"
