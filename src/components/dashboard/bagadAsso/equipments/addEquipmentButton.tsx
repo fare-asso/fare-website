@@ -1,196 +1,153 @@
 "use client"
 
+import { useForm } from "@tanstack/react-form"
 import { PlusIcon } from "lucide-react"
-import Image from "next/image"
-import {
-    type ChangeEvent,
-    type MouseEvent,
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useRef,
-    useState
-} from "react"
-import { MdDelete } from "react-icons/md"
+import { useState, useTransition } from "react"
 
 import addEquipmentAction from "@/actions/bagadAsso/addEquipmentAction"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { DialogTrigger } from "@/components/ui/dialog"
+import { DialogForm } from "@/components/ui/dialog-form"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput"
-import NumberInput from "@/components/ui/input/numberInput"
-import { Label } from "@/components/ui/label"
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldLabel
+} from "@/components/ui/field"
+import { FilePondInput } from "@/components/ui/filepond"
+import { NumberField } from "@/components/ui/number-field"
+import { TextField } from "@/components/ui/text-field"
+import {
+    AddEquipmentSchema,
+    type TAddEquipment
+} from "@/schemas/bagadEquipment"
 
-import LoadingRing from "../../loadingRing"
+const MAX_FILE_SIZE = 25 * 1024 * 1024
+
+const emptyForm: TAddEquipment = {
+    name: "",
+    quantity: 1,
+    deposit: 0,
+    image: undefined
+}
 
 export default function AddEquipmentButton() {
-    const [formState, formAction, pending] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(addEquipmentAction, undefined)
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
+    const [open, setOpen] = useState(false)
+    const [isPending, submit] = useTransition()
+    const [submitError, setSubmitError] = useState<string | null>(null)
 
-    const [file, setFile] = useState<string | undefined>(undefined)
-
-    const inputFileRef = useRef<HTMLInputElement>(null)
-
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault()
-
-        // if there is a file
-        if (e.target.files && e.target.files.length > 0) {
-            const file = e.target.files[0]
-            setFile(URL.createObjectURL(file))
+    const form = useForm({
+        defaultValues: emptyForm,
+        validators: {
+            onChange: AddEquipmentSchema,
+            onSubmit: AddEquipmentSchema
+        },
+        // oxlint-disable-next-line require-await -- submission runs inside a transition
+        onSubmit: async ({ value }) => {
+            setSubmitError(null)
+            submit(async () => {
+                const res = await addEquipmentAction(value)
+                if (res.success) {
+                    setOpen(false)
+                    form.reset()
+                } else {
+                    setSubmitError(res.error)
+                }
+            })
         }
-    }
-
-    const handleDeleteImage = (e: MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-
-        setFile(undefined)
-        if (inputFileRef.current) {
-            inputFileRef.current.value = ""
-        }
-    }
-
-    const handleOpenChange = useCallback((open: boolean) => {
-        setDialogIsOpen(open)
-        if (!open) {
-            // Réinitialiser le formulaire lorsque le dialogue est fermé
-        }
-    }, [])
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-        }
-    }, [formState, handleOpenChange])
-
-    // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        const formData = new FormData(event.currentTarget)
-
-        startTransition(() => {
-            formAction(formData)
-        })
-    }
+    })
 
     return (
-        <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
-            {/* Trigger */}
-            <DialogTrigger asChild>
-                <Button>
-                    <PlusIcon />
-                    Ajouter du matériel
-                </Button>
-            </DialogTrigger>
-
-            {/* Content */}
-            <DialogContent className="sm:w-[90%] sm:max-w-[60%] md:max-w-[50%] lg:max-w-[30%]">
-                <DialogHeader>
-                    <DialogTitle>Nouveau matériel</DialogTitle>
-                    <DialogDescription>
-                        Ceci est le formulaire d'ajout des nouveaux équipements
-                        du projet BagadAsso
-                    </DialogDescription>
-                </DialogHeader>
-
-                {/* Form */}
-                <form
-                    onSubmit={handleSubmit}
-                    id="addEquipmentForm"
-                    className="space-y-3 [&_label]:mb-2"
-                >
-                    {/* Name */}
-                    <div>
-                        <Label htmlFor="name">Nom</Label>
-                        <Input
-                            type="text"
-                            id="name"
-                            name="name"
-                            placeholder="Nom de l'équipement"
-                        />
-                    </div>
-
-                    {/* Quantity */}
-                    <div>
-                        <Label htmlFor="quantity">Quantité</Label>
-                        <NumberInput name="quantity" min={0} />
-                    </div>
-
-                    {/* Guarantee */}
-                    <div>
-                        <Label htmlFor="guarantee">Caution (par objet)</Label>
-                        <CurrencyAmountInput name="guarantee" currency="€" />
-                    </div>
-
-                    {/* Picture */}
-                    <div>
-                        <Label htmlFor="equipment-picture">
-                            Image de l'équipement
-                        </Label>
-                        {file && (
-                            <div className="relative w-fit">
-                                <Image
-                                    width={300}
-                                    height={300}
-                                    src={file}
-                                    alt="Photo du matériel"
-                                    className="my-2 aspect-auto h-48 rounded-lg border outline outline-offset-1"
-                                />
-                                <Button
-                                    className="absolute top-0 right-0 m-1 p-3"
-                                    variant="destructive"
-                                    onClick={handleDeleteImage}
-                                >
-                                    <MdDelete size="20" />
-                                </Button>
-                            </div>
-                        )}
-                        <Input
-                            type="file"
-                            ref={inputFileRef}
-                            id="equipment-picture"
-                            name="equipment-picture"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
-                    </div>
-
-                    {formState?.error ? (
-                        <Alert variant="destructive">
-                            <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
-                        </Alert>
-                    ) : null}
-                </form>
-
-                <DialogFooter>
-                    <Button
-                        type="submit"
-                        form="addEquipmentForm"
-                        className="mt-4"
-                        disabled={pending}
-                    >
-                        {pending ? <LoadingRing /> : null} Ajouter
+        <DialogForm
+            open={open}
+            onOpenChange={setOpen}
+            trigger={
+                <DialogTrigger asChild>
+                    <Button>
+                        <PlusIcon />
+                        <span>Ajouter du matériel</span>
                     </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </DialogTrigger>
+            }
+            title="Nouveau matériel"
+            description="Ajoutez un équipement disponible à la location pour le projet Bagad'Asso."
+            formId="addEquipmentForm"
+            onSubmit={() => form.handleSubmit()}
+            isPending={isPending}
+            submitError={submitError}
+            submitLabel="Ajouter"
+        >
+            <form.Field
+                name="name"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label="Nom"
+                        placeholder="ex. Barnum 3×6m"
+                        error="Le nom est requis."
+                    />
+                )}
+            />
+
+            <div className="grid grid-cols-1 gap-7 @sm/field-group:grid-cols-2 @sm/field-group:gap-4">
+                <form.Field
+                    name="quantity"
+                    children={(field) => (
+                        <NumberField
+                            field={field}
+                            label="Quantité"
+                            min={0}
+                            error="Quantité invalide."
+                        />
+                    )}
+                />
+
+                <form.Field
+                    name="deposit"
+                    children={(field) => (
+                        <NumberField
+                            field={field}
+                            label="Caution (par objet)"
+                            min={0}
+                            step={0.01}
+                            suffix="€"
+                            error="Caution invalide."
+                        />
+                    )}
+                />
+            </div>
+
+            <form.Field
+                name="image"
+                children={(field) => {
+                    const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                        <Field data-invalid={isInvalid}>
+                            <FieldLabel htmlFor={field.name}>
+                                Image de l'équipement
+                            </FieldLabel>
+                            <FieldDescription>
+                                Optionnelle. Format : PNG, JPG, GIF, WebP.
+                                Maximum {MAX_FILE_SIZE / (1024 * 1024)} Mo.
+                            </FieldDescription>
+                            <FilePondInput
+                                maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
+                                acceptedFileTypes={[
+                                    "image/png",
+                                    "image/jpeg",
+                                    "image/gif",
+                                    "image/webp"
+                                ]}
+                                onChange={(file) => field.handleChange(file)}
+                            />
+                            {isInvalid && (
+                                <FieldError errors={field.state.meta.errors} />
+                            )}
+                        </Field>
+                    )
+                }}
+            />
+        </DialogForm>
     )
 }

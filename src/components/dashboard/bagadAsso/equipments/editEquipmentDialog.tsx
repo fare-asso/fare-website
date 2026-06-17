@@ -1,38 +1,29 @@
 "use client"
 
+import { useForm } from "@tanstack/react-form"
 import { PencilIcon } from "lucide-react"
-import Image from "next/image"
-import {
-    type ChangeEvent,
-    type MouseEvent,
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useRef,
-    useState
-} from "react"
-import { MdDelete } from "react-icons/md"
+import { useState, useTransition } from "react"
 
 import editEquipmentAction from "@/actions/bagadAsso/editEquipmentAction"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { DialogTrigger } from "@/components/ui/dialog"
+import { DialogForm } from "@/components/ui/dialog-form"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import CurrencyAmountInput from "@/components/ui/input/currencyAmountInput"
-import NumberInput from "@/components/ui/input/numberInput"
-import { Label } from "@/components/ui/label"
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldLabel
+} from "@/components/ui/field"
+import { FilePondInput } from "@/components/ui/filepond"
+import { NumberField } from "@/components/ui/number-field"
+import { TextField } from "@/components/ui/text-field"
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
+import {
+    EditEquipmentSchema,
+    type TEditEquipment
+} from "@/schemas/bagadEquipment"
 
-import LoadingRing from "../../loadingRing"
+const MAX_FILE_SIZE = 25 * 1024 * 1024
 
 export default function EditEquipmentDialog({
     equipment,
@@ -41,219 +32,144 @@ export default function EditEquipmentDialog({
     equipment: BagadAssoEquipment
     currentImageUrl: string | null
 }) {
-    const [formState, formAction, pending] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(editEquipmentAction, undefined)
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
+    const [open, setOpen] = useState(false)
+    const [isPending, submit] = useTransition()
+    const [submitError, setSubmitError] = useState<string | null>(null)
 
-    const [file, setFile] = useState<string | undefined>(undefined)
-    const [keepCurrentImage, setKeepCurrentImage] =
-        useState<boolean>(!!currentImageUrl)
-
-    const inputFileRef = useRef<HTMLInputElement>(null)
-
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault()
-
-        if (e.target.files && e.target.files.length > 0) {
-            const file = e.target.files[0]
-            setFile(URL.createObjectURL(file))
-            setKeepCurrentImage(false)
-        }
-    }
-
-    const handleDeleteImage = (e: MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-
-        setFile(undefined)
-        setKeepCurrentImage(false)
-        if (inputFileRef.current) {
-            inputFileRef.current.value = ""
-        }
-    }
-
-    const handleDeleteCurrentImage = (e: MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-        setKeepCurrentImage(false)
-    }
-
-    const handleOpenChange = useCallback(
-        (open: boolean) => {
-            setDialogIsOpen(open)
-            if (!open) {
-                // Reset form state when dialog is closed
-                setFile(undefined)
-                setKeepCurrentImage(!!currentImageUrl)
-                if (inputFileRef.current) {
-                    inputFileRef.current.value = ""
-                }
-            }
+    const form = useForm({
+        defaultValues: {
+            id: equipment.id,
+            name: equipment.name,
+            quantity: equipment.quantity,
+            deposit: equipment.deposit,
+            image: undefined,
+            removeImage: false
+        } as TEditEquipment,
+        validators: {
+            onChange: EditEquipmentSchema,
+            onSubmit: EditEquipmentSchema
         },
-        [currentImageUrl]
-    )
-
-    // Close dialog when action succeeds
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
+        // oxlint-disable-next-line require-await -- submission runs inside a transition
+        onSubmit: async ({ value }) => {
+            setSubmitError(null)
+            submit(async () => {
+                const res = await editEquipmentAction(value)
+                if (res.success) {
+                    setOpen(false)
+                } else {
+                    setSubmitError(res.error)
+                }
+            })
         }
-    }, [formState, handleOpenChange])
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        const formData = new FormData(event.currentTarget)
-        formData.set("equipmentId", equipment.id.toString())
-
-        // If we're removing the current image and not uploading a new one
-        if (!keepCurrentImage && !file) {
-            formData.set("removeImage", "true")
-        }
-
-        startTransition(() => {
-            formAction(formData)
-        })
-    }
+    })
 
     return (
-        <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
-                <Button variant="outline" size="icon" className="h-8 w-8">
-                    <PencilIcon className="h-4 w-4" />
-                    <span className="sr-only">Modifier</span>
-                </Button>
-            </DialogTrigger>
-
-            <DialogContent className="sm:w-[90%] sm:max-w-[60%] md:max-w-[50%] lg:max-w-[30%]">
-                <DialogHeader>
-                    <DialogTitle>Modifier l'équipement</DialogTitle>
-                    <DialogDescription>
-                        Modifiez les informations de l'équipement "
-                        {equipment.name}"
-                    </DialogDescription>
-                </DialogHeader>
-
-                <form
-                    onSubmit={handleSubmit}
-                    id={`editEquipmentForm-${equipment.id}`}
-                    className="space-y-3 [&_label]:mb-2"
-                >
-                    {/* Name */}
-                    <div>
-                        <Label htmlFor={`name-${equipment.id}`}>Nom</Label>
-                        <Input
-                            type="text"
-                            id={`name-${equipment.id}`}
-                            name="name"
-                            placeholder="Nom de l'équipement"
-                            defaultValue={equipment.name}
-                        />
-                    </div>
-
-                    {/* Quantity */}
-                    <div>
-                        <Label htmlFor={`quantity-${equipment.id}`}>
-                            Quantité
-                        </Label>
-                        <NumberInput
-                            name="quantity"
-                            min={0}
-                            defaultValue={equipment.quantity}
-                        />
-                    </div>
-
-                    {/* Guarantee */}
-                    <div>
-                        <Label htmlFor={`guarantee-${equipment.id}`}>
-                            Caution (par objet)
-                        </Label>
-                        <CurrencyAmountInput
-                            name="guarantee"
-                            currency="€"
-                            defaultValue={equipment.deposit}
-                        />
-                    </div>
-
-                    {/* Picture */}
-                    <div>
-                        <Label htmlFor={`equipment-picture-${equipment.id}`}>
-                            Image de l'équipement
-                        </Label>
-
-                        {/* Current image */}
-                        {keepCurrentImage && currentImageUrl && (
-                            <div className="relative w-fit">
-                                <Image
-                                    width={300}
-                                    height={300}
-                                    src={currentImageUrl}
-                                    alt={`Photo de ${equipment.name}`}
-                                    className="my-2 aspect-auto h-48 rounded-lg border outline outline-offset-1"
-                                />
-                                <Button
-                                    className="absolute top-0 right-0 m-1 p-3"
-                                    variant="destructive"
-                                    onClick={handleDeleteCurrentImage}
-                                    type="button"
-                                >
-                                    <MdDelete size="20" />
-                                </Button>
-                            </div>
-                        )}
-
-                        {/* New image preview */}
-                        {file && !keepCurrentImage && (
-                            <div className="relative w-fit">
-                                <Image
-                                    width={300}
-                                    height={300}
-                                    src={file}
-                                    alt="Nouvelle photo du matériel"
-                                    className="my-2 aspect-auto h-48 rounded-lg border outline outline-offset-1"
-                                />
-                                <Button
-                                    className="absolute top-0 right-0 m-1 p-3"
-                                    variant="destructive"
-                                    onClick={handleDeleteImage}
-                                    type="button"
-                                >
-                                    <MdDelete size="20" />
-                                </Button>
-                            </div>
-                        )}
-
-                        <Input
-                            type="file"
-                            ref={inputFileRef}
-                            id={`equipment-picture-${equipment.id}`}
-                            name="equipment-picture"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
-                    </div>
-
-                    {formState?.error ? (
-                        <Alert variant="destructive">
-                            <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
-                        </Alert>
-                    ) : null}
-                </form>
-
-                <DialogFooter>
-                    <Button
-                        type="submit"
-                        form={`editEquipmentForm-${equipment.id}`}
-                        className="mt-4"
-                        disabled={pending}
-                    >
-                        {pending ? <LoadingRing /> : null} Enregistrer
+        <DialogForm
+            open={open}
+            onOpenChange={(next) => {
+                setOpen(next)
+                if (!next) {
+                    setSubmitError(null)
+                    form.reset()
+                }
+            }}
+            trigger={
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="icon" className="size-8">
+                        <PencilIcon className="size-4" />
+                        <span className="sr-only">Modifier</span>
                     </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </DialogTrigger>
+            }
+            title="Modifier l'équipement"
+            description={`Modifiez les informations de l'équipement "${equipment.name}".`}
+            formId={`editEquipmentForm-${equipment.id}`}
+            onSubmit={() => form.handleSubmit()}
+            isPending={isPending}
+            submitError={submitError}
+            submitLabel="Enregistrer"
+        >
+            <form.Field
+                name="name"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label="Nom"
+                        placeholder="Nom de l'équipement"
+                        error="Le nom est requis."
+                    />
+                )}
+            />
+
+            <div className="grid grid-cols-1 gap-7 @sm/field-group:grid-cols-2 @sm/field-group:gap-4">
+                <form.Field
+                    name="quantity"
+                    children={(field) => (
+                        <NumberField
+                            field={field}
+                            label="Quantité"
+                            min={0}
+                            error="Quantité invalide."
+                        />
+                    )}
+                />
+
+                <form.Field
+                    name="deposit"
+                    children={(field) => (
+                        <NumberField
+                            field={field}
+                            label="Caution (par objet)"
+                            min={0}
+                            step={0.01}
+                            suffix="€"
+                            error="Caution invalide."
+                        />
+                    )}
+                />
+            </div>
+
+            <form.Field
+                name="image"
+                children={(field) => {
+                    const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                        <Field data-invalid={isInvalid}>
+                            <FieldLabel htmlFor={field.name}>
+                                Image de l'équipement{" "}
+                                <span className="text-muted-foreground">
+                                    (optionnelle)
+                                </span>
+                            </FieldLabel>
+                            <FieldDescription>
+                                Retirez l'image pour la supprimer, ou déposez-en
+                                une nouvelle pour la remplacer. Format : PNG,
+                                JPG, GIF, WebP. Maximum{" "}
+                                {MAX_FILE_SIZE / (1024 * 1024)} Mo.
+                            </FieldDescription>
+                            <FilePondInput
+                                initialImageUrl={currentImageUrl ?? undefined}
+                                maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
+                                acceptedFileTypes={[
+                                    "image/png",
+                                    "image/jpeg",
+                                    "image/gif",
+                                    "image/webp"
+                                ]}
+                                onChange={(file) => field.handleChange(file)}
+                                onEditChange={({ file, cleared }) => {
+                                    field.handleChange(file)
+                                    form.setFieldValue("removeImage", cleared)
+                                }}
+                            />
+                            {isInvalid && (
+                                <FieldError errors={field.state.meta.errors} />
+                            )}
+                        </Field>
+                    )
+                }}
+            />
+        </DialogForm>
     )
 }

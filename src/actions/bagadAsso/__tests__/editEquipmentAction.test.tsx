@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { validEditEquipmentInput } from "@/test/factories/bagadAsso"
 import { imageFile } from "@/test/factories/files"
 import { mockUser } from "@/test/factories/user"
 import {
@@ -37,21 +38,10 @@ vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import editEquipmentAction from "../editEquipmentAction"
 
-const fd = (o: Record<string, string | File> = {}): FormData => {
-    const f = new FormData()
-    f.set("equipmentId", "1")
-    f.set("name", "Tente")
-    f.set("quantity", "5")
-    f.set("guarantee", "100")
-    f.set("equipment-picture", imageFile("tent.png"))
-    for (const [k, v] of Object.entries(o)) f.set(k, v)
-    return f
-}
-
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:bagad-equipment"]))
-    h.findUnique.mockResolvedValue({ id: 1, imagePath: "old.png" })
-    h.upload.mockResolvedValue({ data: { path: "new.png" }, error: null })
+    h.findUnique.mockResolvedValue({ imagePath: "old.png" })
+    h.upload.mockResolvedValue({ path: "new.png" })
     h.remove.mockResolvedValue({ error: null })
     h.update.mockResolvedValue({ id: 1 })
 })
@@ -59,7 +49,8 @@ beforeEach(() => {
 describe("editEquipmentAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await editEquipmentAction(undefined, fd())).toEqual({
+        expect(await editEquipmentAction(validEditEquipmentInput())).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -67,54 +58,85 @@ describe("editEquipmentAction", () => {
 
     it("requires the edit:bagad-equipment permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await editEquipmentAction(undefined, fd())
-        expect(res.error).toMatch(/permission/)
+        const res = await editEquipmentAction(validEditEquipmentInput())
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.update).not.toHaveBeenCalled()
     })
 
-    it("rejects a payload missing required fields", async () => {
-        const res = await editEquipmentAction(undefined, fd({ name: "" }))
-        expect(res).toEqual({
-            error: "Un ou plusieurs champs ne sont pas remplis."
-        })
-    })
-
-    it("rejects a non-numeric id", async () => {
+    it("rejects an invalid payload", async () => {
         const res = await editEquipmentAction(
-            undefined,
-            fd({ equipmentId: "abc" })
+            validEditEquipmentInput({ name: "" })
         )
-        expect(res).toEqual({ error: "ID de l'équipement invalide." })
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.update).not.toHaveBeenCalled()
     })
 
     it("errors when the equipment does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
-        expect(await editEquipmentAction(undefined, fd())).toEqual({
+        expect(await editEquipmentAction(validEditEquipmentInput())).toEqual({
+            success: false,
             error: "Équipement non trouvé."
         })
+        expect(h.update).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        const res = await editEquipmentAction(undefined, fd())
+        const res = await editEquipmentAction(validEditEquipmentInput())
         expect(res).toEqual({
+            success: false,
             error: "Echec de la modification de l'équipement. Veuillez réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("updates the equipment and revalidates on the happy path", async () => {
-        const res = await editEquipmentAction(undefined, fd())
+    it("keeps the current image when none is provided", async () => {
+        const res = await editEquipmentAction(validEditEquipmentInput())
         expect(res).toEqual({ success: true })
+        expect(h.upload).not.toHaveBeenCalled()
+        expect(h.remove).not.toHaveBeenCalled()
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 1 },
-            data: expect.objectContaining({
-                name: "Tente",
-                deposit: 100,
-                quantity: 5,
-                imagePath: "new.png"
-            })
+            data: {
+                name: "Barnum",
+                deposit: 50,
+                quantity: 2,
+                imagePath: "old.png"
+            }
         })
         expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
+        expect(h.revalidatePath).toHaveBeenCalledWith("/projets/bagad-asso")
+    })
+
+    it("uploads a new image and removes the old one on replace", async () => {
+        const res = await editEquipmentAction(
+            validEditEquipmentInput({ image: imageFile("tent.png") })
+        )
+        expect(res).toEqual({ success: true })
+        expect(h.upload).toHaveBeenCalledOnce()
+        expect(h.remove).toHaveBeenCalledWith(["old.png"])
+        expect(h.update).toHaveBeenCalledWith({
+            where: { id: 1 },
+            data: expect.objectContaining({ imagePath: "new.png" })
+        })
+    })
+
+    it("removes the current image when removeImage is set", async () => {
+        const res = await editEquipmentAction(
+            validEditEquipmentInput({ removeImage: true })
+        )
+        expect(res).toEqual({ success: true })
+        expect(h.upload).not.toHaveBeenCalled()
+        expect(h.remove).toHaveBeenCalledWith(["old.png"])
+        expect(h.update).toHaveBeenCalledWith({
+            where: { id: 1 },
+            data: expect.objectContaining({ imagePath: null })
+        })
     })
 })
