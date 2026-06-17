@@ -65,20 +65,20 @@ Always use `pnpm`, never use `npm`
 - **Use `export type` for TypeScript types and interfaces:** `export type MyType = { ... }`
 - **Use ES modules:** `import ... from "..."` (not CommonJS `require`)
 - Use Node.js import protocol for standard library: `import fs from "node:fs"`
-- Auto-organize imports with Biome (uses `useImportType`, `useExportType`)
+- Imports are auto-sorted by oxfmt (`sortImports`); oxlint enforces type-only imports/exports (`consistent-type-imports`, `consistent-type-exports`)
 - Path aliases: `@/` for `src/` (configured in tsconfig.json)
 
 ### Formatting & Linting
 
-- **Biome** is the source of truth (replaces ESLint and Prettier)
-- Auto-format with `pnpm lint` before committing
-- **Line width:** 80 characters (Biome enforces via `lineWidth`)
-- **Indentation:** 4 spaces (not tabs)
-- **No semicolons** (Biome removes via `semicolons: asNeeded`)
-- **Quote style:** Double quotes for JSX, double quotes for strings
+- **oxlint** (linting) and **oxfmt** (formatting) are the source of truth (replace ESLint, Prettier, and Biome). Config: `oxlint.config.ts`, `oxfmt.config.ts`
+- Format with `pnpm format` (oxfmt) and lint-fix with `pnpm lint` (oxlint) before committing
+- **Line width:** 80 characters (oxfmt `printWidth`)
+- **Indentation:** 4 spaces (oxfmt `tabWidth: 4`, `useTabs: false`)
+- **No semicolons** (oxfmt `semi: false`)
+- **Quote style:** Double quotes for JSX and strings (oxfmt `singleQuote: false`, `jsxSingleQuote: false`)
 - **Naming:** camelCase for variables/functions, PascalCase for components/types, CONSTANT_CASE for constants
-- Biome checks accessibility rules (a11y) and Next.js patterns
-- Tailwind classes auto-sorted via `useSortedClasses` rule (functions: `cn`, `twMerge`, `cva`)
+- oxlint checks accessibility (a11y) and Next.js patterns
+- Tailwind classes auto-sorted by oxfmt (`sortTailwindcss`, functions: `cn`, `twMerge`, `cva`)
 
 ### Component Patterns
 
@@ -570,7 +570,7 @@ await sendEmail({ to: "...", subject: "...", html: "..." })
 Also rely on:
 
 - TypeScript type checking (`pnpm run check:types`)
-- Biome linting (`pnpm run check:lint`)
+- oxlint linting (`pnpm run check:lint`)
 - Manual testing in dev server (`pnpm run dev`)
 
 ---
@@ -581,7 +581,8 @@ Also rely on:
 
 ```bash
 pnpm run check:types      # Ensure no TypeScript errors
-pnpm run check:lint       # Ensure Biome rules pass
+pnpm run check:lint       # Ensure oxlint rules pass
+pnpm run check:format     # Ensure oxfmt formatting is clean
 pnpm run knip             # Check for unused code/imports
 pnpm test                 # Run node + browser test suites
 pnpm run build            # Test production build
@@ -594,9 +595,9 @@ pnpm run build            # Test production build
 - ✅ Server actions use Zod v4 validation
 - ✅ Permissions checked server-side
 - ✅ Migrations tested locally
-- ✅ Code formatted with `pnpm run lint`
+- ✅ Code formatted with `pnpm run format`
 - ✅ No unused imports (checked by Knip)
-- ✅ Tailwind classes sorted correctly (done by biomejs)
+- ✅ Tailwind classes sorted correctly (done by oxfmt)
 - ✅ Database types regenerated (automatic)
 
 ---
@@ -605,7 +606,7 @@ pnpm run build            # Test production build
 
 **On every push/PR (`.github/workflows/checks.yaml`):**
 
-1. `quality` job: Biome linting → TypeScript type checking → Knip
+1. `quality` job: oxlint (`check:lint`) → TypeScript type checking → oxfmt formatting check (`check:format`) → Knip
 2. `test` job: `pnpm run test:node`, then install Playwright Chromium and
    `pnpm run test:browser`
 
@@ -632,7 +633,7 @@ Both jobs must be green to merge.
 | `pnpm run lint`        | Fix linting & formatting issues         |
 | `pnpm run check:types` | Type check only (no fixes)              |
 | `pnpm run knip`        | Find unused code                        |
-| `pnpm run format`      | Format code (Prettier)                  |
+| `pnpm run format`      | Format code (oxfmt)                     |
 | `pnpm run email:dev`   | Preview email templates                 |
 
 ---

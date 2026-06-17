@@ -22,10 +22,10 @@ export default function TabSwitcher({
                 <TabsTrigger value="active">Actives</TabsTrigger>
                 <TabsTrigger value="archived">Archivées</TabsTrigger>
             </TabsList>
-            <TabsContent value="active" className="h-0 w-full">
+            <TabsContent value="active" className="w-full">
                 {React.Children.toArray(children)[0]}
             </TabsContent>
-            <TabsContent value="archived" className="h-0 w-full">
+            <TabsContent value="archived" className="w-full">
                 {React.Children.toArray(children)[1]}
             </TabsContent>
         </Tabs>
