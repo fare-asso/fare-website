@@ -84,11 +84,18 @@ export function FilePondInput({
 
             if (editMode) {
                 const current = nextFiles[0]
+                const original = originalFile.current
+                // Treat the seeded image as unchanged even if FilePond hands
+                // back a cloned File (reference match OR same name/size/type).
+                const isUnchanged =
+                    !!current &&
+                    !!original &&
+                    (current === original ||
+                        (current.name === original.name &&
+                            current.size === original.size &&
+                            current.type === original.type))
                 onEditChange?.({
-                    file:
-                        current && current !== originalFile.current
-                            ? current
-                            : undefined,
+                    file: current && !isUnchanged ? current : undefined,
                     cleared: nextFiles.length === 0
                 })
                 return

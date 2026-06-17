@@ -2,10 +2,14 @@ import { type } from "arktype"
 
 import { fileSchema } from "@/schemas/reusables"
 
+const MAX_IMAGE_SIZE = 25 * 1024 * 1024
+
 const imageSchemaOptions = {
-    mimeType: "image" as const,
+    mimes: ["image/png", "image/jpeg", "image/gif", "image/webp"],
     errorMessage: "Veuillez fournir une image.",
-    typeErrorMessage: "L'image doit être au format PNG, JPG, WebP ou SVG."
+    typeErrorMessage: "L'image doit être au format PNG, JPG, GIF ou WebP.",
+    maxSize: MAX_IMAGE_SIZE,
+    sizeErrorMessage: "L'image ne doit pas dépasser 25 Mo."
 }
 
 export const AddEquipmentSchema = type({

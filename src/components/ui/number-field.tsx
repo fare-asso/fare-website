@@ -2,7 +2,7 @@
 
 import type { AnyFieldApi } from "@tanstack/react-form"
 import { MinusIcon, PlusIcon } from "lucide-react"
-import type { ReactNode } from "react"
+import { type ReactNode, useState } from "react"
 
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { clamp } from "@/helpers/math"
@@ -43,8 +43,25 @@ export function NumberField({
     const value = Number(field.state.value ?? 0)
     const hasSteppers = suffix === undefined
 
-    const set = (next: number): void =>
+    // `draft` (when non-null) lets the user freely type partial input such as
+    // "" or "0." without it being clamped/parsed away mid-keystroke.
+    const [draft, setDraft] = useState<string | null>(null)
+    const display = draft ?? (field.state.value ?? "").toString()
+
+    // Commit a final, clamped value (steppers and on blur).
+    const commit = (next: number): void => {
+        setDraft(null)
         field.handleChange(clamp(Number.isNaN(next) ? min : next, min, max))
+    }
+
+    // Live typing: keep the raw text, push a parsed number through for
+    // validation, but don't clamp until blur.
+    const handleType = (raw: string): void => {
+        setDraft(raw)
+        if (raw === "") return
+        const parsed = Number(raw)
+        if (!Number.isNaN(parsed)) field.handleChange(parsed)
+    }
 
     return (
         <Field data-invalid={isInvalid} className={className}>
@@ -60,7 +77,7 @@ export function NumberField({
                     <button
                         type="button"
                         aria-label="Diminuer"
-                        onClick={() => set(value - step)}
+                        onClick={() => commit(value - step)}
                         disabled={value <= min}
                         className="text-muted-foreground hover:bg-muted hover:text-foreground flex aspect-square h-full items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40"
                     >
@@ -75,15 +92,14 @@ export function NumberField({
                     min={min}
                     max={max}
                     step={step}
-                    value={Number.isNaN(value) ? "" : value}
+                    value={display}
                     placeholder={placeholder}
                     aria-invalid={isInvalid}
-                    onBlur={field.handleBlur}
-                    onChange={(e) =>
-                        set(
-                            e.target.value === "" ? min : Number(e.target.value)
-                        )
-                    }
+                    onBlur={() => {
+                        commit(draft === null ? value : Number(draft))
+                        field.handleBlur()
+                    }}
+                    onChange={(e) => handleType(e.target.value)}
                     className={cn(
                         "h-full min-w-0 flex-1 [appearance:textfield] bg-transparent text-sm outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
                         hasSteppers ? "border-x text-center" : "px-3"
@@ -93,7 +109,7 @@ export function NumberField({
                     <button
                         type="button"
                         aria-label="Augmenter"
-                        onClick={() => set(value + step)}
+                        onClick={() => commit(value + step)}
                         disabled={value >= max}
                         className="text-muted-foreground hover:bg-muted hover:text-foreground flex aspect-square h-full items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40"
                     >

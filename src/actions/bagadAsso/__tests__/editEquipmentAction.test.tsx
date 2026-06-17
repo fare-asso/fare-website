@@ -86,7 +86,7 @@ describe("editEquipmentAction", () => {
         expect(h.update).not.toHaveBeenCalled()
     })
 
-    it("captures and fails when the db update throws", async () => {
+    it("captures and fails when the db update throws, keeping the old image", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         const res = await editEquipmentAction(validEditEquipmentInput())
         expect(res).toEqual({
@@ -94,6 +94,22 @@ describe("editEquipmentAction", () => {
             error: "Echec de la modification de l'équipement. Veuillez réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
+        // No new upload and the existing image must stay intact.
+        expect(h.remove).not.toHaveBeenCalled()
+    })
+
+    it("rolls back the new upload when the db update throws on replace", async () => {
+        h.update.mockRejectedValue(new Error("db down"))
+        const res = await editEquipmentAction(
+            validEditEquipmentInput({ image: imageFile("tent.png") })
+        )
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de la modification de l'équipement. Veuillez réessayer."
+        })
+        // The orphaned upload is removed; the old image is left untouched.
+        expect(h.remove).toHaveBeenCalledWith(["new.png"])
+        expect(h.remove).not.toHaveBeenCalledWith(["old.png"])
     })
 
     it("keeps the current image when none is provided", async () => {

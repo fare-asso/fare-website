@@ -46,14 +46,20 @@ export async function getNextBookingsByEquipment(): Promise<
         )
         if (!parsed.success || !Array.isArray(parsed.value)) continue
 
-        for (const { id, quantity } of parsed.value) {
-            if (bookings.has(id)) continue
-            bookings.set(id, {
+        for (const entry of parsed.value) {
+            if (
+                typeof entry?.id !== "number" ||
+                typeof entry?.quantity !== "number"
+            ) {
+                continue
+            }
+            if (bookings.has(entry.id)) continue
+            bookings.set(entry.id, {
                 ticketId: ticket.id,
                 association: ticket.assocation,
                 eventName: ticket.eventName,
                 eventDate: ticket.eventDate,
-                quantity
+                quantity: entry.quantity
             })
         }
     }

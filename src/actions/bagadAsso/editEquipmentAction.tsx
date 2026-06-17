@@ -54,10 +54,12 @@ async function editEquipmentActionImpl(input: TEditEquipment): Promise<Result> {
     }
 
     const supabase = createAdminClient()
-    let imagePath = current.value.imagePath
+    const oldImagePath = current.value.imagePath
+    let imagePath = oldImagePath
+    // Track a fresh upload so we can roll it back if the DB write fails.
+    let uploadedPath: string | null = null
 
     if (data.image) {
-        // Replace: upload the new image, then drop the previous one
         const fileExt = data.image.name.split(".").pop() ?? "bin"
         const newPath = `${randomUUID()}.${fileExt}`
         const upload = await tryCatch(
@@ -69,21 +71,9 @@ async function editEquipmentActionImpl(input: TEditEquipment): Promise<Result> {
             captureActionError(upload.error)
             return { success: false, error: "Échec de l'upload de l'image." }
         }
-        if (current.value.imagePath) {
-            await tryCatch(
-                supabase.storage
-                    .from("equipment-pictures")
-                    .remove([current.value.imagePath])
-            )
-        }
         imagePath = upload.value.path
-    } else if (data.removeImage && current.value.imagePath) {
-        // Remove without replacement
-        await tryCatch(
-            supabase.storage
-                .from("equipment-pictures")
-                .remove([current.value.imagePath])
-        )
+        uploadedPath = upload.value.path
+    } else if (data.removeImage) {
         imagePath = null
     }
 
@@ -100,10 +90,25 @@ async function editEquipmentActionImpl(input: TEditEquipment): Promise<Result> {
     )
     if (!updated.success) {
         captureActionError(updated.error)
+        // Roll back the orphaned upload; leave the existing image intact.
+        if (uploadedPath) {
+            await tryCatch(
+                supabase.storage
+                    .from("equipment-pictures")
+                    .remove([uploadedPath])
+            )
+        }
         return {
             success: false,
             error: "Echec de la modification de l'équipement. Veuillez réessayer."
         }
+    }
+
+    // The write succeeded — drop the previous image if it is no longer used.
+    if (oldImagePath && oldImagePath !== imagePath) {
+        await tryCatch(
+            supabase.storage.from("equipment-pictures").remove([oldImagePath])
+        )
     }
 
     revalidatePath("/dashboard/bagadAsso")

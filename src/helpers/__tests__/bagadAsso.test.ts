@@ -92,4 +92,21 @@ describe("getNextBookingsByEquipment", () => {
         expect(bookings.size).toBe(1)
         expect(bookings.get(7)?.quantity).toBe(3)
     })
+
+    it("skips entries with a malformed shape", async () => {
+        h.findMany.mockResolvedValue([
+            bagadAssoTicketRecord({
+                equipments: JSON.stringify([
+                    { quantity: 2 }, // missing id
+                    { id: 5 }, // missing quantity
+                    { id: 8, quantity: 1 } // valid
+                ])
+            })
+        ])
+
+        const bookings = await getNextBookingsByEquipment()
+
+        expect(bookings.size).toBe(1)
+        expect(bookings.get(8)?.quantity).toBe(1)
+    })
 })

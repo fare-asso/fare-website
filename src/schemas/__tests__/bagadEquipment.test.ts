@@ -17,6 +17,29 @@ describe("AddEquipmentSchema", () => {
         expect(out instanceof type.errors).toBe(false)
     })
 
+    it("accepts a GIF image", () => {
+        const out = AddEquipmentSchema({
+            ...base,
+            image: imageFile("a.gif", "image/gif")
+        })
+        expect(out instanceof type.errors).toBe(false)
+    })
+
+    it("rejects an SVG image (cannot be rendered by next/image)", () => {
+        const out = AddEquipmentSchema({
+            ...base,
+            image: imageFile("a.svg", "image/svg+xml")
+        })
+        expect(out instanceof type.errors).toBe(true)
+    })
+
+    it("rejects an image larger than 25 Mo", () => {
+        const big = imageFile("big.png")
+        Object.defineProperty(big, "size", { value: 26 * 1024 * 1024 })
+        const out = AddEquipmentSchema({ ...base, image: big })
+        expect(out instanceof type.errors).toBe(true)
+    })
+
     it("rejects an empty name", () => {
         expect(
             AddEquipmentSchema({ ...base, name: "" }) instanceof type.errors
