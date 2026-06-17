@@ -23,13 +23,13 @@ export default function TabSwitcher({
                 <TabsTrigger value="approved">Approuvées</TabsTrigger>
                 <TabsTrigger value="archived">Archivées</TabsTrigger>
             </TabsList>
-            <TabsContent value="pending" className="h-0 w-full">
+            <TabsContent value="pending" className="w-full">
                 {React.Children.toArray(children)[0]}
             </TabsContent>
-            <TabsContent value="approved" className="h-0 w-full">
+            <TabsContent value="approved" className="w-full">
                 {React.Children.toArray(children)[1]}
             </TabsContent>
-            <TabsContent value="archived" className="h-0 w-full">
+            <TabsContent value="archived" className="w-full">
                 {React.Children.toArray(children)[2]}
             </TabsContent>
         </Tabs>
