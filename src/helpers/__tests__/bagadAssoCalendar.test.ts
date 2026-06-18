@@ -36,7 +36,7 @@ describe("buildBagadAssoCalendar", () => {
         const ics = buildBagadAssoCalendar([
             bagadAssoTicketRecord({
                 eventName: "Gala; soirée, déguisée\\",
-                assocation: "Asso"
+                association: "Asso"
             })
         ])
         const summary = ics

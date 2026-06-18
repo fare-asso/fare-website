@@ -8,7 +8,10 @@ import {
     ShieldIcon,
     LucideLandmark,
     LucideUsers,
-    Megaphone
+    Megaphone,
+    Calendar1Icon,
+    TicketIcon,
+    BoxIcon
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -17,14 +20,7 @@ import type { ReactNode } from "react"
 import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
 import { FaHandcuffs, FaPeopleGroup, FaUsers } from "react-icons/fa6" // Bouge Ta Prison
 // Link icons
-import {
-    LuBox,
-    LuHandshake,
-    LuNetwork,
-    LuPartyPopper,
-    LuTicket,
-    LuUser
-} from "react-icons/lu" // Bagad'Asso
+import { LuHandshake, LuNetwork, LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
 
 import LogoFARE from "#public/logo_fare.png"
 import type { Permission } from "@/generated/prisma/client"
@@ -156,13 +152,18 @@ export default function SideBarApp({
                     children: [
                         {
                             href: "/dashboard/bagadAsso",
+                            title: "Calendrier",
+                            icon: <Calendar1Icon />
+                        },
+                        {
+                            href: "/dashboard/bagadAsso/tickets",
                             title: "Tickets",
-                            icon: <LuTicket />
+                            icon: <TicketIcon />
                         },
                         {
                             href: "/dashboard/bagadAsso/equipments",
                             title: "Matériel",
-                            icon: <LuBox />
+                            icon: <BoxIcon />
                         }
                     ]
                 },

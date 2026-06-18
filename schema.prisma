@@ -189,7 +189,7 @@ model BagadAssoEquipment {
 
 model BagadAssoTicket {
   id                    Int       @id @default(autoincrement())
-  assocation            String
+  association            String
   firstName             String
   lastName              String
   position              String    @default("")

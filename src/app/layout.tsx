@@ -23,7 +23,9 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-                <NuqsAdapter>{children}</NuqsAdapter>
+                <NuqsAdapter defaultOptions={{ clearOnDefault: false }}>
+                    {children}
+                </NuqsAdapter>
             </body>
         </html>
     )

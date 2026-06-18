@@ -103,7 +103,7 @@ describe("submitBagadAssoFormAction", () => {
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({
-                assocation: "Asso Test",
+                association: "Asso Test",
                 associationEmail: "asso@example.com",
                 firstName: "Lea",
                 lastName: "Martin",

@@ -6,7 +6,7 @@ import BaseTemplate, { APP_URL } from "./base"
 interface NewBagadAssoTicketProps {
     data: {
         id: number
-        assocation: string
+        association: string
         eventDate: Date
         eventName: string
         eventType: string
@@ -19,7 +19,7 @@ interface NewBagadAssoTicketProps {
 export function NewBagadAssoTicket({
     data: {
         id,
-        assocation,
+        association,
         eventDate,
         eventName,
         eventType,
@@ -92,7 +92,7 @@ export function NewBagadAssoTicket({
                             Association
                         </Text>
                         <Text className="m-0 mt-1 text-sm font-medium text-stone-700">
-                            {assocation}
+                            {association}
                         </Text>
                     </Column>
                     <Column className="w-1/2">
@@ -129,7 +129,7 @@ export function NewBagadAssoTicket({
 
 NewBagadAssoTicket.PreviewProps = {
     data: {
-        assocation: "BDE Pharma",
+        association: "BDE Pharma",
         eventDate: new Date("2025-03-15"),
         eventName: "Soirée d'intégration",
         eventType: "Soirée étudiante",

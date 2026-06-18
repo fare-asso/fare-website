@@ -68,7 +68,7 @@ async function submitBagadAssoFormActionImpl(
     const ticket = await tryCatch(
         prisma.bagadAssoTicket.create({
             data: {
-                assocation: validatedData.associationName,
+                association: validatedData.associationName,
                 associationEmail: validatedData.associationEmail,
                 firstName: validatedData.referentFirstName,
                 lastName: validatedData.referentLastName,
