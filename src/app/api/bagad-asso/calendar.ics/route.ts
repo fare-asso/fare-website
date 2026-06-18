@@ -10,10 +10,10 @@ export const GET = withEvlog(async (request: Request) => {
 
     if (!token) {
         throw createError({
-            status: 404,
-            message: "Not Found",
-            why: "Aucun jeton fourni",
-            fix: "Générer un lien calendrier depuis le tableau de bord"
+            status: 400,
+            message: "Bad Request",
+            why: "Le paramètre `token` est manquant",
+            fix: "Fournir le jeton du lien calendrier"
         })
     }
 
@@ -25,7 +25,7 @@ export const GET = withEvlog(async (request: Request) => {
     )
     if (!user.success) {
         throw createError({
-            status: 502,
+            status: 500,
             message: "Internal Server Error",
             why: "Impossible de vérifier le jeton calendrier",
             fix: "Réessayer plus tard",
@@ -33,12 +33,21 @@ export const GET = withEvlog(async (request: Request) => {
         })
     }
 
-    if (!user.value || !hasPermission(user.value, "access:bagad-asso")) {
+    if (!user.value) {
         throw createError({
-            status: 404,
-            message: "Not Found",
+            status: 401,
+            message: "Unauthorized",
             why: "Jeton invalide ou révoqué",
             fix: "Régénérer un lien calendrier depuis le tableau de bord"
+        })
+    }
+
+    if (!hasPermission(user.value, "access:bagad-asso")) {
+        throw createError({
+            status: 403,
+            message: "Forbidden",
+            why: "Accès Bagad'Asso requis",
+            fix: "Demander la permission access:bagad-asso"
         })
     }
 
@@ -50,7 +59,7 @@ export const GET = withEvlog(async (request: Request) => {
     )
     if (!tickets.success) {
         throw createError({
-            status: 502,
+            status: 500,
             message: "Internal Server Error",
             why: "Impossible de récupérer les tickets Bagad'Asso",
             fix: "Réessayer plus tard",
