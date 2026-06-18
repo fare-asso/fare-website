@@ -42,6 +42,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { locationDisplayName } from "@/helpers/location"
 
 import LoadingRing from "../../loadingRing"
 
@@ -231,7 +232,9 @@ export default function BagadAssoTicketCard({
 
                     <div className="text-muted-foreground flex items-center gap-2">
                         <MapPinIcon className="h-4 w-4 shrink-0" />
-                        <span className="truncate">{ticket.eventAddr}</span>
+                        <span className="truncate">
+                            {locationDisplayName(ticket.eventAddr)}
+                        </span>
                     </div>
 
                     <div className="text-muted-foreground flex items-center gap-2">

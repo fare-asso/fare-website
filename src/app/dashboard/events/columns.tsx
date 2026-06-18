@@ -26,12 +26,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import { dateToString } from "@/helpers/date"
-import { parseLocation } from "@/helpers/location"
-
-function processLocationObject(value: string): string {
-    const parsed = parseLocation(value)
-    return parsed.success ? parsed.value.displayName : value
-}
+import { locationDisplayName } from "@/helpers/location"
 
 export type Event = {
     id: number
@@ -122,7 +117,7 @@ export function getColumns(
             accessorKey: "location",
             header: "Lieu",
             cell: ({ row }) => {
-                return processLocationObject(row.getValue("location")).split(
+                return locationDisplayName(row.getValue("location")).split(
                     ","
                 )[0]
             }
@@ -195,9 +190,7 @@ export function getColumns(
                                     image: "",
                                     startTime: row.getValue("startTime"),
                                     endTime: row.getValue("endTime"),
-                                    location: processLocationObject(
-                                        row.getValue("location")
-                                    ),
+                                    location: row.getValue("location"),
                                     visibility: row.getValue("visibility"),
                                     category: row.getValue("category")
                                 }}

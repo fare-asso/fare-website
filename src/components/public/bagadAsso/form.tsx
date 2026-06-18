@@ -37,6 +37,7 @@ import {
     FieldSeparator
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import LocationPicker from "@/components/ui/location/locationPicker"
 import {
     Popover,
     PopoverContent,
@@ -704,16 +705,11 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                             <FieldLabel htmlFor={field.name}>
                                                 Adresse de l'évènement
                                             </FieldLabel>
-                                            <Input
+                                            <LocationPicker
                                                 id={field.name}
-                                                name={field.name}
                                                 value={field.state.value}
                                                 onBlur={field.handleBlur}
-                                                onChange={(e) =>
-                                                    field.handleChange(
-                                                        e.target.value
-                                                    )
-                                                }
+                                                onChange={field.handleChange}
                                                 aria-invalid={isInvalid}
                                                 placeholder="1 Place du Parlement, Rennes"
                                             />

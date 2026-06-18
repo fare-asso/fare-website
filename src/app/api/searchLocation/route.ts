@@ -1,7 +1,25 @@
+import { type } from "arktype"
+
 import { createError, useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
-import type { AutocompleteResponse } from "./types"
+import type { LocationSuggestion, SearchLocationResponse } from "./types"
+
+// Géoplateforme geocoding API : https://data.geopf.fr/geocodage/openapi
+const GEOCODING_URL = "https://data.geopf.fr/geocodage/search"
+
+// Limite de 200 caractères, on est large
+const MAX_QUERY_LENGTH = 200
+
+const GeocodeResponseSchema = type({
+    features: type({
+        properties: { "label?": "string" },
+        geometry: {
+            // GeoJSON Point : [lon, lat], parfois suivi de l'altitude
+            coordinates: "number[] >= 2"
+        }
+    }).array()
+})
 
 /**
  * An API request which gives autocompletion for an address query.
@@ -9,7 +27,7 @@ import type { AutocompleteResponse } from "./types"
 export const GET = withEvlog(async (request: Request) => {
     const log = useLogger()
     const { searchParams } = new URL(request.url)
-    const query = searchParams.get("query")
+    const query = searchParams.get("query")?.trim()
 
     if (!query) {
         throw createError({
@@ -32,18 +50,13 @@ export const GET = withEvlog(async (request: Request) => {
 
     log.set({ query })
 
-    // Fetch response from autocompletion service (https://adresse.data.gouv.fr/)
-    const fetched = await tryCatch(
-        fetch(
-            `https://data.geopf.fr/geocodage/completion?text=${encodeURIComponent(query)}&maximumResponses=5`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }
-        )
-    )
+    const url = new URL(GEOCODING_URL)
+    url.searchParams.set("q", query.slice(0, MAX_QUERY_LENGTH))
+    url.searchParams.set("autocomplete", "1")
+    url.searchParams.set("limit", "5")
+    url.searchParams.set("index", "address")
+
+    const fetched = await tryCatch(fetch(url))
     if (!fetched.success) {
         throw createError({
             status: 502,
@@ -63,9 +76,7 @@ export const GET = withEvlog(async (request: Request) => {
         })
     }
 
-    const jsonData = await tryCatch(
-        fetched.value.json() as Promise<AutocompleteResponse>
-    )
+    const jsonData = await tryCatch(fetched.value.json() as Promise<unknown>)
     if (!jsonData.success) {
         throw createError({
             status: 502,
@@ -76,6 +87,31 @@ export const GET = withEvlog(async (request: Request) => {
         })
     }
 
-    log.set({ resultCount: jsonData.value.results.length })
-    return Response.json(jsonData.value)
+    const validated = GeocodeResponseSchema(jsonData.value)
+    if (validated instanceof type.errors) {
+        throw createError({
+            status: 502,
+            message: "Internal Server Error",
+            why: "Réponse du service de géocodage dans un format inattendu",
+            fix: "Réessayer plus tard",
+            cause: new Error(validated.summary)
+        })
+    }
+
+    const suggestions: LocationSuggestion[] = []
+    for (const feature of validated.features) {
+        const { label } = feature.properties
+        if (!label) {
+            continue
+        }
+        const [lon, lat] = feature.geometry.coordinates
+        suggestions.push({ label, lat: String(lat), lon: String(lon) })
+    }
+
+    log.set({ resultCount: suggestions.length })
+    return Response.json({ suggestions } satisfies SearchLocationResponse, {
+        headers: {
+            "Cache-Control": "public, max-age=86400, s-maxage=86400"
+        }
+    })
 })
