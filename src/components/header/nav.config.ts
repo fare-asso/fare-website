@@ -17,6 +17,11 @@ export const links: NavLink[] = [
                 desc: "Nos mission, nos valeurs, notre histoire"
             },
             {
+                title: "Notre histoire",
+                href: "/a-propos/historique",
+                desc: "L'origine de la FARE"
+            },
+            {
                 title: "Le Bureau",
                 href: "/a-propos/bureau"
             },
