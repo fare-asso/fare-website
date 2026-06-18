@@ -3,7 +3,7 @@ import { type } from "arktype"
 import { createError, useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
-import type { LocationSuggestion } from "./types"
+import type { LocationSuggestion, SearchLocationResponse } from "./types"
 
 // Géoplateforme geocoding API : https://data.geopf.fr/geocodage/openapi
 const GEOCODING_URL = "https://data.geopf.fr/geocodage/search"
@@ -131,12 +131,9 @@ export const GET = withEvlog(async (request: Request) => {
     }
 
     log.set({ resultCount: suggestions.length })
-    return Response.json(
-        { suggestions },
-        {
-            headers: {
-                "Cache-Control": "public, max-age=86400, s-maxage=86400"
-            }
+    return Response.json({ suggestions } satisfies SearchLocationResponse, {
+        headers: {
+            "Cache-Control": "public, max-age=86400, s-maxage=86400"
         }
-    )
+    })
 })
