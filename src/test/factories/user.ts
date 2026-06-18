@@ -13,6 +13,7 @@ export function mockUser(
         createdAt: new Date("2026-01-01T00:00:00Z"),
         deletedAt: null,
         role,
+        calendarToken: null,
         permissions: permissions.map((name, i) => ({
             id: i + 1,
             userId: "user-1",
