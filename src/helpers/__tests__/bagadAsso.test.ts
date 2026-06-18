@@ -33,7 +33,7 @@ describe("getNextBookingsByEquipment", () => {
         h.findMany.mockResolvedValue([
             bagadAssoTicketRecord({
                 id: 10,
-                assocation: "Soonest",
+                association: "Soonest",
                 eventDate: new Date("2026-07-01T00:00:00Z"),
                 equipments: JSON.stringify([
                     { id: 1, quantity: 2 },
@@ -42,7 +42,7 @@ describe("getNextBookingsByEquipment", () => {
             }),
             bagadAssoTicketRecord({
                 id: 11,
-                assocation: "Later",
+                association: "Later",
                 eventDate: new Date("2026-08-01T00:00:00Z"),
                 equipments: JSON.stringify([
                     { id: 1, quantity: 5 },

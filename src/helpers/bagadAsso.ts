@@ -29,7 +29,7 @@ export async function getNextBookingsByEquipment(): Promise<
         orderBy: { eventDate: "asc" },
         select: {
             id: true,
-            assocation: true,
+            association: true,
             eventName: true,
             eventDate: true,
             equipments: true
@@ -56,7 +56,7 @@ export async function getNextBookingsByEquipment(): Promise<
             if (bookings.has(entry.id)) continue
             bookings.set(entry.id, {
                 ticketId: ticket.id,
-                association: ticket.assocation,
+                association: ticket.association,
                 eventName: ticket.eventName,
                 eventDate: ticket.eventDate,
                 quantity: entry.quantity

@@ -130,7 +130,7 @@ export default function BagadAssoTicketCard({
                                 href={`/dashboard/bagadAsso/tickets/${ticket.id}`}
                                 className="hover:text-primary transition-colors hover:underline"
                             >
-                                {ticket.assocation}
+                                {ticket.association}
                             </Link>
                         </CardTitle>
                         <CardDescription className="text-base font-medium">
@@ -183,7 +183,7 @@ export default function BagadAssoTicketCard({
                                         {isArchived ? (
                                             <p>
                                                 Le ticket #{ticket.id} pour "
-                                                {ticket.assocation}" sera
+                                                {ticket.association}" sera
                                                 restauré et réapparaîtra dans la
                                                 liste des tickets actifs.
                                             </p>
@@ -191,7 +191,7 @@ export default function BagadAssoTicketCard({
                                             <>
                                                 <p>
                                                     Le ticket #{ticket.id} pour
-                                                    "{ticket.assocation}" sera
+                                                    "{ticket.association}" sera
                                                     marqué comme traité et
                                                     masqué de la liste.
                                                 </p>

@@ -50,7 +50,7 @@ function buildEvent(ticket: BagadAssoTicket): string[] {
         (ticket.position ? ` (${ticket.position})` : "")
 
     const description = [
-        `Association : ${ticket.assocation}`,
+        `Association : ${ticket.association}`,
         `Référent : ${referent}`,
         `Email référent : ${ticket.representativeEmail}`,
         `Email association : ${ticket.associationEmail}`,
@@ -64,7 +64,7 @@ function buildEvent(ticket: BagadAssoTicket): string[] {
         `UID:bagad-asso-${ticket.id}@fare-asso.fr`,
         `DTSTAMP:${toUtcStamp(ticket.creationDate)}`,
         `DTSTART;VALUE=DATE:${toUtcDate(ticket.eventDate)}`,
-        `SUMMARY:${escapeText(`${ticket.eventName} (${ticket.assocation})`)}`,
+        `SUMMARY:${escapeText(`${ticket.eventName} (${ticket.association})`)}`,
         `LOCATION:${escapeText(locationDisplayName(ticket.eventAddr))}`,
         `DESCRIPTION:${escapeText(description)}`,
         "END:VEVENT"

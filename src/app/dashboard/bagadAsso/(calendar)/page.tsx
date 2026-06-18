@@ -53,7 +53,7 @@ export default async function Tickets() {
         id: ticket.id,
         eventName: ticket.eventName,
         eventDate: ticket.eventDate,
-        association: ticket.assocation,
+        association: ticket.association,
         eventAddr: ticket.eventAddr,
         firstName: ticket.firstName,
         lastName: ticket.lastName,

@@ -70,7 +70,7 @@ export function bagadAssoTicketRecord(
 ): BagadAssoTicket {
     return {
         id: 1,
-        assocation: "Asso Test",
+        association: "Asso Test",
         firstName: "Lea",
         lastName: "Martin",
         position: "Presidente",

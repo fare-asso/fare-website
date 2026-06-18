@@ -211,7 +211,7 @@ export default async function Page({
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <p className="text-lg font-semibold">
-                                {ticket.assocation}
+                                {ticket.association}
                             </p>
                             <a
                                 href={`mailto:${ticket.associationEmail}`}
@@ -342,7 +342,7 @@ export default async function Page({
                     {canEditTicket || canDeleteTicket ? (
                         <TicketActions
                             ticketId={ticket.id}
-                            ticketName={ticket.assocation}
+                            ticketName={ticket.association}
                             isArchived={ticket.deleted !== null}
                             canEdit={canEditTicket}
                             canDelete={canDeleteTicket}

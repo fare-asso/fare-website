@@ -49,7 +49,7 @@ type Event = Pick<
     | "id"
     | "eventName"
     | "eventDate"
-    | "assocation"
+    | "association"
     | "eventAddr"
     | "firstName"
     | "lastName"
@@ -142,7 +142,7 @@ export function Calendar({ events }: { events?: Event[] }) {
                             <div
                                 key={day.toISOString()}
                                 className={cn(
-                                    "bg-background flex min-h-36 flex-col gap-1 p-1.5 transition-colors transition-none",
+                                    "bg-background flex min-h-36 flex-col gap-1 p-1.5 transition-none",
                                     inMonth
                                         ? "hover:bg-muted/10"
                                         : "bg-muted/20 text-muted-foreground"
@@ -202,7 +202,7 @@ function Event({ event }: { event: Event }) {
                     )}
                 >
                     {event.eventName} -{" "}
-                    <span className="font-bold">{event.assocation}</span>
+                    <span className="font-bold">{event.association}</span>
                 </div>
             </PopoverTrigger>
             <PopoverContent className="slide-in-bottom">
@@ -212,7 +212,7 @@ function Event({ event }: { event: Event }) {
                         <span className="text-foreground flex flex-col gap-1.5">
                             <span className="flex items-start gap-2 font-bold">
                                 <UsersIcon className="text-muted-foreground mt-0.5 size-4 shrink-0" />
-                                {event.assocation}
+                                {event.association}
                             </span>
                             <span className="flex items-start gap-2">
                                 <MapPinIcon className="text-muted-foreground mt-0.5 size-4 shrink-0" />
