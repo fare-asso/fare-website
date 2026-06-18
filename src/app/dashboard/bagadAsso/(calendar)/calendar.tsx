@@ -44,7 +44,20 @@ function monthGrid(month: Date): Date[] {
     )
 }
 
-export function Calendar({ events }: { events?: BagadAssoTicket[] }) {
+type Event = Pick<
+    BagadAssoTicket,
+    | "id"
+    | "eventName"
+    | "eventDate"
+    | "assocation"
+    | "eventAddr"
+    | "firstName"
+    | "lastName"
+    | "phoneNumber"
+    | "deleted"
+>
+
+export function Calendar({ events }: { events?: Event[] }) {
     const [month, setMonth] = useQueryState(
         "month",
         parseAsIsoDate.withDefault(new Date()).withOptions({})
@@ -56,7 +69,9 @@ export function Calendar({ events }: { events?: BagadAssoTicket[] }) {
         setMonth(
             (date) =>
                 new Date(
-                    date.setMonth(date.getMonth() + (dir === "prev" ? -1 : 1))
+                    date.getFullYear(),
+                    date.getMonth() + (dir === "prev" ? -1 : 1),
+                    1
                 )
         )
     }
@@ -169,7 +184,7 @@ export function Calendar({ events }: { events?: BagadAssoTicket[] }) {
     )
 }
 
-function Event({ event }: { event: BagadAssoTicket }) {
+function Event({ event }: { event: Event }) {
     const isArchived = event.deleted !== null
     const isPast = !isArchived && event.eventDate < new Date()
     return (

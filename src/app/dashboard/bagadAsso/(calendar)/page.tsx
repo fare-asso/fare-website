@@ -49,6 +49,18 @@ export default async function Tickets() {
         }
     ]
 
+    tickets.map((ticket) => ({
+        id: ticket.id,
+        eventName: ticket.eventName,
+        eventDate: ticket.eventDate,
+        association: ticket.assocation,
+        eventAddr: ticket.eventAddr,
+        firstName: ticket.firstName,
+        lastName: ticket.lastName,
+        phoneNumber: ticket.phoneNumber,
+        deleted: ticket.deleted
+    }))
+
     return (
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardContent className="h-1/2 flex-1 p-0">
