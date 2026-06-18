@@ -11,27 +11,15 @@ const GEOCODING_URL = "https://data.geopf.fr/geocodage/search"
 // Limite de 200 caractères, on est large
 const MAX_QUERY_LENGTH = 200
 
-// La feature POI (points d'intérêt) expose `city`/`postcode` sous la
-// forme d'un tableau et la feature address sous la forme d'un String,
-// donc on accepte les deux.
 const GeocodeResponseSchema = type({
     features: type({
-        properties: {
-            "label?": "string",
-            "toponym?": "string",
-            "postcode?": "string | string[]",
-            "city?": "string | string[]"
-        },
+        properties: { "label?": "string" },
         geometry: {
             // GeoJSON Point : [lon, lat], parfois suivi de l'altitude
             coordinates: "number[] >= 2"
         }
     }).array()
 })
-
-function firstOf(value: string | string[] | undefined): string | undefined {
-    return Array.isArray(value) ? value[0] : value
-}
 
 /**
  * An API request which gives autocompletion for an address query.
@@ -66,7 +54,7 @@ export const GET = withEvlog(async (request: Request) => {
     url.searchParams.set("q", query.slice(0, MAX_QUERY_LENGTH))
     url.searchParams.set("autocomplete", "1")
     url.searchParams.set("limit", "5")
-    url.searchParams.set("index", "address,poi")
+    url.searchParams.set("index", "address")
 
     const fetched = await tryCatch(fetch(url))
     if (!fetched.success) {
@@ -112,22 +100,12 @@ export const GET = withEvlog(async (request: Request) => {
 
     const suggestions: LocationSuggestion[] = []
     for (const feature of validated.features) {
-        const { label, toponym, postcode, city } = feature.properties
-        // La feature POI n'a pas de label donc on en reconstruit un
-        const builtLabel =
-            label ??
-            [toponym, firstOf(postcode), firstOf(city)]
-                .filter(Boolean)
-                .join(" ")
-        if (!builtLabel) {
+        const { label } = feature.properties
+        if (!label) {
             continue
         }
         const [lon, lat] = feature.geometry.coordinates
-        suggestions.push({
-            label: builtLabel,
-            lat: String(lat),
-            lon: String(lon)
-        })
+        suggestions.push({ label, lat: String(lat), lon: String(lon) })
     }
 
     log.set({ resultCount: suggestions.length })

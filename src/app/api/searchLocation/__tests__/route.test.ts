@@ -27,26 +27,26 @@ describe("GET /api/searchLocation", () => {
         expect(res.status).toBe(400)
     })
 
-    it("maps address (label) and POI (built label) features", async () => {
+    it("maps labelled address features and skips those without a label", async () => {
         server.use(
             http.get(GEOCODING_URL, () =>
                 HttpResponse.json({
                     features: [
                         {
-                            properties: {
-                                label: "1 Rue de Paris 35000 Rennes"
-                            },
+                            properties: { label: "Rennes" },
                             // GeoJSON Point: [lon, lat]
-                            geometry: { coordinates: [-1.6, 48.1] }
+                            geometry: { coordinates: [-1.68, 48.11] }
                         },
                         {
-                            // POI has no `label`: rebuilt from toponym/postcode/city
                             properties: {
-                                toponym: "Mairie",
-                                postcode: ["35000"],
-                                city: ["Rennes"]
+                                label: "Rennes 47270 Saint-Maurin"
                             },
-                            geometry: { coordinates: [-1.7, 48.2] }
+                            geometry: { coordinates: [0.88, 44.19] }
+                        },
+                        {
+                            // no `label` (e.g. a POI): skipped
+                            properties: {},
+                            geometry: { coordinates: [-1.67, 48.1] }
                         }
                     ]
                 })
@@ -57,8 +57,8 @@ describe("GET /api/searchLocation", () => {
         expect(res.status).toBe(200)
         const body = (await res.json()) as SearchLocationResponse
         expect(body.suggestions).toEqual([
-            { label: "1 Rue de Paris 35000 Rennes", lat: "48.1", lon: "-1.6" },
-            { label: "Mairie 35000 Rennes", lat: "48.2", lon: "-1.7" }
+            { label: "Rennes", lat: "48.11", lon: "-1.68" },
+            { label: "Rennes 47270 Saint-Maurin", lat: "44.19", lon: "0.88" }
         ])
         expect(res.headers.get("Cache-Control")).toContain("max-age=86400")
     })
