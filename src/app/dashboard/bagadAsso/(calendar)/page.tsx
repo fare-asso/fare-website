@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 import { Calendar } from "./calendar"
@@ -15,7 +16,13 @@ export default async function Tickets() {
         return redirect("/dashboard/unauthorized")
     }
 
-    const { value: tickets } = await tryCatch(prisma.bagadAssoTicket.findMany())
+    const result = await tryCatch(prisma.bagadAssoTicket.findMany())
+    if (!result.success) {
+        captureActionError(result.error)
+        return <div>Erreur lors de la récupération des tickets</div>
+    }
+
+    const tickets = result.value
 
     const now = new Date()
     // most recent 1st September (start of the academic year)
@@ -24,9 +31,8 @@ export default async function Tickets() {
         8,
         1
     )
-    const active = (tickets ?? []).filter((t) => !t.deleted)
-    const currentYear =
-        tickets?.filter((t) => t.eventDate >= academicYearStart) ?? []
+    const active = tickets.filter((t) => !t.deleted)
+    const currentYear = tickets.filter((t) => t.eventDate >= academicYearStart)
     const upcoming = active.filter((t) => t.eventDate >= now)
     const stats = [
         {
@@ -54,7 +60,7 @@ export default async function Tickets() {
                         </Card>
                     ))}
                 </section>
-                <Calendar events={tickets ?? []} />
+                <Calendar events={tickets} />
             </CardContent>
         </Card>
     )
