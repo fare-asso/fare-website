@@ -50,9 +50,7 @@ function buildEvent(ticket: BagadAssoTicket): string[] {
         (ticket.position ? ` (${ticket.position})` : "")
 
     const description = [
-        `Type : ${ticket.eventType}`,
         `Association : ${ticket.assocation}`,
-        `Participants estimés : ${ticket.estimatedParticipants}`,
         `Référent : ${referent}`,
         `Email référent : ${ticket.representativeEmail}`,
         `Email association : ${ticket.associationEmail}`,
