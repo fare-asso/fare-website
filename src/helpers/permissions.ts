@@ -7,8 +7,10 @@ export function hasRole(user: User, role: Role) {
 }
 
 export function hasPermission(
-    user: UserWithPermissions,
+    user: UserWithPermissions | null,
     permissionName: string
 ) {
-    return user.permissions.some((up) => up.permission.name === permissionName)
+    return !!user?.permissions?.some(
+        (up) => up.permission.name === permissionName
+    )
 }
