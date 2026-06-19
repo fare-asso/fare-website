@@ -3,6 +3,7 @@ import Image from "next/image"
 
 import logoBagadAsso from "#public/Logo_Bagadasso.png"
 import BagadAssoForm from "@/components/public/bagadAsso/form"
+import LinkButton from "@/components/public/link"
 import prisma from "@/helpers/db"
 
 export const metadata: Metadata = {
@@ -102,6 +103,17 @@ export default async function BagadAsso() {
                     </div>
                 </div>
             </section>
+
+            <div className="mb-12 flex w-full max-w-4xl flex-col items-center gap-4">
+                <p className="text-center">
+                    Le matériel du Bagad'Asso est financé par plusieurs
+                    organismes que nous tenons à remercier.
+                </p>
+                <LinkButton
+                    href="/projets/bagad-asso/remerciements"
+                    title="Voir nos remerciements"
+                />
+            </div>
 
             {/* Formulaire de demande de matériel */}
             <BagadAssoForm equipmentList={equipmentList} />
