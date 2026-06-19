@@ -8,6 +8,7 @@ import recettesParMois from "#public/AGORAe/recettes_par_mois.png"
 import salle from "#public/AGORAe/salle.jpg"
 import tableauRAV from "#public/AGORAe/tableau_rav.png"
 import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
+import LinkButton from "@/components/public/link"
 
 export const metadata: Metadata = {
     title: "AGORAé"
@@ -241,6 +242,17 @@ export default function AGORAe() {
                         </li>
                     </ul>
                 </section>
+
+                <div className="flex w-full flex-col items-center gap-4">
+                    <p className="text-center">
+                        Le matériel du Bagad'Asso est financé par plusieurs
+                        organismes que nous tenons à remercier.
+                    </p>
+                    <LinkButton
+                        href="/projets/agorae/remerciements"
+                        title="Voir nos remerciements"
+                    />
+                </div>
             </div>
         </div>
     )
