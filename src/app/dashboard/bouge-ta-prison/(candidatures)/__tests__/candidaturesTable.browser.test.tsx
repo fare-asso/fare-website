@@ -6,6 +6,7 @@ import { validTutorApplicationRecord } from "@/test/factories/bougeTaPrison"
 
 const h = vi.hoisted(() => ({
     downloadAction: vi.fn(),
+    bulkArchive: vi.fn(),
     downloadBase64: vi.fn(),
     noop: vi.fn(),
     toastSuccess: vi.fn(),
@@ -15,6 +16,9 @@ const h = vi.hoisted(() => ({
 
 vi.mock("@/actions/bouge-ta-prison/downloadTutorApplicationsZipAction", () => ({
     default: h.downloadAction
+}))
+vi.mock("@/actions/bouge-ta-prison/bulkArchiveTutorApplicationsAction", () => ({
+    default: h.bulkArchive
 }))
 vi.mock("@/lib/download", () => ({ downloadBase64: h.downloadBase64 }))
 vi.mock("@/actions/bouge-ta-prison/archiveTutorApplication", () => ({
@@ -44,6 +48,7 @@ const records: BTPTutorApplication[] = [
 
 beforeEach(() => {
     h.downloadAction.mockReset()
+    h.bulkArchive.mockReset()
     h.downloadBase64.mockReset()
     h.toastSuccess.mockReset()
     h.toastError.mockReset()
@@ -54,6 +59,7 @@ beforeEach(() => {
         filename: "candidatures-tutorat-2026-06-23.zip",
         missing: 0
     })
+    h.bulkArchive.mockResolvedValue({ success: true, value: { count: 1 } })
 })
 
 describe("<CandidaturesTable />", () => {
@@ -156,11 +162,61 @@ describe("<CandidaturesTable />", () => {
             .click()
 
         await expect
-            .element(screen.getByText(/Maximum 75 candidatures/))
+            .element(screen.getByText(/limité à 75 candidatures/))
             .toBeVisible()
         await expect
             .element(screen.getByRole("button", { name: /Télécharger/ }))
             .toBeDisabled()
         expect(h.downloadAction).not.toHaveBeenCalled()
+    })
+
+    it("bulk-archives the selected candidatures after confirmation", async () => {
+        const screen = await render(<CandidaturesTable data={records} />)
+        await screen
+            .getByRole("checkbox", { name: "Sélectionner la ligne" })
+            .first()
+            .click()
+        // open the confirmation dialog (distinct label from the row actions),
+        // then confirm inside the dialog
+        await screen
+            .getByRole("button", { name: "Archiver la sélection" })
+            .click()
+        await screen
+            .getByRole("alertdialog")
+            .getByRole("button", { name: "Archiver" })
+            .click()
+
+        await vi.waitFor(() =>
+            expect(h.bulkArchive).toHaveBeenCalledWith({
+                ids: [1],
+                archive: true
+            })
+        )
+        expect(h.toastSuccess).toHaveBeenCalled()
+    })
+
+    it("bulk-unarchives on the archived tab", async () => {
+        const screen = await render(
+            <CandidaturesTable data={records} archived />
+        )
+        await screen
+            .getByRole("checkbox", { name: "Sélectionner la ligne" })
+            .first()
+            .click()
+        await screen
+            .getByRole("button", { name: "Désarchiver la sélection" })
+            .click()
+        await screen
+            .getByRole("alertdialog")
+            .getByRole("button", { name: "Désarchiver" })
+            .click()
+
+        await vi.waitFor(() =>
+            expect(h.bulkArchive).toHaveBeenCalledWith({
+                ids: [1],
+                archive: false
+            })
+        )
+        expect(h.toastSuccess).toHaveBeenCalled()
     })
 })

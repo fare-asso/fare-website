@@ -18,13 +18,15 @@ import {
 } from "@/components/ui/table"
 import type { BTPTutorApplication } from "@/generated/prisma/client"
 
-import BulkDownloadBar from "./bulkDownloadBar"
+import BulkActionsBar from "./bulkActionsBar"
 import { columns } from "./columns"
 
 export default function CandidaturesTable({
-    data
+    data,
+    archived = false
 }: {
     data: BTPTutorApplication[]
+    archived?: boolean
 }) {
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
     const table = useReactTable({
@@ -110,9 +112,10 @@ export default function CandidaturesTable({
                 </Table>
             </div>
 
-            <BulkDownloadBar
+            <BulkActionsBar
                 selectedIds={selectedIds}
                 onClear={() => setRowSelection({})}
+                archived={archived}
             />
         </div>
     )

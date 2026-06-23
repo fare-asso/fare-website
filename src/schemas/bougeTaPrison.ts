@@ -69,3 +69,13 @@ export const DownloadTutorApplicationsSchema = type("number.integer >= 1")
 
 export type TDownloadTutorApplications =
     typeof DownloadTutorApplicationsSchema.infer
+
+/* BTP bulk archive */
+
+export const BulkArchiveTutorApplicationsSchema = type({
+    ids: type("number.integer >= 1").array().atLeastLength(1),
+    archive: "boolean"
+})
+
+export type BulkArchiveTutorApplications =
+    typeof BulkArchiveTutorApplicationsSchema.infer
