@@ -37,10 +37,10 @@ export default function RowActions({
     const onArchive = async () => {
         setIsLoading(true)
         const response = await archiveTutorApplication(application.id)
-        if (response.error) {
-            toast.error(response.error)
-        } else {
+        if (response.success) {
             toast.success("La candidature a été archivée.")
+        } else {
+            toast.error(response.error)
         }
         setIsLoading(false)
     }
@@ -48,10 +48,10 @@ export default function RowActions({
     const onUnarchive = async () => {
         setIsLoading(true)
         const response = await unarchiveTutorApplication(application.id)
-        if (response.error) {
-            toast.error(response.error)
-        } else {
+        if (response.success) {
             toast.success("La candidature a été désarchivée.")
+        } else {
+            toast.error(response.error)
         }
         setIsLoading(false)
     }
