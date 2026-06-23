@@ -63,7 +63,13 @@ export default defineConfig({
                 resolve: { alias: browserAlias },
                 plugins: [react()],
                 optimizeDeps: {
-                    include: ["@supabase/ssr", "lucide-react", "next/cache"]
+                    include: [
+                        "@supabase/ssr",
+                        "@tanstack/react-table",
+                        "lucide-react",
+                        "next/cache",
+                        "next/link"
+                    ]
                 },
                 test: {
                     name: "browser",

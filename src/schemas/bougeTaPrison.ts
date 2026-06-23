@@ -1,3 +1,4 @@
+import { type } from "arktype"
 import { isDevelopment } from "std-env"
 import { z } from "zod"
 
@@ -56,3 +57,15 @@ export const BTPTutorQuestionSchema = z.object({
 })
 
 export type BTPTutorQuestion = z.infer<typeof BTPTutorQuestionSchema>
+
+/* BTP bulk download */
+
+export const MAX_TUTOR_APPLICATIONS_DOWNLOAD = 75
+
+export const DownloadTutorApplicationsSchema = type("number.integer >= 1")
+    .array()
+    .atLeastLength(1)
+    .atMostLength(MAX_TUTOR_APPLICATIONS_DOWNLOAD)
+
+export type TDownloadTutorApplications =
+    typeof DownloadTutorApplicationsSchema.infer
