@@ -31,49 +31,10 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { Adhesion } from "@/generated/prisma/client"
+import { downloadBase64 } from "@/lib/download"
 import { tryCatch } from "@/lib/utils"
 
 import LoadingRing from "../loadingRing"
-
-function downloadBase64Zip(zipData: string, filename: string) {
-    const byteCharacters = atob(zipData)
-    const byteNumbers = Array.from<number>({ length: byteCharacters.length })
-    for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i)
-    }
-    const byteArray = new Uint8Array(byteNumbers)
-    const blob = new Blob([byteArray], { type: "application/zip" })
-
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.style.display = "none"
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    window.URL.revokeObjectURL(url)
-    document.body.removeChild(a)
-}
-
-function downloadBase64Pdf(pdfData: string, filename: string) {
-    const byteCharacters = atob(pdfData)
-    const byteNumbers = Array.from<number>({ length: byteCharacters.length })
-    for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i)
-    }
-    const byteArray = new Uint8Array(byteNumbers)
-    const blob = new Blob([byteArray], { type: "application/pdf" })
-
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.style.display = "none"
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    window.URL.revokeObjectURL(url)
-    document.body.removeChild(a)
-}
 
 interface AdhesionCardActionsProps {
     adhesion: Adhesion
@@ -108,7 +69,11 @@ export default function AdhesionCardActions({
         if (result.error) {
             toast.error(result.error)
         } else if (result.success && result.zipData) {
-            downloadBase64Zip(result.zipData, result.filename || "download.zip")
+            downloadBase64(
+                result.zipData,
+                result.filename || "download.zip",
+                "application/zip"
+            )
             toast.success(`Le dossier de ${displayName} a été téléchargé.`)
         }
         setIsDownloading(false)
@@ -127,9 +92,10 @@ export default function AdhesionCardActions({
         if (result.error) {
             toast.error(result.error)
         } else if (result.success && result.pdfData) {
-            downloadBase64Pdf(
+            downloadBase64(
                 result.pdfData,
-                result.filename || "formulaire-adhesion.pdf"
+                result.filename || "formulaire-adhesion.pdf",
+                "application/pdf"
             )
             toast.success(`Le formulaire de ${displayName} a été généré.`)
         }

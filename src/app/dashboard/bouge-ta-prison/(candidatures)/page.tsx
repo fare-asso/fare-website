@@ -26,7 +26,7 @@ export default function EspaceBougeTaPrison() {
                     Gestion des candidatures tutorat du projet Bouge Ta Prison
                 </CardDescription>
             </CardHeader>
-            <CardContent className="h-1/2 flex-1 p-0">
+            <CardContent className="h-1/2 min-h-0 flex-1 p-0">
                 <TabSwitcher>
                     <PendingApplications />
                     <ApprovedApplications />

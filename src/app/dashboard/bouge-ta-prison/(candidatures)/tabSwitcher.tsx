@@ -16,20 +16,29 @@ export default function TabSwitcher({
         <Tabs
             value={tab}
             onValueChange={setTab}
-            className="flex h-full w-full flex-col items-center gap-2"
+            className="flex h-full min-h-0 w-full flex-col items-center gap-2"
         >
             <TabsList className="grid w-full grid-cols-3 md:w-1/2">
                 <TabsTrigger value="pending">En attente</TabsTrigger>
                 <TabsTrigger value="approved">Approuvées</TabsTrigger>
                 <TabsTrigger value="archived">Archivées</TabsTrigger>
             </TabsList>
-            <TabsContent value="pending" className="w-full">
+            <TabsContent
+                value="pending"
+                className="flex min-h-0 w-full flex-1 flex-col"
+            >
                 {React.Children.toArray(children)[0]}
             </TabsContent>
-            <TabsContent value="approved" className="w-full">
+            <TabsContent
+                value="approved"
+                className="flex min-h-0 w-full flex-1 flex-col"
+            >
                 {React.Children.toArray(children)[1]}
             </TabsContent>
-            <TabsContent value="archived" className="w-full">
+            <TabsContent
+                value="archived"
+                className="flex min-h-0 w-full flex-1 flex-col"
+            >
                 {React.Children.toArray(children)[2]}
             </TabsContent>
         </Tabs>
