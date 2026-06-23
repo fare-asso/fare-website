@@ -56,7 +56,7 @@ export default function BulkDownloadBar({
     }
 
     return createPortal(
-        <div className="bg-background/95 supports-[backdrop-filter]:bg-background/80 fixed inset-x-3 bottom-4 z-50 mx-auto w-auto max-w-xl rounded-xl border p-3 shadow-xl backdrop-blur sm:bottom-6">
+        <div className="bg-background/95 supports-backdrop-filter:bg-background/80 fixed inset-x-3 bottom-4 z-50 mx-auto w-fit rounded-xl border p-3 shadow-xl backdrop-blur sm:bottom-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <div className="flex items-center justify-between gap-1 sm:justify-start sm:gap-2">
                     <span className="text-sm font-medium whitespace-nowrap">
@@ -86,7 +86,7 @@ export default function BulkDownloadBar({
                     ) : (
                         <DownloadIcon className="size-4" />
                     )}
-                    Télécharger ({count})
+                    Télécharger
                 </Button>
             </div>
 
