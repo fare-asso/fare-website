@@ -23,7 +23,7 @@ export default async function ArchivedApplications() {
                 </span>{" "}
                 archivée{applications.length > 1 ? "s" : ""}.
             </p>
-            <CandidaturesTable data={applications} />
+            <CandidaturesTable data={applications} archived />
         </div>
     )
 }
