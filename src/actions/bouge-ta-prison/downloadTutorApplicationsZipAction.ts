@@ -4,6 +4,7 @@ import { type } from "arktype"
 import { format } from "date-fns"
 import { zip } from "fflate"
 
+import type { BTPTutorApplication } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
@@ -24,7 +25,10 @@ type DownloadResult =
     | { success: false; error: string }
 
 function csvField(value: string): string {
-    return /[",\n\r]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value
+    // Neutralize spreadsheet formula triggers (CSV injection) — applicant
+    // fields come from a public form — then quote/escape as usual.
+    const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+    return /[",\n\r]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe
 }
 
 function statusLabel(app: {
@@ -80,32 +84,41 @@ async function downloadTutorApplicationsZipActionImpl(
 
     const supabase = await createClient()
 
-    const downloaded = await Promise.all(
-        applications.value.map(async (app) => {
-            const folder = `${sanitizeString(app.lastName)}-${sanitizeString(
-                app.firstName
-            )}-${app.id}`
-            const files = [
-                { name: "cv.pdf", path: app.cvPath },
-                { name: "lettre-de-motivation.pdf", path: app.mlPath }
-            ]
-            const data = await Promise.all(
-                files.map(async (file) => {
-                    const dl = await tryCatch(
-                        supabase.storage.from(BUCKET).download(file.path)
-                    )
-                    if (!dl.success || !dl.value) {
-                        return { name: file.name, bytes: null }
-                    }
-                    return {
-                        name: file.name,
-                        bytes: new Uint8Array(await dl.value.arrayBuffer())
-                    }
-                })
-            )
-            return { app, folder, data }
-        })
-    )
+    const downloadApplication = async (app: BTPTutorApplication) => {
+        const folder = `${sanitizeString(app.lastName)}-${sanitizeString(
+            app.firstName
+        )}-${app.id}`
+        const files = [
+            { name: "cv.pdf", path: app.cvPath },
+            { name: "lettre-de-motivation.pdf", path: app.mlPath }
+        ]
+        const data = await Promise.all(
+            files.map(async (file) => {
+                const dl = await tryCatch(
+                    supabase.storage.from(BUCKET).download(file.path)
+                )
+                if (!dl.success || !dl.value) {
+                    return { name: file.name, bytes: null }
+                }
+                return {
+                    name: file.name,
+                    bytes: new Uint8Array(await dl.value.arrayBuffer())
+                }
+            })
+        )
+        return { app, folder, data }
+    }
+
+    // Download in small batches so we never open ~150 concurrent storage
+    // requests on a large selection (75 apps × 2 files).
+    const DOWNLOAD_CONCURRENCY = 10
+    const downloaded: Awaited<ReturnType<typeof downloadApplication>>[] = []
+    for (let i = 0; i < applications.value.length; i += DOWNLOAD_CONCURRENCY) {
+        const batch = applications.value.slice(i, i + DOWNLOAD_CONCURRENCY)
+        // oxlint-disable-next-line no-await-in-loop -- sequential batches cap concurrency
+        const results = await Promise.all(batch.map(downloadApplication))
+        downloaded.push(...results)
+    }
 
     const entries: Record<string, Uint8Array> = {}
     let missing = 0
@@ -173,6 +186,9 @@ async function downloadTutorApplicationsZipActionImpl(
         }
     }
 
+    // The whole archive is returned as base64 through the server action. The
+    // 75-candidature cap (enforced by the schema) bounds memory/response size;
+    // switch to a streamed Route Handler if individual PDFs grow large.
     return {
         success: true,
         zipData: Buffer.from(zipBuffer.value).toString("base64"),

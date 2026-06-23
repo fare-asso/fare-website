@@ -76,7 +76,7 @@ describe("<CandidaturesTable />", () => {
     it("reveals the bulk bar when rows are selected", async () => {
         const screen = await render(<CandidaturesTable data={records} />)
         await screen
-            .getByRole("checkbox", { name: "Selectionner tout" })
+            .getByRole("checkbox", { name: "Sélectionner tout" })
             .click()
         await expect
             .element(screen.getByText(/2 candidatures sélectionnées/))
@@ -86,7 +86,7 @@ describe("<CandidaturesTable />", () => {
     it("hides the bulk bar again when everything is deselected", async () => {
         const screen = await render(<CandidaturesTable data={records} />)
         const selectAll = screen.getByRole("checkbox", {
-            name: "Selectionner tout"
+            name: "Sélectionner tout"
         })
 
         await selectAll.click()
@@ -110,7 +110,7 @@ describe("<CandidaturesTable />", () => {
     it("downloads the selected candidatures as a zip", async () => {
         const screen = await render(<CandidaturesTable data={records} />)
         await screen
-            .getByRole("checkbox", { name: "Selectionner tout" })
+            .getByRole("checkbox", { name: "Sélectionner tout" })
             .click()
         await screen.getByRole("button", { name: /Télécharger/ }).click()
 
@@ -134,7 +134,7 @@ describe("<CandidaturesTable />", () => {
         })
         const screen = await render(<CandidaturesTable data={records} />)
         await screen
-            .getByRole("checkbox", { name: "Selectionner tout" })
+            .getByRole("checkbox", { name: "Sélectionner tout" })
             .click()
         await screen.getByRole("button", { name: /Télécharger/ }).click()
 
@@ -152,7 +152,7 @@ describe("<CandidaturesTable />", () => {
         )
         const screen = await render(<CandidaturesTable data={many} />)
         await screen
-            .getByRole("checkbox", { name: "Selectionner tout" })
+            .getByRole("checkbox", { name: "Sélectionner tout" })
             .click()
 
         await expect

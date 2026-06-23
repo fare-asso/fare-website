@@ -51,14 +51,14 @@ export const columns: ColumnDef<BTPTutorApplication>[] = [
                 onCheckedChange={(value) =>
                     table.toggleAllPageRowsSelected(!!value)
                 }
-                aria-label="Selectionner tout"
+                aria-label="Sélectionner tout"
             />
         ),
         cell: ({ row }) => (
             <Checkbox
                 checked={row.getIsSelected()}
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Selectionner la ligne"
+                aria-label="Sélectionner la ligne"
             />
         ),
         enableSorting: false,

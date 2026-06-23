@@ -3,7 +3,6 @@
 import {
     flexRender,
     getCoreRowModel,
-    getFilteredRowModel,
     type RowSelectionState,
     useReactTable
 } from "@tanstack/react-table"
@@ -34,7 +33,6 @@ export default function CandidaturesTable({
         state: { rowSelection },
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
         enableRowSelection: true,
         getRowId: (row) => String(row.id)
     })

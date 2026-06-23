@@ -137,4 +137,25 @@ describe("downloadTutorApplicationsZipAction", () => {
         const csv = new TextDecoder().decode(files["candidatures.csv"])
         expect(csv).toContain("cv.pdf")
     })
+
+    it("neutralizes CSV formula injection in applicant fields", async () => {
+        h.findMany.mockResolvedValue([
+            validTutorApplicationRecord({
+                id: 1,
+                firstName: "Lea",
+                lastName: '=HYPERLINK("http://evil")'
+            })
+        ])
+        const res = await downloadTutorApplicationsZipAction([1])
+        expect(res.success).toBe(true)
+        if (!res.success) return
+
+        const csv = new TextDecoder().decode(
+            unzip(res.zipData)["candidatures.csv"]
+        )
+        // The dangerous value is prefixed with ' so Excel/LibreOffice treat it
+        // as text, never a formula.
+        expect(csv).toContain("'=HYPERLINK")
+        expect(csv).not.toMatch(/(^|,)=HYPERLINK/m)
+    })
 })
