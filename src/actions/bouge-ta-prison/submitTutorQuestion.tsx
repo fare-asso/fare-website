@@ -1,9 +1,11 @@
 "use server"
 
+import { type } from "arktype"
 import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
+import { BtpContact } from "@/../emails/btp-contact"
 import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
@@ -15,16 +17,14 @@ import {
 } from "@/schemas/bougeTaPrison"
 import type { ActionResponse } from "@/types/actions"
 
-import { BtpContact } from "../../../emails/btp-contact"
-
 async function submitTutorQuestionImpl(
     data: BTPTutorQuestion
 ): Promise<ActionResponse> {
-    const parsedData = BTPTutorQuestionSchema.safeParse(data)
+    const parsedData = BTPTutorQuestionSchema(data)
 
-    if (!parsedData.success) {
+    if (parsedData instanceof type.errors) {
         const fieldErrors: Record<string, string[]> = {}
-        for (const issue of parsedData.error.issues) {
+        for (const issue of parsedData.issues) {
             const field = String(issue.path[0])
             if (!fieldErrors[field]) {
                 fieldErrors[field] = []
@@ -39,13 +39,13 @@ async function submitTutorQuestionImpl(
 
     // Verify CAPTCHA in production
     if (!isDevelopment) {
-        if (!parsedData.data.captchaToken) {
+        if (!parsedData.captchaToken) {
             return {
                 error: "Veuillez compléter le CAPTCHA."
             }
         }
 
-        const isCaptchaValid = await verifyCaptcha(parsedData.data.captchaToken)
+        const isCaptchaValid = await verifyCaptcha(parsedData.captchaToken)
         if (!isCaptchaValid) {
             return {
                 error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
@@ -57,12 +57,12 @@ async function submitTutorQuestionImpl(
     const created = await tryCatch(
         prisma.bTPTutorQuestion.create({
             data: {
-                firstName: data.firstName,
-                lastName: data.lastName,
-                email: data.email,
-                major: data.major,
-                studyYear: data.studyYear,
-                question: data.message
+                firstName: parsedData.firstName,
+                lastName: parsedData.lastName,
+                email: parsedData.email,
+                major: parsedData.major,
+                studyYear: parsedData.studyYear,
+                question: parsedData.message
             }
         })
     )
@@ -82,10 +82,10 @@ async function submitTutorQuestionImpl(
             subject: "Nouvelle question tutorat Bouge Ta Prison",
             html: await render(
                 <BtpContact
-                    firstName={data.firstName}
-                    lastName={data.lastName}
-                    email={data.email}
-                    message={data.message}
+                    firstName={parsedData.firstName}
+                    lastName={parsedData.lastName}
+                    email={parsedData.email}
+                    message={parsedData.message}
                     id={createdQuestion.id}
                 />
             )

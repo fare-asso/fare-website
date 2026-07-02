@@ -1,62 +1,37 @@
 import { type } from "arktype"
-import { isDevelopment } from "std-env"
-import { z } from "zod"
+
+import { fileSchema } from "./reusables"
 
 /* BTP Tutor Application */
-
-export const BTPTutorApplicationSchema = z.object({
-    firstName: z.string().min(1, { message: "Le prénom est obligatoire" }),
-    lastName: z.string().min(1, { message: "Le nom est obligatoire" }),
-    email: z.email({ message: "Email non-valide" }),
-    major: z.string().min(1, { message: "La filière est obligatoire" }),
-    studyYear: z.enum(["L3", "M1", "M2"], {
-        message: "L'année d'étude est obligatoire"
+export const BTPTutorApplicationSchema = type({
+    firstName: "string >= 1",
+    lastName: "string >= 1",
+    email: "string.email",
+    major: "string >= 1",
+    studyYear: "'L3' | 'M1' | 'M2'",
+    cv: fileSchema({
+        maxSize: 5 * 1024 * 1024 // 5MB
     }),
-    cv: z
-        .instanceof(File)
-        .refine((file) => file.type === "application/pdf", {
-            message: "Le CV doit être un fichier PDF"
-        })
-        .refine((file) => file.size < 5 * 1024 * 1024, {
-            message: "La taille du fichier doit être inférieure à 5Mo"
-        }),
-    motivationLetter: z
-        .instanceof(File)
-        .refine((file) => file.type === "application/pdf", {
-            message: "La lettre de motivation doit être un fichier PDF"
-        })
-        .refine((file) => file.size < 5 * 1024 * 1024, {
-            message: "La taille du fichier doit être inférieure à 5Mo"
-        }),
-    captchaToken: z.string().refine((val) => isDevelopment || val !== "", {
-        message: "Veuillez valider le captcha"
-    })
+    motivationLetter: fileSchema({
+        maxSize: 5 * 1024 * 1024 // 5MB
+    }),
+    captchaToken: "string > 1"
 })
 
-export type BTPTutorApplication = z.infer<typeof BTPTutorApplicationSchema>
+export type BTPTutorApplication = typeof BTPTutorApplicationSchema.infer
 
 /* BTP Tutor Question */
-
-export const BTPTutorQuestionSchema = z.object({
-    lastName: z.string().min(1, { message: "Le nom est obligatoire" }),
-    firstName: z.string().min(1, { message: "Le prénom est obligatoire" }),
-    email: z.email({ message: "Email non-valide" }),
-    major: z.string().min(1, { message: "La filière est obligatoire" }),
-    studyYear: z.enum(["L3", "M1", "M2", "other"], {
-        message: "L'année d'étude est obligatoire"
-    }),
-    message: z
-        .string()
-        .min(1, { message: "Le message est obligatoire" })
-        .max(1000, {
-            message: "Le message doit faire moins de 1000 caractères"
-        }),
-    captchaToken: z.string().refine((val) => isDevelopment || val !== "", {
-        message: "Veuillez valider le captcha"
-    })
+export const BTPTutorQuestionSchema = type({
+    lastName: "string >= 1",
+    firstName: "string >= 1",
+    email: "string.email",
+    major: "string > 1",
+    studyYear: "'L3' | 'M1' | 'M2' | 'other'",
+    message: "1 < string < 1000",
+    captchaToken: "string > 1"
 })
 
-export type BTPTutorQuestion = z.infer<typeof BTPTutorQuestionSchema>
+export type BTPTutorQuestion = typeof BTPTutorQuestionSchema.infer
 
 /* BTP bulk download */
 

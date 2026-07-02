@@ -1,5 +1,6 @@
 "use server"
 
+import { type } from "arktype"
 import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
@@ -25,11 +26,11 @@ async function submitTutorApplicationImpl(
         data[key] = value
     }
 
-    const parsedData = BTPTutorApplicationSchema.safeParse(data)
+    const parsedData = BTPTutorApplicationSchema(data)
 
-    if (!parsedData.success) {
+    if (parsedData instanceof type.errors) {
         const fieldErrors: Record<string, string[]> = {}
-        for (const issue of parsedData.error.issues) {
+        for (const issue of parsedData.issues) {
             const field = String(issue.path[0])
             if (!fieldErrors[field]) {
                 fieldErrors[field] = []
@@ -44,13 +45,13 @@ async function submitTutorApplicationImpl(
 
     // Verify CAPTCHA in production
     if (!isDevelopment) {
-        if (!parsedData.data.captchaToken) {
+        if (!parsedData.captchaToken) {
             return {
                 error: "Veuillez compléter le CAPTCHA."
             }
         }
 
-        const isCaptchaValid = await verifyCaptcha(parsedData.data.captchaToken)
+        const isCaptchaValid = await verifyCaptcha(parsedData.captchaToken)
         if (!isCaptchaValid) {
             return {
                 error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
@@ -59,10 +60,10 @@ async function submitTutorApplicationImpl(
     }
 
     // Generate a random folder name for the storage
-    const firstInitial = parsedData.data.firstName.toLowerCase().at(0) ?? ""
+    const firstInitial = parsedData.firstName.toLowerCase().at(0) ?? ""
     const sanitizedName =
         sanitizeString(firstInitial) +
-        sanitizeString(parsedData.data.lastName.toLowerCase())
+        sanitizeString(parsedData.lastName.toLowerCase())
 
     const folderName = `${crypto.randomUUID()}-${sanitizedName}`
 
@@ -71,7 +72,7 @@ async function submitTutorApplicationImpl(
 
     const { data: cvUploadData, error: cvUploadError } = await supabase.storage
         .from("btp-tutor-application")
-        .upload(`${folderName}/cv-${sanitizedName}.pdf`, parsedData.data.cv)
+        .upload(`${folderName}/cv-${sanitizedName}.pdf`, parsedData.cv)
     if (cvUploadError) {
         return {
             error: "Echec de l'upload du CV"
@@ -82,7 +83,7 @@ async function submitTutorApplicationImpl(
         .from("btp-tutor-application")
         .upload(
             `${folderName}/lm-${sanitizedName}.pdf`,
-            parsedData.data.motivationLetter
+            parsedData.motivationLetter
         )
     if (lmUploadError) {
         // Clean up uploaded CV
@@ -98,11 +99,11 @@ async function submitTutorApplicationImpl(
     const created = await tryCatch(
         prisma.bTPTutorApplication.create({
             data: {
-                firstName: parsedData.data.firstName,
-                lastName: parsedData.data.lastName,
-                email: parsedData.data.email,
-                major: parsedData.data.major,
-                studyYear: parsedData.data.studyYear,
+                firstName: parsedData.firstName,
+                lastName: parsedData.lastName,
+                email: parsedData.email,
+                major: parsedData.major,
+                studyYear: parsedData.studyYear,
                 cvPath: cvUploadData.path,
                 mlPath: lmUploadData.path
             }
@@ -123,7 +124,7 @@ async function submitTutorApplicationImpl(
     await sendEmail({
         to: "intervention-carceral@fare-asso.fr",
         subject: "Nouvelle candidature de tuteur Bouge Ta Prison",
-        html: await render(<BtpApplication data={parsedData.data} />)
+        html: await render(<BtpApplication data={parsedData} />)
     })
 
     revalidatePath("/dashboard/bouge-ta-prison")

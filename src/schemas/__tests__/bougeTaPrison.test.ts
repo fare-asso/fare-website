@@ -1,3 +1,4 @@
+import { type } from "arktype"
 import { describe, expect, it } from "vitest"
 
 import { pdfFile } from "@/test/factories/files"
@@ -31,68 +32,68 @@ const validQuestion = () => ({
 describe("BTPTutorApplicationSchema", () => {
     it("accepts a fully valid payload", () => {
         expect(
-            BTPTutorApplicationSchema.safeParse(validApplication()).success
-        ).toBe(true)
+            BTPTutorApplicationSchema(validApplication())
+        ).not.toBeInstanceOf(type.errors)
     })
 
     it("rejects a study year outside L3 | M1 | M2", () => {
-        const res = BTPTutorApplicationSchema.safeParse({
+        const res = BTPTutorApplicationSchema({
             ...validApplication(),
             studyYear: "L2"
         })
-        expect(res.success).toBe(false)
+        expect(res).toBeInstanceOf(type.errors)
     })
 
     it("rejects a non-PDF CV", () => {
-        const res = BTPTutorApplicationSchema.safeParse({
+        const res = BTPTutorApplicationSchema({
             ...validApplication(),
             cv: new File([new Uint8Array([1])], "cv.png", {
                 type: "image/png"
             })
         })
-        expect(res.success).toBe(false)
+        expect(res).toBeInstanceOf(type.errors)
     })
 
     it("rejects a CV larger than 5 MB", () => {
         const big = new File([new Uint8Array(6 * 1024 * 1024)], "cv.pdf", {
             type: "application/pdf"
         })
-        const res = BTPTutorApplicationSchema.safeParse({
+        const res = BTPTutorApplicationSchema({
             ...validApplication(),
             cv: big
         })
-        expect(res.success).toBe(false)
+        expect(res).toBeInstanceOf(type.errors)
     })
 })
 
 describe("BTPTutorQuestionSchema", () => {
     it("accepts a fully valid payload", () => {
-        expect(BTPTutorQuestionSchema.safeParse(validQuestion()).success).toBe(
-            true
+        expect(BTPTutorQuestionSchema(validQuestion())).not.toBeInstanceOf(
+            type.errors
         )
     })
 
     it("rejects an invalid email", () => {
-        const res = BTPTutorQuestionSchema.safeParse({
+        const res = BTPTutorQuestionSchema({
             ...validQuestion(),
             email: "not-an-email"
         })
-        expect(res.success).toBe(false)
+        expect(res).toBeInstanceOf(type.errors)
     })
 
     it("rejects a message longer than 1000 characters", () => {
-        const res = BTPTutorQuestionSchema.safeParse({
+        const res = BTPTutorQuestionSchema({
             ...validQuestion(),
             message: "x".repeat(1001)
         })
-        expect(res.success).toBe(false)
+        expect(res).toBeInstanceOf(type.errors)
     })
 
     it("accepts the 'other' study year option", () => {
-        const res = BTPTutorQuestionSchema.safeParse({
+        const res = BTPTutorQuestionSchema({
             ...validQuestion(),
             studyYear: "other"
         })
-        expect(res.success).toBe(true)
+        expect(res).not.toBeInstanceOf(type.errors)
     })
 })

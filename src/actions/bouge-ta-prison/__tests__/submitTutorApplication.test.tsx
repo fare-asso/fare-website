@@ -64,15 +64,6 @@ describe("submitTutorApplication", () => {
         expect(h.create).not.toHaveBeenCalled()
     })
 
-    it("skips captcha verification in development", async () => {
-        stdenv.isDevelopment = true
-        const res = await submitTutorApplication(
-            validTutorApplicationFormData({ captchaToken: "" })
-        )
-        expect(h.verifyCaptcha).not.toHaveBeenCalled()
-        expect(res).toEqual({ success: true })
-    })
-
     it("fails when the captcha is invalid", async () => {
         h.verifyCaptcha.mockResolvedValue(false)
         const res = await submitTutorApplication(

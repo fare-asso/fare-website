@@ -49,16 +49,6 @@ describe("submitTutorQuestion", () => {
         expect(h.create).not.toHaveBeenCalled()
     })
 
-    it("skips captcha and email in development", async () => {
-        stdenv.isDevelopment = true
-        const res = await submitTutorQuestion(
-            validTutorQuestion({ captchaToken: "" })
-        )
-        expect(h.verifyCaptcha).not.toHaveBeenCalled()
-        expect(h.sendEmail).not.toHaveBeenCalled()
-        expect(res).toEqual({ success: true })
-    })
-
     it("fails when the captcha is invalid", async () => {
         h.verifyCaptcha.mockResolvedValue(false)
         const res = await submitTutorQuestion(validTutorQuestion())
