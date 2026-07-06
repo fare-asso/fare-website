@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
+import { FaRegFilePdf } from "react-icons/fa6"
+import { FiDownload, FiExternalLink } from "react-icons/fi"
 
 import food from "#public/AGORAe/food.jpg"
 import logoAgoraE from "#public/AGORAe/logo_AgoraE.png"
@@ -8,6 +10,8 @@ import recettesParMois from "#public/AGORAe/recettes_par_mois.png"
 import salle from "#public/AGORAe/salle.jpg"
 import tableauRAV from "#public/AGORAe/tableau_rav.png"
 import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
+
+const rapportActiviteUrl = "/documents/Rapport_activite_AGORAe_2025-2026.pdf"
 
 export const metadata: Metadata = {
     title: "AGORAé"
@@ -224,6 +228,51 @@ export default function AGORAe() {
                         </a>
                         .
                     </p>
+                </section>
+
+                <section className="w-full">
+                    <h2 className="mb-4 text-2xl font-semibold">
+                        Documentation
+                    </h2>
+
+                    <div className="group border-border bg-card flex w-full flex-col gap-4 rounded-lg border p-4 shadow-xs transition-shadow hover:shadow-md sm:flex-row sm:items-center">
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center self-center rounded-lg bg-red-50 transition-colors group-hover:bg-red-100 dark:bg-red-950/30 dark:group-hover:bg-red-950/50">
+                            <FaRegFilePdf size={28} className="text-red-500" />
+                        </div>
+                        <div className="flex min-w-0 flex-1 flex-col gap-1 text-center sm:text-left">
+                            <Link
+                                href={rapportActiviteUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-foreground hover:text-fare-accent truncate font-medium transition-colors hover:underline"
+                            >
+                                Rapport d'activité AGORAé 2025-2026
+                            </Link>
+                        </div>
+                        <div className="flex shrink-0 items-center justify-center gap-2 sm:justify-end">
+                            <Link
+                                href={rapportActiviteUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm shadow-xs transition-colors"
+                            >
+                                <FiExternalLink size={16} />
+                                <span className="hidden md:inline">
+                                    Consulter
+                                </span>
+                            </Link>
+                            <a
+                                href={rapportActiviteUrl}
+                                download="Rapport_activite_AGORAe_2025-2026.pdf"
+                                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm shadow-xs transition-colors"
+                            >
+                                <FiDownload size={16} />
+                                <span className="hidden md:inline">
+                                    Télécharger
+                                </span>
+                            </a>
+                        </div>
+                    </div>
                 </section>
 
                 <section>
