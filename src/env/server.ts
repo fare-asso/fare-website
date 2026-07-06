@@ -1,4 +1,4 @@
-import { createEnv } from "@t3-oss/env-nextjs"
+import { createEnv } from "@t3-oss/env-core"
 import { z } from "zod"
 
 export const env = createEnv({
@@ -27,24 +27,6 @@ export const env = createEnv({
                 return `https://${val}`
             })
     },
-    client: {
-        NEXT_PUBLIC_SUPABASE_URL: z.url(),
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
-
-        NEXT_PUBLIC_SITE_URL: z.url().default("http://localhost:3000"),
-        NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: z.string().min(1),
-        NEXT_PUBLIC_SENTRY_DSN: z.string()
-    },
-    experimental__runtimeEnv: {
-        NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        NEXT_PUBLIC_SUPABASE_ANON_KEY:
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-
-        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-        NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY:
-            process.env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY,
-        NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN
-    },
-
+    runtimeEnv: process.env,
     emptyStringAsUndefined: true
 })

@@ -25,7 +25,7 @@ export default defineConfig({
     categories: {
         correctness: "error"
     },
-    ignorePatterns: ["**/next-env.d.ts", "**/migrations/**", "**/generated/**"],
+    ignorePatterns: ["**/migrations/**", "**/generated/**", "**/routeTree.gen.ts"],
     overrides: [
         {
             // Test files & mocks: async mock factories must keep the async

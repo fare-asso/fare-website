@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 
-import { env } from "@/env"
+import { clientEnv } from "@/env/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { validateEmail } from "@/helpers/string"
@@ -45,7 +45,7 @@ async function inviteRepresentativeActionImpl(
     // Send Invitation By Email
     const invited = await tryCatch(
         supabase.auth.admin.inviteUserByEmail(email, {
-            redirectTo: `${env.NEXT_PUBLIC_SITE_URL}/espace-asso/create-password`
+            redirectTo: `${clientEnv.VITE_SITE_URL}/espace-asso/create-password`
         })
     )
     if (!invited.success) {

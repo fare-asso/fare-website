@@ -6,7 +6,7 @@ import {
 } from "@friendlycaptcha/sdk"
 import { useEffect, useRef } from "react"
 
-import { env } from "@/env"
+import { clientEnv } from "@/env/client"
 
 interface CaptchaProps {
     onComplete?: (token: string) => void
@@ -29,7 +29,7 @@ export function Captcha({ onComplete, onExpire, onError }: CaptchaProps) {
             language: "fr",
             theme: "light",
             element: captchaRef.current,
-            sitekey: env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
+            sitekey: clientEnv.VITE_FRIENDLY_CAPTCHA_SITE_KEY
         })
 
         captchaRef.current.addEventListener("frc:widget.complete", (event) => {

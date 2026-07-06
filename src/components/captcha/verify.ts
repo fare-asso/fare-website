@@ -3,7 +3,7 @@
 // oxlint-disable local/require-server-action-wrapper
 "use server"
 
-import { env } from "@/env"
+import { clientEnv } from "@/env/client"
 
 type FCApiResponse =
     | {
@@ -49,7 +49,7 @@ export async function verifyCaptcha(captchaValue: string) {
         {
             method: "POST",
             body: JSON.stringify({
-                sitekey: env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY,
+                sitekey: clientEnv.VITE_FRIENDLY_CAPTCHA_SITE_KEY,
                 response: captchaValue
             }),
             headers: {

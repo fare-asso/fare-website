@@ -18,5 +18,5 @@ export default defineConfig({
     sortImports: true,
     sortTailwindcss: { functions: ["cn", "twMerge", "cva"] },
     sortPackageJson: true,
-    ignorePatterns: ["**/next-env.d.ts", "**/migrations/**"]
+    ignorePatterns: ["**/migrations/**", "**/routeTree.gen.ts"]
 })

@@ -10,7 +10,9 @@
 /coverage
 
 # next.js
-/.next/
+/.output/
+/.nitro/
+/.tanstack/
 /out/
 
 # production
@@ -39,3 +41,4 @@ yarn-error.log*
 # vitest browser-mode failure screenshots
 __screenshots__/
 .vitest-attachments/
+/.pnpm-store/

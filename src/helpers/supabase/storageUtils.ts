@@ -1,7 +1,7 @@
-import { env } from "@/env"
+import { clientEnv } from "@/env/client"
 
 export class StorageUtils {
-    private storageUrl: string = env.NEXT_PUBLIC_SUPABASE_URL
+    private storageUrl: string = clientEnv.VITE_SUPABASE_URL
 
     public constructor(storageUrl?: string) {
         if (storageUrl) {

@@ -2,15 +2,15 @@ import { createServerClient } from "@supabase/ssr"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 
-import { env } from "@/env"
+import { clientEnv } from "@/env/client"
 import { tryCatch } from "@/lib/utils"
 
 export async function createClient() {
     const cookieStore = await cookies()
 
     return createServerClient(
-        env.NEXT_PUBLIC_SUPABASE_URL,
-        env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        clientEnv.VITE_SUPABASE_URL,
+        clientEnv.VITE_SUPABASE_ANON_KEY,
         {
             cookies: {
                 getAll() {
@@ -34,7 +34,7 @@ export function createAdminClient() {
     // PostgREST requests. The plain client sends the service-role key as
     // both apikey and Authorization, so queries actually run as service_role.
     return createSupabaseClient(
-        env.NEXT_PUBLIC_SUPABASE_URL,
+        clientEnv.VITE_SUPABASE_URL,
         env.SUPABASE_SERVICE_ROLE_KEY,
         {
             auth: {

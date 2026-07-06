@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { render } from "react-email"
 
 import NewGoogleUserTemplate from "@/../emails/new-google-user"
-import { env } from "@/env"
+import { clientEnv } from "@/env/client"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { createClient } from "@/helpers/supabase/server"
@@ -15,7 +15,7 @@ const NEW_USER_THRESHOLD_MS = 60_000 // 60 seconds
 export async function GET(request: Request) {
     // Only trust x-forwarded-host (set by the ingress); never the raw Host
     // header, which is client-controllable. Fall back to the canonical URL.
-    const fallback = new URL(env.DOKPLOY_DEPLOY_URL || env.NEXT_PUBLIC_SITE_URL)
+    const fallback = new URL(env.DOKPLOY_DEPLOY_URL || clientEnv.VITE_SITE_URL)
     const host = request.headers.get("x-forwarded-host") ?? fallback.host
     const proto =
         request.headers.get("x-forwarded-proto") ??

@@ -4,7 +4,7 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { isDevelopment } from "std-env"
 
-import { env } from "@/env"
+import { clientEnv } from "@/env/client"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserRole from "@/helpers/user/role"
 import { captureActionError, withServerAction } from "@/lib/sentry"
@@ -15,7 +15,7 @@ async function loginWithGoogleActionImpl() {
 
     // Only trust x-forwarded-host (set by the ingress); never the raw Host
     // header, which is client-controllable. Fall back to the canonical URL.
-    const fallback = new URL(env.DOKPLOY_DEPLOY_URL || env.NEXT_PUBLIC_SITE_URL)
+    const fallback = new URL(env.DOKPLOY_DEPLOY_URL || clientEnv.VITE_SITE_URL)
     const h = await headers()
     const host = h.get("x-forwarded-host") ?? fallback.host
     const proto =
