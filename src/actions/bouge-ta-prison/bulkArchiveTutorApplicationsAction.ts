@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
     BulkArchiveTutorApplicationsSchema,
@@ -52,11 +56,33 @@ async function bulkArchiveTutorApplicationsActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true, value: { count: updated.value.count } }
 }
 
-export default withServerAction(
-    "bulkArchiveTutorApplicationsAction",
-    bulkArchiveTutorApplicationsActionImpl
-)
+const bulkArchiveTutorApplicationsActionServerFn = createServerFn({
+    method: "POST"
+})
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof bulkArchiveTutorApplicationsActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "bulkArchiveTutorApplicationsAction",
+            bulkArchiveTutorApplicationsActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof bulkArchiveTutorApplicationsActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof bulkArchiveTutorApplicationsActionImpl>
+): ReturnType<typeof bulkArchiveTutorApplicationsActionImpl> =>
+    bulkArchiveTutorApplicationsActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof bulkArchiveTutorApplicationsActionImpl>

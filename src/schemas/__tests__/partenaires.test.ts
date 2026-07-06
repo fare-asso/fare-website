@@ -1,16 +1,15 @@
 import { type } from "arktype"
 import { describe, expect, it } from "vitest"
 
+import {
+    AddPartenaireSchema,
+    EditPartenaireSchema
+} from "@/schemas/partenaires"
 import { imageFile, pdfFile } from "@/test/factories/files"
 import {
     validAddPartenaire,
     validEditPartenaire
 } from "@/test/factories/partenaires"
-
-import {
-    AddPartenaireSchema,
-    EditPartenaireSchema
-} from "../partenaires-schema"
 
 const isErrors = (out: unknown): boolean => out instanceof type.errors
 

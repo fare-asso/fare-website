@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function unarchiveAdhesionActionImpl(adhesionId: number): Promise<{
@@ -38,12 +42,28 @@ async function unarchiveAdhesionActionImpl(adhesionId: number): Promise<{
         return { error: "Echec de la désarchivation de la demande d'adhésion" }
     }
 
-    revalidatePath("/dashboard/adhesions")
-
     return { success: true }
 }
 
-export default withServerAction(
-    "unarchiveAdhesionAction",
-    unarchiveAdhesionActionImpl
-)
+const unarchiveAdhesionActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof unarchiveAdhesionActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "unarchiveAdhesionAction",
+            unarchiveAdhesionActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof unarchiveAdhesionActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof unarchiveAdhesionActionImpl>
+): ReturnType<typeof unarchiveAdhesionActionImpl> =>
+    unarchiveAdhesionActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof unarchiveAdhesionActionImpl>

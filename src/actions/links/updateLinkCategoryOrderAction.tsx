@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { OrderSchema, type TOrder } from "@/schemas/elu"
 
@@ -52,12 +56,31 @@ async function updateLinkCategoryOrderActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction(
-    "updateLinkCategoryOrderAction",
-    updateLinkCategoryOrderActionImpl
-)
+const updateLinkCategoryOrderActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof updateLinkCategoryOrderActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "updateLinkCategoryOrderAction",
+            updateLinkCategoryOrderActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof updateLinkCategoryOrderActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof updateLinkCategoryOrderActionImpl>
+): ReturnType<typeof updateLinkCategoryOrderActionImpl> =>
+    updateLinkCategoryOrderActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof updateLinkCategoryOrderActionImpl>

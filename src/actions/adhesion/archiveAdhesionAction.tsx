@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function archiveAdhesionActionImpl(adhesionId: number): Promise<{
@@ -38,12 +42,28 @@ async function archiveAdhesionActionImpl(adhesionId: number): Promise<{
         return { error: "Echec de l'archivage de la demande d'adhésion" }
     }
 
-    revalidatePath("/dashboard/adhesions")
-
     return { success: true }
 }
 
-export default withServerAction(
-    "archiveAdhesionAction",
-    archiveAdhesionActionImpl
-)
+const archiveAdhesionActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof archiveAdhesionActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "archiveAdhesionAction",
+            archiveAdhesionActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof archiveAdhesionActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof archiveAdhesionActionImpl>
+): ReturnType<typeof archiveAdhesionActionImpl> =>
+    archiveAdhesionActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof archiveAdhesionActionImpl>

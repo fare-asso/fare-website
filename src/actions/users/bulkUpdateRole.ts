@@ -1,12 +1,16 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import type { Role } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
@@ -47,7 +51,6 @@ async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
         }
     }
 
-    revalidatePath("/dashboard/users")
     return {
         success: true,
         updatedCount: filteredIds.length,
@@ -55,4 +58,20 @@ async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
     }
 }
 
-export default withServerAction("bulkUpdateRole", bulkUpdateRoleImpl)
+const bulkUpdateRoleServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof bulkUpdateRoleImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "bulkUpdateRole",
+            bulkUpdateRoleImpl
+        )(...unpackActionArgs<Parameters<typeof bulkUpdateRoleImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof bulkUpdateRoleImpl>
+): ReturnType<typeof bulkUpdateRoleImpl> =>
+    bulkUpdateRoleServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof bulkUpdateRoleImpl
+    >

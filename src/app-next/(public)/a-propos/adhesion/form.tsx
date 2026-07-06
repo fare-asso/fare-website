@@ -42,12 +42,12 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-
 import {
     AdhesionFormSchema,
     type BureauMember,
     type TAdhesionForm
-} from "./form-schema"
+} from "@/schemas/adhesion"
+
 import { processAdhesion } from "./process-adhesion"
 
 // --- Constants ---

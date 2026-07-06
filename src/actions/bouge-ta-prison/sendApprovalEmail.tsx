@@ -1,12 +1,16 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 import { render } from "react-email"
 
 import type { BTPTutorApplication } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 import BtpApplicationAck from "../../../emails/btp-application-aknowledgement"
@@ -56,12 +60,26 @@ async function sendApprovalEmailImpl(
         }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison/candidatures-tutorat/18")
-    revalidatePath("/dashboard/bouge-ta-prison")
     return {
         success: true,
         error: null
     }
 }
 
-export default withServerAction("sendApprovalEmail", sendApprovalEmailImpl)
+const sendApprovalEmailServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof sendApprovalEmailImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "sendApprovalEmail",
+            sendApprovalEmailImpl
+        )(...unpackActionArgs<Parameters<typeof sendApprovalEmailImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof sendApprovalEmailImpl>
+): ReturnType<typeof sendApprovalEmailImpl> =>
+    sendApprovalEmailServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof sendApprovalEmailImpl>

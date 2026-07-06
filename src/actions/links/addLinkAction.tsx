@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddLinkSchema, type TAddLink } from "@/schemas/link"
 
@@ -58,9 +62,23 @@ async function addLinkActionImpl(input: TAddLink): Promise<Result> {
         return { success: false, error: "Échec de la création du lien." }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction("addLinkAction", addLinkActionImpl)
+const addLinkActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof addLinkActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "addLinkAction",
+            addLinkActionImpl
+        )(...unpackActionArgs<Parameters<typeof addLinkActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof addLinkActionImpl>
+): ReturnType<typeof addLinkActionImpl> =>
+    addLinkActionServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof addLinkActionImpl
+    >

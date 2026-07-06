@@ -1,6 +1,4 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
@@ -12,7 +10,13 @@ import {
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { locationDisplayName } from "@/helpers/location"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 import NewBagadAssoTicket from "../../../emails/badagasso-ticket"
@@ -24,7 +28,6 @@ export type FormState = {
 }
 
 async function submitBagadAssoFormActionImpl(
-    _prevState: FormState | undefined,
     data: BagadAssoFormData
 ): Promise<FormState> {
     // Validate the data using Zod schema
@@ -106,11 +109,31 @@ async function submitBagadAssoFormActionImpl(
         )
     })
 
-    revalidatePath("/dashboard/bagadAsso")
     return { success: true }
 }
 
-export default withServerAction(
-    "submitBagadAssoFormAction",
-    submitBagadAssoFormActionImpl
-)
+const submitBagadAssoFormActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof submitBagadAssoFormActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "submitBagadAssoFormAction",
+            submitBagadAssoFormActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof submitBagadAssoFormActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof submitBagadAssoFormActionImpl>
+): ReturnType<typeof submitBagadAssoFormActionImpl> =>
+    submitBagadAssoFormActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof submitBagadAssoFormActionImpl>

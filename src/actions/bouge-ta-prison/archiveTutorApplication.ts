@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type Result = { success: true } | { success: false; error: string }
@@ -36,11 +40,28 @@ async function archiveTutorApplicationImpl(id: number): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
 
-export default withServerAction(
-    "archiveTutorApplication",
-    archiveTutorApplicationImpl
-)
+const archiveTutorApplicationServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof archiveTutorApplicationImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "archiveTutorApplication",
+            archiveTutorApplicationImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof archiveTutorApplicationImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof archiveTutorApplicationImpl>
+): ReturnType<typeof archiveTutorApplicationImpl> =>
+    archiveTutorApplicationServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof archiveTutorApplicationImpl>

@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function bulkDeleteUsersImpl(userIds: string[]) {
@@ -47,7 +51,6 @@ async function bulkDeleteUsersImpl(userIds: string[]) {
         }
     }
 
-    revalidatePath("/dashboard/users")
     return {
         success: true,
         deletedCount: filteredIds.length,
@@ -55,4 +58,20 @@ async function bulkDeleteUsersImpl(userIds: string[]) {
     }
 }
 
-export default withServerAction("bulkDeleteUsers", bulkDeleteUsersImpl)
+const bulkDeleteUsersServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof bulkDeleteUsersImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "bulkDeleteUsers",
+            bulkDeleteUsersImpl
+        )(...unpackActionArgs<Parameters<typeof bulkDeleteUsersImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof bulkDeleteUsersImpl>
+): ReturnType<typeof bulkDeleteUsersImpl> =>
+    bulkDeleteUsersServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof bulkDeleteUsersImpl
+    >

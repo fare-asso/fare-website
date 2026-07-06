@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { OrderSchema, type TOrder } from "@/schemas/elu"
 
@@ -50,14 +54,29 @@ async function updateConseilOrderActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true }
 }
 
-export default withServerAction(
-    "updateConseilOrderAction",
-    updateConseilOrderActionImpl
-)
+const updateConseilOrderActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<Parameters<typeof updateConseilOrderActionImpl>>
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "updateConseilOrderAction",
+            updateConseilOrderActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof updateConseilOrderActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof updateConseilOrderActionImpl>
+): ReturnType<typeof updateConseilOrderActionImpl> =>
+    updateConseilOrderActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof updateConseilOrderActionImpl>

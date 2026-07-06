@@ -1,9 +1,13 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteTutorQuestionImpl(
@@ -22,8 +26,24 @@ async function deleteTutorQuestionImpl(
         return { error: "Echec de la suppression de la question" }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
 
-export default withServerAction("deleteTutorQuestion", deleteTutorQuestionImpl)
+const deleteTutorQuestionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteTutorQuestionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteTutorQuestion",
+            deleteTutorQuestionImpl
+        )(...unpackActionArgs<Parameters<typeof deleteTutorQuestionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteTutorQuestionImpl>
+): ReturnType<typeof deleteTutorQuestionImpl> =>
+    deleteTutorQuestionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deleteTutorQuestionImpl>

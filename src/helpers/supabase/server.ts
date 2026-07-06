@@ -1,25 +1,26 @@
 import { createServerClient } from "@supabase/ssr"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
-import { cookies } from "next/headers"
+import { getCookies, setCookie } from "@tanstack/react-start/server"
 
 import { clientEnv } from "@/env/client"
+import { env } from "@/env/server"
 import { tryCatch } from "@/lib/utils"
 
-export async function createClient() {
-    const cookieStore = await cookies()
-
+export function createClient() {
     return createServerClient(
         clientEnv.VITE_SUPABASE_URL,
         clientEnv.VITE_SUPABASE_ANON_KEY,
         {
             cookies: {
                 getAll() {
-                    return cookieStore.getAll()
+                    return Object.entries(getCookies()).map(
+                        ([name, value]) => ({ name, value })
+                    )
                 },
                 setAll(cookiesToSet) {
                     tryCatch(() => {
                         for (const { name, value, options } of cookiesToSet) {
-                            cookieStore.set(name, value, options)
+                            setCookie(name, value, options)
                         }
                     })
                 }

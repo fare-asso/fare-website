@@ -1,15 +1,19 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddInstanceSchema, type TAddInstance } from "@/schemas/instance"
 
@@ -102,8 +106,23 @@ async function addInstanceActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/elus/instances")
     return { success: true }
 }
 
-export default withServerAction("addInstanceAction", addInstanceActionImpl)
+const addInstanceActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof addInstanceActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "addInstanceAction",
+            addInstanceActionImpl
+        )(...unpackActionArgs<Parameters<typeof addInstanceActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof addInstanceActionImpl>
+): ReturnType<typeof addInstanceActionImpl> =>
+    addInstanceActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof addInstanceActionImpl>

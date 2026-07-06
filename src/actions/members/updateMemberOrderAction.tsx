@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 interface MemberOrder {
@@ -44,13 +48,29 @@ async function updateMemberOrderActionImpl(memberOrder: MemberOrder[]) {
     }
 
     // Revalidate paths
-    revalidatePath("/dashboard/membres")
-    revalidatePath("/a-propos/bureau")
 
     return { success: true }
 }
 
-export default withServerAction(
-    "updateMemberOrderAction",
-    updateMemberOrderActionImpl
-)
+const updateMemberOrderActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof updateMemberOrderActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "updateMemberOrderAction",
+            updateMemberOrderActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof updateMemberOrderActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof updateMemberOrderActionImpl>
+): ReturnType<typeof updateMemberOrderActionImpl> =>
+    updateMemberOrderActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof updateMemberOrderActionImpl>

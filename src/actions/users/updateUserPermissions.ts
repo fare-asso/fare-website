@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function updateUserPermissionsImpl(
@@ -55,12 +59,28 @@ async function updateUserPermissionsImpl(
         }
     }
 
-    revalidatePath(`/dashboard/users/${userId}`)
-
     return { success: true }
 }
 
-export default withServerAction(
-    "updateUserPermissions",
-    updateUserPermissionsImpl
-)
+const updateUserPermissionsServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof updateUserPermissionsImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "updateUserPermissions",
+            updateUserPermissionsImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof updateUserPermissionsImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof updateUserPermissionsImpl>
+): ReturnType<typeof updateUserPermissionsImpl> =>
+    updateUserPermissionsServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof updateUserPermissionsImpl>

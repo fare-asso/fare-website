@@ -1,7 +1,5 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
@@ -9,7 +7,13 @@ import { BtpContact } from "@/../emails/btp-contact"
 import { verifyCaptcha } from "@/components/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
     type BTPTutorQuestion,
@@ -92,8 +96,24 @@ async function submitTutorQuestionImpl(
         })
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
 
-export default withServerAction("submitTutorQuestion", submitTutorQuestionImpl)
+const submitTutorQuestionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof submitTutorQuestionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "submitTutorQuestion",
+            submitTutorQuestionImpl
+        )(...unpackActionArgs<Parameters<typeof submitTutorQuestionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof submitTutorQuestionImpl>
+): ReturnType<typeof submitTutorQuestionImpl> =>
+    submitTutorQuestionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof submitTutorQuestionImpl>

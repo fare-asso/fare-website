@@ -1,11 +1,15 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
 import { verifyCaptcha } from "@/components/captcha/verify"
 import { sendEmail } from "@/helpers/email"
-import { withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { type Contact, ContactSchema } from "@/schemas/contact"
 
 import ContactTemplate from "../../../emails/contact"
@@ -16,10 +20,7 @@ export type FormState = {
     fieldErrors?: Partial<Record<keyof Contact, string[]>>
 }
 
-async function submitContactFormActionImpl(
-    _prevState: FormState | undefined,
-    data: Contact
-): Promise<FormState> {
+async function submitContactFormActionImpl(data: Contact): Promise<FormState> {
     const parsed = ContactSchema.safeParse(data)
 
     if (!parsed.success) {
@@ -76,7 +77,25 @@ async function submitContactFormActionImpl(
     return { success: true }
 }
 
-export default withServerAction(
-    "submitContactFormAction",
-    submitContactFormActionImpl
-)
+const submitContactFormActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof submitContactFormActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "submitContactFormAction",
+            submitContactFormActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof submitContactFormActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof submitContactFormActionImpl>
+): ReturnType<typeof submitContactFormActionImpl> =>
+    submitContactFormActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof submitContactFormActionImpl>

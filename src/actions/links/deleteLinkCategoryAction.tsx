@@ -1,19 +1,20 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type Result = { success: true } | { success: false; error: string }
 
-async function deleteLinkCategoryActionImpl(
-    _prevState: Result | undefined,
-    id: number
-): Promise<Result> {
+async function deleteLinkCategoryActionImpl(id: number): Promise<Result> {
     const user = await getCurrentUserWithPermissions()
     if (!user) {
         return { success: false, error: "Authentification requise" }
@@ -36,12 +37,29 @@ async function deleteLinkCategoryActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction(
-    "deleteLinkCategoryAction",
-    deleteLinkCategoryActionImpl
-)
+const deleteLinkCategoryActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<Parameters<typeof deleteLinkCategoryActionImpl>>
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteLinkCategoryAction",
+            deleteLinkCategoryActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof deleteLinkCategoryActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteLinkCategoryActionImpl>
+): ReturnType<typeof deleteLinkCategoryActionImpl> =>
+    deleteLinkCategoryActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deleteLinkCategoryActionImpl>

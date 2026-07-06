@@ -1,14 +1,18 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { uniqueFileName } from "@/helpers/storage"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddMemberSchema, type TAddMember } from "@/schemas/members"
 
@@ -67,9 +71,23 @@ async function addMemberActionImpl(
         return { success: false, error: "Échec de la création du membre." }
     }
 
-    revalidatePath("/dashboard/membres")
-    revalidatePath("/a-propos/bureau")
     return { success: true }
 }
 
-export default withServerAction("addMemberAction", addMemberActionImpl)
+const addMemberActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof addMemberActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "addMemberAction",
+            addMemberActionImpl
+        )(...unpackActionArgs<Parameters<typeof addMemberActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof addMemberActionImpl>
+): ReturnType<typeof addMemberActionImpl> =>
+    addMemberActionServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof addMemberActionImpl
+    >

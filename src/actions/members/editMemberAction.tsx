@@ -1,14 +1,18 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { uniqueFileName } from "@/helpers/storage"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditMemberSchema, type TEditMember } from "@/schemas/members"
 
@@ -94,9 +98,23 @@ async function editMemberActionImpl(input: TEditMember): Promise<Result> {
         return { success: false, error: "Échec de la modification du membre." }
     }
 
-    revalidatePath("/dashboard/membres")
-    revalidatePath("/a-propos/bureau")
     return { success: true }
 }
 
-export default withServerAction("editMemberAction", editMemberActionImpl)
+const editMemberActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof editMemberActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "editMemberAction",
+            editMemberActionImpl
+        )(...unpackActionArgs<Parameters<typeof editMemberActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof editMemberActionImpl>
+): ReturnType<typeof editMemberActionImpl> =>
+    editMemberActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof editMemberActionImpl>

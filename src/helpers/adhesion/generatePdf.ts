@@ -5,11 +5,8 @@ import { type } from "arktype"
 import { format } from "date-fns"
 import { PDFDocument, type PDFPage, rgb, StandardFonts } from "pdf-lib"
 
-import {
-    type BureauMember,
-    bureauMemberSchema
-} from "@/app/(public)/a-propos/adhesion/form-schema"
 import type { Adhesion } from "@/generated/prisma/client"
+import { type BureauMember, bureauMemberSchema } from "@/schemas/adhesion"
 
 interface AdhesionPdfData {
     dateAdhesion: Date

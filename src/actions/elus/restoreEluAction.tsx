@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type RestoreEluResult = { success: true } | { success: false; error: string }
@@ -36,11 +40,23 @@ async function restoreEluActionImpl(id: number): Promise<RestoreEluResult> {
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true }
 }
 
-export default withServerAction("restoreEluAction", restoreEluActionImpl)
+const restoreEluActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof restoreEluActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "restoreEluAction",
+            restoreEluActionImpl
+        )(...unpackActionArgs<Parameters<typeof restoreEluActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof restoreEluActionImpl>
+): ReturnType<typeof restoreEluActionImpl> =>
+    restoreEluActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof restoreEluActionImpl>

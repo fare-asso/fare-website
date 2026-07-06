@@ -14,8 +14,7 @@ import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/server"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
-
-import { AdhesionFormSchema, type TAdhesionForm } from "./form-schema"
+import { AdhesionFormSchema, type TAdhesionForm } from "@/schemas/adhesion"
 
 const BUCKET = "adhesion"
 

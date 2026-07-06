@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function hardDeleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
@@ -35,12 +39,33 @@ async function hardDeleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
         return { error: "Echec de la suppression définitive du ticket" }
     }
 
-    revalidatePath("/dashboard/bagadAsso")
-
     return { success: true }
 }
 
-export default withServerAction(
-    "hardDeleteBagadAssoTicketAction",
-    hardDeleteBagadAssoTicketActionImpl
-)
+const hardDeleteBagadAssoTicketActionServerFn = createServerFn({
+    method: "POST"
+})
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof hardDeleteBagadAssoTicketActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "hardDeleteBagadAssoTicketAction",
+            hardDeleteBagadAssoTicketActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof hardDeleteBagadAssoTicketActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof hardDeleteBagadAssoTicketActionImpl>
+): ReturnType<typeof hardDeleteBagadAssoTicketActionImpl> =>
+    hardDeleteBagadAssoTicketActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof hardDeleteBagadAssoTicketActionImpl>

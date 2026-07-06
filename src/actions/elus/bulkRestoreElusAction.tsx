@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type Result =
@@ -43,14 +47,28 @@ async function bulkRestoreElusActionImpl(ids: number[]): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true, value: { count: restored.value.count } }
 }
 
-export default withServerAction(
-    "bulkRestoreElusAction",
-    bulkRestoreElusActionImpl
-)
+const bulkRestoreElusActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof bulkRestoreElusActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "bulkRestoreElusAction",
+            bulkRestoreElusActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof bulkRestoreElusActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof bulkRestoreElusActionImpl>
+): ReturnType<typeof bulkRestoreElusActionImpl> =>
+    bulkRestoreElusActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof bulkRestoreElusActionImpl>

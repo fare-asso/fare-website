@@ -1,12 +1,16 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteMemberActionImpl({ id }: { id: number }) {
@@ -46,9 +50,23 @@ async function deleteMemberActionImpl({ id }: { id: number }) {
         return { error: error.message }
     }
 
-    revalidatePath("/dashboard/membres")
-    revalidatePath("/a-propos/bureau")
     return { success: true }
 }
 
-export default withServerAction("deleteMemberAction", deleteMemberActionImpl)
+const deleteMemberActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteMemberActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteMemberAction",
+            deleteMemberActionImpl
+        )(...unpackActionArgs<Parameters<typeof deleteMemberActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteMemberActionImpl>
+): ReturnType<typeof deleteMemberActionImpl> =>
+    deleteMemberActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deleteMemberActionImpl>

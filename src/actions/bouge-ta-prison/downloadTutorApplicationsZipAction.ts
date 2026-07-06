@@ -1,5 +1,4 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
 import { format } from "date-fns"
 import { zip } from "fflate"
@@ -10,7 +9,13 @@ import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
     DownloadTutorApplicationsSchema,
@@ -197,7 +202,30 @@ async function downloadTutorApplicationsZipActionImpl(
     }
 }
 
-export default withServerAction(
-    "downloadTutorApplicationsZipAction",
-    downloadTutorApplicationsZipActionImpl
-)
+const downloadTutorApplicationsZipActionServerFn = createServerFn({
+    method: "POST"
+})
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof downloadTutorApplicationsZipActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "downloadTutorApplicationsZipAction",
+            downloadTutorApplicationsZipActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof downloadTutorApplicationsZipActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof downloadTutorApplicationsZipActionImpl>
+): ReturnType<typeof downloadTutorApplicationsZipActionImpl> =>
+    downloadTutorApplicationsZipActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof downloadTutorApplicationsZipActionImpl>

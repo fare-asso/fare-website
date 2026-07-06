@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddConseilSchema, type TAddConseil } from "@/schemas/conseil"
 
@@ -64,10 +68,23 @@ async function addConseilActionImpl(input: TAddConseil): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
     return { success: true }
 }
 
-export default withServerAction("addConseilAction", addConseilActionImpl)
+const addConseilActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof addConseilActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "addConseilAction",
+            addConseilActionImpl
+        )(...unpackActionArgs<Parameters<typeof addConseilActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof addConseilActionImpl>
+): ReturnType<typeof addConseilActionImpl> =>
+    addConseilActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof addConseilActionImpl>

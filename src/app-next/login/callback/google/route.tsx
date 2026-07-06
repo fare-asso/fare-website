@@ -4,6 +4,7 @@ import { render } from "react-email"
 
 import NewGoogleUserTemplate from "@/../emails/new-google-user"
 import { clientEnv } from "@/env/client"
+import { env } from "@/env/server"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { createClient } from "@/helpers/supabase/server"

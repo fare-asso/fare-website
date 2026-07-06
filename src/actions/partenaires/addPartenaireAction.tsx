@@ -1,20 +1,21 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
-import {
-    AddPartenaireSchema,
-    type TAddPartenaire
-} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
+import { AddPartenaireSchema, type TAddPartenaire } from "@/schemas/partenaires"
 
 async function addPartenaireActionImpl(
     input: TAddPartenaire
@@ -68,9 +69,24 @@ async function addPartenaireActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/partenaires")
-    revalidatePath("/a-propos/partenaires")
     return { success: true }
 }
 
-export default withServerAction("addPartenaireAction", addPartenaireActionImpl)
+const addPartenaireActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof addPartenaireActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "addPartenaireAction",
+            addPartenaireActionImpl
+        )(...unpackActionArgs<Parameters<typeof addPartenaireActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof addPartenaireActionImpl>
+): ReturnType<typeof addPartenaireActionImpl> =>
+    addPartenaireActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof addPartenaireActionImpl>

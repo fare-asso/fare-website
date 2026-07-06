@@ -1,15 +1,19 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
     AddEquipmentSchema,
@@ -78,9 +82,23 @@ async function addEquipmentActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/bagadAsso")
-    revalidatePath("/projets/bagad-asso")
     return { success: true }
 }
 
-export default withServerAction("addEquipmentAction", addEquipmentActionImpl)
+const addEquipmentActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof addEquipmentActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "addEquipmentAction",
+            addEquipmentActionImpl
+        )(...unpackActionArgs<Parameters<typeof addEquipmentActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof addEquipmentActionImpl>
+): ReturnType<typeof addEquipmentActionImpl> =>
+    addEquipmentActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof addEquipmentActionImpl>

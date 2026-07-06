@@ -1,12 +1,16 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteCDPActionImpl({ id }: { id: number }) {
@@ -60,14 +64,26 @@ async function deleteCDPActionImpl({ id }: { id: number }) {
         // success
 
         // revalidate Path
-        revalidatePath("/dashboard/communiques-de-presse")
-        revalidatePath("/presse")
-        revalidatePath("/presse/communiques-de-presse")
-        revalidatePath("/presse/dossiers-de-presse")
         return {
             success: true
         }
     }
 }
 
-export default withServerAction("deleteCDPAction", deleteCDPActionImpl)
+const deleteCDPActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteCDPActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteCDPAction",
+            deleteCDPActionImpl
+        )(...unpackActionArgs<Parameters<typeof deleteCDPActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteCDPActionImpl>
+): ReturnType<typeof deleteCDPActionImpl> =>
+    deleteCDPActionServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof deleteCDPActionImpl
+    >

@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { OrderSchema, type TOrder } from "@/schemas/elu"
 
@@ -50,12 +54,28 @@ async function updateLinkOrderActionImpl(linkOrder: TOrder): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction(
-    "updateLinkOrderAction",
-    updateLinkOrderActionImpl
-)
+const updateLinkOrderActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof updateLinkOrderActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "updateLinkOrderAction",
+            updateLinkOrderActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof updateLinkOrderActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof updateLinkOrderActionImpl>
+): ReturnType<typeof updateLinkOrderActionImpl> =>
+    updateLinkOrderActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof updateLinkOrderActionImpl>

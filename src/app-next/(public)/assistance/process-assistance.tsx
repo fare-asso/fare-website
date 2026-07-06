@@ -11,13 +11,12 @@ import { getAssistanceConfig } from "@/helpers/assistanceConfig"
 import { sendEmail } from "@/helpers/email"
 import { captureActionError, withServerAction } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
-
 import {
     AssistanceFormSchema,
     MOYEN_CONTACT,
     SITUATIONS,
     type TAssistanceForm
-} from "./form-schema"
+} from "@/schemas/assistance"
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024
 

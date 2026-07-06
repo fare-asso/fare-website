@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function unarchiveBagadAssoTicketActionImpl(ticketId: number): Promise<{
@@ -38,12 +42,33 @@ async function unarchiveBagadAssoTicketActionImpl(ticketId: number): Promise<{
         return { error: "Echec de la désarchivation du ticket" }
     }
 
-    revalidatePath("/dashboard/bagadAsso")
-
     return { success: true }
 }
 
-export default withServerAction(
-    "unarchiveBagadAssoTicketAction",
-    unarchiveBagadAssoTicketActionImpl
-)
+const unarchiveBagadAssoTicketActionServerFn = createServerFn({
+    method: "POST"
+})
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof unarchiveBagadAssoTicketActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "unarchiveBagadAssoTicketAction",
+            unarchiveBagadAssoTicketActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof unarchiveBagadAssoTicketActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof unarchiveBagadAssoTicketActionImpl>
+): ReturnType<typeof unarchiveBagadAssoTicketActionImpl> =>
+    unarchiveBagadAssoTicketActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof unarchiveBagadAssoTicketActionImpl>

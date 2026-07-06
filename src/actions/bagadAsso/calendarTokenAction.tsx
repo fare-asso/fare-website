@@ -1,13 +1,17 @@
-"use server"
-
 import { randomBytes } from "node:crypto"
 
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type GenerateResult =
@@ -39,8 +43,6 @@ async function generateBagadCalendarTokenActionImpl(): Promise<GenerateResult> {
         return { success: false, error: "Echec de la génération du lien" }
     }
 
-    revalidatePath("/dashboard/bagadAsso")
-
     return { success: true, value: token }
 }
 
@@ -69,17 +71,61 @@ async function revokeBagadCalendarTokenActionImpl(): Promise<RevokeResult> {
         return { success: false, error: "Echec de la révocation du lien" }
     }
 
-    revalidatePath("/dashboard/bagadAsso")
-
     return { success: true }
 }
 
-export const generateBagadCalendarTokenAction = withServerAction(
-    "generateBagadCalendarTokenAction",
-    generateBagadCalendarTokenActionImpl
-)
+const generateBagadCalendarTokenActionServerFn = createServerFn({
+    method: "POST"
+})
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof generateBagadCalendarTokenActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "generateBagadCalendarTokenAction",
+            generateBagadCalendarTokenActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof generateBagadCalendarTokenActionImpl>
+            >(data)
+        )
+    )
 
-export const revokeBagadCalendarTokenAction = withServerAction(
-    "revokeBagadCalendarTokenAction",
-    revokeBagadCalendarTokenActionImpl
-)
+export const generateBagadCalendarTokenAction = async (
+    ...args: Parameters<typeof generateBagadCalendarTokenActionImpl>
+): ReturnType<typeof generateBagadCalendarTokenActionImpl> =>
+    generateBagadCalendarTokenActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof generateBagadCalendarTokenActionImpl>
+
+const revokeBagadCalendarTokenActionServerFn = createServerFn({
+    method: "POST"
+})
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof revokeBagadCalendarTokenActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "revokeBagadCalendarTokenAction",
+            revokeBagadCalendarTokenActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof revokeBagadCalendarTokenActionImpl>
+            >(data)
+        )
+    )
+
+export const revokeBagadCalendarTokenAction = async (
+    ...args: Parameters<typeof revokeBagadCalendarTokenActionImpl>
+): ReturnType<typeof revokeBagadCalendarTokenActionImpl> =>
+    revokeBagadCalendarTokenActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof revokeBagadCalendarTokenActionImpl>

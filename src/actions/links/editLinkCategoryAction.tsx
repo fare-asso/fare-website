@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditLinkCategorySchema, type TEditLinkCategory } from "@/schemas/link"
 
@@ -46,12 +50,28 @@ async function editLinkCategoryActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction(
-    "editLinkCategoryAction",
-    editLinkCategoryActionImpl
-)
+const editLinkCategoryActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof editLinkCategoryActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "editLinkCategoryAction",
+            editLinkCategoryActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof editLinkCategoryActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof editLinkCategoryActionImpl>
+): ReturnType<typeof editLinkCategoryActionImpl> =>
+    editLinkCategoryActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof editLinkCategoryActionImpl>

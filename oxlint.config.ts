@@ -25,7 +25,11 @@ export default defineConfig({
     categories: {
         correctness: "error"
     },
-    ignorePatterns: ["**/migrations/**", "**/generated/**", "**/routeTree.gen.ts"],
+    ignorePatterns: [
+        "**/migrations/**",
+        "**/generated/**",
+        "**/routeTree.gen.ts"
+    ],
     overrides: [
         {
             // Test files & mocks: async mock factories must keep the async

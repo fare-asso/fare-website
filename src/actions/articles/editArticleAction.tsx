@@ -1,19 +1,20 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import type { JSONContent } from "@tiptap/react"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function editArticleActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+async function editArticleActionImpl(formData: FormData) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -128,12 +129,22 @@ async function editArticleActionImpl(
         return { error: "Echec de la modification de l'article" }
     }
 
-    revalidatePath("/actualites")
-    revalidatePath("/dashboard/articles")
-
     return { success: true }
 }
 
-export default withServerAction("editArticleAction", editArticleActionImpl, {
-    attachFormData: true
-})
+const editArticleActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof editArticleActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction("editArticleAction", editArticleActionImpl, {
+            attachFormData: true
+        })(...unpackActionArgs<Parameters<typeof editArticleActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof editArticleActionImpl>
+): ReturnType<typeof editArticleActionImpl> =>
+    editArticleActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof editArticleActionImpl>

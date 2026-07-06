@@ -1,12 +1,16 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type DeletePartenaireResult =
@@ -14,7 +18,6 @@ type DeletePartenaireResult =
     | { success: false; error: string }
 
 async function deletePartenaireActionImpl(
-    _prevState: DeletePartenaireResult | undefined,
     id: number
 ): Promise<DeletePartenaireResult> {
     const user = await getCurrentUserWithPermissions()
@@ -68,13 +71,28 @@ async function deletePartenaireActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/partenaires")
-    revalidatePath("/a-propos/partenaires")
-
     return { success: true }
 }
 
-export default withServerAction(
-    "deletePartenaireAction",
-    deletePartenaireActionImpl
-)
+const deletePartenaireActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deletePartenaireActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deletePartenaireAction",
+            deletePartenaireActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof deletePartenaireActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof deletePartenaireActionImpl>
+): ReturnType<typeof deletePartenaireActionImpl> =>
+    deletePartenaireActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deletePartenaireActionImpl>

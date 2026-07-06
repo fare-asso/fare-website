@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditEluSchema, type TEditElu } from "@/schemas/elu"
 
@@ -66,10 +70,23 @@ async function editEluActionImpl(input: TEditElu): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
     return { success: true }
 }
 
-export default withServerAction("editEluAction", editEluActionImpl)
+const editEluActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof editEluActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "editEluAction",
+            editEluActionImpl
+        )(...unpackActionArgs<Parameters<typeof editEluActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof editEluActionImpl>
+): ReturnType<typeof editEluActionImpl> =>
+    editEluActionServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof editEluActionImpl
+    >

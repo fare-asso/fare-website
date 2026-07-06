@@ -1,11 +1,17 @@
-"use server"
+import { createServerFn } from "@tanstack/react-start"
 
 import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function downloadAdhesionPdfActionImpl(adhesionId: number): Promise<{
@@ -54,7 +60,28 @@ async function downloadAdhesionPdfActionImpl(adhesionId: number): Promise<{
     }
 }
 
-export default withServerAction(
-    "downloadAdhesionPdfAction",
-    downloadAdhesionPdfActionImpl
-)
+const downloadAdhesionPdfActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof downloadAdhesionPdfActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "downloadAdhesionPdfAction",
+            downloadAdhesionPdfActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof downloadAdhesionPdfActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof downloadAdhesionPdfActionImpl>
+): ReturnType<typeof downloadAdhesionPdfActionImpl> =>
+    downloadAdhesionPdfActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof downloadAdhesionPdfActionImpl>

@@ -1,18 +1,19 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteEquipmentActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    equipmentId: number
-) {
+async function deleteEquipmentActionImpl(equipmentId: number) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -64,12 +65,28 @@ async function deleteEquipmentActionImpl(
         captureActionError(deleted.error)
         return { error: "Echec de la suppression de l'équipement" }
     }
-    revalidatePath("/dashboard/bagadAsso")
-    revalidatePath("/projets/bagad-asso")
     return { success: true }
 }
 
-export default withServerAction(
-    "deleteEquipmentAction",
-    deleteEquipmentActionImpl
-)
+const deleteEquipmentActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteEquipmentActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteEquipmentAction",
+            deleteEquipmentActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof deleteEquipmentActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteEquipmentActionImpl>
+): ReturnType<typeof deleteEquipmentActionImpl> =>
+    deleteEquipmentActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deleteEquipmentActionImpl>

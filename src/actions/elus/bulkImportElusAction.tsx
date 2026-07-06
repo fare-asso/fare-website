@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { withServerAction, captureActionError } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { BulkImportEluSchema, type TBulkImportElu } from "@/schemas/elu"
 
@@ -86,14 +90,28 @@ async function bulkImportElusActionImpl(
         return { success: false, error: "Erreur lors de la création des élus" }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true, value: { count: created.value.count } }
 }
 
-export default withServerAction(
-    "bulkImportElusAction",
-    bulkImportElusActionImpl
-)
+const bulkImportElusActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof bulkImportElusActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "bulkImportElusAction",
+            bulkImportElusActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof bulkImportElusActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof bulkImportElusActionImpl>
+): ReturnType<typeof bulkImportElusActionImpl> =>
+    bulkImportElusActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof bulkImportElusActionImpl>

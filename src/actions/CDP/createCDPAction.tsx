@@ -1,13 +1,17 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import type { PresseType } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 function isPresseType(value: string): value is PresseType {
@@ -24,10 +28,7 @@ function getPresseType(formData: FormData): PresseType | undefined {
     return undefined
 }
 
-async function createCDPActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+async function createCDPActionImpl(formData: FormData) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -123,21 +124,24 @@ async function createCDPActionImpl(
         }
     }
 
-    // successfully created the record
-    // revalidate cdp page
-    revalidatePath("/dashboard/communiques-de-presse")
-    revalidatePath("/presse")
-    revalidatePath(
-        type === "CDP"
-            ? "/presse/communiques-de-presse"
-            : "/presse/dossiers-de-presse"
-    )
-
     return {
         success: true
     }
 }
 
-export default withServerAction("createCDPAction", createCDPActionImpl, {
-    attachFormData: true
-})
+const createCDPActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof createCDPActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction("createCDPAction", createCDPActionImpl, {
+            attachFormData: true
+        })(...unpackActionArgs<Parameters<typeof createCDPActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof createCDPActionImpl>
+): ReturnType<typeof createCDPActionImpl> =>
+    createCDPActionServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof createCDPActionImpl
+    >

@@ -1,18 +1,19 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function editAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+async function editAssociationActionImpl(formData: FormData) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -141,8 +142,6 @@ async function editAssociationActionImpl(
     }
 
     if (edited.value) {
-        revalidatePath("/dashboard/associations")
-        revalidatePath("/reseau")
         return { success: true }
     } else {
         return {
@@ -151,8 +150,24 @@ async function editAssociationActionImpl(
     }
 }
 
-export default withServerAction(
-    "editAssociationAction",
-    editAssociationActionImpl,
-    { attachFormData: true }
-)
+const editAssociationActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof editAssociationActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction("editAssociationAction", editAssociationActionImpl, {
+            attachFormData: true
+        })(
+            ...unpackActionArgs<Parameters<typeof editAssociationActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof editAssociationActionImpl>
+): ReturnType<typeof editAssociationActionImpl> =>
+    editAssociationActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof editAssociationActionImpl>

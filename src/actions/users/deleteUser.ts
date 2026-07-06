@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteUserImpl(userId: string) {
@@ -45,8 +49,23 @@ async function deleteUserImpl(userId: string) {
         }
     }
 
-    revalidatePath("/dashboard/users")
     return { success: true }
 }
 
-export default withServerAction("deleteUser", deleteUserImpl)
+const deleteUserServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteUserImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteUser",
+            deleteUserImpl
+        )(...unpackActionArgs<Parameters<typeof deleteUserImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteUserImpl>
+): ReturnType<typeof deleteUserImpl> =>
+    deleteUserServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof deleteUserImpl
+    >

@@ -1,20 +1,21 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function addAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+async function addAssociationActionImpl(formData: FormData) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -123,9 +124,6 @@ async function addAssociationActionImpl(
     }
 
     if (created.value) {
-        revalidatePath("/dashboard/associations")
-        revalidatePath("/reseau")
-        revalidatePath("/")
         return { success: true }
     } else {
         return {
@@ -134,8 +132,24 @@ async function addAssociationActionImpl(
     }
 }
 
-export default withServerAction(
-    "addAssociationAction",
-    addAssociationActionImpl,
-    { attachFormData: true }
-)
+const addAssociationActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof addAssociationActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction("addAssociationAction", addAssociationActionImpl, {
+            attachFormData: true
+        })(
+            ...unpackActionArgs<Parameters<typeof addAssociationActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof addAssociationActionImpl>
+): ReturnType<typeof addAssociationActionImpl> =>
+    addAssociationActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof addAssociationActionImpl>

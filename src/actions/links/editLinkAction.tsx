@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditLinkSchema, type TEditLink } from "@/schemas/link"
 
@@ -59,9 +63,23 @@ async function editLinkActionImpl(input: TEditLink): Promise<Result> {
         return { success: false, error: "Échec de la modification du lien." }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction("editLinkAction", editLinkActionImpl)
+const editLinkActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof editLinkActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "editLinkAction",
+            editLinkActionImpl
+        )(...unpackActionArgs<Parameters<typeof editLinkActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof editLinkActionImpl>
+): ReturnType<typeof editLinkActionImpl> =>
+    editLinkActionServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof editLinkActionImpl
+    >

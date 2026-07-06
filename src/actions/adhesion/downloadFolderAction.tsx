@@ -1,5 +1,4 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { zip } from "fflate"
 
 import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf"
@@ -8,7 +7,13 @@ import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type ActionState = {
@@ -19,7 +24,6 @@ type ActionState = {
 }
 
 async function downloadFolderActionImpl(
-    _prevState: ActionState | undefined,
     folderPath: string
 ): Promise<ActionState> {
     // Auth and permission verifications
@@ -117,7 +121,25 @@ async function downloadFolderActionImpl(
     }
 }
 
-export const downloadFolderAction = withServerAction(
-    "downloadFolderAction",
-    downloadFolderActionImpl
-)
+const downloadFolderActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof downloadFolderActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "downloadFolderAction",
+            downloadFolderActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof downloadFolderActionImpl>>(
+                data
+            )
+        )
+    )
+
+export const downloadFolderAction = async (
+    ...args: Parameters<typeof downloadFolderActionImpl>
+): ReturnType<typeof downloadFolderActionImpl> =>
+    downloadFolderActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof downloadFolderActionImpl>

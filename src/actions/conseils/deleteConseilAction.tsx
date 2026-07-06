@@ -1,17 +1,20 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type DeleteConseilResult = { success: true } | { success: false; error: string }
 
 async function deleteConseilActionImpl(
-    _prevState: DeleteConseilResult | undefined,
     id: number
 ): Promise<DeleteConseilResult> {
     const user = await getCurrentUserWithPermissions()
@@ -63,11 +66,24 @@ async function deleteConseilActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true }
 }
 
-export default withServerAction("deleteConseilAction", deleteConseilActionImpl)
+const deleteConseilActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteConseilActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteConseilAction",
+            deleteConseilActionImpl
+        )(...unpackActionArgs<Parameters<typeof deleteConseilActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteConseilActionImpl>
+): ReturnType<typeof deleteConseilActionImpl> =>
+    deleteConseilActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deleteConseilActionImpl>

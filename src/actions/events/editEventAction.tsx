@@ -1,15 +1,19 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserId from "@/helpers/user/id"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 interface Event {
@@ -25,10 +29,7 @@ interface Event {
     visibility?: boolean
 }
 
-async function editEventActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+async function editEventActionImpl(formData: FormData) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -318,11 +319,22 @@ async function editEventActionImpl(
         }
     }
 
-    revalidatePath("/agenda")
-    revalidatePath("/dashboard/events")
     return { success: true }
 }
 
-export default withServerAction("editEventAction", editEventActionImpl, {
-    attachFormData: true
-})
+const editEventActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof editEventActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction("editEventAction", editEventActionImpl, {
+            attachFormData: true
+        })(...unpackActionArgs<Parameters<typeof editEventActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof editEventActionImpl>
+): ReturnType<typeof editEventActionImpl> =>
+    editEventActionServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof editEventActionImpl
+    >

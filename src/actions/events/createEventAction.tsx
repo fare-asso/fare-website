@@ -1,8 +1,6 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
@@ -10,7 +8,13 @@ import { sanitizeString } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
 import getCurrentUserId from "@/helpers/user/id"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 interface Event {
@@ -25,10 +29,7 @@ interface Event {
     visibility?: boolean
 }
 
-async function createEventActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+async function createEventActionImpl(formData: FormData) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -298,11 +299,22 @@ async function createEventActionImpl(
         }
     }
 
-    revalidatePath("/agenda")
-    revalidatePath("/dashboard/events")
     return { success: true }
 }
 
-export default withServerAction("createEventAction", createEventActionImpl, {
-    attachFormData: true
-})
+const createEventActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof createEventActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction("createEventAction", createEventActionImpl, {
+            attachFormData: true
+        })(...unpackActionArgs<Parameters<typeof createEventActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof createEventActionImpl>
+): ReturnType<typeof createEventActionImpl> =>
+    createEventActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof createEventActionImpl>

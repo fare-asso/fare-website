@@ -1,9 +1,13 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function unarchiveTutorQuestionImpl(
@@ -24,11 +28,28 @@ async function unarchiveTutorQuestionImpl(
         return { error: "Echec du désarchivage de la question" }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison/questions")
     return { success: true }
 }
 
-export default withServerAction(
-    "unarchiveTutorQuestion",
-    unarchiveTutorQuestionImpl
-)
+const unarchiveTutorQuestionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof unarchiveTutorQuestionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "unarchiveTutorQuestion",
+            unarchiveTutorQuestionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof unarchiveTutorQuestionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof unarchiveTutorQuestionImpl>
+): ReturnType<typeof unarchiveTutorQuestionImpl> =>
+    unarchiveTutorQuestionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof unarchiveTutorQuestionImpl>

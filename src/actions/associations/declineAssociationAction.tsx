@@ -1,16 +1,19 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function declineAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ): Promise<{ error?: string; success?: boolean }> {
     const user = await getCurrentUserWithPermissions()
@@ -70,14 +73,29 @@ async function declineAssociationActionImpl(
         return { error: "Échec du refus de l'association" }
     }
 
-    revalidatePath("/dashboard/associations")
-    revalidatePath("/reseau")
-    revalidatePath("/")
-
     return { success: true }
 }
 
-export default withServerAction(
-    "declineAssociationAction",
-    declineAssociationActionImpl
-)
+const declineAssociationActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<Parameters<typeof declineAssociationActionImpl>>
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "declineAssociationAction",
+            declineAssociationActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof declineAssociationActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof declineAssociationActionImpl>
+): ReturnType<typeof declineAssociationActionImpl> =>
+    declineAssociationActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof declineAssociationActionImpl>

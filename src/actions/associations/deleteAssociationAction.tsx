@@ -1,18 +1,19 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient, createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    id: number
-) {
+async function deleteAssociationActionImpl(id: number) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -80,13 +81,28 @@ async function deleteAssociationActionImpl(
         captureActionError(deleted.error)
         return { error: "Echec de la suppression de l'association" }
     }
-    revalidatePath("/dashboard/associations")
-    revalidatePath("/reseau")
-    revalidatePath("/")
     return { success: true }
 }
 
-export default withServerAction(
-    "deleteAssociationAction",
-    deleteAssociationActionImpl
-)
+const deleteAssociationActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteAssociationActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteAssociationAction",
+            deleteAssociationActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof deleteAssociationActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteAssociationActionImpl>
+): ReturnType<typeof deleteAssociationActionImpl> =>
+    deleteAssociationActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deleteAssociationActionImpl>

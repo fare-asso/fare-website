@@ -1,9 +1,15 @@
-"use server"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function updateUserInfoImpl(
@@ -47,4 +53,20 @@ async function updateUserInfoImpl(
     return { success: true }
 }
 
-export default withServerAction("updateUserInfo", updateUserInfoImpl)
+const updateUserInfoServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof updateUserInfoImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "updateUserInfo",
+            updateUserInfoImpl
+        )(...unpackActionArgs<Parameters<typeof updateUserInfoImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof updateUserInfoImpl>
+): ReturnType<typeof updateUserInfoImpl> =>
+    updateUserInfoServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof updateUserInfoImpl
+    >

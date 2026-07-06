@@ -1,6 +1,4 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import { clientEnv } from "@/env/client"
 import prisma from "@/helpers/db"
@@ -8,13 +6,16 @@ import { hasPermission } from "@/helpers/permissions"
 import { validateEmail } from "@/helpers/string"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createAdminClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function inviteRepresentativeActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+async function inviteRepresentativeActionImpl(formData: FormData) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -94,12 +95,32 @@ async function inviteRepresentativeActionImpl(
         return { error: "Echec de l'invitation du représentant" }
     }
 
-    revalidatePath("/dashboard/associations")
     return { success: true }
 }
 
-export default withServerAction(
-    "inviteRepresentativeAction",
-    inviteRepresentativeActionImpl,
-    { attachFormData: true }
-)
+const inviteRepresentativeActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof inviteRepresentativeActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "inviteRepresentativeAction",
+            inviteRepresentativeActionImpl,
+            { attachFormData: true }
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof inviteRepresentativeActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof inviteRepresentativeActionImpl>
+): ReturnType<typeof inviteRepresentativeActionImpl> =>
+    inviteRepresentativeActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof inviteRepresentativeActionImpl>

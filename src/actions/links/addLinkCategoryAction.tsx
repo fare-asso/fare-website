@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddLinkCategorySchema, type TAddLinkCategory } from "@/schemas/link"
 
@@ -45,12 +49,28 @@ async function addLinkCategoryActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction(
-    "addLinkCategoryAction",
-    addLinkCategoryActionImpl
-)
+const addLinkCategoryActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof addLinkCategoryActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "addLinkCategoryAction",
+            addLinkCategoryActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof addLinkCategoryActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof addLinkCategoryActionImpl>
+): ReturnType<typeof addLinkCategoryActionImpl> =>
+    addLinkCategoryActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof addLinkCategoryActionImpl>

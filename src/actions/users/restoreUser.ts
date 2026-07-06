@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function restoreUserImpl(userId: string) {
@@ -37,8 +41,23 @@ async function restoreUserImpl(userId: string) {
         }
     }
 
-    revalidatePath("/dashboard/users")
     return { success: true }
 }
 
-export default withServerAction("restoreUser", restoreUserImpl)
+const restoreUserServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof restoreUserImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "restoreUser",
+            restoreUserImpl
+        )(...unpackActionArgs<Parameters<typeof restoreUserImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof restoreUserImpl>
+): ReturnType<typeof restoreUserImpl> =>
+    restoreUserServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof restoreUserImpl
+    >

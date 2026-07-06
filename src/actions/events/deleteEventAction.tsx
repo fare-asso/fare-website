@@ -1,12 +1,16 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteEventActionImpl({ eventId }: { eventId: number }) {
@@ -63,7 +67,22 @@ async function deleteEventActionImpl({ eventId }: { eventId: number }) {
         captureActionError(deleted.error)
         return
     }
-    revalidatePath("/dashboard/events")
 }
 
-export default withServerAction("deleteEventAction", deleteEventActionImpl)
+const deleteEventActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteEventActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteEventAction",
+            deleteEventActionImpl
+        )(...unpackActionArgs<Parameters<typeof deleteEventActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteEventActionImpl>
+): ReturnType<typeof deleteEventActionImpl> =>
+    deleteEventActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deleteEventActionImpl>

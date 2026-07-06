@@ -1,19 +1,20 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type DeleteEluResult = { success: true } | { success: false; error: string }
 
-async function deleteEluActionImpl(
-    _prevState: DeleteEluResult | undefined,
-    id: number
-): Promise<DeleteEluResult> {
+async function deleteEluActionImpl(id: number): Promise<DeleteEluResult> {
     const user = await getCurrentUserWithPermissions()
     if (!user) {
         return { success: false, error: "Authentification requise" }
@@ -51,11 +52,23 @@ async function deleteEluActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true }
 }
 
-export default withServerAction("deleteEluAction", deleteEluActionImpl)
+const deleteEluActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteEluActionImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteEluAction",
+            deleteEluActionImpl
+        )(...unpackActionArgs<Parameters<typeof deleteEluActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteEluActionImpl>
+): ReturnType<typeof deleteEluActionImpl> =>
+    deleteEluActionServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof deleteEluActionImpl
+    >

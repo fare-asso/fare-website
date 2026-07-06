@@ -1,9 +1,13 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function archiveTutorQuestionImpl(
@@ -24,11 +28,28 @@ async function archiveTutorQuestionImpl(
         return { error: "Echec de l'archivage de la question" }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison/questions")
     return { success: true }
 }
 
-export default withServerAction(
-    "archiveTutorQuestion",
-    archiveTutorQuestionImpl
-)
+const archiveTutorQuestionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof archiveTutorQuestionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "archiveTutorQuestion",
+            archiveTutorQuestionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof archiveTutorQuestionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof archiveTutorQuestionImpl>
+): ReturnType<typeof archiveTutorQuestionImpl> =>
+    archiveTutorQuestionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof archiveTutorQuestionImpl>

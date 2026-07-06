@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
@@ -38,12 +42,31 @@ async function deleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
         return { error: "Echec de la suppression du ticket" }
     }
 
-    revalidatePath("/dashboard/bagadAsso")
-
     return { success: true }
 }
 
-export default withServerAction(
-    "deleteBagadAssoTicketAction",
-    deleteBagadAssoTicketActionImpl
-)
+const deleteBagadAssoTicketActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof deleteBagadAssoTicketActionImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteBagadAssoTicketAction",
+            deleteBagadAssoTicketActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof deleteBagadAssoTicketActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteBagadAssoTicketActionImpl>
+): ReturnType<typeof deleteBagadAssoTicketActionImpl> =>
+    deleteBagadAssoTicketActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deleteBagadAssoTicketActionImpl>

@@ -1,18 +1,19 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteArticleActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    id: number
-) {
+async function deleteArticleActionImpl(id: number) {
     // Auth and permission verifications
     const user = await getCurrentUserWithPermissions()
     if (!user) {
@@ -71,9 +72,24 @@ async function deleteArticleActionImpl(
         captureActionError(deleted.error)
         return { error: "Echec de la suppression de l'article" }
     }
-    revalidatePath("/dashboard/articles")
-    revalidatePath("/actualites")
     return { success: true }
 }
 
-export default withServerAction("deleteArticleAction", deleteArticleActionImpl)
+const deleteArticleActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof deleteArticleActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "deleteArticleAction",
+            deleteArticleActionImpl
+        )(...unpackActionArgs<Parameters<typeof deleteArticleActionImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof deleteArticleActionImpl>
+): ReturnType<typeof deleteArticleActionImpl> =>
+    deleteArticleActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof deleteArticleActionImpl>

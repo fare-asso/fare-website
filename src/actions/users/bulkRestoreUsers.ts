@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function bulkRestoreUsersImpl(userIds: string[]) {
@@ -41,8 +45,23 @@ async function bulkRestoreUsersImpl(userIds: string[]) {
         }
     }
 
-    revalidatePath("/dashboard/users")
     return { success: true, restoredCount: userIds.length }
 }
 
-export default withServerAction("bulkRestoreUsers", bulkRestoreUsersImpl)
+const bulkRestoreUsersServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof bulkRestoreUsersImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "bulkRestoreUsers",
+            bulkRestoreUsersImpl
+        )(...unpackActionArgs<Parameters<typeof bulkRestoreUsersImpl>>(data))
+    )
+
+export default async (
+    ...args: Parameters<typeof bulkRestoreUsersImpl>
+): ReturnType<typeof bulkRestoreUsersImpl> =>
+    bulkRestoreUsersServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof bulkRestoreUsersImpl>

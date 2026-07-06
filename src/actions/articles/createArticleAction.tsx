@@ -1,17 +1,20 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import type { JSONContent } from "@tiptap/react"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function createArticleActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
     formData: FormData
 ): Promise<{ error?: string; success?: boolean }> {
     // Auth and permission verifications
@@ -89,14 +92,27 @@ async function createArticleActionImpl(
         return { error: "Echec de la création de l'article" }
     }
 
-    revalidatePath("/actualites")
-    revalidatePath("/dashboard/articles")
-
     return { success: true }
 }
 
-export default withServerAction(
-    "createArticleAction",
-    createArticleActionImpl,
-    { attachFormData: true }
-)
+const createArticleActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof createArticleActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction("createArticleAction", createArticleActionImpl, {
+            attachFormData: true
+        })(
+            ...unpackActionArgs<Parameters<typeof createArticleActionImpl>>(
+                data
+            )
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof createArticleActionImpl>
+): ReturnType<typeof createArticleActionImpl> =>
+    createArticleActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof createArticleActionImpl>

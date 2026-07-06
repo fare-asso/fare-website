@@ -1,9 +1,14 @@
-"use server"
-
-import { redirect } from "next/navigation"
+import { redirect } from "@tanstack/react-router"
+import { createServerFn } from "@tanstack/react-start"
 
 import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function signOutImpl(): Promise<{ success: boolean; error?: string }> {
@@ -21,7 +26,23 @@ async function signOutImpl(): Promise<{ success: boolean; error?: string }> {
     }
 
     console.log("Deconnection réussie")
-    redirect("/login")
+    throw redirect({ href: "/login" })
 }
 
-export const signOut = withServerAction("signOut", signOutImpl)
+const signOutServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof signOutImpl>>) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "signOut",
+            signOutImpl
+        )(...unpackActionArgs<Parameters<typeof signOutImpl>>(data))
+    )
+
+export const signOut = async (
+    ...args: Parameters<typeof signOutImpl>
+): ReturnType<typeof signOutImpl> =>
+    signOutServerFn({ data: await packActionArgs(args) }) as ReturnType<
+        typeof signOutImpl
+    >

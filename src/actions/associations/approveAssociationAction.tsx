@@ -1,15 +1,18 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function approveAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
     id: number
 ): Promise<{ error?: string; success?: boolean }> {
     const user = await getCurrentUserWithPermissions()
@@ -65,17 +68,31 @@ async function approveAssociationActionImpl(
             captureActionError(archived.error)
             return { error: "Échec de l'approbation de l'association" }
         }
-        revalidatePath("/dashboard/adhesions")
     }
-
-    revalidatePath("/dashboard/associations")
-    revalidatePath("/reseau")
-    revalidatePath("/")
 
     return { success: true }
 }
 
-export default withServerAction(
-    "approveAssociationAction",
-    approveAssociationActionImpl
-)
+const approveAssociationActionServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<Parameters<typeof approveAssociationActionImpl>>
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "approveAssociationAction",
+            approveAssociationActionImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof approveAssociationActionImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof approveAssociationActionImpl>
+): ReturnType<typeof approveAssociationActionImpl> =>
+    approveAssociationActionServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof approveAssociationActionImpl>

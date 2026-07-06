@@ -1,11 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type Result = { success: true } | { success: false; error: string }
@@ -36,11 +40,31 @@ async function unarchiveTutorApplicationImpl(id: number): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
 
-export default withServerAction(
-    "unarchiveTutorApplication",
-    unarchiveTutorApplicationImpl
-)
+const unarchiveTutorApplicationServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (
+            data: ActionPayload<
+                Parameters<typeof unarchiveTutorApplicationImpl>
+            >
+        ) => data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "unarchiveTutorApplication",
+            unarchiveTutorApplicationImpl
+        )(
+            ...unpackActionArgs<
+                Parameters<typeof unarchiveTutorApplicationImpl>
+            >(data)
+        )
+    )
+
+export default async (
+    ...args: Parameters<typeof unarchiveTutorApplicationImpl>
+): ReturnType<typeof unarchiveTutorApplicationImpl> =>
+    unarchiveTutorApplicationServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof unarchiveTutorApplicationImpl>
