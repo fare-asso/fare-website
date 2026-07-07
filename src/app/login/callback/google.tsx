@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/tanstackstart-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { render } from "react-email"
+import { isDevelopment } from "std-env"
 
 import NewGoogleUserTemplate from "@/../emails/new-google-user"
 import { env } from "@/env.server"
@@ -19,15 +20,20 @@ export const Route = createFileRoute("/login/callback/google")({
             GET: async ({ request }) => {
                 // Only trust x-forwarded-host (set by the ingress); never the
                 // raw Host header, which is client-controllable. Fall back to
-                // the canonical URL.
+                // the canonical URL. In dev, use the actual Host so redirects
+                // stay on the same dev server/port.
                 const fallback = new URL(
                     env.DOKPLOY_DEPLOY_URL || clientEnv.VITE_SITE_URL
                 )
                 const host =
-                    request.headers.get("x-forwarded-host") ?? fallback.host
+                    request.headers.get("x-forwarded-host") ??
+                    (isDevelopment ? request.headers.get("host") : undefined) ??
+                    fallback.host
                 const proto =
                     request.headers.get("x-forwarded-proto") ??
-                    fallback.protocol.replace(":", "")
+                    (isDevelopment
+                        ? "http"
+                        : fallback.protocol.replace(":", ""))
                 const origin = `${proto}://${host}`
 
                 const { searchParams } = new URL(request.url)

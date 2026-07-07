@@ -21,11 +21,16 @@ async function loginWithGoogleActionImpl() {
 
     // Only trust x-forwarded-host (set by the ingress); never the raw Host
     // header, which is client-controllable. Fall back to the canonical URL.
+    // In dev, use the actual Host so the callback returns to the same dev
+    // server regardless of which port vite picked.
     const fallback = new URL(env.DOKPLOY_DEPLOY_URL || clientEnv.VITE_SITE_URL)
-    const host = getRequestHeader("x-forwarded-host") ?? fallback.host
+    const host =
+        getRequestHeader("x-forwarded-host") ??
+        (isDevelopment ? getRequestHeader("host") : undefined) ??
+        fallback.host
     const proto =
         getRequestHeader("x-forwarded-proto") ??
-        fallback.protocol.replace(":", "")
+        (isDevelopment ? "http" : fallback.protocol.replace(":", ""))
     const origin = `${proto}://${host}`
 
     console.log(
