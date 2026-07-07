@@ -10,7 +10,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import { dashboardTitle } from "@/lib/seo"
 
-import dashboardCss from "@/styles/dashboard.css?url"
+import "@/styles/dashboard.css"
 
 const getDashboardUser = createServerFn().handler(async () => {
     const user = await getCurrentUserWithPermissions()
@@ -32,8 +32,7 @@ export const Route = createFileRoute("/dashboard")({
     shouldReload: false,
     loader: () => getDashboardUser(),
     head: () => ({
-        meta: [{ title: dashboardTitle() }],
-        links: [{ rel: "stylesheet", href: dashboardCss }]
+        meta: [{ title: dashboardTitle() }]
     }),
     component: DashboardLayout
 })

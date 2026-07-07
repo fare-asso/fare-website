@@ -1,3 +1,6 @@
+import fs from "node:fs"
+import path from "node:path"
+
 import babel from "@rolldown/plugin-babel"
 import { sentryTanstackStart } from "@sentry/tanstackstart-react/vite"
 import tailwindcss from "@tailwindcss/vite"
@@ -17,6 +20,24 @@ logger.warn = (msg, options) => {
         return
     }
     warn(msg, options)
+}
+
+// Content-only public pages are prerendered to static HTML at build time.
+// A page qualifies iff its route file has no loader (no request-time data)
+// and its path is static — derived by scanning, so new pages are picked up
+// automatically and pages that gain a loader drop out on their own.
+function staticPublicPages(): string[] {
+    const dir = path.join(import.meta.dirname, "src/app/_public")
+    const pages: string[] = []
+    for (const entry of fs.readdirSync(dir, { recursive: true })) {
+        const file = String(entry)
+        if (!file.endsWith(".tsx") || file.includes("$")) continue
+        const source = fs.readFileSync(path.join(dir, file), "utf8")
+        if (source.includes("loader:")) continue
+        const route = file.replace(/\/?index\.tsx$/, "").replace(/\.tsx$/, "")
+        pages.push(`/${route}`.replace(/\/+$/, "") || "/")
+    }
+    return pages.sort()
 }
 
 export default defineConfig(async ({ mode }) => {
@@ -46,6 +67,12 @@ export default defineConfig(async ({ mode }) => {
                 importProtection: {
                     behavior: "mock",
                     log: "once"
+                },
+                pages: staticPublicPages().map((path) => ({ path })),
+                prerender: {
+                    enabled: true,
+                    crawlLinks: false,
+                    autoStaticPathsDiscovery: false
                 }
             }),
             viteReact(),

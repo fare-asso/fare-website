@@ -11,7 +11,7 @@ import { createClient } from "@/helpers/supabase.server"
 import { pageTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 
-import homeCss from "@/styles/home.css?url"
+import "@/styles/home.css"
 
 const getPartners = createServerFn().handler(async () => {
     const supabase = createClient()
@@ -54,8 +54,7 @@ export const Route = createFileRoute("/_public/")({
         mapAssociations: getMapAssociations()
     }),
     head: () => ({
-        meta: [{ title: pageTitle("Accueil") }],
-        links: [{ rel: "stylesheet", href: homeCss }]
+        meta: [{ title: pageTitle("Accueil") }]
     }),
     component: Home
 })

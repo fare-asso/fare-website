@@ -11,8 +11,8 @@ import { useEffect } from "react"
 
 import { pageTitle } from "@/lib/seo"
 
-import globalsCss from "@/styles/globals.css?url"
-import notFoundCss from "@/styles/not-found.css?url"
+import "@/styles/globals.css"
+import "@/styles/not-found.css"
 
 export const Route = createRootRoute({
     head: () => ({
@@ -29,11 +29,7 @@ export const Route = createRootRoute({
                     "Fédération des Associations du Réseau Étudiant de Haute-Bretagne"
             }
         ],
-        links: [
-            { rel: "stylesheet", href: globalsCss },
-            { rel: "stylesheet", href: notFoundCss },
-            { rel: "icon", href: "/icon.png" }
-        ]
+        links: [{ rel: "icon", href: "/icon.png" }]
     }),
     component: RootComponent,
     notFoundComponent: NotFoundPage,
