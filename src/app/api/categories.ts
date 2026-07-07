@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import prisma from "@/helpers/db"
-import { useLogger, withEvlog } from "@/lib/evlog"
+import prisma from "@/helpers/db.server"
+import { useLogger, withEvlog } from "@/lib/evlog.server"
 
 interface Category {
     id: number

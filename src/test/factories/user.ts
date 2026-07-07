@@ -1,5 +1,5 @@
 import type { Role } from "@/generated/prisma/client"
-import type { UserWithPermissions } from "@/helpers/supabase/auth"
+import type { UserWithPermissions } from "@/helpers/supabase/auth.server"
 
 export function mockUser(
     permissions: string[] = [],

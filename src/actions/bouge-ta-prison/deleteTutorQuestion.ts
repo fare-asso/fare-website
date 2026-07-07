@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import {
     type ActionPayload,
     captureActionError,

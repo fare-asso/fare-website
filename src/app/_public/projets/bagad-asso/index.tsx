@@ -3,8 +3,8 @@ import { createServerFn } from "@tanstack/react-start"
 
 import Image from "@/components/image"
 import BagadAssoForm from "@/components/public/bagadAsso/form"
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import prisma from "@/helpers/db.server"
+import { createClient } from "@/helpers/supabase.server"
 import { pageTitle } from "@/lib/seo"
 
 const getEquipmentList = createServerFn().handler(async () => {

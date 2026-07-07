@@ -18,14 +18,14 @@ const h = vi.hoisted(() => ({
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
 
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({
         instance: { findUnique: h.findInstance, delete: h.deleteInstance },
         conseil: { count: h.countConseil }
     })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
+vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
+vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))

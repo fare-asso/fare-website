@@ -4,9 +4,9 @@ import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
 import { BtpContact } from "@/../emails/btp-contact"
-import { verifyCaptcha } from "@/components/captcha/verify"
-import prisma from "@/helpers/db"
-import { sendEmail } from "@/helpers/email"
+import { verifyCaptcha } from "@/components/captcha/verify.server"
+import prisma from "@/helpers/db.server"
+import { sendEmail } from "@/helpers/email.server"
 import {
     type ActionPayload,
     captureActionError,

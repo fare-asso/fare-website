@@ -5,11 +5,11 @@ import { isDevelopment } from "std-env"
 
 import AdhesionAck from "@/../emails/adhesion-acknowledgement"
 import { AdhesionTemplate } from "@/../emails/new-adhesion"
-import { verifyCaptcha } from "@/components/captcha/verify"
-import prisma from "@/helpers/db"
-import { sendEmail } from "@/helpers/email"
+import { verifyCaptcha } from "@/components/captcha/verify.server"
+import prisma from "@/helpers/db.server"
+import { sendEmail } from "@/helpers/email.server"
 import { sanitizeString } from "@/helpers/string"
-import { createClient } from "@/helpers/supabase/server"
+import { createClient } from "@/helpers/supabase.server"
 import {
     type ActionPayload,
     captureActionError,

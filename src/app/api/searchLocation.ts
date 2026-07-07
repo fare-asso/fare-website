@@ -5,7 +5,7 @@ import type {
     LocationSuggestion,
     SearchLocationResponse
 } from "@/helpers/searchLocation"
-import { createError, useLogger, withEvlog } from "@/lib/evlog"
+import { createError, useLogger, withEvlog } from "@/lib/evlog.server"
 import { tryCatch } from "@/lib/utils"
 
 // Géoplateforme geocoding API : https://data.geopf.fr/geocodage/openapi

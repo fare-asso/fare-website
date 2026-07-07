@@ -11,7 +11,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { captureActionError } from "@/lib/sentry"
 import { dashboardTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"

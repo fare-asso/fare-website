@@ -13,10 +13,10 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
+import { createClient } from "@/helpers/supabase.server"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import { dashboardTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 

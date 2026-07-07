@@ -27,12 +27,16 @@ const from = vi.hoisted(() =>
 vi.mock("std-env", () => stdEnvModule(stdenv))
 // createClient is sync under TanStack Start — the shared supabaseServerModule
 // mock still returns a Promise, so mock it inline.
-vi.mock("@/helpers/supabase/server", () => ({
+vi.mock("@/helpers/supabase.server", () => ({
     createClient: vi.fn(() => ({ storage: { from } }))
 }))
-vi.mock("@/helpers/db", () => dbModule({ adhesion: { create: h.create } }))
-vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
-vi.mock("@/components/captcha/verify", () => captchaModule(h.verifyCaptcha))
+vi.mock("@/helpers/db.server", () =>
+    dbModule({ adhesion: { create: h.create } })
+)
+vi.mock("@/helpers/email.server", () => emailModule(h.sendEmail))
+vi.mock("@/components/captcha/verify.server", () =>
+    captchaModule(h.verifyCaptcha)
+)
 vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => ({
     ...sentryModule(h.captureActionError),

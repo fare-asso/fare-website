@@ -8,7 +8,7 @@ const h = vi.hoisted(() => ({
     create: vi.fn()
 }))
 
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({
         assistanceConfig: { findFirst: h.findFirst, create: h.create }
     })

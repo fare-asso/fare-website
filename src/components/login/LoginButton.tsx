@@ -18,6 +18,9 @@ export function LoginWithGoogleButton() {
     const handleGoogleLogin = () => {
         startTransition(async () => {
             await loginWithGoogle()
+            // The OAuth redirect is in flight: keep the pending state until
+            // the browser leaves the page. An error above ends the transition.
+            await new Promise(() => {})
         })
     }
 

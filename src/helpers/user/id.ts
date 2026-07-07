@@ -1,4 +1,4 @@
-import { createClient } from "../supabase/server"
+import { createClient } from "../supabase.server"
 
 export default async function getCurrentUserId(): Promise<{
     userId?: string

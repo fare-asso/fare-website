@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card"
 import { getAssistanceConfig } from "@/helpers/assistanceConfig"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import { dashboardTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 

@@ -2,7 +2,7 @@ import { redirect } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 
 import type { Role } from "@/generated/prisma/client"
-import { createAdminClient, createClient } from "@/helpers/supabase/server"
+import { createAdminClient, createClient } from "@/helpers/supabase.server"
 
 const permissionProtectedRoutes: {
     pathIncludes: string

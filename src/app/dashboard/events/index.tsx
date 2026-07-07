@@ -13,7 +13,7 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import { dashboardTitle } from "@/lib/seo"
 
 const getEventsPageData = createServerFn().handler(async () => {

@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
 
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { uniqueFileName } from "@/helpers/storage"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
+import { createClient } from "@/helpers/supabase.server"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import {
     type ActionPayload,
     captureActionError,

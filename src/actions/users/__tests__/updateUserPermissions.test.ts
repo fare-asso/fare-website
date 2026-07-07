@@ -27,14 +27,14 @@ const transaction = vi.hoisted(() =>
     )
 )
 
-vi.mock("@/helpers/db", () => {
+vi.mock("@/helpers/db.server", () => {
     const client: Record<string, unknown> = {}
     // `$transaction` is a Prisma client method name; set it dynamically to
     // keep it off an object-literal identifier.
     Reflect.set(client, "$transaction", transaction)
     return dbModule(client)
 })
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
+vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import updateUserPermissions from "../updateUserPermissions"

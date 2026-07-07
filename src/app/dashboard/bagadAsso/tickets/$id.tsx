@@ -34,10 +34,10 @@ import {
     computeTotalDeposit,
     joinTicketAndEquipment
 } from "@/helpers/bagadAsso"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { locationDisplayName, parseLocation } from "@/helpers/location"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import { captureActionError } from "@/lib/sentry"
 import { dashboardTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"

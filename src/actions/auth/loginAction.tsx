@@ -1,11 +1,12 @@
 import { redirect } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
+import { getRequestHeader } from "@tanstack/react-start/server"
 import { isDevelopment } from "std-env"
 
+import { env } from "@/env.server"
 import { clientEnv } from "@/env/client"
-import { env } from "@/env/server"
-import { createClient } from "@/helpers/supabase/server"
-import getCurrentUserRole from "@/helpers/user/role"
+import { createClient } from "@/helpers/supabase.server"
+import getCurrentUserRole from "@/helpers/user/role.server"
 import {
     type ActionPayload,
     captureActionError,
@@ -16,7 +17,6 @@ import {
 import { tryCatch } from "@/lib/utils"
 
 async function loginWithGoogleActionImpl() {
-    const { getRequestHeader } = await import("@tanstack/react-start/server")
     const supabase = createClient()
 
     // Only trust x-forwarded-host (set by the ingress); never the raw Host

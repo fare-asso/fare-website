@@ -7,7 +7,7 @@ const h = vi.hoisted(() => ({
     captureActionError: vi.fn()
 }))
 
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorQuestion: { update: h.update } })
 )
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))

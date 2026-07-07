@@ -4,8 +4,8 @@ import type {
     UserPermission
 } from "@/generated/prisma/client"
 
-import prisma from "../db"
-import { createClient } from "./server"
+import prisma from "../db.server"
+import { createClient } from "../supabase.server"
 
 export type UserWithPermissions = User & {
     permissions: (UserPermission & {

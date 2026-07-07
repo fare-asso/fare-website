@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { sanitizeString } from "@/helpers/string"
-import { createClient } from "@/helpers/supabase/server"
+import { createClient } from "@/helpers/supabase.server"
 import {
     type ActionPayload,
     packActionArgs,

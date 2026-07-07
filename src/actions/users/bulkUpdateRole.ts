@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import type { Role } from "@/generated/prisma/client"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission, hasRole } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import {
     type ActionPayload,
     captureActionError,

@@ -4,11 +4,11 @@ import { format } from "date-fns"
 import { zip } from "fflate"
 
 import type { BTPTutorApplication } from "@/generated/prisma/client"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
+import { createClient } from "@/helpers/supabase.server"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import {
     type ActionPayload,
     captureActionError,

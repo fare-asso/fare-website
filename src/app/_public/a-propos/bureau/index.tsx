@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 
 import MemberList from "@/components/public/bureau/memberList"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { pageTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 

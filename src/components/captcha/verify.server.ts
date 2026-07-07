@@ -1,5 +1,5 @@
+import { env } from "@/env.server"
 import { clientEnv } from "@/env/client"
-import { env } from "@/env/server"
 
 type FCApiResponse =
     | {

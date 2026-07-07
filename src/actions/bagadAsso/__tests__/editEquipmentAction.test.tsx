@@ -22,13 +22,13 @@ const from = vi.hoisted(() =>
     vi.fn(() => ({ upload: h.upload, remove: h.remove }))
 )
 
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({
         bagadAssoEquipment: { findUnique: h.findUnique, update: h.update }
     })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
+vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
+vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))

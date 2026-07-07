@@ -3,7 +3,7 @@ import { createEvlog } from "evlog/next"
 import { createDrainPipeline } from "evlog/pipeline"
 import { createSentryDrain } from "evlog/sentry"
 
-import { env } from "@/env/server"
+import { env } from "@/env.server"
 
 const drain = env.SENTRY_DSN
     ? createDrainPipeline<DrainContext>({

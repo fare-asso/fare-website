@@ -1,7 +1,7 @@
 import { wrapFetchWithSentry } from "@sentry/tanstackstart-react"
 import handler, { createServerEntry } from "@tanstack/react-start/server-entry"
 
-import { flushEvlog } from "@/lib/evlog"
+import { flushEvlog } from "@/lib/evlog.server"
 
 // Flush buffered evlog events on shutdown.
 process.once("SIGTERM", () => void flushEvlog())

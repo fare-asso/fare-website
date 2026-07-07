@@ -4,8 +4,8 @@ import { createServerFn } from "@tanstack/react-start"
 import DbSizeChart from "@/components/dashboard/dbSizeChart/dbSizeChart"
 import StorageChart from "@/components/dashboard/storageChart/storageChart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import prisma from "@/helpers/db.server"
+import { createClient } from "@/helpers/supabase.server"
 import { tryCatch } from "@/lib/utils"
 
 const getUserName = createServerFn().handler(async () => {

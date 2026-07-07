@@ -5,9 +5,9 @@ import { isDevelopment } from "std-env"
 
 import { AssistanceTemplate } from "@/../emails/assistance"
 import AssistanceAck from "@/../emails/assistance-acknowledgement"
-import { verifyCaptcha } from "@/components/captcha/verify"
+import { verifyCaptcha } from "@/components/captcha/verify.server"
 import { getAssistanceConfig } from "@/helpers/assistanceConfig"
-import { sendEmail } from "@/helpers/email"
+import { sendEmail } from "@/helpers/email.server"
 import {
     type ActionPayload,
     captureActionError,

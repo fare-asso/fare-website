@@ -18,11 +18,11 @@ const h = vi.hoisted(() => ({
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ download: h.download })))
 
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorApplication: { findMany: h.findMany } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
+vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
+vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))

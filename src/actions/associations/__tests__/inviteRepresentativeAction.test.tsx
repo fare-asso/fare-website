@@ -16,14 +16,14 @@ const h = vi.hoisted(() => ({
     captureActionError: vi.fn()
 }))
 
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({
         user: { update: h.userUpdate },
         association: { update: h.assoUpdate }
     })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
+vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
+vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ auth: { admin: { inviteUserByEmail: h.invite } } })
 )
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))

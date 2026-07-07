@@ -17,9 +17,11 @@ const h = vi.hoisted(() => ({
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ upload: h.upload })))
 
-vi.mock("@/helpers/db", () => dbModule({ association: { create: h.create } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
+vi.mock("@/helpers/db.server", () =>
+    dbModule({ association: { create: h.create } })
+)
+vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
+vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))

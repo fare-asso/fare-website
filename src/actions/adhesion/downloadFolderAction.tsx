@@ -2,11 +2,11 @@ import { createServerFn } from "@tanstack/react-start"
 import { zip } from "fflate"
 
 import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
+import { createClient } from "@/helpers/supabase.server"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import {
     type ActionPayload,
     captureActionError,

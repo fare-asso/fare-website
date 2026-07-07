@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start"
 
 import { clientEnv } from "@/env/client"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { validateEmail } from "@/helpers/string"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createAdminClient } from "@/helpers/supabase/server"
+import { createAdminClient } from "@/helpers/supabase.server"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import {
     type ActionPayload,
     captureActionError,

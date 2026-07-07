@@ -9,8 +9,10 @@ const h = vi.hoisted(() => ({
     captureActionError: vi.fn()
 }))
 
-vi.mock("@/helpers/db", () => dbModule({ user: { updateMany: h.updateMany } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
+vi.mock("@/helpers/db.server", () =>
+    dbModule({ user: { updateMany: h.updateMany } })
+)
+vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import bulkDeleteUsers from "../bulkDeleteUsers"

@@ -3,8 +3,8 @@ import { createServerFn } from "@tanstack/react-start"
 
 import Image from "@/components/image"
 import Link from "@/components/link"
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import prisma from "@/helpers/db.server"
+import { createClient } from "@/helpers/supabase.server"
 import { tryCatch } from "@/lib/utils"
 
 const getAssociation = createServerFn()

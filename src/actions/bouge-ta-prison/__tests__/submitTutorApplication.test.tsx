@@ -25,14 +25,16 @@ const from = vi.hoisted(() =>
 )
 
 vi.mock("std-env", () => stdEnvModule(stdenv))
-vi.mock("@/components/captcha/verify", () => captchaModule(h.verifyCaptcha))
-vi.mock("@/helpers/supabase/server", () =>
+vi.mock("@/components/captcha/verify.server", () =>
+    captchaModule(h.verifyCaptcha)
+)
+vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorApplication: { create: h.create } })
 )
-vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
+vi.mock("@/helpers/email.server", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 

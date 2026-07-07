@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router"
 
 import { buildBagadAssoCalendar } from "@/helpers/bagadAssoCalendar"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
-import { createError, useLogger, withEvlog } from "@/lib/evlog"
+import { createError, useLogger, withEvlog } from "@/lib/evlog.server"
 import { tryCatch } from "@/lib/utils"
 
 export const Route = createFileRoute("/api/bagad-asso/calendar.ics")({

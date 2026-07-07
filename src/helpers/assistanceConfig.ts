@@ -1,4 +1,4 @@
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 
 export interface AssistanceConfigValues {
     recipientEmail: string

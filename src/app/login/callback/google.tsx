@@ -3,11 +3,11 @@ import { createFileRoute } from "@tanstack/react-router"
 import { render } from "react-email"
 
 import NewGoogleUserTemplate from "@/../emails/new-google-user"
+import { env } from "@/env.server"
 import { clientEnv } from "@/env/client"
-import { env } from "@/env/server"
-import prisma from "@/helpers/db"
-import { sendEmail } from "@/helpers/email"
-import { createClient } from "@/helpers/supabase/server"
+import prisma from "@/helpers/db.server"
+import { sendEmail } from "@/helpers/email.server"
+import { createClient } from "@/helpers/supabase.server"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -52,11 +52,17 @@ export const Route = createFileRoute("/login/callback/google")({
                         await upsertUserProfile(supabase)
                         await handleNewUserNotification(supabase)
 
-                        return Response.redirect(`${origin}${next}`, 302)
+                        return new Response(null, {
+                            status: 302,
+                            headers: { Location: `${origin}${next}` }
+                        })
                     }
                 }
 
-                return Response.redirect(`${origin}/login?error=true`, 302)
+                return new Response(null, {
+                    status: 302,
+                    headers: { Location: `${origin}/login?error=true` }
+                })
             }
         }
     }

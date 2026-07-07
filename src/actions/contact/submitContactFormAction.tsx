@@ -2,8 +2,8 @@ import { createServerFn } from "@tanstack/react-start"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
-import { verifyCaptcha } from "@/components/captcha/verify"
-import { sendEmail } from "@/helpers/email"
+import { verifyCaptcha } from "@/components/captcha/verify.server"
+import { sendEmail } from "@/helpers/email.server"
 import {
     type ActionPayload,
     packActionArgs,

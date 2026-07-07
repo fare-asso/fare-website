@@ -12,13 +12,13 @@ const h = vi.hoisted(() => ({
     captureActionError: vi.fn()
 }))
 
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({
         linkCategory: { findUnique: h.findCategory },
         linkItem: { create: h.createLink }
     })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
+vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import addLinkAction from "../addLinkAction"

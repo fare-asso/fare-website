@@ -2,11 +2,11 @@ import { randomUUID } from "node:crypto"
 
 import { createServerFn } from "@tanstack/react-start"
 
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
+import { createClient } from "@/helpers/supabase.server"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import getCurrentUserId from "@/helpers/user/id"
 import {
     type ActionPayload,

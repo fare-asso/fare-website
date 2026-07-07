@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer"
 import { isProduction } from "std-env"
 
-import { env } from "@/env/server"
+import { env } from "@/env.server"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 

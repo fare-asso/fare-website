@@ -1,5 +1,5 @@
 import type { Event } from "@/components/dashboard/events/columns"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 
 export async function getData(): Promise<Event[]> {
     const events = await prisma.event.findMany({

@@ -7,7 +7,7 @@ const h = vi.hoisted(() => ({
     findMany: vi.fn()
 }))
 
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({ bagadAssoTicket: { findMany: h.findMany } })
 )
 

@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/tanstackstart-react"
 import { isNotFound, isRedirect } from "@tanstack/react-router"
 
-import { useLogger, withEvlog } from "@/lib/evlog"
+import { useLogger, withEvlog } from "@/lib/evlog.server"
 import { tryCatch } from "@/lib/utils"
 
 type WithServerActionOptions = {

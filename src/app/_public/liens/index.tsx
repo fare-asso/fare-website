@@ -17,7 +17,7 @@ import {
 } from "react-icons/fa6"
 
 import Link from "@/components/link"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { captureActionError } from "@/lib/sentry"
 import { pageTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"

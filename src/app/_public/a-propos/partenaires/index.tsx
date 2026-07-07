@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 
 import Image from "@/components/image"
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import prisma from "@/helpers/db.server"
+import { createClient } from "@/helpers/supabase.server"
 import { pageTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 

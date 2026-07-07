@@ -10,9 +10,9 @@ import { UserInfoForm } from "@/components/dashboard/users/userInfoForm"
 import { UserPermissionsForm } from "@/components/dashboard/users/userPermissionForm"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import { dashboardTitle } from "@/lib/seo"
 
 const getUserPageData = createServerFn()

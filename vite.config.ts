@@ -9,7 +9,7 @@ import { defineConfig, loadEnv } from "vite"
 export default defineConfig(async ({ mode }) => {
     Object.assign(process.env, loadEnv(mode, process.cwd(), ""))
     // Validate env at build time (replaces the jiti import in next.config.mjs)
-    await import("./src/env/server")
+    await import("./src/env.server")
     await import("./src/env/client")
 
     return {
@@ -26,27 +26,12 @@ export default defineConfig(async ({ mode }) => {
                 router: {
                     routesDirectory: "app"
                 },
-                // Server-only modules reachable from client-imported action
-                // files are mocked out of the client bundle (access throws)
-                // instead of failing the build.
+                // Server-only modules use the .server.ts naming convention
+                // (the plugin's default client deny pattern); they are mocked
+                // out of the client bundle and throw on accidental access.
                 importProtection: {
                     behavior: "mock",
-                    log: "once",
-                    client: {
-                        specifiers: ["@tanstack/react-start/server"],
-                        // `files` (not `specifiers`) so relative imports of
-                        // these modules are caught too.
-                        files: [
-                            "**/*.server.*",
-                            "**/src/helpers/db.ts",
-                            "**/src/helpers/supabase/server.ts",
-                            "**/src/helpers/supabase/auth.ts",
-                            "**/src/helpers/email.ts",
-                            "**/src/env/server.ts",
-                            "**/src/lib/evlog.ts",
-                            "**/src/generated/prisma/**"
-                        ]
-                    }
+                    log: "once"
                 }
             }),
             viteReact(),

@@ -8,7 +8,7 @@ const h = vi.hoisted(() => ({
     )
 }))
 
-vi.mock("@/lib/evlog", () => ({
+vi.mock("@/lib/evlog.server", () => ({
     withEvlog:
         <A extends unknown[], R>(handler: (...args: A) => R) =>
         (...args: A): R =>

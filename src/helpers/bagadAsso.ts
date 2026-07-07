@@ -1,7 +1,7 @@
 import type { BagadAssoTicket } from "@/generated/prisma/client"
 import { tryCatch } from "@/lib/utils"
 
-import prisma from "./db"
+import prisma from "./db.server"
 
 interface Equipement {
     id: number

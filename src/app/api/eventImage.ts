@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
-import { useLogger, withEvlog } from "@/lib/evlog"
+import prisma from "@/helpers/db.server"
+import { createClient } from "@/helpers/supabase.server"
+import { useLogger, withEvlog } from "@/lib/evlog.server"
 
 export const Route = createFileRoute("/api/eventImage")({
     server: {

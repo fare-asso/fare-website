@@ -14,10 +14,10 @@ const h = vi.hoisted(() => ({
     captureActionError: vi.fn()
 }))
 
-vi.mock("@/helpers/db", () =>
+vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorApplication: { update: h.update } })
 )
-vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
+vi.mock("@/helpers/email.server", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 

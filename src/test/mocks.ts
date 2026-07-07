@@ -10,7 +10,7 @@ import { isNotFound, isRedirect } from "@tanstack/react-router"
  *         create: vi.fn(),
  *         captureActionError: vi.fn()
  *     }))
- *     vi.mock("@/helpers/db", () => dbModule({ adhesion: { create: h.create } }))
+ *     vi.mock("@/helpers/db.server", () => dbModule({ adhesion: { create: h.create } }))
  *     vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
  */
 import { vi } from "vitest"

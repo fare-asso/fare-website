@@ -1,7 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg"
 import { isProduction } from "std-env"
 
-import { env } from "@/env/server"
+import { env } from "@/env.server"
 import { PrismaClient } from "@/generated/prisma/client"
 
 const prismaClientSingleton = () => {

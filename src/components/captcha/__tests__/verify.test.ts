@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 
 import { captchaUrl, server } from "@/test/msw"
 
-import { verifyCaptcha } from "../verify"
+import { verifyCaptcha } from "../verify.server"
 
 describe("verifyCaptcha", () => {
     it("returns true when the API reports success", async () => {

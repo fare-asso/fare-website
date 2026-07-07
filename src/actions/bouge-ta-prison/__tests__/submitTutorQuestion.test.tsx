@@ -19,11 +19,13 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock("std-env", () => stdEnvModule(stdenv))
-vi.mock("@/components/captcha/verify", () => captchaModule(h.verifyCaptcha))
-vi.mock("@/helpers/db", () =>
+vi.mock("@/components/captcha/verify.server", () =>
+    captchaModule(h.verifyCaptcha)
+)
+vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorQuestion: { create: h.create } })
 )
-vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
+vi.mock("@/helpers/email.server", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 

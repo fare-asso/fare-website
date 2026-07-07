@@ -2,13 +2,13 @@ import { createServerFn } from "@tanstack/react-start"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
-import { verifyCaptcha } from "@/components/captcha/verify"
+import { verifyCaptcha } from "@/components/captcha/verify.server"
 import {
     type BagadAssoFormData,
     BagadAssoFormSchema
 } from "@/components/public/bagadAsso/form-schema"
-import prisma from "@/helpers/db"
-import { sendEmail } from "@/helpers/email"
+import prisma from "@/helpers/db.server"
+import { sendEmail } from "@/helpers/email.server"
 import { locationDisplayName } from "@/helpers/location"
 import {
     type ActionPayload,

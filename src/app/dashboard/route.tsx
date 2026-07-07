@@ -7,7 +7,7 @@ import SideBarApp from "@/components/dashboard/sideBarApp"
 import { Separator } from "@/components/ui/separator"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import { dashboardTitle } from "@/lib/seo"
 
 import dashboardCss from "@/styles/dashboard.css?url"

@@ -1,6 +1,6 @@
 import type { Role, User } from "@/generated/prisma/client"
 
-import type { UserWithPermissions } from "./supabase/auth"
+import type { UserWithPermissions } from "./supabase/auth.server"
 
 export function hasRole(user: User, role: Role) {
     return user.role === role
