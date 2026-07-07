@@ -4,7 +4,20 @@ import tailwindcss from "@tailwindcss/vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
 import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react"
 import { nitro } from "nitro/vite"
-import { defineConfig, loadEnv } from "vite"
+import { createLogger, defineConfig, loadEnv } from "vite"
+
+// Import-protection denials are by design here (server modules are mocked out
+// of the client bundle; every action file imports server helpers). The plugin
+// has no off switch, so filter its noise — real leaks still throw at runtime.
+const logger = createLogger()
+const warn = logger.warn.bind(logger)
+logger.warn = (msg, options) => {
+    if (msg.includes("[import-protection] Import denied")) return
+    if (msg.includes("SOURCEMAP_BROKEN") && msg.includes("import-protection")) {
+        return
+    }
+    warn(msg, options)
+}
 
 export default defineConfig(async ({ mode }) => {
     Object.assign(process.env, loadEnv(mode, process.cwd(), ""))
@@ -13,6 +26,7 @@ export default defineConfig(async ({ mode }) => {
     await import("./src/env/client")
 
     return {
+        customLogger: logger,
         server: {
             port: 3000
         },
