@@ -1,5 +1,3 @@
-"use client"
-
 import {
     closestCenter,
     DndContext,
@@ -15,6 +13,7 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy
 } from "@dnd-kit/sortable"
+import { useRouter } from "@tanstack/react-router"
 import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
@@ -43,6 +42,7 @@ export default function SortableLinkList({
     catId,
     files
 }: SortableLinkListProps) {
+    const router = useRouter()
     const [links, setOptimisticLinks] = useOptimistic(
         initialLinks,
         (_current, next: LinkItem[]) => next
@@ -79,7 +79,9 @@ export default function SortableLinkList({
 
                 const result = await updateLinkOrderAction(linkOrder)
 
-                if (!result.success) {
+                if (result.success) {
+                    await router.invalidate()
+                } else {
                     toast.error(result.error)
                 }
             })

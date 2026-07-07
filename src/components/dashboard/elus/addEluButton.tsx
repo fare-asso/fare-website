@@ -1,6 +1,5 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useRouter } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
@@ -36,6 +35,7 @@ export default function AddEluButton({
     defaultConseilId?: number
     variant?: "button" | "card"
 }) {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -61,6 +61,7 @@ export default function AddEluButton({
             submit(async () => {
                 const res = await addEluAction(value)
                 if (res.success) {
+                    await router.invalidate()
                     setOpen(false)
                     form.reset()
                 } else {

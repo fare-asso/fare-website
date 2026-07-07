@@ -1,6 +1,5 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useRouter } from "@tanstack/react-router"
 import { FileTextIcon, Loader2Icon, PlusIcon } from "lucide-react"
 import type { Dispatch, SetStateAction } from "react"
 import { useState, useTransition } from "react"
@@ -96,6 +95,7 @@ function AddLink({
     categoryId: number
     setOpen: Dispatch<SetStateAction<boolean>>
 }) {
+    const router = useRouter()
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -117,6 +117,7 @@ function AddLink({
             submit(async () => {
                 const res = await addLinkAction(value)
                 if (res.success) {
+                    await router.invalidate()
                     setOpen(false)
                     form.reset()
                 } else {
@@ -191,6 +192,7 @@ function AddFile({
         Record<PresseType, { url: string; name: string; type: PresseType }[]>
     >
 }) {
+    const router = useRouter()
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -212,6 +214,7 @@ function AddFile({
             submit(async () => {
                 const res = await addLinkAction(value)
                 if (res.success) {
+                    await router.invalidate()
                     setOpen(false)
                     form.reset()
                 } else {

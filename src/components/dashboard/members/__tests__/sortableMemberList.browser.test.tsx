@@ -21,6 +21,10 @@ vi.mock("@/components/dashboard/members/editMemberButton", () => ({
 }))
 vi.mock("next/image", () => ({ default: () => null }))
 
+vi.mock("@tanstack/react-router", () => ({
+    useRouter: () => ({ invalidate: vi.fn() })
+}))
+
 import SortableMemberList from "../sortableMemberList"
 
 function members() {

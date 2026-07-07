@@ -1,6 +1,5 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
@@ -38,6 +37,7 @@ export default function EditConseilButton({
     conseil: Conseil
     instances: InstanceOption[]
 }) {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -59,6 +59,7 @@ export default function EditConseilButton({
             submit(async () => {
                 const res = await editConseilAction(value)
                 if (res.success) {
+                    await router.invalidate()
                     setOpen(false)
                 } else {
                     setSubmitError(res.error)

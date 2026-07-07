@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
@@ -28,6 +27,7 @@ import type { Elu } from "@/generated/prisma/client"
 import LoadingRing from "../loadingRing"
 
 export default function DeleteEluButton({ elu }: { elu: Elu }) {
+    const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -40,6 +40,7 @@ export default function DeleteEluButton({ elu }: { elu: Elu }) {
             const res = await deleteEluAction(elu.id)
             if (res.success) {
                 setIsOpen(false)
+                await router.invalidate()
                 toast.success("Élu·e supprimé·e.", {
                     duration: 10000,
                     action: {
@@ -47,7 +48,9 @@ export default function DeleteEluButton({ elu }: { elu: Elu }) {
                         onClick: () => {
                             startTransition(async () => {
                                 const restore = await restoreEluAction(elu.id)
-                                if (!restore.success) {
+                                if (restore.success) {
+                                    await router.invalidate()
+                                } else {
                                     toast.error(restore.error)
                                 }
                             })

@@ -1,6 +1,5 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useRouter } from "@tanstack/react-router"
 import { Loader2Icon, PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
@@ -41,6 +40,7 @@ export default function AddInstanceButton({
 }: {
     variant?: "button" | "card"
 }) {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -57,6 +57,7 @@ export default function AddInstanceButton({
             submit(async () => {
                 const res = await addInstanceAction(value)
                 if (res.success) {
+                    await router.invalidate()
                     setOpen(false)
                     form.reset()
                 } else {

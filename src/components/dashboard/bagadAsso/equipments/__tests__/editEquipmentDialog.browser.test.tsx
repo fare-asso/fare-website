@@ -13,6 +13,9 @@ const h = vi.hoisted(() => ({
 vi.mock("@/actions/bagadAsso/editEquipmentAction", () => ({
     default: h.action
 }))
+vi.mock("@tanstack/react-router", () => ({
+    useRouter: () => ({ invalidate: vi.fn() })
+}))
 vi.mock("@/components/ui/filepond", () => ({
     FilePondInput: ({
         onEditChange

@@ -8,6 +8,9 @@ const h = vi.hoisted(() => ({ action: vi.fn() }))
 vi.mock("@/actions/partenaires/deletePartenaireAction", () => ({
     default: h.action
 }))
+vi.mock("@tanstack/react-router", () => ({
+    useRouter: () => ({ invalidate: vi.fn() })
+}))
 
 import DeletePartenaireButton from "../deletePartenaireButton"
 

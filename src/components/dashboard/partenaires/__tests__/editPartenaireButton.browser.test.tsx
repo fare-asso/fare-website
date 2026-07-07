@@ -13,6 +13,9 @@ const h = vi.hoisted(() => ({
 vi.mock("@/actions/partenaires/editPartenaireAction", () => ({
     default: h.action
 }))
+vi.mock("@tanstack/react-router", () => ({
+    useRouter: () => ({ invalidate: vi.fn() })
+}))
 vi.mock("@/components/ui/filepond", () => ({
     FilePondInput: ({ onChange }: { onChange?: (file: File) => void }) => (
         <button type="button" onClick={() => onChange?.(h.pickedFile)}>

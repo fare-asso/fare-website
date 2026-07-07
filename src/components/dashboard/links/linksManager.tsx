@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { LinkIcon } from "lucide-react"
 import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
@@ -35,6 +34,7 @@ export default function LinksManager({
     canEdit,
     canDelete
 }: LinksManagerProps): React.JSX.Element {
+    const router = useRouter()
     const [orderedCategories, setOptimisticCategories] = useOptimistic(
         categories,
         (_current, next: CategoryWithLinks[]) => next
@@ -57,7 +57,9 @@ export default function LinksManager({
                 order
             }))
             const res = await updateLinkCategoryOrderAction(categoryOrder)
-            if (!res.success) {
+            if (res.success) {
+                await router.invalidate()
+            } else {
                 toast.error(res.error)
             }
         })

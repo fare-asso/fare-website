@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { useTransition } from "react"
 import { toast } from "sonner"
@@ -21,6 +20,7 @@ export default function MoveConseilButtons({
     conseilIds,
     index
 }: MoveConseilButtonsProps) {
+    const router = useRouter()
     const [isPending, startTransition] = useTransition()
 
     const canMoveUp = index > 0
@@ -37,7 +37,9 @@ export default function MoveConseilButtons({
         startTransition(async () => {
             const conseilOrder = newIds.map((id, order) => ({ id, order }))
             const res = await updateConseilOrderAction(conseilOrder)
-            if (!res.success) {
+            if (res.success) {
+                await router.invalidate()
+            } else {
                 toast.error(res.error)
             }
         })

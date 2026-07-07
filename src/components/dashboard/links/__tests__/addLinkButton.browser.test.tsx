@@ -4,6 +4,9 @@ import { render } from "vitest-browser-react"
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
 vi.mock("@/actions/links/addLinkAction", () => ({ default: h.action }))
+vi.mock("@tanstack/react-router", () => ({
+    useRouter: () => ({ invalidate: vi.fn() })
+}))
 
 import AddLinkButton from "../addLinkButton"
 

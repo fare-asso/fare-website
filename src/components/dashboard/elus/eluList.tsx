@@ -148,6 +148,9 @@ export default function EluList({
                                         )
                                     ) : (
                                         <SortableEluList
+                                            key={conseil.elus
+                                                .map((e) => e.id)
+                                                .join(",")}
                                             initialElus={conseil.elus}
                                             instanceOptions={instanceOptions}
                                             canEdit={canEditElu}

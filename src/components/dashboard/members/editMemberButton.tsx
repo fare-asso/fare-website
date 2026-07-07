@@ -1,6 +1,5 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
@@ -22,6 +21,7 @@ import { type TEditMember, EditMemberSchema } from "@/schemas/members"
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 export default function EditMemberButton({ member }: { member: Member }) {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -48,6 +48,7 @@ export default function EditMemberButton({ member }: { member: Member }) {
             submit(async () => {
                 const res = await editMemberAction(value)
                 if (res.success) {
+                    await router.invalidate()
                     setOpen(false)
                 } else {
                     setSubmitError(res.error)

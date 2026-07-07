@@ -1,6 +1,5 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useRouter } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
@@ -12,6 +11,7 @@ import { TextField } from "@/components/ui/text-field"
 import { AddLinkCategorySchema, type TAddLinkCategory } from "@/schemas/link"
 
 export default function AddLinkCategoryButton() {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -32,6 +32,7 @@ export default function AddLinkCategoryButton() {
             submit(async () => {
                 const res = await addLinkCategoryAction(value)
                 if (res.success) {
+                    await router.invalidate()
                     setOpen(false)
                     form.reset()
                 } else {

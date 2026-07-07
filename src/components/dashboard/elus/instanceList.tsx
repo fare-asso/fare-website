@@ -60,6 +60,7 @@ export default function InstanceList({
                 {instances.length > 1 ? "s" : ""}
             </p>
             <SortableInstanceList
+                key={instances.map((i) => i.instance.id).join(",")}
                 initialInstances={instances}
                 canCreate={canCreate}
                 canEdit={canEdit}

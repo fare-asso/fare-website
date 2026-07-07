@@ -1,5 +1,3 @@
-"use client"
-
 import {
     closestCenter,
     DndContext,
@@ -15,6 +13,7 @@ import {
     SortableContext,
     sortableKeyboardCoordinates
 } from "@dnd-kit/sortable"
+import { useRouter } from "@tanstack/react-router"
 import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
@@ -40,6 +39,7 @@ export default function SortableMemberList({
     canEdit,
     canDelete
 }: SortableMemberListProps) {
+    const router = useRouter()
     const [members, setOptimisticMembers] = useOptimistic(
         initialMembers,
         (_current, next: MemberWithPicture[]) => next
@@ -73,6 +73,8 @@ export default function SortableMemberList({
             )
             if (result.error) {
                 toast.error(result.error)
+            } else {
+                await router.invalidate()
             }
         })
     }
@@ -87,6 +89,7 @@ export default function SortableMemberList({
             if (result.error) {
                 toast.error(result.error)
             } else {
+                await router.invalidate()
                 toast.success(
                     `Le membre ${member.firstName} ${member.lastName} a bien été supprimé`
                 )

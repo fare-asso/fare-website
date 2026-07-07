@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { EraserIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
@@ -33,6 +32,7 @@ export default function DeleteAllElusButton({
     conseilName: string
     eluIds: number[]
 }) {
+    const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [isPending, startTransition] = useTransition()
 
@@ -43,6 +43,7 @@ export default function DeleteAllElusButton({
         startTransition(async () => {
             const res = await bulkDeleteElusAction(eluIds)
             if (res.success) {
+                await router.invalidate()
                 toast.success(`${res.value.count} éluEs suppriméEs.`, {
                     duration: 10000,
                     action: {
@@ -51,7 +52,9 @@ export default function DeleteAllElusButton({
                             startTransition(async () => {
                                 const restore =
                                     await bulkRestoreElusAction(eluIds)
-                                if (!restore.success) {
+                                if (restore.success) {
+                                    await router.invalidate()
+                                } else {
                                     toast.error(restore.error)
                                 }
                             })

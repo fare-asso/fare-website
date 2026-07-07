@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { format, isBefore } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
@@ -51,6 +50,7 @@ export default function BagadAssoTicketCard({
 }: {
     ticket: BagadAssoTicket
 }) {
+    const router = useRouter()
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const isArchived = ticket.deleted !== null
@@ -64,6 +64,7 @@ export default function BagadAssoTicketCard({
         if (response.error) {
             toast.error(`${response.error}`)
         } else {
+            await router.invalidate()
             toast.success("Le ticket a été archivé.")
         }
         setIsLoading(false)
@@ -77,6 +78,7 @@ export default function BagadAssoTicketCard({
         if (response.error) {
             toast.error(`${response.error}`)
         } else {
+            await router.invalidate()
             toast.success("Le ticket a été désarchivé.")
         }
         setIsLoading(false)

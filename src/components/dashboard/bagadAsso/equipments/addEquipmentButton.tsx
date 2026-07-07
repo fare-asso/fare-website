@@ -1,6 +1,5 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useRouter } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
@@ -32,6 +31,7 @@ const emptyForm: TAddEquipment = {
 }
 
 export default function AddEquipmentButton() {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -48,6 +48,7 @@ export default function AddEquipmentButton() {
             submit(async () => {
                 const res = await addEquipmentAction(value)
                 if (res.success) {
+                    await router.invalidate()
                     setOpen(false)
                     form.reset()
                 } else {

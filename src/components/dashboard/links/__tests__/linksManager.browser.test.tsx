@@ -22,6 +22,10 @@ vi.mock("@/actions/links/deleteLinkCategoryAction", () => ({
     default: h.noop
 }))
 
+vi.mock("@tanstack/react-router", () => ({
+    useRouter: () => ({ invalidate: vi.fn() })
+}))
+
 import LinksManager from "../linksManager"
 
 function makeCategories() {

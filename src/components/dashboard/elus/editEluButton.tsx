@@ -1,6 +1,5 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
@@ -40,6 +39,7 @@ export default function EditEluButton({
     elu: Elu
     instances: InstanceOption[]
 }) {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -62,6 +62,7 @@ export default function EditEluButton({
             submit(async () => {
                 const res = await editEluAction(value)
                 if (res.success) {
+                    await router.invalidate()
                     setOpen(false)
                 } else {
                     setSubmitError(res.error)
