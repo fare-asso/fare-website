@@ -98,7 +98,7 @@ Always use `pnpm`, never use `npm`
 ### Error Handling
 
 - **Server actions return a discriminated union:** `{ success: true; value: T } | { success: false; error: string }` (omit `value` when there is no payload: `{ success: true } | { success: false; error: string }`). Callers narrow on `success` — never optional `success?`/`error?` fields
-- **Every server action MUST be wrapped with `withServerAction()`** from `@/lib/sentry` (see [Server Actions](#server-actions))
+- **Every server action MUST be wrapped with `withServerAction()`** from `@/lib/sentry.server` (see [Server Actions](#server-actions))
 - **Use the `tryCatch` helper from `@/lib/utils` instead of `try/catch` blocks — everywhere, not just server actions.** `tryCatch` is overloaded so a single import covers every case:
     - `await tryCatch(promise)` — wrap a Promise (DB call, fetch, etc.)
     - `await tryCatch(() => asyncOp())` — async thunk, also catches synchronous throws inside the thunk
@@ -108,7 +108,7 @@ Always use `pnpm`, never use `npm`
 
 - **Plain `try/catch` is forbidden anywhere in the codebase** — the only exception is the one inside `tryCatch` itself in `src/lib/utils.ts`, which has an inline `oxlint-disable` comment. The local oxlint rule `local/no-try-catch` enforces this — silence it inline with `// oxlint-disable-next-line local/no-try-catch` only when there's a documented reason in a comment above
 - For pure-side-effect sync calls where you intentionally ignore failure (cookie set, `localStorage` write, best-effort `sendEmail`), call `tryCatch` as a void expression: `void tryCatch(() => cookieStore.set(...))` (or simply `await sendEmail(...)` since it has the same effect)
-- **Report genuine exceptions with `captureActionError(error)`** from `@/lib/sentry` on the `tryCatch` failure branch — never a bare `console.error()` (it already logs + sends to Sentry, and re-throws router `redirect`/`notFound` control flow via `isRedirect`/`isNotFound`)
+- **Report genuine exceptions with `captureActionError(error)`** from `@/lib/sentry.server` on the `tryCatch` failure branch — never a bare `console.error()` (it already logs + sends to Sentry, and re-throws router `redirect`/`notFound` control flow via `isRedirect`/`isNotFound`)
 - Do NOT `captureActionError` on validation/permission/not-found early-returns — only on real thrown exceptions surfaced by `tryCatch` (DB, storage, PDF). Keeps Sentry free of expected denials. (`sendEmail` already calls `captureActionError` internally — don't double-capture)
 - Never expose sensitive data (stack traces, keys) in error messages
 - Use Sonner toasts for client-side error display
@@ -308,13 +308,14 @@ export const Route = createFileRoute("/dashboard/items/")({
 ### Server Actions
 
 Server actions handle mutations. Files live in `src/actions/**`. **Every
-action is a private `…Impl` function, run through
-`createServerFn({ method: "POST" })` with the handler wrapped by
-`withServerAction()` from `@/lib/sentry`, plus a thin exported wrapper that
-keeps the plain `action(args)` call signature.** No `"use server"` directive.
-`withServerAction` adds a Sentry trace span and auto-captures uncaught throws;
-`packActionArgs`/`unpackActionArgs` serialize the arg list (incl. `File`s and
-top-level `FormData`) across the serverFn RPC boundary.
+action is a single named `createServerFn({ method: "POST" })` export whose
+logic lives INLINE in the handler, wrapped by `withServerAction()` from
+`@/lib/sentry.server`.** No `"use server"` directive, no separate `…Impl`
+function, no wrapper around the export. Because all server code sits inside
+the `.handler(...)` argument, Start's compiler strips it (and its server-only
+imports) from the client bundle — this shape is what keeps the client clean.
+`withServerAction` adds a named Sentry trace span + evlog request logging and
+passes router `redirect`/`notFound` throws through.
 
 ```typescript
 // src/actions/items/createItemAction.ts
@@ -323,13 +324,7 @@ import { z } from "zod"
 import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import {
-    type ActionPayload,
-    captureActionError,
-    packActionArgs,
-    unpackActionArgs,
-    withServerAction
-} from "@/lib/sentry"
+import { captureActionError, withServerAction } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
 const CreateItemSchema = z.object({
@@ -337,77 +332,68 @@ const CreateItemSchema = z.object({
     email: z.email()
 })
 
-// Discriminated union — callers narrow on `success`, never optional fields
-type CreateItemResult =
-    | { success: true; value: Item }
-    | { success: false; error: string }
+export const createItemAction = createServerFn({ method: "POST" })
+    .validator((data: z.infer<typeof CreateItemSchema>) => data)
+    .handler(
+        withServerAction("createItem", async ({ data }) => {
+            // 1. Auth + permission guards (early returns — NOT captured)
+            const user = await getCurrentUserWithPermissions()
+            if (!user) {
+                return { success: false, error: "Authentification requise" }
+            }
+            if (!hasPermission(user, "create:item")) {
+                return {
+                    success: false,
+                    error: "Vous n'avez pas la permission"
+                }
+            }
 
-async function createItemActionImpl(
-    formData: z.infer<typeof CreateItemSchema>
-): Promise<CreateItemResult> {
-    // 1. Auth + permission guards (early returns — NOT captured by Sentry)
-    const user = await getCurrentUserWithPermissions()
-    if (!user) return { success: false, error: "Authentification requise" }
-    if (!hasPermission(user, "create:item")) {
-        return { success: false, error: "Vous n'avez pas la permission" }
-    }
+            // 2. Zod validation (early return — NOT captured)
+            const parsed = CreateItemSchema.safeParse(data)
+            if (!parsed.success) {
+                return {
+                    success: false,
+                    error: "Un ou plusieurs champs sont invalides."
+                }
+            }
 
-    // 2. Zod validation (early return — NOT captured)
-    const parsed = CreateItemSchema.safeParse(formData)
-    if (!parsed.success) {
-        return {
-            success: false,
-            error: "Un ou plusieurs champs sont invalides."
-        }
-    }
+            // 3. Risky IO via tryCatch — narrow on `success`, capture on
+            //    failure, return a French error. NO try/catch blocks.
+            const item = await tryCatch(
+                prisma.item.create({ data: parsed.data })
+            )
+            if (!item.success) {
+                captureActionError(item.error)
+                return {
+                    success: false,
+                    error: "Echec de la création de l'élément"
+                }
+            }
 
-    // 3. Risky IO via tryCatch — same Result shape as the action return.
-    //    Narrow on `success`, capture on failure, return a French error.
-    //    DO NOT use a try/catch block here.
-    const item = await tryCatch(prisma.item.create({ data: parsed.data }))
-    if (!item.success) {
-        captureActionError(item.error) // logs + sends to Sentry + rethrows redirect/notFound
-        return { success: false, error: "Echec de la création de l'élément" }
-    }
-
-    return { success: true, value: item.value }
-}
-
-// serverFn: packed args in, withServerAction-wrapped impl as handler.
-// Pass `{ attachFormData: true }` to withServerAction ONLY for
-// internal/dashboard CRUD actions whose arg is a FormData with no secrets.
-const createItemActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
-        (data: ActionPayload<Parameters<typeof createItemActionImpl>>) => data
+            return { success: true, value: item.value }
+        })
     )
-    .handler(({ data }) =>
-        withServerAction(
-            "createItemAction",
-            createItemActionImpl
-        )(...unpackActionArgs<Parameters<typeof createItemActionImpl>>(data))
-    )
-
-// Thin exported wrapper — callers keep the plain `action(args)` signature
-export default async (
-    ...args: Parameters<typeof createItemActionImpl>
-): ReturnType<typeof createItemActionImpl> =>
-    createItemActionServerFn({
-        data: await packActionArgs(args)
-    }) as ReturnType<typeof createItemActionImpl>
 ```
 
-For a named (non-default) export, export the wrapper under the public name
-instead of `export default`. For files with multiple actions, build one
-serverFn + wrapper per action. Best-effort work (e.g. notification emails
-after the record is persisted) does NOT need any wrapping — `sendEmail`
-catches and reports its own failures, so just `await sendEmail(...)` and
-ignore the result. For other best-effort sync work, use the sync-thunk form
-`tryCatch(() => …)` and discard the result.
+Callers use the serverFn signature: `await createItemAction({ data: input })`.
+Multiple parameters become one `data` object. `FormData` travels as the
+top-level `data` value (`.validator((data: FormData) => data)`) — actions that
+accept `File` uploads MUST use FormData transport (Files cannot be serialized
+inside typed args). Zero-arg actions drop `.validator` entirely. For files
+with several actions, export one const per action. Best-effort work (e.g.
+notification emails after the record is persisted) does NOT need wrapping —
+`sendEmail` catches and reports its own failures, so just
+`await sendEmail(...)` and ignore the result. For other best-effort sync
+work, use the sync-thunk form `tryCatch(() => …)` and discard the result.
 
 **Key patterns:**
 
-- Wrap every action's impl with `withServerAction("actionName", impl)` inside
-  the serverFn handler — name = the exported function name
+- Handler = `withServerAction("actionName", async ({ data }) => { … })` —
+  logic inline, never a module-scope impl function (that defeats the
+  compiler's client-side dead-code elimination)
+- Server-only imports (`db.server`, `supabase.server`, `sentry.server`) are
+  fine at the top of action files — they are only referenced inside the
+  handler, so they never reach the client bundle
 - Auth/permission/Zod failures are **early returns**, not exceptions — do not
   `captureActionError` them
 - Wrap every genuinely risky IO (DB, storage, PDF/zip, supabase storage
@@ -641,11 +627,11 @@ Uses `@sentry/tanstackstart-react`:
 3. Reuse `src/test/mocks.ts` (hoistable mock builders for db, supabase, email,
    sentry, start, …) and `src/test/factories/<domain>.ts` (valid-input
    builders). Do not re-inline `vi.mock` blocks per file. The `sentryModule`
-   mock makes `withServerAction` a passthrough and includes
-   `packActionArgs`/`unpackActionArgs` passthroughs so the serverFn wrappers
-   stay functional under test.
-4. **Action tests** import the wrapped default export (serverFn + sentry mocks
-   make it call the impl directly) and cover the full branch + IO matrix:
+   mock (for `@/lib/sentry.server`) makes `withServerAction` a passthrough so
+   handlers run directly under test.
+4. **Action tests** import the named action (the global start mock + sentry
+   passthrough call the handler directly) and call it with the serverFn
+   signature `action({ data })`, covering the full branch + IO matrix:
    invalid payload, each auth/permission denial, every external-IO failure
    branch, partial-failure cleanup, best-effort continuation, happy path with
    exact payload. Redirect assertions use the real `redirect`/`isRedirect`

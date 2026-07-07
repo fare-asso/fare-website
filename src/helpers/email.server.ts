@@ -2,7 +2,7 @@ import nodemailer from "nodemailer"
 import { isProduction } from "std-env"
 
 import { env } from "@/env.server"
-import { captureActionError } from "@/lib/sentry"
+import { captureActionError } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
 interface EmailAttachment {

@@ -2,7 +2,7 @@ import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
+import { deleteAssociationAction } from "@/actions/associations/deleteAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -39,7 +39,9 @@ export default function DeleteAssociationButton({
         event.preventDefault()
 
         startTransition(async () => {
-            const result = await deleteAssociationAction(association.id)
+            const result = await deleteAssociationAction({
+                data: association.id
+            })
             if (result?.success) {
                 await router.invalidate()
                 setIsOpen(false)

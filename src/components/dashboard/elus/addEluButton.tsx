@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import addEluAction from "@/actions/elus/addEluAction"
+import { addEluAction } from "@/actions/elus/addEluAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -59,7 +59,7 @@ export default function AddEluButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addEluAction(value)
+                const res = await addEluAction({ data: value })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

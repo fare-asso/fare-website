@@ -13,9 +13,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ elu: { updateMany: h.updateMany } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import bulkDeleteElusAction from "../bulkDeleteElusAction"
+import { bulkDeleteElusAction } from "../bulkDeleteElusAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:elu"]))
@@ -25,7 +25,7 @@ beforeEach(() => {
 describe("bulkDeleteElusAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await bulkDeleteElusAction([1, 2])).toEqual({
+        expect(await bulkDeleteElusAction({ data: [1, 2] })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -34,14 +34,14 @@ describe("bulkDeleteElusAction", () => {
 
     it("requires the delete:elu permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await bulkDeleteElusAction([1, 2])
+        const res = await bulkDeleteElusAction({ data: [1, 2] })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.updateMany).not.toHaveBeenCalled()
     })
 
     it("rejects an empty id list", async () => {
-        const res = await bulkDeleteElusAction([])
+        const res = await bulkDeleteElusAction({ data: [] })
         expect(res).toEqual({
             success: false,
             error: "AucunE éluE à supprimer"
@@ -51,13 +51,13 @@ describe("bulkDeleteElusAction", () => {
 
     it("captures and fails when the update throws", async () => {
         h.updateMany.mockRejectedValue(new Error("db down"))
-        const res = await bulkDeleteElusAction([1, 2])
+        const res = await bulkDeleteElusAction({ data: [1, 2] })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("soft-deletes the elus and returns the count", async () => {
-        const res = await bulkDeleteElusAction([1, 2])
+        const res = await bulkDeleteElusAction({ data: [1, 2] })
         expect(res).toEqual({ success: true, value: { count: 2 } })
         expect(h.updateMany).toHaveBeenCalledWith({
             where: { id: { in: [1, 2] } },

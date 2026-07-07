@@ -14,9 +14,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ elu: { findUnique: h.findElu, update: h.updateElu } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteEluAction from "../deleteEluAction"
+import { deleteEluAction } from "../deleteEluAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:elu"]))
@@ -27,7 +27,7 @@ beforeEach(() => {
 describe("deleteEluAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteEluAction(1)).toEqual({
+        expect(await deleteEluAction({ data: 1 })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -36,7 +36,7 @@ describe("deleteEluAction", () => {
 
     it("requires the delete:elu permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await deleteEluAction(1)
+        const res = await deleteEluAction({ data: 1 })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.updateElu).not.toHaveBeenCalled()
@@ -44,14 +44,14 @@ describe("deleteEluAction", () => {
 
     it("returns an error when the elu is not found", async () => {
         h.findElu.mockResolvedValue(null)
-        const res = await deleteEluAction(1)
+        const res = await deleteEluAction({ data: 1 })
         expect(res).toEqual({ success: false, error: "Élu·e introuvable." })
         expect(h.updateElu).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the lookup throws", async () => {
         h.findElu.mockRejectedValue(new Error("db down"))
-        const res = await deleteEluAction(1)
+        const res = await deleteEluAction({ data: 1 })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.updateElu).not.toHaveBeenCalled()
@@ -59,13 +59,13 @@ describe("deleteEluAction", () => {
 
     it("captures and fails when the soft delete throws", async () => {
         h.updateElu.mockRejectedValue(new Error("update failed"))
-        const res = await deleteEluAction(1)
+        const res = await deleteEluAction({ data: 1 })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("soft-deletes the elu and revalidates on the happy path", async () => {
-        const res = await deleteEluAction(7)
+        const res = await deleteEluAction({ data: 7 })
         expect(res).toEqual({ success: true })
         expect(h.updateElu).toHaveBeenCalledWith({
             where: { id: 7 },

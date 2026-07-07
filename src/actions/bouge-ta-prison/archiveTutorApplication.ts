@@ -3,65 +3,41 @@ import { createServerFn } from "@tanstack/react-start"
 import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import {
-    type ActionPayload,
-    captureActionError,
-    packActionArgs,
-    unpackActionArgs,
-    withServerAction
-} from "@/lib/sentry"
+import { captureActionError, withServerAction } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
-type Result = { success: true } | { success: false; error: string }
-
-async function archiveTutorApplicationImpl(id: number): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
-    if (!user) {
-        return { success: false, error: "Authentification requise" }
-    }
-    if (!hasPermission(user, "access:btp")) {
-        return {
-            success: false,
-            error: "Vous n'avez pas la permission d'effectuer cette opération"
-        }
-    }
-
-    const result = await tryCatch(
-        prisma.bTPTutorApplication.update({
-            where: { id },
-            data: { archived: new Date() }
-        })
-    )
-    if (!result.success) {
-        captureActionError(result.error)
-        return {
-            success: false,
-            error: "Echec de l'archivage de la candidature"
-        }
-    }
-
-    return { success: true }
-}
-
-const archiveTutorApplicationServerFn = createServerFn({ method: "POST" })
-    .validator(
-        (data: ActionPayload<Parameters<typeof archiveTutorApplicationImpl>>) =>
-            data
-    )
-    .handler(({ data }) =>
+export const archiveTutorApplicationAction = createServerFn({ method: "POST" })
+    .validator((data: { id: number }) => data)
+    .handler(
         withServerAction(
             "archiveTutorApplication",
-            archiveTutorApplicationImpl
-        )(
-            ...unpackActionArgs<Parameters<typeof archiveTutorApplicationImpl>>(
-                data
-            )
+            async ({ data: { id } }) => {
+                const user = await getCurrentUserWithPermissions()
+                if (!user) {
+                    return { success: false, error: "Authentification requise" }
+                }
+                if (!hasPermission(user, "access:btp")) {
+                    return {
+                        success: false,
+                        error: "Vous n'avez pas la permission d'effectuer cette opération"
+                    }
+                }
+
+                const result = await tryCatch(
+                    prisma.bTPTutorApplication.update({
+                        where: { id },
+                        data: { archived: new Date() }
+                    })
+                )
+                if (!result.success) {
+                    captureActionError(result.error)
+                    return {
+                        success: false,
+                        error: "Echec de l'archivage de la candidature"
+                    }
+                }
+
+                return { success: true }
+            }
         )
     )
-
-export default async (
-    ...args: Parameters<typeof archiveTutorApplicationImpl>
-): ReturnType<typeof archiveTutorApplicationImpl> =>
-    archiveTutorApplicationServerFn({
-        data: await packActionArgs(args)
-    }) as ReturnType<typeof archiveTutorApplicationImpl>

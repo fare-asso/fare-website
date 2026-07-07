@@ -25,7 +25,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import prisma from "@/helpers/db.server"
 import { createClient } from "@/helpers/supabase.server"
-import { captureActionError } from "@/lib/sentry"
+import { captureActionError } from "@/lib/sentry.server"
 import { dashboardTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 

@@ -12,8 +12,8 @@ import {
 import { useState } from "react"
 import { toast } from "sonner"
 
-import archiveTutorQuestion from "@/actions/bouge-ta-prison/archiveTutorQuestion"
-import unarchiveTutorQuestion from "@/actions/bouge-ta-prison/unarchiveTutorQuestion"
+import { archiveTutorQuestionAction } from "@/actions/bouge-ta-prison/archiveTutorQuestion"
+import { unarchiveTutorQuestionAction } from "@/actions/bouge-ta-prison/unarchiveTutorQuestion"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import Link from "@/components/link"
 import {
@@ -48,7 +48,9 @@ export default function QuestionCard({
 
     const onArchive = async () => {
         setIsLoading(true)
-        const response = await archiveTutorQuestion(question.id)
+        const response = await archiveTutorQuestionAction({
+            data: { id: question.id }
+        })
 
         if (response.error) {
             toast.error(response.error)
@@ -61,7 +63,9 @@ export default function QuestionCard({
 
     const onUnarchive = async () => {
         setIsLoading(true)
-        const response = await unarchiveTutorQuestion(question.id)
+        const response = await unarchiveTutorQuestionAction({
+            data: { id: question.id }
+        })
 
         if (response.error) {
             toast.error(response.error)

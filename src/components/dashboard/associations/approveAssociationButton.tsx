@@ -2,7 +2,7 @@ import { useRouter } from "@tanstack/react-router"
 import { CheckCircleIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import approveAssociationAction from "@/actions/associations/approveAssociationAction"
+import { approveAssociationAction } from "@/actions/associations/approveAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -38,7 +38,9 @@ export default function ApproveAssociationButton({
     ): void => {
         event.preventDefault()
         startTransition(async () => {
-            const result = await approveAssociationAction(association.id)
+            const result = await approveAssociationAction({
+                data: association.id
+            })
             if (result?.success) {
                 await router.invalidate()
                 setIsOpen(false)

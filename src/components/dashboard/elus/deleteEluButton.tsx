@@ -3,8 +3,8 @@ import { Trash2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import deleteEluAction from "@/actions/elus/deleteEluAction"
-import restoreEluAction from "@/actions/elus/restoreEluAction"
+import { deleteEluAction } from "@/actions/elus/deleteEluAction"
+import { restoreEluAction } from "@/actions/elus/restoreEluAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -37,7 +37,7 @@ export default function DeleteEluButton({ elu }: { elu: Elu }) {
         event.preventDefault()
 
         startTransition(async () => {
-            const res = await deleteEluAction(elu.id)
+            const res = await deleteEluAction({ data: elu.id })
             if (res.success) {
                 setIsOpen(false)
                 await router.invalidate()
@@ -47,7 +47,9 @@ export default function DeleteEluButton({ elu }: { elu: Elu }) {
                         label: "Annuler",
                         onClick: () => {
                             startTransition(async () => {
-                                const restore = await restoreEluAction(elu.id)
+                                const restore = await restoreEluAction({
+                                    data: elu.id
+                                })
                                 if (restore.success) {
                                     await router.invalidate()
                                 } else {

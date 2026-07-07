@@ -13,9 +13,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ user: { updateMany: h.updateMany } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import bulkDeleteUsers from "../bulkDeleteUsers"
+import { bulkDeleteUsersAction } from "../bulkDeleteUsers"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:user"], "ADMIN"))
@@ -25,7 +25,9 @@ beforeEach(() => {
 describe("bulkDeleteUsers", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await bulkDeleteUsers(["u2"])).toEqual({
+        expect(
+            await bulkDeleteUsersAction({ data: { userIds: ["u2"] } })
+        ).toEqual({
             success: false,
             error: "Non authentifié"
         })
@@ -33,7 +35,9 @@ describe("bulkDeleteUsers", () => {
 
     it("requires the ADMIN role", async () => {
         h.getUser.mockResolvedValue(mockUser(["delete:user"], "MEMBER"))
-        expect(await bulkDeleteUsers(["u2"])).toEqual({
+        expect(
+            await bulkDeleteUsersAction({ data: { userIds: ["u2"] } })
+        ).toEqual({
             success: false,
             error: "Accès réservé aux administrateurs"
         })
@@ -41,21 +45,27 @@ describe("bulkDeleteUsers", () => {
 
     it("requires the delete:user permission", async () => {
         h.getUser.mockResolvedValue(mockUser([], "ADMIN"))
-        expect(await bulkDeleteUsers(["u2"])).toEqual({
+        expect(
+            await bulkDeleteUsersAction({ data: { userIds: ["u2"] } })
+        ).toEqual({
             success: false,
             error: "Permission insuffisante"
         })
     })
 
     it("rejects when only the current user would be deleted", async () => {
-        const res = await bulkDeleteUsers(["user-1"])
+        const res = await bulkDeleteUsersAction({
+            data: { userIds: ["user-1"] }
+        })
         expect(res.success).toBe(false)
         expect(h.updateMany).not.toHaveBeenCalled()
     })
 
     it("captures and fails when updateMany throws", async () => {
         h.updateMany.mockRejectedValue(new Error("db down"))
-        expect(await bulkDeleteUsers(["u2"])).toEqual({
+        expect(
+            await bulkDeleteUsersAction({ data: { userIds: ["u2"] } })
+        ).toEqual({
             success: false,
             error: "Une erreur s'est produite lors de la suppression"
         })
@@ -63,7 +73,9 @@ describe("bulkDeleteUsers", () => {
     })
 
     it("soft-deletes the filtered users and revalidates", async () => {
-        const res = await bulkDeleteUsers(["u2", "user-1"])
+        const res = await bulkDeleteUsersAction({
+            data: { userIds: ["u2", "user-1"] }
+        })
         expect(res).toEqual({
             success: true,
             deletedCount: 1,

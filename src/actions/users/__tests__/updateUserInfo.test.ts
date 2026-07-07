@@ -11,9 +11,9 @@ const h = vi.hoisted(() => ({
 
 vi.mock("@/helpers/db.server", () => dbModule({ user: { update: h.update } }))
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import updateUserInfo from "../updateUserInfo"
+import { updateUserInfoAction } from "../updateUserInfo"
 
 const data = {
     name: "New Name",
@@ -29,24 +29,30 @@ beforeEach(() => {
 describe("updateUserInfo", () => {
     it("throws when not authenticated", async () => {
         h.getUser.mockResolvedValue(null)
-        await expect(updateUserInfo("u2", data)).rejects.toThrow(/Unauthorized/)
+        await expect(
+            updateUserInfoAction({ data: { userId: "u2", info: data } })
+        ).rejects.toThrow(/Unauthorized/)
     })
 
     it("throws when not an ADMIN", async () => {
         h.getUser.mockResolvedValue(mockUser(["edit:user"], "MEMBER"))
-        await expect(updateUserInfo("u2", data)).rejects.toThrow(/Admin only/)
+        await expect(
+            updateUserInfoAction({ data: { userId: "u2", info: data } })
+        ).rejects.toThrow(/Admin only/)
     })
 
     it("throws when lacking the edit:user permission", async () => {
         h.getUser.mockResolvedValue(mockUser([], "ADMIN"))
-        await expect(updateUserInfo("u2", data)).rejects.toThrow(
-            /Insufficient permissions/
-        )
+        await expect(
+            updateUserInfoAction({ data: { userId: "u2", info: data } })
+        ).rejects.toThrow(/Insufficient permissions/)
     })
 
     it("captures and fails when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await updateUserInfo("u2", data)).toEqual({
+        expect(
+            await updateUserInfoAction({ data: { userId: "u2", info: data } })
+        ).toEqual({
             success: false,
             error: "An error occurred while updating user info."
         })
@@ -54,7 +60,9 @@ describe("updateUserInfo", () => {
     })
 
     it("updates the user on the happy path", async () => {
-        const res = await updateUserInfo("u2", data)
+        const res = await updateUserInfoAction({
+            data: { userId: "u2", info: data }
+        })
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: "u2" },

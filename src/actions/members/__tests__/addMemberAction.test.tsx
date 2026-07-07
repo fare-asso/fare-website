@@ -26,9 +26,24 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import addMemberAction from "../addMemberAction"
+import type { TAddMember } from "@/schemas/members"
+
+import { addMemberAction } from "../addMemberAction"
+
+const fd = (input: TAddMember): FormData => {
+    const f = new FormData()
+    f.set("firstName", input.firstName)
+    f.set("lastName", input.lastName)
+    f.set("position", input.position)
+    f.set("email", input.email)
+    f.set("facebook", input.facebook ?? "")
+    f.set("instagram", input.instagram ?? "")
+    f.set("twitter", input.twitter ?? "")
+    if (input.picture) f.set("picture", input.picture)
+    return f
+}
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:member"]))
@@ -43,7 +58,7 @@ beforeEach(() => {
 describe("addMemberAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        const res = await addMemberAction(validAddMember())
+        const res = await addMemberAction({ data: fd(validAddMember()) })
         expect(res).toEqual({
             success: false,
             error: "Authentification requise"
@@ -54,7 +69,7 @@ describe("addMemberAction", () => {
 
     it("requires the create:member permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await addMemberAction(validAddMember())
+        const res = await addMemberAction({ data: fd(validAddMember()) })
         expect(res.success).toBe(false)
         if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.upload).not.toHaveBeenCalled()
@@ -62,9 +77,9 @@ describe("addMemberAction", () => {
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await addMemberAction(
-            validAddMember({ email: "not-an-email" })
-        )
+        const res = await addMemberAction({
+            data: fd(validAddMember({ email: "not-an-email" }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -74,9 +89,9 @@ describe("addMemberAction", () => {
     })
 
     it("rejects a non-image picture", async () => {
-        const res = await addMemberAction(
-            validAddMember({ picture: pdfFile("x.pdf") })
-        )
+        const res = await addMemberAction({
+            data: fd(validAddMember({ picture: pdfFile("x.pdf") }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -86,7 +101,7 @@ describe("addMemberAction", () => {
 
     it("captures and returns an error when the upload throws", async () => {
         h.upload.mockRejectedValue(new Error("storage down"))
-        const res = await addMemberAction(validAddMember())
+        const res = await addMemberAction({ data: fd(validAddMember()) })
         expect(res).toEqual({
             success: false,
             error: "Échec de l'upload de la photo."
@@ -97,7 +112,7 @@ describe("addMemberAction", () => {
 
     it("removes the uploaded picture when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await addMemberAction(validAddMember())
+        const res = await addMemberAction({ data: fd(validAddMember()) })
         expect(res).toEqual({
             success: false,
             error: "Échec de la création du membre."
@@ -108,7 +123,7 @@ describe("addMemberAction", () => {
 
     it("creates the member and revalidates on the happy path", async () => {
         const input = validAddMember({ picture: imageFile("lea.png") })
-        const res = await addMemberAction(input)
+        const res = await addMemberAction({ data: fd(input) })
         expect(res).toEqual({ success: true })
         expect(h.upload).toHaveBeenCalledOnce()
         const [uploadName, uploadFile, uploadOpts] = h.upload.mock.calls[0] as [

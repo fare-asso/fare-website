@@ -3,7 +3,7 @@ import { LinkIcon } from "lucide-react"
 import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
-import updateLinkCategoryOrderAction from "@/actions/links/updateLinkCategoryOrderAction"
+import { updateLinkCategoryOrderAction } from "@/actions/links/updateLinkCategoryOrderAction"
 import DeleteLinkCategoryButton from "@/components/dashboard/links/deleteLinkCategoryButton"
 import EditLinkCategoryButton from "@/components/dashboard/links/editLinkCategoryButton"
 import MoveLinkCategoryButtons from "@/components/dashboard/links/moveLinkCategoryButtons"
@@ -56,7 +56,9 @@ export default function LinksManager({
                 id: c.id,
                 order
             }))
-            const res = await updateLinkCategoryOrderAction(categoryOrder)
+            const res = await updateLinkCategoryOrderAction({
+                data: categoryOrder
+            })
             if (res.success) {
                 await router.invalidate()
             } else {

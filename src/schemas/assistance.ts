@@ -57,3 +57,24 @@ export const AssistanceFormSchema = type({
 })
 
 export type TAssistanceForm = typeof AssistanceFormSchema.infer
+
+// serverFn transport: typed args cannot carry Files, so the form is sent as
+// FormData and rebuilt server-side before running AssistanceFormSchema.
+export function assistanceFormToFormData(value: TAssistanceForm): FormData {
+    const fd = new FormData()
+    fd.append("prenom", value.prenom)
+    fd.append("nom", value.nom)
+    fd.append("email", value.email)
+    fd.append("etablissement", value.etablissement)
+    if (value.ufr !== undefined) fd.append("ufr", value.ufr)
+    fd.append("situation", value.situation)
+    fd.append("message", value.message)
+    fd.append("moyenContact", value.moyenContact)
+    if (value.telephone !== undefined) {
+        fd.append("telephone", value.telephone)
+    }
+    for (const piece of value.pieces ?? []) fd.append("pieces", piece)
+    fd.append("consentement", String(value.consentement))
+    fd.append("captchaToken", value.captchaToken)
+    return fd
+}

@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { Loader2Icon, PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import addInstanceAction from "@/actions/instances/addInstanceAction"
+import { addInstanceAction } from "@/actions/instances/addInstanceAction"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -24,7 +24,11 @@ import {
 import { FilePondInput } from "@/components/ui/filepond"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { AddInstanceSchema, type TAddInstance } from "@/schemas/instance"
+import {
+    AddInstanceSchema,
+    instanceFormData,
+    type TAddInstance
+} from "@/schemas/instance"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 
@@ -55,7 +59,9 @@ export default function AddInstanceButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addInstanceAction(value)
+                const res = await addInstanceAction({
+                    data: instanceFormData(value)
+                })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

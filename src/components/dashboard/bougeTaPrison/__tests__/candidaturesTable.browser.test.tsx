@@ -33,17 +33,17 @@ vi.mock("@/components/link", () => ({
 }))
 
 vi.mock("@/actions/bouge-ta-prison/downloadTutorApplicationsZipAction", () => ({
-    default: h.downloadAction
+    downloadTutorApplicationsZipAction: h.downloadAction
 }))
 vi.mock("@/actions/bouge-ta-prison/bulkArchiveTutorApplicationsAction", () => ({
-    default: h.bulkArchive
+    bulkArchiveTutorApplicationsAction: h.bulkArchive
 }))
 vi.mock("@/lib/download", () => ({ downloadBase64: h.downloadBase64 }))
 vi.mock("@/actions/bouge-ta-prison/archiveTutorApplication", () => ({
-    default: h.noop
+    archiveTutorApplicationAction: h.noop
 }))
 vi.mock("@/actions/bouge-ta-prison/unarchiveTutorApplication", () => ({
-    default: h.noop
+    unarchiveTutorApplicationAction: h.noop
 }))
 vi.mock("sonner", () => ({
     toast: {
@@ -139,7 +139,7 @@ describe("<CandidaturesTable />", () => {
         await screen.getByRole("button", { name: /Télécharger/ }).click()
 
         await vi.waitFor(() =>
-            expect(h.downloadAction).toHaveBeenCalledWith([1, 2])
+            expect(h.downloadAction).toHaveBeenCalledWith({ data: [1, 2] })
         )
         expect(h.downloadBase64).toHaveBeenCalledWith(
             "aGk=",
@@ -206,8 +206,7 @@ describe("<CandidaturesTable />", () => {
 
         await vi.waitFor(() =>
             expect(h.bulkArchive).toHaveBeenCalledWith({
-                ids: [1],
-                archive: true
+                data: { ids: [1], archive: true }
             })
         )
         expect(h.toastSuccess).toHaveBeenCalled()
@@ -231,8 +230,7 @@ describe("<CandidaturesTable />", () => {
 
         await vi.waitFor(() =>
             expect(h.bulkArchive).toHaveBeenCalledWith({
-                ids: [1],
-                archive: false
+                data: { ids: [1], archive: false }
             })
         )
         expect(h.toastSuccess).toHaveBeenCalled()

@@ -2,7 +2,7 @@ import { useRouter } from "@tanstack/react-router"
 import { RotateCcw } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import restoreUser from "@/actions/users/restoreUser"
+import { restoreUserAction } from "@/actions/users/restoreUser"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
@@ -31,7 +31,7 @@ export function RestoreUserButton({ userId, userName }: Props) {
     const handleRestore = () => {
         setError(null)
         startTransition(async () => {
-            const result = await restoreUser(userId)
+            const result = await restoreUserAction({ data: { userId } })
             if (result.success) {
                 setOpen(false)
                 await router.invalidate()

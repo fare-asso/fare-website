@@ -3,8 +3,8 @@ import { EraserIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import bulkDeleteElusAction from "@/actions/elus/bulkDeleteElusAction"
-import bulkRestoreElusAction from "@/actions/elus/bulkRestoreElusAction"
+import { bulkDeleteElusAction } from "@/actions/elus/bulkDeleteElusAction"
+import { bulkRestoreElusAction } from "@/actions/elus/bulkRestoreElusAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -41,7 +41,7 @@ export default function DeleteAllElusButton({
     ) => {
         event.preventDefault()
         startTransition(async () => {
-            const res = await bulkDeleteElusAction(eluIds)
+            const res = await bulkDeleteElusAction({ data: eluIds })
             if (res.success) {
                 await router.invalidate()
                 toast.success(`${res.value.count} éluEs suppriméEs.`, {
@@ -50,8 +50,9 @@ export default function DeleteAllElusButton({
                         label: "Annuler",
                         onClick: () => {
                             startTransition(async () => {
-                                const restore =
-                                    await bulkRestoreElusAction(eluIds)
+                                const restore = await bulkRestoreElusAction({
+                                    data: eluIds
+                                })
                                 if (restore.success) {
                                     await router.invalidate()
                                 } else {

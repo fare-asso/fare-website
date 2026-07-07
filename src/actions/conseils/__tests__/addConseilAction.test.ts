@@ -18,9 +18,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import addConseilAction from "../addConseilAction"
+import { addConseilAction } from "../addConseilAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:instance"]))
@@ -31,7 +31,7 @@ beforeEach(() => {
 describe("addConseilAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await addConseilAction(validAddConseil())).toEqual({
+        expect(await addConseilAction({ data: validAddConseil() })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -40,14 +40,16 @@ describe("addConseilAction", () => {
 
     it("is gated on the create:instance permission (reused for conseils)", async () => {
         h.getUser.mockResolvedValue(mockUser(["create:elu"]))
-        const res = await addConseilAction(validAddConseil())
+        const res = await addConseilAction({ data: validAddConseil() })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.createConseil).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await addConseilAction(validAddConseil({ name: "" }))
+        const res = await addConseilAction({
+            data: validAddConseil({ name: "" })
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -57,22 +59,22 @@ describe("addConseilAction", () => {
 
     it("returns an error when the instance is not found", async () => {
         h.findInstance.mockResolvedValue(null)
-        const res = await addConseilAction(validAddConseil())
+        const res = await addConseilAction({ data: validAddConseil() })
         expect(res).toEqual({ success: false, error: "Instance introuvable." })
         expect(h.createConseil).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the insert throws", async () => {
         h.createConseil.mockRejectedValue(new Error("db down"))
-        const res = await addConseilAction(validAddConseil())
+        const res = await addConseilAction({ data: validAddConseil() })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("creates the conseil and revalidates on the happy path", async () => {
-        const res = await addConseilAction(
-            validAddConseil({ description: "Conseil restreint" })
-        )
+        const res = await addConseilAction({
+            data: validAddConseil({ description: "Conseil restreint" })
+        })
         expect(res).toEqual({ success: true })
         expect(h.createConseil).toHaveBeenCalledWith({
             data: {

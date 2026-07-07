@@ -5,86 +5,84 @@ import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { createAdminClient } from "@/helpers/supabase.server"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import {
-    type ActionPayload,
-    captureActionError,
-    packActionArgs,
-    unpackActionArgs,
-    withServerAction
-} from "@/lib/sentry"
+import { captureActionError, withServerAction } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
-import { AddPartenaireSchema, type TAddPartenaire } from "@/schemas/partenaires"
+import { AddPartenaireSchema } from "@/schemas/partenaires"
 
-async function addPartenaireActionImpl(
-    input: TAddPartenaire
-): Promise<{ success: true } | { success: false; error: string }> {
-    const user = await getCurrentUserWithPermissions()
-    if (!user) return { success: false, error: "Authentification requise" }
-    if (!hasPermission(user, "create:partner")) {
-        return {
-            success: false,
-            error: "Vous n'avez pas la permission de créer des partenaires"
-        }
-    }
-
-    const data = AddPartenaireSchema(input)
-    if (data instanceof type.errors) {
-        return {
-            success: false,
-            error: "Un ou plusieurs champs sont invalides."
-        }
-    }
-
-    const supabase = createAdminClient()
-    const fileExt = data.logo.name.split(".").pop() ?? "bin"
-    const filePath = `${crypto.randomUUID()}.${fileExt}`
-    const upload = await tryCatch(
-        supabase.storage
-            .from("partner-pictures")
-            .upload(filePath, data.logo, { contentType: data.logo.type })
-    )
-    if (!upload.success) {
-        captureActionError(upload.error)
-        return { success: false, error: "Échec de l'upload du logo." }
-    }
-    const logoPath = upload.value.path
-
-    const created = await tryCatch(
-        prisma.partenaire.create({
-            data: {
-                name: data.name,
-                description: data.description,
-                logoPath
-            }
-        })
-    )
-    if (!created.success) {
-        captureActionError(created.error)
-        await supabase.storage.from("partner-pictures").remove([logoPath])
-        return {
-            success: false,
-            error: "Échec de la création du partenaire."
-        }
-    }
-
-    return { success: true }
-}
-
-const addPartenaireActionServerFn = createServerFn({ method: "POST" })
-    .validator(
-        (data: ActionPayload<Parameters<typeof addPartenaireActionImpl>>) =>
-            data
-    )
-    .handler(({ data }) =>
+export const addPartenaireAction = createServerFn({ method: "POST" })
+    .validator((data: FormData) => data)
+    .handler(
         withServerAction(
             "addPartenaireAction",
-            addPartenaireActionImpl
-        )(...unpackActionArgs<Parameters<typeof addPartenaireActionImpl>>(data))
-    )
+            async ({
+                data: fd
+            }): Promise<
+                { success: true } | { success: false; error: string }
+            > => {
+                const user = await getCurrentUserWithPermissions()
+                if (!user) {
+                    return { success: false, error: "Authentification requise" }
+                }
+                if (!hasPermission(user, "create:partner")) {
+                    return {
+                        success: false,
+                        error: "Vous n'avez pas la permission de créer des partenaires"
+                    }
+                }
 
-export default async (
-    ...args: Parameters<typeof addPartenaireActionImpl>
-): ReturnType<typeof addPartenaireActionImpl> =>
-    addPartenaireActionServerFn({
-        data: await packActionArgs(args)
-    }) as ReturnType<typeof addPartenaireActionImpl>
+                const input = {
+                    name: fd.get("name"),
+                    description: fd.get("description"),
+                    logo: fd.get("logo") ?? undefined
+                }
+                const data = AddPartenaireSchema(input)
+                if (data instanceof type.errors) {
+                    return {
+                        success: false,
+                        error: "Un ou plusieurs champs sont invalides."
+                    }
+                }
+
+                const supabase = createAdminClient()
+                const fileExt = data.logo.name.split(".").pop() ?? "bin"
+                const filePath = `${crypto.randomUUID()}.${fileExt}`
+                const upload = await tryCatch(
+                    supabase.storage
+                        .from("partner-pictures")
+                        .upload(filePath, data.logo, {
+                            contentType: data.logo.type
+                        })
+                )
+                if (!upload.success) {
+                    captureActionError(upload.error)
+                    return {
+                        success: false,
+                        error: "Échec de l'upload du logo."
+                    }
+                }
+                const logoPath = upload.value.path
+
+                const created = await tryCatch(
+                    prisma.partenaire.create({
+                        data: {
+                            name: data.name,
+                            description: data.description,
+                            logoPath
+                        }
+                    })
+                )
+                if (!created.success) {
+                    captureActionError(created.error)
+                    await supabase.storage
+                        .from("partner-pictures")
+                        .remove([logoPath])
+                    return {
+                        success: false,
+                        error: "Échec de la création du partenaire."
+                    }
+                }
+
+                return { success: true }
+            }
+        )
+    )

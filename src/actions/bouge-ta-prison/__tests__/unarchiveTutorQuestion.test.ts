@@ -10,9 +10,9 @@ const h = vi.hoisted(() => ({
 vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorQuestion: { update: h.update } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import unarchiveTutorQuestion from "../unarchiveTutorQuestion"
+import { unarchiveTutorQuestionAction } from "../unarchiveTutorQuestion"
 
 beforeEach(() => {
     h.update.mockResolvedValue({ id: 1 })
@@ -20,7 +20,7 @@ beforeEach(() => {
 
 describe("unarchiveTutorQuestion", () => {
     it("unarchives the question and revalidates", async () => {
-        const res = await unarchiveTutorQuestion(6)
+        const res = await unarchiveTutorQuestionAction({ data: { id: 6 } })
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 6 },
@@ -30,9 +30,11 @@ describe("unarchiveTutorQuestion", () => {
 
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await unarchiveTutorQuestion(6)).toEqual({
-            error: "Echec du désarchivage de la question"
-        })
+        expect(await unarchiveTutorQuestionAction({ data: { id: 6 } })).toEqual(
+            {
+                error: "Echec du désarchivage de la question"
+            }
+        )
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 })

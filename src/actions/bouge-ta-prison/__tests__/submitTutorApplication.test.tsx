@@ -36,9 +36,9 @@ vi.mock("@/helpers/db.server", () =>
 )
 vi.mock("@/helpers/email.server", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import submitTutorApplication from "../submitTutorApplication"
+import { submitTutorApplicationAction } from "../submitTutorApplication"
 
 beforeEach(() => {
     stdenv.isDevelopment = false
@@ -54,9 +54,9 @@ beforeEach(() => {
 
 describe("submitTutorApplication", () => {
     it("rejects an invalid payload before any side effect", async () => {
-        const res = await submitTutorApplication(
-            validTutorApplicationFormData({ studyYear: "X" })
-        )
+        const res = await submitTutorApplicationAction({
+            data: validTutorApplicationFormData({ studyYear: "X" })
+        })
         expect(res.error).toBe("Un ou plusieurs champs sont invalides.")
         expect(res.fieldErrors?.studyYear).toBeDefined()
         expect(h.upload).not.toHaveBeenCalled()
@@ -65,9 +65,9 @@ describe("submitTutorApplication", () => {
 
     it("fails when the captcha is invalid", async () => {
         h.verifyCaptcha.mockResolvedValue(false)
-        const res = await submitTutorApplication(
-            validTutorApplicationFormData()
-        )
+        const res = await submitTutorApplicationAction({
+            data: validTutorApplicationFormData()
+        })
         expect(res).toEqual({
             error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         })
@@ -79,9 +79,9 @@ describe("submitTutorApplication", () => {
             data: null,
             error: { message: "boom" }
         }))
-        const res = await submitTutorApplication(
-            validTutorApplicationFormData()
-        )
+        const res = await submitTutorApplicationAction({
+            data: validTutorApplicationFormData()
+        })
         expect(res).toEqual({ error: "Echec de l'upload du CV" })
         expect(h.create).not.toHaveBeenCalled()
     })
@@ -96,9 +96,9 @@ describe("submitTutorApplication", () => {
                 data: null,
                 error: { message: "boom" }
             }))
-        const res = await submitTutorApplication(
-            validTutorApplicationFormData()
-        )
+        const res = await submitTutorApplicationAction({
+            data: validTutorApplicationFormData()
+        })
         expect(res).toEqual({
             error: "Echec de l'upload de la lettre de motivation"
         })
@@ -108,9 +108,9 @@ describe("submitTutorApplication", () => {
 
     it("captures, cleans up and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await submitTutorApplication(
-            validTutorApplicationFormData()
-        )
+        const res = await submitTutorApplicationAction({
+            data: validTutorApplicationFormData()
+        })
         expect(res).toEqual({
             error: "Echec de la création de la candidature. Veuillez réessayer."
         })
@@ -122,18 +122,18 @@ describe("submitTutorApplication", () => {
 
     it("still succeeds when the notification email fails (handled inside sendEmail)", async () => {
         h.sendEmail.mockResolvedValue({ success: false })
-        const res = await submitTutorApplication(
-            validTutorApplicationFormData()
-        )
+        const res = await submitTutorApplicationAction({
+            data: validTutorApplicationFormData()
+        })
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledOnce()
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
     it("persists, emails and revalidates on the happy path", async () => {
-        const res = await submitTutorApplication(
-            validTutorApplicationFormData()
-        )
+        const res = await submitTutorApplicationAction({
+            data: validTutorApplicationFormData()
+        })
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({

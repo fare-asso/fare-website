@@ -19,9 +19,9 @@ vi.mock("@/helpers/db.server", () =>
 )
 vi.mock("@/helpers/email.server", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import sendApprovalEmail from "../sendApprovalEmail"
+import { sendApprovalEmailAction } from "../sendApprovalEmail"
 
 beforeEach(() => {
     h.sendEmail.mockResolvedValue({ success: true })
@@ -31,7 +31,9 @@ beforeEach(() => {
 describe("sendApprovalEmail", () => {
     it("returns an error when the transporter reports a failure", async () => {
         h.sendEmail.mockResolvedValue({ success: false })
-        const res = await sendApprovalEmail(validTutorApplicationRecord())
+        const res = await sendApprovalEmailAction({
+            data: validTutorApplicationRecord()
+        })
         expect(res.success).toBe(false)
         expect(res.error).toMatch(/email/i)
         expect(h.update).not.toHaveBeenCalled()
@@ -39,7 +41,9 @@ describe("sendApprovalEmail", () => {
 
     it("captures and fails when the approval update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        const res = await sendApprovalEmail(validTutorApplicationRecord())
+        const res = await sendApprovalEmailAction({
+            data: validTutorApplicationRecord()
+        })
         expect(res).toEqual({
             success: false,
             error: "Echec de la mise à jour de la candidature"
@@ -48,9 +52,9 @@ describe("sendApprovalEmail", () => {
     })
 
     it("emails, approves and revalidates on the happy path", async () => {
-        const res = await sendApprovalEmail(
-            validTutorApplicationRecord({ id: 5 })
-        )
+        const res = await sendApprovalEmailAction({
+            data: validTutorApplicationRecord({ id: 5 })
+        })
         expect(res).toEqual({ success: true, error: null })
         expect(h.sendEmail).toHaveBeenCalledWith(
             expect.objectContaining({

@@ -5,146 +5,135 @@ import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient } from "@/helpers/supabase.server"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import {
-    type ActionPayload,
-    captureActionError,
-    packActionArgs,
-    unpackActionArgs,
-    withServerAction
-} from "@/lib/sentry"
+import { captureActionError, withServerAction } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
-async function editArticleActionImpl(formData: FormData) {
-    // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
-    if (!user) {
-        return { error: "Authentification requise" }
-    }
-    if (!hasPermission(user, "edit:article")) {
-        return {
-            error: "Vous n'avez pas la permission de modifier des articles"
-        }
-    }
-
-    // create supabase client
-    const supabase = createClient()
-
-    // retrieve form data fields
-    const title = formData.get("title")?.toString()
-    const content = formData.get("content")?.toString()
-    const articleId = Number(formData.get("id")?.toString())
-
-    // Ensure articleId is a number
-    if (Number.isNaN(articleId)) {
-        return { error: "L'id de l'article est eronné" }
-    }
-
-    // Fields Validation
-    if (!title || !content) {
-        return { error: "Veuillez remplir tous les champs obligatoires." }
-    }
-
-    // Fetch current article
-    const articleResult = await tryCatch(
-        prisma.article.findUnique({
-            where: {
-                id: articleId
-            },
-            select: {
-                id: true,
-                imagesPath: true
+export const editArticleAction = createServerFn({ method: "POST" })
+    .validator((data: FormData) => data)
+    .handler(
+        withServerAction("editArticleAction", async ({ data: formData }) => {
+            // Auth and permission verifications
+            const user = await getCurrentUserWithPermissions()
+            if (!user) {
+                return { error: "Authentification requise" }
             }
-        })
-    )
-    if (!articleResult.success) {
-        captureActionError(articleResult.error)
-        return { error: "Echec de la modification de l'article" }
-    }
-    const article = articleResult.value
+            if (!hasPermission(user, "edit:article")) {
+                return {
+                    error: "Vous n'avez pas la permission de modifier des articles"
+                }
+            }
 
-    if (!article) {
-        return { error: "Article not found" }
-    }
+            // create supabase client
+            const supabase = createClient()
 
-    // Delete previous images from storage
-    const removed = await tryCatch(
-        supabase.storage.from("article-pictures").remove(article.imagesPath)
-    )
-    if (!removed.success) {
-        captureActionError(removed.error)
-        return { error: "Echec de la modification de l'article" }
-    }
+            // retrieve form data fields
+            const title = formData.get("title")?.toString()
+            const content = formData.get("content")?.toString()
+            const articleId = Number(formData.get("id")?.toString())
 
-    // Images
-    const images = formData.getAll("images") as File[]
+            // Ensure articleId is a number
+            if (Number.isNaN(articleId)) {
+                return { error: "L'id de l'article est eronné" }
+            }
 
-    // upload images to storage
-    const responsesResult = await tryCatch(
-        Promise.all(
-            images.map(
-                async (file) =>
-                    await supabase.storage
-                        .from("article-pictures")
-                        .upload(file.name, file)
+            // Fields Validation
+            if (!title || !content) {
+                return {
+                    error: "Veuillez remplir tous les champs obligatoires."
+                }
+            }
+
+            // Fetch current article
+            const articleResult = await tryCatch(
+                prisma.article.findUnique({
+                    where: {
+                        id: articleId
+                    },
+                    select: {
+                        id: true,
+                        imagesPath: true
+                    }
+                })
             )
-        )
-    )
-    if (!responsesResult.success) {
-        captureActionError(responsesResult.error)
-        return { error: "Echec de la modification de l'article" }
-    }
-    const responses = responsesResult.value
-
-    // check for errors
-    for (const response of responses) {
-        if (response.error) {
-            return {
-                error: "L'upload des images a échoué. Veuillez réessayer"
+            if (!articleResult.success) {
+                captureActionError(articleResult.error)
+                return { error: "Echec de la modification de l'article" }
             }
-        }
-    }
+            const article = articleResult.value
 
-    const parsedContent = tryCatch(() => JSON.parse(content) as JSONContent)
-    if (!parsedContent.success) {
-        return { error: "Le contenu de l'article est invalide" }
-    }
-
-    // insert article to database
-    const updated = await tryCatch(
-        prisma.article.update({
-            where: {
-                id: articleId
-            },
-            data: {
-                title: title,
-                content: parsedContent.value,
-                imagesPath: responses
-                    .map((response) => response.data?.path)
-                    .filter((path): path is string => path !== undefined)
+            if (!article) {
+                return { error: "Article not found" }
             }
+
+            // Delete previous images from storage
+            const removed = await tryCatch(
+                supabase.storage
+                    .from("article-pictures")
+                    .remove(article.imagesPath)
+            )
+            if (!removed.success) {
+                captureActionError(removed.error)
+                return { error: "Echec de la modification de l'article" }
+            }
+
+            // Images
+            const images = formData.getAll("images") as File[]
+
+            // upload images to storage
+            const responsesResult = await tryCatch(
+                Promise.all(
+                    images.map(
+                        async (file) =>
+                            await supabase.storage
+                                .from("article-pictures")
+                                .upload(file.name, file)
+                    )
+                )
+            )
+            if (!responsesResult.success) {
+                captureActionError(responsesResult.error)
+                return { error: "Echec de la modification de l'article" }
+            }
+            const responses = responsesResult.value
+
+            // check for errors
+            for (const response of responses) {
+                if (response.error) {
+                    return {
+                        error: "L'upload des images a échoué. Veuillez réessayer"
+                    }
+                }
+            }
+
+            const parsedContent = tryCatch(
+                () => JSON.parse(content) as JSONContent
+            )
+            if (!parsedContent.success) {
+                return { error: "Le contenu de l'article est invalide" }
+            }
+
+            // insert article to database
+            const updated = await tryCatch(
+                prisma.article.update({
+                    where: {
+                        id: articleId
+                    },
+                    data: {
+                        title: title,
+                        content: parsedContent.value,
+                        imagesPath: responses
+                            .map((response) => response.data?.path)
+                            .filter(
+                                (path): path is string => path !== undefined
+                            )
+                    }
+                })
+            )
+            if (!updated.success) {
+                captureActionError(updated.error)
+                return { error: "Echec de la modification de l'article" }
+            }
+
+            return { success: true }
         })
     )
-    if (!updated.success) {
-        captureActionError(updated.error)
-        return { error: "Echec de la modification de l'article" }
-    }
-
-    return { success: true }
-}
-
-const editArticleActionServerFn = createServerFn({ method: "POST" })
-    .validator(
-        (data: ActionPayload<Parameters<typeof editArticleActionImpl>>) => data
-    )
-    .handler(({ data }) =>
-        withServerAction("editArticleAction", editArticleActionImpl, {
-            attachFormData: true
-        })(...unpackActionArgs<Parameters<typeof editArticleActionImpl>>(data))
-    )
-
-export default async (
-    ...args: Parameters<typeof editArticleActionImpl>
-): ReturnType<typeof editArticleActionImpl> =>
-    editArticleActionServerFn({
-        data: await packActionArgs(args)
-    }) as ReturnType<typeof editArticleActionImpl>

@@ -18,9 +18,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import updateLinkCategoryOrderAction from "../updateLinkCategoryOrderAction"
+import { updateLinkCategoryOrderAction } from "../updateLinkCategoryOrderAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:lien"]))
@@ -34,14 +34,16 @@ const order = [
 
 describe("updateLinkCategoryOrderAction", () => {
     itIsGatedBy({
-        action: () => updateLinkCategoryOrderAction(order),
+        action: () => updateLinkCategoryOrderAction({ data: order }),
         permission: "edit:lien",
         getUser: h.getUser,
         writes: [h.transaction]
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await updateLinkCategoryOrderAction([{ id: 1.5, order: 0 }])
+        const res = await updateLinkCategoryOrderAction({
+            data: [{ id: 1.5, order: 0 }]
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides"
@@ -51,13 +53,13 @@ describe("updateLinkCategoryOrderAction", () => {
 
     it("captures and fails when the transaction throws", async () => {
         h.transaction.mockRejectedValue(new Error("tx failed"))
-        const res = await updateLinkCategoryOrderAction(order)
+        const res = await updateLinkCategoryOrderAction({ data: order })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("updates every order in a transaction on the happy path", async () => {
-        const res = await updateLinkCategoryOrderAction(order)
+        const res = await updateLinkCategoryOrderAction({ data: order })
         expect(res).toEqual({ success: true })
         expect(h.updateCategory).toHaveBeenCalledWith({
             where: { id: 1 },

@@ -9,7 +9,7 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock("@/actions/partenaires/addPartenaireAction", () => ({
-    default: h.action
+    addPartenaireAction: h.action
 }))
 vi.mock("@tanstack/react-router", () => ({
     useRouter: () => ({ invalidate: vi.fn() })
@@ -78,12 +78,10 @@ describe("<AddPartenaireButton />", () => {
         await screen.getByRole("button", { name: /^\s*Ajouter\s*$/ }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
-        expect(submitted).toMatchObject({
-            name: "ACME",
-            description: "Un partenaire de la Federation."
-        })
-        expect(submitted.logo).toBeInstanceOf(File)
+        const { data } = h.action.mock.calls[0][0] as { data: FormData }
+        expect(data.get("name")).toBe("ACME")
+        expect(data.get("description")).toBe("Un partenaire de la Federation.")
+        expect(data.get("logo")).toBeInstanceOf(File)
     })
 
     it("renders the server error when the action fails", async () => {

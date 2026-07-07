@@ -2,7 +2,7 @@ import { useRouter } from "@tanstack/react-router"
 import { useCallback, useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editAssociationAction from "@/actions/associations/editAssociationAction"
+import { editAssociationAction } from "@/actions/associations/editAssociationAction"
 import {
     Accordion,
     AccordionContent,
@@ -58,7 +58,7 @@ export default function EditAssociationButton({
         const formData = new FormData(event.currentTarget)
 
         startTransition(async () => {
-            const result = await editAssociationAction(formData)
+            const result = await editAssociationAction({ data: formData })
             if (result?.success) {
                 await router.invalidate()
                 handleOpenChange(false)

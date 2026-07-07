@@ -9,7 +9,7 @@ import { clientEnv } from "@/env/client"
 import prisma from "@/helpers/db.server"
 import { sendEmail } from "@/helpers/email.server"
 import { createClient } from "@/helpers/supabase.server"
-import { captureActionError } from "@/lib/sentry"
+import { captureActionError } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
 const NEW_USER_THRESHOLD_MS = 60_000 // 60 seconds

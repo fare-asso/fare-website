@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { adhesionFormToFormData, type TAdhesionForm } from "@/schemas/adhesion"
 import { validAdhesionForm } from "@/test/factories/adhesion"
 import { pdfFile } from "@/test/factories/files"
 import {
@@ -38,16 +39,14 @@ vi.mock("@/components/captcha/verify.server", () =>
     captchaModule(h.verifyCaptcha)
 )
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("@/lib/sentry", () => ({
-    ...sentryModule(h.captureActionError),
-    // pack/unpack are passthroughs here — the serverFn mock keeps args local.
-    packActionArgs: async <A extends unknown[]>(args: A): Promise<A> => args,
-    unpackActionArgs: <A extends unknown[]>(data: A): A => data
-}))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
 import { processAdhesion } from "../processAdhesion"
 
 const uuid = "11111111-1111-1111-1111-111111111111"
+
+const submit = (form: TAdhesionForm = validAdhesionForm()) =>
+    processAdhesion({ data: adhesionFormToFormData(form) })
 
 beforeEach(() => {
     stdenv.isDevelopment = false
@@ -66,7 +65,7 @@ beforeEach(() => {
 
 describe("processAdhesion", () => {
     it("rejects an invalid payload before any side effect", async () => {
-        const res = await processAdhesion(validAdhesionForm({ sigle: "F" }))
+        const res = await submit(validAdhesionForm({ sigle: "F" }))
         expect(res.success).toBe(false)
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.create).not.toHaveBeenCalled()
@@ -75,14 +74,14 @@ describe("processAdhesion", () => {
 
     it("skips captcha verification in development", async () => {
         stdenv.isDevelopment = true
-        const res = await processAdhesion(validAdhesionForm())
+        const res = await submit()
         expect(h.verifyCaptcha).not.toHaveBeenCalled()
         expect(res.success).toBe(true)
     })
 
     it("fails when the captcha is invalid in non-dev", async () => {
         h.verifyCaptcha.mockResolvedValue(false)
-        const res = await processAdhesion(validAdhesionForm())
+        const res = await submit()
         expect(res).toEqual({
             success: false,
             message: "La vérification du captcha a échoué. Veuillez réessayer."
@@ -97,7 +96,7 @@ describe("processAdhesion", () => {
                 ? { data: null, error: { message: "boom" } }
                 : { data: { path }, error: null }
         )
-        const res = await processAdhesion(validAdhesionForm())
+        const res = await submit()
         expect(res.success).toBe(false)
         expect(h.remove).toHaveBeenCalledWith([
             `${uuid}-fare/logo.png`,
@@ -109,7 +108,7 @@ describe("processAdhesion", () => {
 
     it("cleans up and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await processAdhesion(validAdhesionForm())
+        const res = await submit()
         expect(res.success).toBe(false)
         expect(h.remove).toHaveBeenCalledWith([
             `${uuid}-fare/logo.png`,
@@ -122,15 +121,13 @@ describe("processAdhesion", () => {
 
     it("still succeeds when sending emails fails (handled inside sendEmail)", async () => {
         h.sendEmail.mockResolvedValue({ success: false })
-        const res = await processAdhesion(validAdhesionForm())
+        const res = await submit()
         expect(res.success).toBe(true)
         expect(h.create).toHaveBeenCalledOnce()
     })
 
     it("uploads only the optional documents that are provided", async () => {
-        await processAdhesion(
-            validAdhesionForm({ lettreEngagement: pdfFile("l.pdf") })
-        )
+        await submit(validAdhesionForm({ lettreEngagement: pdfFile("l.pdf") }))
         const uploaded = h.upload.mock.calls.map((c) => c[0])
         expect(uploaded).toContain(`${uuid}-fare/lettreEngagement.pdf`)
         expect(uploaded).not.toContain(`${uuid}-fare/reglementInterieur.pdf`)
@@ -138,7 +135,7 @@ describe("processAdhesion", () => {
     })
 
     it("persists and emails on the happy path", async () => {
-        const res = await processAdhesion(validAdhesionForm())
+        const res = await submit()
 
         expect(res).toEqual({ success: true })
         expect(from).toHaveBeenCalledWith("adhesion")

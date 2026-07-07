@@ -5,7 +5,7 @@ import Image from "@/components/image"
 import { Card, CardContent } from "@/components/ui/card"
 import prisma from "@/helpers/db.server"
 import { createClient } from "@/helpers/supabase.server"
-import { captureActionError } from "@/lib/sentry"
+import { captureActionError } from "@/lib/sentry.server"
 import { pageTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 

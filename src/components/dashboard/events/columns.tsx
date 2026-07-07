@@ -2,7 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import type { ReactElement } from "react"
 import { MdVisibility, MdVisibilityOff } from "react-icons/md"
 
-import deleteEventAction from "@/actions/events/deleteEventAction"
+import { deleteEventAction } from "@/actions/events/deleteEventAction"
 import EditEventButtonClient from "@/components/dashboard/event/editEventButton"
 import {
     AlertDialog,
@@ -222,7 +222,10 @@ export function getColumns(
                                         <AlertDialogAction
                                             onClick={() =>
                                                 void deleteEventAction({
-                                                    eventId: row.getValue("id")
+                                                    data: {
+                                                        eventId:
+                                                            row.getValue("id")
+                                                    }
                                                 }).then(() => onDeleted())
                                             }
                                         >

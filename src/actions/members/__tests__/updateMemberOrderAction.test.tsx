@@ -18,9 +18,9 @@ vi.mock("@/helpers/db.server", () => {
     return dbModule(client)
 })
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import updateMemberOrderAction from "../updateMemberOrderAction"
+import { updateMemberOrderAction } from "../updateMemberOrderAction"
 
 const order = [
     { id: 1, order: 2 },
@@ -36,7 +36,7 @@ beforeEach(() => {
 describe("updateMemberOrderAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await updateMemberOrderAction(order)).toEqual({
+        expect(await updateMemberOrderAction({ data: order })).toEqual({
             error: "Authentification requise"
         })
         expect(h.transaction).not.toHaveBeenCalled()
@@ -44,21 +44,21 @@ describe("updateMemberOrderAction", () => {
 
     it("requires the edit:member permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await updateMemberOrderAction(order)
+        const res = await updateMemberOrderAction({ data: order })
         expect(res.error).toMatch(/permission/)
         expect(h.transaction).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the transaction throws", async () => {
         h.transaction.mockRejectedValue(new Error("db down"))
-        expect(await updateMemberOrderAction(order)).toEqual({
+        expect(await updateMemberOrderAction({ data: order })).toEqual({
             error: "La mise à jour de l'ordre des membres a échoué. Veuillez réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("updates the order in a transaction and revalidates", async () => {
-        const res = await updateMemberOrderAction(order)
+        const res = await updateMemberOrderAction({ data: order })
         expect(res).toEqual({ success: true })
         expect(h.transaction).toHaveBeenCalledOnce()
         expect(h.update).toHaveBeenCalledTimes(2)

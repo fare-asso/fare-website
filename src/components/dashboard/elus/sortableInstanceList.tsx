@@ -18,7 +18,7 @@ import {
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import updateInstanceOrderAction from "@/actions/instances/updateInstanceOrderAction"
+import { updateInstanceOrderAction } from "@/actions/instances/updateInstanceOrderAction"
 import type { Instance } from "@/generated/prisma/client"
 
 import AddInstanceButton from "./addInstanceButton"
@@ -82,7 +82,9 @@ export default function SortableInstanceList({
                     order: index
                 }))
 
-                const result = await updateInstanceOrderAction(instanceOrder)
+                const result = await updateInstanceOrderAction({
+                    data: instanceOrder
+                })
 
                 if (!result.success) {
                     // Revert on error

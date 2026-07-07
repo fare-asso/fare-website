@@ -11,7 +11,7 @@ const h = vi.hoisted(() => ({
 
 vi.mock("@/helpers/db.server", () => dbModule({ user: { update: h.update } }))
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
 import {
     generateBagadCalendarTokenAction,

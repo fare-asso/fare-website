@@ -3,70 +3,44 @@ import { createServerFn } from "@tanstack/react-start"
 import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import {
-    type ActionPayload,
-    captureActionError,
-    packActionArgs,
-    unpackActionArgs,
-    withServerAction
-} from "@/lib/sentry"
+import { captureActionError, withServerAction } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
-    success?: boolean
-    error?: string
-}> {
-    // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
-    if (!user) {
-        return { error: "Authentification requise" }
-    }
-    if (!hasPermission(user, "delete:bagad-ticket")) {
-        return {
-            error: "Vous n'avez pas la permission d'effectuer cette opération"
-        }
-    }
-
-    const result = await tryCatch(
-        prisma.bagadAssoTicket.update({
-            where: {
-                id: ticketId
-            },
-            data: {
-                deleted: new Date()
-            }
-        })
-    )
-    if (!result.success) {
-        captureActionError(result.error)
-        return { error: "Echec de la suppression du ticket" }
-    }
-
-    return { success: true }
-}
-
-const deleteBagadAssoTicketActionServerFn = createServerFn({ method: "POST" })
-    .validator(
-        (
-            data: ActionPayload<
-                Parameters<typeof deleteBagadAssoTicketActionImpl>
-            >
-        ) => data
-    )
-    .handler(({ data }) =>
+export const deleteBagadAssoTicketAction = createServerFn({ method: "POST" })
+    .validator((data: { ticketId: number }) => data)
+    .handler(
         withServerAction(
             "deleteBagadAssoTicketAction",
-            deleteBagadAssoTicketActionImpl
-        )(
-            ...unpackActionArgs<
-                Parameters<typeof deleteBagadAssoTicketActionImpl>
-            >(data)
+            async ({
+                data: { ticketId }
+            }): Promise<{ success?: boolean; error?: string }> => {
+                // Auth and permission verifications
+                const user = await getCurrentUserWithPermissions()
+                if (!user) {
+                    return { error: "Authentification requise" }
+                }
+                if (!hasPermission(user, "delete:bagad-ticket")) {
+                    return {
+                        error: "Vous n'avez pas la permission d'effectuer cette opération"
+                    }
+                }
+
+                const result = await tryCatch(
+                    prisma.bagadAssoTicket.update({
+                        where: {
+                            id: ticketId
+                        },
+                        data: {
+                            deleted: new Date()
+                        }
+                    })
+                )
+                if (!result.success) {
+                    captureActionError(result.error)
+                    return { error: "Echec de la suppression du ticket" }
+                }
+
+                return { success: true }
+            }
         )
     )
-
-export default async (
-    ...args: Parameters<typeof deleteBagadAssoTicketActionImpl>
-): ReturnType<typeof deleteBagadAssoTicketActionImpl> =>
-    deleteBagadAssoTicketActionServerFn({
-        data: await packActionArgs(args)
-    }) as ReturnType<typeof deleteBagadAssoTicketActionImpl>

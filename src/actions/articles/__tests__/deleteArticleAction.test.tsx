@@ -24,9 +24,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteArticleAction from "../deleteArticleAction"
+import { deleteArticleAction } from "../deleteArticleAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:article"]))
@@ -38,7 +38,7 @@ beforeEach(() => {
 describe("deleteArticleAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteArticleAction(1)).toEqual({
+        expect(await deleteArticleAction({ data: 1 })).toEqual({
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -46,21 +46,21 @@ describe("deleteArticleAction", () => {
 
     it("requires the delete:article permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await deleteArticleAction(1)
+        const res = await deleteArticleAction({ data: 1 })
         expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("errors when the article does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
-        expect(await deleteArticleAction(1)).toEqual({
+        expect(await deleteArticleAction({ data: 1 })).toEqual({
             error: "Echec de la suppression de l'article"
         })
     })
 
     it("errors when the image removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "boom" } })
-        expect(await deleteArticleAction(1)).toEqual({
+        expect(await deleteArticleAction({ data: 1 })).toEqual({
             error: "Echec de la suppression des images dans la base de données"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -68,14 +68,14 @@ describe("deleteArticleAction", () => {
 
     it("captures and fails when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
-        expect(await deleteArticleAction(1)).toEqual({
+        expect(await deleteArticleAction({ data: 1 })).toEqual({
             error: "Echec de la suppression de l'article"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("deletes the article and revalidates on the happy path", async () => {
-        const res = await deleteArticleAction(4)
+        const res = await deleteArticleAction({ data: 4 })
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
     })

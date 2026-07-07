@@ -11,7 +11,7 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock("@/actions/bagadAsso/editEquipmentAction", () => ({
-    default: h.action
+    editEquipmentAction: h.action
 }))
 vi.mock("@tanstack/react-router", () => ({
     useRouter: () => ({ invalidate: vi.fn() })
@@ -86,13 +86,13 @@ describe("<EditEquipmentDialog />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        expect(h.action.mock.calls[0][0]).toMatchObject({
-            id: 7,
-            name: "Barnum modifié",
-            quantity: 3,
-            deposit: 50,
-            removeImage: false
-        })
+        const submitted = h.action.mock.calls[0][0].data as FormData
+        expect(submitted).toBeInstanceOf(FormData)
+        expect(submitted.get("id")).toBe("7")
+        expect(submitted.get("name")).toBe("Barnum modifié")
+        expect(submitted.get("quantity")).toBe("3")
+        expect(submitted.get("deposit")).toBe("50")
+        expect(submitted.get("removeImage")).toBe("false")
     })
 
     it("flags the image for removal when it is cleared", async () => {
@@ -103,7 +103,8 @@ describe("<EditEquipmentDialog />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        expect(h.action.mock.calls[0][0]).toMatchObject({ removeImage: true })
+        const submitted = h.action.mock.calls[0][0].data as FormData
+        expect(submitted.get("removeImage")).toBe("true")
     })
 
     it("passes the chosen file on the payload", async () => {
@@ -114,7 +115,8 @@ describe("<EditEquipmentDialog />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        expect(h.action.mock.calls[0][0].image).toBeInstanceOf(File)
+        const submitted = h.action.mock.calls[0][0].data as FormData
+        expect(submitted.get("image")).toBeInstanceOf(File)
     })
 
     it("renders the server error when the action fails", async () => {

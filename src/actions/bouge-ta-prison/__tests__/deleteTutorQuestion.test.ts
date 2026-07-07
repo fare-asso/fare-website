@@ -10,9 +10,9 @@ const h = vi.hoisted(() => ({
 vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorQuestion: { delete: h.deleteFn } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteTutorQuestion from "../deleteTutorQuestion"
+import { deleteTutorQuestionAction } from "../deleteTutorQuestion"
 
 beforeEach(() => {
     h.deleteFn.mockResolvedValue({ id: 1 })
@@ -20,14 +20,14 @@ beforeEach(() => {
 
 describe("deleteTutorQuestion", () => {
     it("deletes the question and revalidates", async () => {
-        const res = await deleteTutorQuestion(8)
+        const res = await deleteTutorQuestionAction({ data: { id: 8 } })
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 8 } })
     })
 
     it("captures and returns an error when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
-        expect(await deleteTutorQuestion(8)).toEqual({
+        expect(await deleteTutorQuestionAction({ data: { id: 8 } })).toEqual({
             error: "Echec de la suppression de la question"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

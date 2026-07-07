@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import addLinkCategoryAction from "@/actions/links/addLinkCategoryAction"
+import { addLinkCategoryAction } from "@/actions/links/addLinkCategoryAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -30,7 +30,7 @@ export default function AddLinkCategoryButton() {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addLinkCategoryAction(value)
+                const res = await addLinkCategoryAction({ data: value })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

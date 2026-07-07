@@ -17,9 +17,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import updateConseilOrderAction from "../updateConseilOrderAction"
+import { updateConseilOrderAction } from "../updateConseilOrderAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:instance"]))
@@ -34,7 +34,7 @@ const order = [
 describe("updateConseilOrderAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await updateConseilOrderAction(order)).toEqual({
+        expect(await updateConseilOrderAction({ data: order })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -43,7 +43,7 @@ describe("updateConseilOrderAction", () => {
 
     it("is gated on the edit:instance permission (reused for conseils)", async () => {
         h.getUser.mockResolvedValue(mockUser(["edit:elu"]))
-        const res = await updateConseilOrderAction(order)
+        const res = await updateConseilOrderAction({ data: order })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.transaction).not.toHaveBeenCalled()
@@ -51,13 +51,13 @@ describe("updateConseilOrderAction", () => {
 
     it("captures and fails when the transaction throws", async () => {
         h.transaction.mockRejectedValue(new Error("tx failed"))
-        const res = await updateConseilOrderAction(order)
+        const res = await updateConseilOrderAction({ data: order })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("updates every order in a transaction on the happy path", async () => {
-        const res = await updateConseilOrderAction(order)
+        const res = await updateConseilOrderAction({ data: order })
         expect(res).toEqual({ success: true })
         expect(h.updateConseil).toHaveBeenCalledWith({
             where: { id: 1 },

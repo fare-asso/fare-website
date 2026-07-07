@@ -7,7 +7,7 @@ import { FaRegFolderOpen } from "react-icons/fa6"
 import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
 import { toast } from "sonner"
 
-import deleteCDPAction from "@/actions/CDP/deleteCDPAction"
+import { deleteCDPAction } from "@/actions/CDP/deleteCDPAction"
 import Link from "@/components/link"
 import {
     AlertDialog,
@@ -52,7 +52,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
 
     const handleDelete = async () => {
         setIsDeleting(true)
-        const res = await deleteCDPAction({ id: cdp.id })
+        const res = await deleteCDPAction({ data: { id: cdp.id } })
         if (res.error) {
             toast.error(res.error)
             setIsDeleting(false)

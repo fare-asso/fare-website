@@ -2,7 +2,7 @@ import { useRouter } from "@tanstack/react-router"
 import { Trash2 } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import deleteUser from "@/actions/users/deleteUser"
+import { deleteUserAction } from "@/actions/users/deleteUser"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
@@ -31,7 +31,7 @@ export function DeleteUserButton({ userId, userName }: Props) {
     const handleDelete = () => {
         setError(null)
         startTransition(async () => {
-            const result = await deleteUser(userId)
+            const result = await deleteUserAction({ data: { userId } })
             if (result.success) {
                 await router.invalidate()
                 setOpen(false)

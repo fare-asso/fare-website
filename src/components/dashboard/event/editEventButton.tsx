@@ -7,7 +7,7 @@ import {
     useState
 } from "react"
 
-import editEventAction from "@/actions/events/editEventAction"
+import { editEventAction } from "@/actions/events/editEventAction"
 import Image from "@/components/image"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -124,7 +124,7 @@ export default function EditEventButtonClient({
         const formData = new FormData(event.currentTarget)
 
         startTransition(async () => {
-            const result = await editEventAction(formData)
+            const result = await editEventAction({ data: formData })
             if (result?.success) {
                 await router.invalidate()
             }

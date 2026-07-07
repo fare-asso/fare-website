@@ -16,7 +16,7 @@ import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient } from "@/helpers/supabase.server"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import { captureActionError } from "@/lib/sentry"
+import { captureActionError } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
 const getEquipmentsData = createServerFn().handler(async () => {

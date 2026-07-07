@@ -3,7 +3,7 @@ import { Trash2Icon } from "lucide-react"
 import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
-import deleteInstanceAction from "@/actions/instances/deleteInstanceAction"
+import { deleteInstanceAction } from "@/actions/instances/deleteInstanceAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -61,7 +61,7 @@ export default function DeleteInstanceButton({
         setIsLoading(true)
 
         startTransition(async () => {
-            const result = await deleteInstanceAction(instance.id)
+            const result = await deleteInstanceAction({ data: instance.id })
             if (result?.success) {
                 await router.invalidate()
             }

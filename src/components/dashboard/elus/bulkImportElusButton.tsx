@@ -5,7 +5,7 @@ import { Loader2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import bulkImportEluAction from "@/actions/elus/bulkImportElusAction"
+import { bulkImportElusAction } from "@/actions/elus/bulkImportElusAction"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -111,9 +111,8 @@ export default function BulkImportElusButton({
                     elus.push(parsed)
                 }
 
-                const res = await bulkImportEluAction({
-                    conseilId: value.conseilId,
-                    elus
+                const res = await bulkImportElusAction({
+                    data: { conseilId: value.conseilId, elus }
                 })
                 if (res.success) {
                     await router.invalidate()

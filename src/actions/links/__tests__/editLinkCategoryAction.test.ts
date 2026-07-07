@@ -15,9 +15,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ linkCategory: { update: h.updateCategory } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import editLinkCategoryAction from "../editLinkCategoryAction"
+import { editLinkCategoryAction } from "../editLinkCategoryAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:lien"]))
@@ -26,16 +26,16 @@ beforeEach(() => {
 
 describe("editLinkCategoryAction", () => {
     itIsGatedBy({
-        action: () => editLinkCategoryAction(validEditLinkCategory()),
+        action: () => editLinkCategoryAction({ data: validEditLinkCategory() }),
         permission: "edit:lien",
         getUser: h.getUser,
         writes: [h.updateCategory]
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await editLinkCategoryAction(
-            validEditLinkCategory({ id: 0 })
-        )
+        const res = await editLinkCategoryAction({
+            data: validEditLinkCategory({ id: 0 })
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -45,7 +45,9 @@ describe("editLinkCategoryAction", () => {
 
     it("captures and fails when the update throws", async () => {
         h.updateCategory.mockRejectedValue(new Error("db down"))
-        const res = await editLinkCategoryAction(validEditLinkCategory())
+        const res = await editLinkCategoryAction({
+            data: validEditLinkCategory()
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de la modification de la catégorie."
@@ -54,9 +56,9 @@ describe("editLinkCategoryAction", () => {
     })
 
     it("updates the category and revalidates on the happy path", async () => {
-        const res = await editLinkCategoryAction(
-            validEditLinkCategory({ id: 4, name: "Projets" })
-        )
+        const res = await editLinkCategoryAction({
+            data: validEditLinkCategory({ id: 4, name: "Projets" })
+        })
         expect(res).toEqual({ success: true })
         expect(h.updateCategory).toHaveBeenCalledWith({
             where: { id: 4 },

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import { captureActionError } from "@/lib/sentry"
+import { captureActionError } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
 const getTickets = createServerFn().handler(async () => {

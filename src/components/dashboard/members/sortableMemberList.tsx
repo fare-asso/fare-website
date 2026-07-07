@@ -17,8 +17,8 @@ import { useRouter } from "@tanstack/react-router"
 import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
-import deleteMemberAction from "@/actions/members/deleteMemberAction"
-import updateMemberOrderAction from "@/actions/members/updateMemberOrderAction"
+import { deleteMemberAction } from "@/actions/members/deleteMemberAction"
+import { updateMemberOrderAction } from "@/actions/members/updateMemberOrderAction"
 import type { Member } from "@/generated/prisma/client"
 
 import SortableMemberCard from "./sortableMemberCard"
@@ -68,9 +68,9 @@ export default function SortableMemberList({
         startTransition(async () => {
             setOptimisticMembers(newMembers)
 
-            const result = await updateMemberOrderAction(
-                newMembers.map((m, order) => ({ id: m.member.id, order }))
-            )
+            const result = await updateMemberOrderAction({
+                data: newMembers.map((m, order) => ({ id: m.member.id, order }))
+            })
             if (result.error) {
                 toast.error(result.error)
             } else {
@@ -85,7 +85,9 @@ export default function SortableMemberList({
                 members.filter((m) => m.member.id !== member.id)
             )
 
-            const result = await deleteMemberAction({ id: member.id })
+            const result = await deleteMemberAction({
+                data: { id: member.id }
+            })
             if (result.error) {
                 toast.error(result.error)
             } else {

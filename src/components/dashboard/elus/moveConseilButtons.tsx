@@ -3,7 +3,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { useTransition } from "react"
 import { toast } from "sonner"
 
-import updateConseilOrderAction from "@/actions/conseils/updateConseilOrderAction"
+import { updateConseilOrderAction } from "@/actions/conseils/updateConseilOrderAction"
 import { Button } from "@/components/ui/button"
 import {
     Tooltip,
@@ -36,7 +36,7 @@ export default function MoveConseilButtons({
 
         startTransition(async () => {
             const conseilOrder = newIds.map((id, order) => ({ id, order }))
-            const res = await updateConseilOrderAction(conseilOrder)
+            const res = await updateConseilOrderAction({ data: conseilOrder })
             if (res.success) {
                 await router.invalidate()
             } else {

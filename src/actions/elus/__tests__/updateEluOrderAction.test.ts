@@ -14,9 +14,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ elu: { update: h.updateElu }, $transaction: h.transaction })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import updateEluOrderAction from "../updateEluOrderAction"
+import { updateEluOrderAction } from "../updateEluOrderAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:elu"]))
@@ -31,7 +31,7 @@ const order = [
 describe("updateEluOrderAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await updateEluOrderAction(order)).toEqual({
+        expect(await updateEluOrderAction({ data: order })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -40,7 +40,7 @@ describe("updateEluOrderAction", () => {
 
     it("requires the edit:elu permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await updateEluOrderAction(order)
+        const res = await updateEluOrderAction({ data: order })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.transaction).not.toHaveBeenCalled()
@@ -48,13 +48,13 @@ describe("updateEluOrderAction", () => {
 
     it("captures and fails when the transaction throws", async () => {
         h.transaction.mockRejectedValue(new Error("tx failed"))
-        const res = await updateEluOrderAction(order)
+        const res = await updateEluOrderAction({ data: order })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("updates every order in a transaction on the happy path", async () => {
-        const res = await updateEluOrderAction(order)
+        const res = await updateEluOrderAction({ data: order })
         expect(res).toEqual({ success: true })
         expect(h.updateElu).toHaveBeenCalledWith({
             where: { id: 1 },

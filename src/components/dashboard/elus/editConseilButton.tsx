@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editConseilAction from "@/actions/conseils/editConseilAction"
+import { editConseilAction } from "@/actions/conseils/editConseilAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -57,7 +57,7 @@ export default function EditConseilButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editConseilAction(value)
+                const res = await editConseilAction({ data: value })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

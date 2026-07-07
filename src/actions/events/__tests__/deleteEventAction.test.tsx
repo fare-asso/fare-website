@@ -24,9 +24,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteEventAction from "../deleteEventAction"
+import { deleteEventAction } from "../deleteEventAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:event"]))
@@ -37,7 +37,7 @@ beforeEach(() => {
 describe("deleteEventAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteEventAction({ eventId: 1 })).toEqual({
+        expect(await deleteEventAction({ data: { eventId: 1 } })).toEqual({
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -45,20 +45,20 @@ describe("deleteEventAction", () => {
 
     it("requires the delete:event permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await deleteEventAction({ eventId: 1 })
+        const res = await deleteEventAction({ data: { eventId: 1 } })
         expect(res?.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("deletes the event and revalidates on the happy path", async () => {
-        const res = await deleteEventAction({ eventId: 4 })
+        const res = await deleteEventAction({ data: { eventId: 4 } })
         expect(res).toBeUndefined()
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
     })
 
     it("captures when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
-        const res = await deleteEventAction({ eventId: 4 })
+        const res = await deleteEventAction({ data: { eventId: 4 } })
         expect(res).toBeUndefined()
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })

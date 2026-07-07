@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editEluAction from "@/actions/elus/editEluAction"
+import { editEluAction } from "@/actions/elus/editEluAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -60,7 +60,7 @@ export default function EditEluButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editEluAction(value)
+                const res = await editEluAction({ data: value })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

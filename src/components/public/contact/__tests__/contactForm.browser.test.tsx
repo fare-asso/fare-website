@@ -4,7 +4,7 @@ import { render } from "vitest-browser-react"
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
 vi.mock("@/actions/contact/submitContactFormAction", () => ({
-    default: h.action
+    submitContactFormAction: h.action
 }))
 vi.mock("@/components/captcha", () => ({
     Captcha: ({ onComplete }: { onComplete: (t: string) => void }) => (
@@ -52,11 +52,13 @@ describe("<ContactForm />", () => {
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
         const submitted = h.action.mock.calls[0][0]
         expect(submitted).toEqual({
-            firstName: "Jean",
-            lastName: "Dupont",
-            email: "jean@example.com",
-            message: "Bonjour, une question.",
-            captchaToken: "token-123"
+            data: {
+                firstName: "Jean",
+                lastName: "Dupont",
+                email: "jean@example.com",
+                message: "Bonjour, une question.",
+                captchaToken: "token-123"
+            }
         })
     })
 

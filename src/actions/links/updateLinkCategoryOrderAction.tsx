@@ -4,83 +4,56 @@ import { type } from "arktype"
 import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import {
-    type ActionPayload,
-    captureActionError,
-    packActionArgs,
-    unpackActionArgs,
-    withServerAction
-} from "@/lib/sentry"
+import { captureActionError, withServerAction } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 import { OrderSchema, type TOrder } from "@/schemas/elu"
 
 type Result = { success: true } | { success: false; error: string }
 
-async function updateLinkCategoryOrderActionImpl(
-    categoryOrder: TOrder
-): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
-    if (!user) {
-        return { success: false, error: "Authentification requise" }
-    }
-    if (!hasPermission(user, "edit:lien")) {
-        return {
-            success: false,
-            error: "Vous n'avez pas la permission de modifier des catégories"
-        }
-    }
-
-    const data = OrderSchema(categoryOrder)
-    if (data instanceof type.errors) {
-        return {
-            success: false,
-            error: "Un ou plusieurs champs sont invalides"
-        }
-    }
-
-    const result = await tryCatch(
-        prisma.$transaction(
-            data.map((item) =>
-                prisma.linkCategory.update({
-                    where: { id: item.id },
-                    data: { order: item.order }
-                })
-            )
-        )
-    )
-    if (!result.success) {
-        captureActionError(result.error)
-        return {
-            success: false,
-            error: "La mise à jour de l'ordre des catégories a échoué. Veuillez réessayer."
-        }
-    }
-
-    return { success: true }
-}
-
-const updateLinkCategoryOrderActionServerFn = createServerFn({ method: "POST" })
-    .validator(
-        (
-            data: ActionPayload<
-                Parameters<typeof updateLinkCategoryOrderActionImpl>
-            >
-        ) => data
-    )
-    .handler(({ data }) =>
+export const updateLinkCategoryOrderAction = createServerFn({ method: "POST" })
+    .validator((data: TOrder) => data)
+    .handler(
         withServerAction(
             "updateLinkCategoryOrderAction",
-            updateLinkCategoryOrderActionImpl
-        )(
-            ...unpackActionArgs<
-                Parameters<typeof updateLinkCategoryOrderActionImpl>
-            >(data)
+            async ({ data: categoryOrder }): Promise<Result> => {
+                const user = await getCurrentUserWithPermissions()
+                if (!user) {
+                    return { success: false, error: "Authentification requise" }
+                }
+                if (!hasPermission(user, "edit:lien")) {
+                    return {
+                        success: false,
+                        error: "Vous n'avez pas la permission de modifier des catégories"
+                    }
+                }
+
+                const data = OrderSchema(categoryOrder)
+                if (data instanceof type.errors) {
+                    return {
+                        success: false,
+                        error: "Un ou plusieurs champs sont invalides"
+                    }
+                }
+
+                const result = await tryCatch(
+                    prisma.$transaction(
+                        data.map((item) =>
+                            prisma.linkCategory.update({
+                                where: { id: item.id },
+                                data: { order: item.order }
+                            })
+                        )
+                    )
+                )
+                if (!result.success) {
+                    captureActionError(result.error)
+                    return {
+                        success: false,
+                        error: "La mise à jour de l'ordre des catégories a échoué. Veuillez réessayer."
+                    }
+                }
+
+                return { success: true }
+            }
         )
     )
-
-export default async (
-    ...args: Parameters<typeof updateLinkCategoryOrderActionImpl>
-): ReturnType<typeof updateLinkCategoryOrderActionImpl> =>
-    updateLinkCategoryOrderActionServerFn({
-        data: await packActionArgs(args)
-    }) as ReturnType<typeof updateLinkCategoryOrderActionImpl>

@@ -4,8 +4,8 @@ import { useState } from "react"
 import { createPortal } from "react-dom"
 import { toast } from "sonner"
 
-import bulkArchiveTutorApplicationsAction from "@/actions/bouge-ta-prison/bulkArchiveTutorApplicationsAction"
-import downloadTutorApplicationsZipAction from "@/actions/bouge-ta-prison/downloadTutorApplicationsZipAction"
+import { bulkArchiveTutorApplicationsAction } from "@/actions/bouge-ta-prison/bulkArchiveTutorApplicationsAction"
+import { downloadTutorApplicationsZipAction } from "@/actions/bouge-ta-prison/downloadTutorApplicationsZipAction"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
@@ -47,7 +47,7 @@ export default function BulkActionsBar({
     const handleDownload = async () => {
         setIsDownloading(true)
         const call = await tryCatch(
-            downloadTutorApplicationsZipAction(selectedIds)
+            downloadTutorApplicationsZipAction({ data: selectedIds })
         )
         if (!call.success) {
             toast.error("Erreur lors du téléchargement des candidatures.")
@@ -77,8 +77,7 @@ export default function BulkActionsBar({
         setIsArchiving(true)
         const call = await tryCatch(
             bulkArchiveTutorApplicationsAction({
-                ids: selectedIds,
-                archive: !archived
+                data: { ids: selectedIds, archive: !archived }
             })
         )
         if (!call.success) {

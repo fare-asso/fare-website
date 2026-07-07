@@ -12,8 +12,8 @@ import {
 import { useState } from "react"
 import { toast } from "sonner"
 
-import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction"
-import unarchiveBagadAssoTicketAction from "@/actions/bagadAsso/unarchiveTicketAction"
+import { deleteBagadAssoTicketAction } from "@/actions/bagadAsso/deleteTicketAction"
+import { unarchiveBagadAssoTicketAction } from "@/actions/bagadAsso/unarchiveTicketAction"
 import Link from "@/components/link"
 import {
     AlertDialog,
@@ -59,7 +59,9 @@ export default function BagadAssoTicketCard({
     const onArchive = async () => {
         setIsLoading(true)
 
-        const response = await deleteBagadAssoTicketAction(ticket.id)
+        const response = await deleteBagadAssoTicketAction({
+            data: { ticketId: ticket.id }
+        })
 
         if (response.error) {
             toast.error(`${response.error}`)
@@ -73,7 +75,9 @@ export default function BagadAssoTicketCard({
     const onUnarchive = async () => {
         setIsLoading(true)
 
-        const response = await unarchiveBagadAssoTicketAction(ticket.id)
+        const response = await unarchiveBagadAssoTicketAction({
+            data: { ticketId: ticket.id }
+        })
 
         if (response.error) {
             toast.error(`${response.error}`)

@@ -23,9 +23,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteCDPAction from "../deleteCDPAction"
+import { deleteCDPAction } from "../deleteCDPAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:cdp"]))
@@ -36,7 +36,7 @@ beforeEach(() => {
 describe("deleteCDPAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteCDPAction({ id: 1 })).toEqual({
+        expect(await deleteCDPAction({ data: { id: 1 } })).toEqual({
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -44,14 +44,14 @@ describe("deleteCDPAction", () => {
 
     it("requires the delete:cdp permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await deleteCDPAction({ id: 1 })
+        const res = await deleteCDPAction({ data: { id: 1 } })
         expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
-        expect(await deleteCDPAction({ id: 1 })).toEqual({
+        expect(await deleteCDPAction({ data: { id: 1 } })).toEqual({
             error: "Echec de la suppression du communiqué de presse"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -59,13 +59,13 @@ describe("deleteCDPAction", () => {
 
     it("errors when the storage removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "boom" } })
-        expect(await deleteCDPAction({ id: 1 })).toEqual({
+        expect(await deleteCDPAction({ data: { id: 1 } })).toEqual({
             error: "Echec de la suppression du communiqué de presse dans le stockage"
         })
     })
 
     it("deletes the CDP and revalidates on the happy path", async () => {
-        const res = await deleteCDPAction({ id: 3 })
+        const res = await deleteCDPAction({ data: { id: 3 } })
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 3 } })
         expect(h.remove).toHaveBeenCalledWith(["cdp/file.pdf"])

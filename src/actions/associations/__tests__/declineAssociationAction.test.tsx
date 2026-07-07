@@ -27,9 +27,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import declineAssociationAction from "../declineAssociationAction"
+import { declineAssociationAction } from "../declineAssociationAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["approve:association"]))
@@ -41,7 +41,7 @@ beforeEach(() => {
 describe("declineAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await declineAssociationAction(1)).toEqual({
+        expect(await declineAssociationAction({ data: 1 })).toEqual({
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -49,14 +49,14 @@ describe("declineAssociationAction", () => {
 
     it("requires the approve:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await declineAssociationAction(1)
+        const res = await declineAssociationAction({ data: 1 })
         expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("errors when the association does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
-        expect(await declineAssociationAction(1)).toEqual({
+        expect(await declineAssociationAction({ data: 1 })).toEqual({
             error: "Association introuvable"
         })
     })
@@ -65,7 +65,7 @@ describe("declineAssociationAction", () => {
         h.findUnique.mockResolvedValue(
             validAssociationRecord({ approved: new Date() })
         )
-        expect(await declineAssociationAction(1)).toEqual({
+        expect(await declineAssociationAction({ data: 1 })).toEqual({
             error: "Impossible de refuser une association déjà approuvée"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -73,13 +73,13 @@ describe("declineAssociationAction", () => {
 
     it("continues deleting even when logo removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "storage boom" } })
-        const res = await declineAssociationAction(1)
+        const res = await declineAssociationAction({ data: 1 })
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledOnce()
     })
 
     it("removes the logo, deletes and revalidates on the happy path", async () => {
-        const res = await declineAssociationAction(5)
+        const res = await declineAssociationAction({ data: 5 })
         expect(res).toEqual({ success: true })
         expect(h.remove).toHaveBeenCalledWith(["association-pictures/logo.png"])
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 5 } })
@@ -87,7 +87,7 @@ describe("declineAssociationAction", () => {
 
     it("captures and fails when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
-        expect(await declineAssociationAction(1)).toEqual({
+        expect(await declineAssociationAction({ data: 1 })).toEqual({
             error: "Échec du refus de l'association"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

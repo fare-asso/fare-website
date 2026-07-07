@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editLinkCategoryAction from "@/actions/links/editLinkCategoryAction"
+import { editLinkCategoryAction } from "@/actions/links/editLinkCategoryAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -39,7 +39,7 @@ export default function EditLinkCategoryButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editLinkCategoryAction(value)
+                const res = await editLinkCategoryAction({ data: value })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

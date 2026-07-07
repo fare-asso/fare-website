@@ -18,7 +18,7 @@ import {
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import updateEluOrderAction from "@/actions/elus/updateEluOrderAction"
+import { updateEluOrderAction } from "@/actions/elus/updateEluOrderAction"
 import type { Elu } from "@/generated/prisma/client"
 
 import EluCard from "./eluCard"
@@ -76,7 +76,9 @@ export default function SortableEluList({
                     order: index
                 }))
 
-                const result = await updateEluOrderAction(eluOrder)
+                const result = await updateEluOrderAction({
+                    data: eluOrder
+                })
 
                 if (!result.success) {
                     // Revert on error

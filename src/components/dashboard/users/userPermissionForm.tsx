@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import { useOptimistic, useTransition } from "react"
 
-import updateUserPermissions from "@/actions/users/updateUserPermissions"
+import { updateUserPermissionsAction } from "@/actions/users/updateUserPermissions"
 import { Button } from "@/components/ui/button"
 import type { Permission } from "@/generated/prisma/client"
 
@@ -30,7 +30,9 @@ export function UserPermissionsForm({
 
         startTransition(async () => {
             setOptimisticPermissions(newPermissions)
-            await updateUserPermissions(userId, newPermissions)
+            await updateUserPermissionsAction({
+                data: { userId, permissions: newPermissions }
+            })
             await router.invalidate()
         })
     }
@@ -53,7 +55,9 @@ export function UserPermissionsForm({
 
         startTransition(async () => {
             setOptimisticPermissions(newPermissions)
-            await updateUserPermissions(userId, newPermissions)
+            await updateUserPermissionsAction({
+                data: { userId, permissions: newPermissions }
+            })
             await router.invalidate()
         })
     }
@@ -66,7 +70,9 @@ export function UserPermissionsForm({
 
         startTransition(async () => {
             setOptimisticPermissions(newPermissions)
-            await updateUserPermissions(userId, newPermissions)
+            await updateUserPermissionsAction({
+                data: { userId, permissions: newPermissions }
+            })
             await router.invalidate()
         })
     }

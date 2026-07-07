@@ -4,7 +4,7 @@ import { useCallback, useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 import { v4 as uuidv4 } from "uuid"
 
-import editArticleAction from "@/actions/articles/editArticleAction"
+import { editArticleAction } from "@/actions/articles/editArticleAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -143,7 +143,7 @@ export default function EditArticleButton({ article }: { article: Article }) {
         formData.append("content", JSON.stringify(updatedContent))
 
         startTransition(async () => {
-            const result = await editArticleAction(formData)
+            const result = await editArticleAction({ data: formData })
             if (result?.success) {
                 await router.invalidate()
                 void handleOpenChange(false)

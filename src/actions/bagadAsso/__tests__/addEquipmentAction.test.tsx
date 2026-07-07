@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import type { TAddEquipment } from "@/schemas/bagadEquipment"
 import { validEquipmentInput } from "@/test/factories/bagadAsso"
 import { imageFile } from "@/test/factories/files"
 import { mockUser } from "@/test/factories/user"
@@ -28,9 +29,18 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import addEquipmentAction from "../addEquipmentAction"
+import { addEquipmentAction } from "../addEquipmentAction"
+
+const fd = (input: TAddEquipment): FormData => {
+    const f = new FormData()
+    f.set("name", input.name)
+    f.set("quantity", String(input.quantity))
+    f.set("deposit", String(input.deposit))
+    if (input.image) f.set("image", input.image)
+    return f
+}
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:bagad-equipment"]))
@@ -41,7 +51,9 @@ beforeEach(() => {
 describe("addEquipmentAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await addEquipmentAction(validEquipmentInput())).toEqual({
+        expect(
+            await addEquipmentAction({ data: fd(validEquipmentInput()) })
+        ).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -50,7 +62,9 @@ describe("addEquipmentAction", () => {
 
     it("requires the create:bagad-equipment permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await addEquipmentAction(validEquipmentInput())
+        const res = await addEquipmentAction({
+            data: fd(validEquipmentInput())
+        })
         expect(res).toEqual({
             success: false,
             error: expect.stringMatching(/permission/)
@@ -59,7 +73,9 @@ describe("addEquipmentAction", () => {
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await addEquipmentAction(validEquipmentInput({ name: "" }))
+        const res = await addEquipmentAction({
+            data: fd(validEquipmentInput({ name: "" }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -68,13 +84,15 @@ describe("addEquipmentAction", () => {
     })
 
     it("rejects an unsupported image type", async () => {
-        const res = await addEquipmentAction(
-            validEquipmentInput({
-                image: new File([new Uint8Array([1])], "f.txt", {
-                    type: "text/plain"
+        const res = await addEquipmentAction({
+            data: fd(
+                validEquipmentInput({
+                    image: new File([new Uint8Array([1])], "f.txt", {
+                        type: "text/plain"
+                    })
                 })
-            })
-        )
+            )
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -84,9 +102,9 @@ describe("addEquipmentAction", () => {
 
     it("captures and fails when the upload throws", async () => {
         h.upload.mockRejectedValue(new Error("boom"))
-        const res = await addEquipmentAction(
-            validEquipmentInput({ image: imageFile("tent.png") })
-        )
+        const res = await addEquipmentAction({
+            data: fd(validEquipmentInput({ image: imageFile("tent.png") }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de l'upload de l'image."
@@ -97,9 +115,9 @@ describe("addEquipmentAction", () => {
 
     it("cleans up the image and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await addEquipmentAction(
-            validEquipmentInput({ image: imageFile("tent.png") })
-        )
+        const res = await addEquipmentAction({
+            data: fd(validEquipmentInput({ image: imageFile("tent.png") }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Echec de l'ajout de l'équipement. Veuillez réessayer."
@@ -109,7 +127,9 @@ describe("addEquipmentAction", () => {
     })
 
     it("creates the equipment without an image", async () => {
-        const res = await addEquipmentAction(validEquipmentInput())
+        const res = await addEquipmentAction({
+            data: fd(validEquipmentInput())
+        })
         expect(res).toEqual({ success: true })
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.create).toHaveBeenCalledWith({
@@ -118,9 +138,9 @@ describe("addEquipmentAction", () => {
     })
 
     it("uploads the image and stores its path on the happy path", async () => {
-        const res = await addEquipmentAction(
-            validEquipmentInput({ image: imageFile("tent.png") })
-        )
+        const res = await addEquipmentAction({
+            data: fd(validEquipmentInput({ image: imageFile("tent.png") }))
+        })
         expect(res).toEqual({ success: true })
         expect(h.upload).toHaveBeenCalledOnce()
         expect(h.create).toHaveBeenCalledWith({

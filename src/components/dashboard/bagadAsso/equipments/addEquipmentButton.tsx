@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import addEquipmentAction from "@/actions/bagadAsso/addEquipmentAction"
+import { addEquipmentAction } from "@/actions/bagadAsso/addEquipmentAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -46,7 +46,12 @@ export default function AddEquipmentButton() {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addEquipmentAction(value)
+                const formData = new FormData()
+                formData.set("name", value.name)
+                formData.set("quantity", String(value.quantity))
+                formData.set("deposit", String(value.deposit))
+                if (value.image) formData.set("image", value.image)
+                const res = await addEquipmentAction({ data: formData })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

@@ -4,7 +4,7 @@ import { Loader2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editInstanceAction from "@/actions/instances/editInstanceAction"
+import { editInstanceAction } from "@/actions/instances/editInstanceAction"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -31,7 +31,11 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { Instance } from "@/generated/prisma/client"
-import { EditInstanceSchema, type TEditInstance } from "@/schemas/instance"
+import {
+    EditInstanceSchema,
+    instanceFormData,
+    type TEditInstance
+} from "@/schemas/instance"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 
@@ -61,7 +65,9 @@ export default function EditInstanceButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editInstanceAction(value)
+                const res = await editInstanceAction({
+                    data: instanceFormData(value)
+                })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

@@ -11,7 +11,7 @@ import { isNotFound, isRedirect } from "@tanstack/react-router"
  *         captureActionError: vi.fn()
  *     }))
  *     vi.mock("@/helpers/db.server", () => dbModule({ adhesion: { create: h.create } }))
- *     vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+ *     vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
  */
 import { vi } from "vitest"
 
@@ -22,11 +22,10 @@ function isRouterControlFlow(error: unknown): boolean {
 }
 
 /**
- * `@/lib/sentry` mock: `withServerAction` becomes a transparent passthrough so
- * tests exercise the real action body; `captureActionError` is a spy that still
- * rethrows router `redirect()` / `notFound()` control-flow errors like the
- * real implementation. `packActionArgs`/`unpackActionArgs` mirror the real
- * payload packing so the serverFn wrappers stay functional under test.
+ * `@/lib/sentry.server` mock: `withServerAction` becomes a transparent
+ * passthrough so tests exercise the real handler body; `captureActionError`
+ * is a spy that still rethrows router `redirect()` / `notFound()`
+ * control-flow errors like the real implementation.
  */
 export function sentryModule(captureActionError?: Fn) {
     const spy =
@@ -42,11 +41,7 @@ export function sentryModule(captureActionError?: Fn) {
             ) =>
             (...args: A): Promise<R> =>
                 handler(...args),
-        captureActionError: spy,
-        packActionArgs: async <A extends unknown[]>(args: A) =>
-            args.length === 1 && args[0] instanceof FormData ? args[0] : args,
-        unpackActionArgs: <A extends unknown[]>(data: A | FormData): A =>
-            (data instanceof FormData ? [data] : data) as A
+        captureActionError: spy
     }
 }
 

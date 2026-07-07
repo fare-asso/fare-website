@@ -26,9 +26,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ auth: { admin: { inviteUserByEmail: h.invite } } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import inviteRepresentativeAction from "../inviteRepresentativeAction"
+import { inviteRepresentativeAction } from "../inviteRepresentativeAction"
 
 const fd = (o: Record<string, string> = {}): FormData => {
     const f = new FormData()
@@ -51,7 +51,7 @@ beforeEach(() => {
 describe("inviteRepresentativeAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await inviteRepresentativeAction(fd())).toEqual({
+        expect(await inviteRepresentativeAction({ data: fd() })).toEqual({
             error: "Authentification requise"
         })
         expect(h.invite).not.toHaveBeenCalled()
@@ -59,22 +59,24 @@ describe("inviteRepresentativeAction", () => {
 
     it("requires the invite:representative permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await inviteRepresentativeAction(fd())
+        const res = await inviteRepresentativeAction({ data: fd() })
         expect(res.error).toMatch(/permission/)
         expect(h.invite).not.toHaveBeenCalled()
     })
 
     it("rejects a missing email", async () => {
-        const res = await inviteRepresentativeAction(fd({ email: "" }))
+        const res = await inviteRepresentativeAction({
+            data: fd({ email: "" })
+        })
         expect(res).toEqual({
             error: "Veuillez remplir tous les champs obligatoires."
         })
     })
 
     it("rejects an invalid email", async () => {
-        const res = await inviteRepresentativeAction(
-            fd({ email: "not-an-email" })
-        )
+        const res = await inviteRepresentativeAction({
+            data: fd({ email: "not-an-email" })
+        })
         expect(res).toEqual({ error: "Adresse E-mail non valide." })
         expect(h.invite).not.toHaveBeenCalled()
     })
@@ -84,7 +86,7 @@ describe("inviteRepresentativeAction", () => {
             data: null,
             error: { code: "email_exists" }
         })
-        expect(await inviteRepresentativeAction(fd())).toEqual({
+        expect(await inviteRepresentativeAction({ data: fd() })).toEqual({
             error: "Cet utilisateur existe déjà"
         })
         expect(h.userUpdate).not.toHaveBeenCalled()
@@ -95,21 +97,23 @@ describe("inviteRepresentativeAction", () => {
             data: null,
             error: { code: "other" }
         })
-        expect(await inviteRepresentativeAction(fd())).toEqual({
+        expect(await inviteRepresentativeAction({ data: fd() })).toEqual({
             error: "Echec de l'invitation du représentant"
         })
     })
 
     it("captures and fails when a db update throws", async () => {
         h.userUpdate.mockRejectedValue(new Error("db down"))
-        expect(await inviteRepresentativeAction(fd())).toEqual({
+        expect(await inviteRepresentativeAction({ data: fd() })).toEqual({
             error: "Echec de l'invitation du représentant"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("invites, links and revalidates on the happy path", async () => {
-        const res = await inviteRepresentativeAction(fd({ associationId: "7" }))
+        const res = await inviteRepresentativeAction({
+            data: fd({ associationId: "7" })
+        })
         expect(res).toEqual({ success: true })
         expect(h.userUpdate).toHaveBeenCalledWith({
             where: { id: "rep-1" },

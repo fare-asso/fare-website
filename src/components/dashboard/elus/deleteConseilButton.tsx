@@ -3,7 +3,7 @@ import { Trash2Icon } from "lucide-react"
 import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
-import deleteConseilAction from "@/actions/conseils/deleteConseilAction"
+import { deleteConseilAction } from "@/actions/conseils/deleteConseilAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -57,7 +57,7 @@ export default function DeleteConseilButton({ conseil }: { conseil: Conseil }) {
         setIsLoading(true)
 
         startTransition(async () => {
-            const result = await deleteConseilAction(conseil.id)
+            const result = await deleteConseilAction({ data: conseil.id })
             if (result?.success) {
                 await router.invalidate()
             }

@@ -2,7 +2,7 @@ import { useForm } from "@tanstack/react-form"
 import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 
-import addPartenaireAction from "@/actions/partenaires/addPartenaireAction"
+import { addPartenaireAction } from "@/actions/partenaires/addPartenaireAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -40,7 +40,11 @@ export default function AddPartenaireButton() {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addPartenaireAction(value)
+                const fd = new FormData()
+                fd.set("name", value.name)
+                fd.set("description", value.description)
+                fd.set("logo", value.logo)
+                const res = await addPartenaireAction({ data: fd })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

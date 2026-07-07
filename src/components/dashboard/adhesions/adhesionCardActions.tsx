@@ -8,10 +8,10 @@ import {
 import { useState } from "react"
 import { toast } from "sonner"
 
-import archiveAdhesionAction from "@/actions/adhesion/archiveAdhesionAction"
-import downloadAdhesionPdfAction from "@/actions/adhesion/downloadAdhesionPdfAction"
+import { archiveAdhesionAction } from "@/actions/adhesion/archiveAdhesionAction"
+import { downloadAdhesionPdfAction } from "@/actions/adhesion/downloadAdhesionPdfAction"
 import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
-import unarchiveAdhesionAction from "@/actions/adhesion/unarchiveAdhesionAction"
+import { unarchiveAdhesionAction } from "@/actions/adhesion/unarchiveAdhesionAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -56,7 +56,9 @@ export default function AdhesionCardActions({
 
     const handleDownload = async () => {
         setIsDownloading(true)
-        const call = await tryCatch(downloadFolderAction(adhesion.folderPath))
+        const call = await tryCatch(
+            downloadFolderAction({ data: adhesion.folderPath })
+        )
         if (!call.success) {
             console.error("Erreur lors du téléchargement:", call.error)
             toast.error("Erreur lors du téléchargement du dossier.")
@@ -79,7 +81,9 @@ export default function AdhesionCardActions({
 
     const handleGeneratePdf = async () => {
         setIsGeneratingPdf(true)
-        const call = await tryCatch(downloadAdhesionPdfAction(adhesion.id))
+        const call = await tryCatch(
+            downloadAdhesionPdfAction({ data: adhesion.id })
+        )
         if (!call.success) {
             console.error("Erreur lors de la génération du PDF:", call.error)
             toast.error("Erreur lors de la génération du formulaire PDF.")
@@ -105,7 +109,7 @@ export default function AdhesionCardActions({
         const action = isArchived
             ? unarchiveAdhesionAction
             : archiveAdhesionAction
-        const response = await action(adhesion.id)
+        const response = await action({ data: adhesion.id })
         if (response.error) {
             toast.error(response.error)
         } else {

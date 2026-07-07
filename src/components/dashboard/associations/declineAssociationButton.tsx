@@ -2,7 +2,7 @@ import { useRouter } from "@tanstack/react-router"
 import { XCircleIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import declineAssociationAction from "@/actions/associations/declineAssociationAction"
+import { declineAssociationAction } from "@/actions/associations/declineAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -38,7 +38,9 @@ export default function DeclineAssociationButton({
     ): void => {
         event.preventDefault()
         startTransition(async () => {
-            const result = await declineAssociationAction(association.id)
+            const result = await declineAssociationAction({
+                data: association.id
+            })
             if (result?.success) {
                 await router.invalidate()
                 setIsOpen(false)

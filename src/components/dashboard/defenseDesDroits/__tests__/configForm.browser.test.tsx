@@ -55,8 +55,7 @@ describe("<ConfigForm />", () => {
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
         expect(h.action).toHaveBeenCalledWith({
-            recipientEmail: "new@fare-asso.fr",
-            delay: "72h"
+            data: { recipientEmail: "new@fare-asso.fr", delay: "72h" }
         })
         await vi.waitFor(() =>
             expect(h.toastSuccess).toHaveBeenCalledWith(

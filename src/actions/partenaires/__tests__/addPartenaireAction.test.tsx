@@ -28,9 +28,19 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import addPartenaireAction from "../addPartenaireAction"
+import type { TAddPartenaire } from "@/schemas/partenaires"
+
+import { addPartenaireAction } from "../addPartenaireAction"
+
+const fd = (input: TAddPartenaire): FormData => {
+    const f = new FormData()
+    f.set("name", input.name)
+    f.set("description", input.description)
+    if (input.logo) f.set("logo", input.logo)
+    return f
+}
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:partner"]))
@@ -50,7 +60,9 @@ beforeEach(() => {
 describe("addPartenaireAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        const res = await addPartenaireAction(validAddPartenaire())
+        const res = await addPartenaireAction({
+            data: fd(validAddPartenaire())
+        })
         expect(res).toEqual({
             success: false,
             error: "Authentification requise"
@@ -61,7 +73,9 @@ describe("addPartenaireAction", () => {
 
     it("requires the create:partner permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await addPartenaireAction(validAddPartenaire())
+        const res = await addPartenaireAction({
+            data: fd(validAddPartenaire())
+        })
         expect(res.success).toBe(false)
         if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.upload).not.toHaveBeenCalled()
@@ -69,7 +83,9 @@ describe("addPartenaireAction", () => {
     })
 
     it("rejects an invalid payload (empty name)", async () => {
-        const res = await addPartenaireAction(validAddPartenaire({ name: "" }))
+        const res = await addPartenaireAction({
+            data: fd(validAddPartenaire({ name: "" }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -79,13 +95,15 @@ describe("addPartenaireAction", () => {
     })
 
     it("rejects a non-image logo", async () => {
-        const res = await addPartenaireAction(
-            validAddPartenaire({
-                logo: new File([new Uint8Array([1])], "x.pdf", {
-                    type: "application/pdf"
+        const res = await addPartenaireAction({
+            data: fd(
+                validAddPartenaire({
+                    logo: new File([new Uint8Array([1])], "x.pdf", {
+                        type: "application/pdf"
+                    })
                 })
-            })
-        )
+            )
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -95,7 +113,9 @@ describe("addPartenaireAction", () => {
 
     it("captures and returns an error when the upload throws", async () => {
         h.upload.mockRejectedValue(new Error("storage down"))
-        const res = await addPartenaireAction(validAddPartenaire())
+        const res = await addPartenaireAction({
+            data: fd(validAddPartenaire())
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de l'upload du logo."
@@ -109,7 +129,9 @@ describe("addPartenaireAction", () => {
             data: null,
             error: { message: "boom" }
         })
-        const res = await addPartenaireAction(validAddPartenaire())
+        const res = await addPartenaireAction({
+            data: fd(validAddPartenaire())
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de l'upload du logo."
@@ -124,7 +146,9 @@ describe("addPartenaireAction", () => {
             error: null
         })
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await addPartenaireAction(validAddPartenaire())
+        const res = await addPartenaireAction({
+            data: fd(validAddPartenaire())
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de la création du partenaire."
@@ -139,7 +163,7 @@ describe("addPartenaireAction", () => {
             description: "Description du partenaire.",
             logo: imageFile("logo.png")
         })
-        const res = await addPartenaireAction(input)
+        const res = await addPartenaireAction({ data: fd(input) })
         expect(res).toEqual({ success: true })
         expect(h.upload).toHaveBeenCalledOnce()
         const [uploadName, uploadFile, uploadOpts] = h.upload.mock.calls[0] as [

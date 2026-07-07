@@ -3,9 +3,9 @@ import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-import archiveTutorQuestion from "@/actions/bouge-ta-prison/archiveTutorQuestion"
-import deleteTutorQuestion from "@/actions/bouge-ta-prison/deleteTutorQuestion"
-import unarchiveTutorQuestion from "@/actions/bouge-ta-prison/unarchiveTutorQuestion"
+import { archiveTutorQuestionAction } from "@/actions/bouge-ta-prison/archiveTutorQuestion"
+import { deleteTutorQuestionAction } from "@/actions/bouge-ta-prison/deleteTutorQuestion"
+import { unarchiveTutorQuestionAction } from "@/actions/bouge-ta-prison/unarchiveTutorQuestion"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
@@ -36,7 +36,9 @@ export default function QuestionActions({
     const onArchive = async () => {
         setIsArchiveLoading(true)
 
-        const response = await archiveTutorQuestion(questionId)
+        const response = await archiveTutorQuestionAction({
+            data: { id: questionId }
+        })
 
         if (response.error) {
             toast.error(response.error)
@@ -50,7 +52,9 @@ export default function QuestionActions({
     const onUnarchive = async () => {
         setIsArchiveLoading(true)
 
-        const response = await unarchiveTutorQuestion(questionId)
+        const response = await unarchiveTutorQuestionAction({
+            data: { id: questionId }
+        })
 
         if (response.error) {
             toast.error(response.error)
@@ -64,7 +68,9 @@ export default function QuestionActions({
     const onHardDelete = async () => {
         setIsDeleteLoading(true)
 
-        const response = await deleteTutorQuestion(questionId)
+        const response = await deleteTutorQuestionAction({
+            data: { id: questionId }
+        })
 
         if (response.error) {
             toast.error(response.error)

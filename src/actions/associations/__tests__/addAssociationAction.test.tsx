@@ -24,9 +24,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import addAssociationAction from "../addAssociationAction"
+import { addAssociationAction } from "../addAssociationAction"
 
 const bigImage = (): File =>
     new File([new Uint8Array(16 * 1024 * 1024)], "big.png", {
@@ -42,7 +42,9 @@ beforeEach(() => {
 describe("addAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await addAssociationAction(validAssociationFormData())).toEqual({
+        expect(
+            await addAssociationAction({ data: validAssociationFormData() })
+        ).toEqual({
             error: "Authentification requise"
         })
         expect(h.create).not.toHaveBeenCalled()
@@ -50,15 +52,17 @@ describe("addAssociationAction", () => {
 
     it("requires the create:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await addAssociationAction(validAssociationFormData())
+        const res = await addAssociationAction({
+            data: validAssociationFormData()
+        })
         expect(res.error).toMatch(/permission/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects a payload missing required fields", async () => {
-        const res = await addAssociationAction(
-            validAssociationFormData({ name: "" })
-        )
+        const res = await addAssociationAction({
+            data: validAssociationFormData({ name: "" })
+        })
         expect(res).toEqual({
             error: "Veuillez remplir tous les champs obligatoires."
         })
@@ -66,27 +70,27 @@ describe("addAssociationAction", () => {
     })
 
     it("rejects a non-file logo", async () => {
-        const res = await addAssociationAction(
-            validAssociationFormData({ "logo-picture": "not-a-file" })
-        )
+        const res = await addAssociationAction({
+            data: validAssociationFormData({ "logo-picture": "not-a-file" })
+        })
         expect(res).toEqual({ error: "Logo non-valide." })
     })
 
     it("rejects an oversized logo", async () => {
-        const res = await addAssociationAction(
-            validAssociationFormData({ "logo-picture": bigImage() })
-        )
+        const res = await addAssociationAction({
+            data: validAssociationFormData({ "logo-picture": bigImage() })
+        })
         expect(res.error).toMatch(/taille/)
     })
 
     it("rejects an unsupported image type", async () => {
-        const res = await addAssociationAction(
-            validAssociationFormData({
+        const res = await addAssociationAction({
+            data: validAssociationFormData({
                 "logo-picture": new File([new Uint8Array([1])], "f.txt", {
                     type: "text/plain"
                 })
             })
-        )
+        })
         expect(res.error).toMatch(/format de l'image/)
     })
 
@@ -95,20 +99,26 @@ describe("addAssociationAction", () => {
             data: null,
             error: { message: "upload boom" }
         })
-        const res = await addAssociationAction(validAssociationFormData())
+        const res = await addAssociationAction({
+            data: validAssociationFormData()
+        })
         expect(res).toEqual({ error: "upload boom" })
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await addAssociationAction(validAssociationFormData())
+        const res = await addAssociationAction({
+            data: validAssociationFormData()
+        })
         expect(res).toEqual({ error: "db down" })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("creates the association and revalidates on the happy path", async () => {
-        const res = await addAssociationAction(validAssociationFormData())
+        const res = await addAssociationAction({
+            data: validAssociationFormData()
+        })
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({

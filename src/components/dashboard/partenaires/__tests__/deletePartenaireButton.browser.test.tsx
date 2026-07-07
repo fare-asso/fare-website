@@ -6,7 +6,7 @@ import type { Partenaire } from "@/generated/prisma/client"
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
 vi.mock("@/actions/partenaires/deletePartenaireAction", () => ({
-    default: h.action
+    deletePartenaireAction: h.action
 }))
 vi.mock("@tanstack/react-router", () => ({
     useRouter: () => ({ invalidate: vi.fn() })
@@ -61,6 +61,6 @@ describe("<DeletePartenaireButton />", () => {
         await screen.getByRole("button", { name: /Supprimer/ }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        expect(h.action.mock.calls[0][0]).toBe(42)
+        expect(h.action.mock.calls[0][0]).toEqual({ data: 42 })
     })
 })

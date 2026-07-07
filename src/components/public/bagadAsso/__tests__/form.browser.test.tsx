@@ -4,7 +4,7 @@ import { render } from "vitest-browser-react"
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
 vi.mock("@/actions/bagadAsso/submitBagadAssoFormAction", () => ({
-    default: h.action
+    submitBagadAssoFormAction: h.action
 }))
 vi.mock("@/components/captcha", () => ({
     Captcha: ({ onComplete }: { onComplete: (t: string) => void }) => (

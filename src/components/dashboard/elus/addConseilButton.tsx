@@ -2,7 +2,7 @@ import { useForm } from "@tanstack/react-form"
 import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 
-import addConseilAction from "@/actions/conseils/addConseilAction"
+import { addConseilAction } from "@/actions/conseils/addConseilAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -51,7 +51,7 @@ export default function AddConseilButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addConseilAction(value)
+                const res = await addConseilAction({ data: value })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

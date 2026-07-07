@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 
-import bulkRestoreUsers from "@/actions/users/bulkRestoreUsers"
+import { bulkRestoreUsersAction } from "@/actions/users/bulkRestoreUsers"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
@@ -34,7 +34,7 @@ export function BulkRestoreDialog({
     const handleRestore = () => {
         setError(null)
         startTransition(async () => {
-            const result = await bulkRestoreUsers(userIds)
+            const result = await bulkRestoreUsersAction({ data: { userIds } })
             if (result.success) {
                 await router.invalidate()
                 onOpenChange(false)

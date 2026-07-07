@@ -5,13 +5,7 @@ import { hasPermission } from "@/helpers/permissions"
 import { createClient } from "@/helpers/supabase.server"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import getCurrentUserId from "@/helpers/user/id.server"
-import {
-    type ActionPayload,
-    captureActionError,
-    packActionArgs,
-    unpackActionArgs,
-    withServerAction
-} from "@/lib/sentry"
+import { captureActionError, withServerAction } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
 interface Event {
@@ -27,312 +21,319 @@ interface Event {
     visibility?: boolean
 }
 
-async function editEventActionImpl(formData: FormData) {
-    // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
-    if (!user) {
-        return { error: "Authentification requise" }
-    }
-    if (!hasPermission(user, "edit:event")) {
-        return {
-            error: "Vous n'avez pas la permission d'effectuer cette opération"
-        }
-    }
-
-    // create supabase client
-    const supabase = createClient()
-
-    // retrieve formdata fields
-    const id = formData.get("id")
-
-    const name = formData.get("name")
-    const description = formData.get("description")
-
-    const picture = formData.get("picture")
-    const previousPath = formData.get("previousPath")
-
-    const location = formData.get("location")
-    const category = formData.get("category")
-
-    const startDate = formData.get("startDate")
-    const startHour = formData.get("startHour")
-    const startMinute = formData.get("startMinute")
-
-    const endDate = formData.get("endDate")
-    const endHour = formData.get("endHour")
-    const endMinute = formData.get("endMinute")
-
-    const visibility = formData.get("visibility")
-
-    // create a temp variable to gradually store each data after their validation
-    const data: Event = {}
-
-    /* Data validation */
-
-    //id
-    if (id != null && typeof id === "string") {
-        const idStr: string = id.toString()
-        const idNumber = Number(idStr)
-        if (Number.isNaN(idNumber)) {
-            return {
-                error: "L'identifiant n'est pas un nombre..."
+export const editEventAction = createServerFn({ method: "POST" })
+    .validator((data: FormData) => data)
+    .handler(
+        withServerAction("editEvent", async ({ data: formData }) => {
+            // Auth and permission verifications
+            const user = await getCurrentUserWithPermissions()
+            if (!user) {
+                return { error: "Authentification requise" }
             }
-        } else {
-            data.id = idNumber
-        }
-    } else {
-        return {
-            error: "L'identifiant de l'évènement n'est pas correct"
-        }
-    }
-
-    // name
-    if (name != null && typeof name === "string") {
-        const nameStr: string = name.toString()
-        if (nameStr.length < 3) {
-            return {
-                error: "La longueur du nom doit être supérieure à 3 caractères"
-            }
-        } else data.name = nameStr
-    } else {
-        return {
-            error: "Le nom n'est pas valide ou n'est pas du bon format"
-        }
-    }
-
-    if (description != null && typeof description === "string") {
-        const descriptionStr: string = description.toString()
-        if (descriptionStr.length < 10) {
-            return {
-                error: "La longueur de la description doit être supérieure à 10 caractères"
-            }
-        } else data.desc = descriptionStr
-    } else {
-        return {
-            error: "La description n'est pas valide ou n'est pas du bon format"
-        }
-    }
-
-    if (picture != null && picture instanceof File) {
-        // if there is a new file
-        const pictureFile: File = picture
-        if (pictureFile.size > 0 && pictureFile.size / (1024 * 1024) <= 10) {
-            // valid picture file and size < 10mb
-            // TODO : Some Logic to remove previous file from S3 and reupload another one
-
-            // Remove Old Path if its possible
-            if (previousPath != null && typeof previousPath === "string") {
-                const _res = await supabase.storage
-                    .from("EventPictures")
-                    .remove([previousPath.toString()])
-            }
-
-            // Upload new picture
-            const response = await supabase.storage
-                .from("EventPictures")
-                .upload(`${data.name}:${crypto.randomUUID()}`, pictureFile)
-
-            if (response.error) {
-                // Upload Failed
-                console.log(response.error)
+            if (!hasPermission(user, "edit:event")) {
                 return {
-                    error: "L'upload de l'image à échoué, veuillez réessayer"
+                    error: "Vous n'avez pas la permission d'effectuer cette opération"
+                }
+            }
+
+            // create supabase client
+            const supabase = createClient()
+
+            // retrieve formdata fields
+            const id = formData.get("id")
+
+            const name = formData.get("name")
+            const description = formData.get("description")
+
+            const picture = formData.get("picture")
+            const previousPath = formData.get("previousPath")
+
+            const location = formData.get("location")
+            const category = formData.get("category")
+
+            const startDate = formData.get("startDate")
+            const startHour = formData.get("startHour")
+            const startMinute = formData.get("startMinute")
+
+            const endDate = formData.get("endDate")
+            const endHour = formData.get("endHour")
+            const endMinute = formData.get("endMinute")
+
+            const visibility = formData.get("visibility")
+
+            // create a temp variable to gradually store each data after their validation
+            const data: Event = {}
+
+            /* Data validation */
+
+            //id
+            if (id != null && typeof id === "string") {
+                const idStr: string = id.toString()
+                const idNumber = Number(idStr)
+                if (Number.isNaN(idNumber)) {
+                    return {
+                        error: "L'identifiant n'est pas un nombre..."
+                    }
+                } else {
+                    data.id = idNumber
                 }
             } else {
-                // Upload Success
-                data.image = response.data.path
-            }
-        } else if (previousPath != null && typeof previousPath === "string") {
-            // keep old picture
-            data.image = previousPath.toString()
-        } else {
-            return {
-                error: "L'image n'est pas valide ou la taille de l'image excède 10 mo"
-            }
-        }
-    } else if (previousPath != null && typeof previousPath === "string") {
-        data.image = previousPath.toString()
-    } else {
-        return {
-            error: "L'image n'est pas valide ou n'est pas du bon format"
-        }
-    }
-
-    if (location != null && typeof location === "string") {
-        if (location.length > 0) {
-            // non null string
-            data.location = location.toString()
-        } else {
-            return {
-                error: "Lieu non-valide"
-            }
-        }
-    } else {
-        return {
-            error: "Le lieu n'est pas valide ou n'est pas du bon format"
-        }
-    }
-
-    if (category != null && typeof category === "string") {
-        const categoryStr: string = category.toString()
-
-        // Retrives a single data record or return NonFoundError (code : 'P2025')
-        const found = await tryCatch(
-            prisma.category.findUniqueOrThrow({
-                where: {
-                    name: categoryStr
-                }
-            })
-        )
-        if (!found.success) {
-            if ("code" in found.error && found.error.code === "P2025") {
                 return {
-                    error: `La catégorie ${categoryStr} n'existe pas`
+                    error: "L'identifiant de l'évènement n'est pas correct"
                 }
             }
-            captureActionError(found.error)
-            return {
-                error: "Une erreur à eu lieu lors de la récupération de la catégorie"
-            }
-        }
-        data.categoryId = found.value.id
-    } else {
-        return {
-            error: "La catégorie n'est pas valide ou n'est pas du bon format"
-        }
-    }
 
-    // Event Start Time
-    if (
-        startDate != null &&
-        typeof startDate === "string" &&
-        startHour != null &&
-        startMinute != null
-    ) {
-        const startDateStr: string = startDate.toString()
-        const startHourStr: string = startHour.toString()
-        const startMinuteStr: string = startMinute.toString()
-        if (
-            Number.isNaN(Number(startHourStr)) ||
-            Number.isNaN(Number(startMinuteStr))
-        ) {
-            return {
-                error: "L'heure ou les minutes de départ ne sont pas sous le bon format"
+            // name
+            if (name != null && typeof name === "string") {
+                const nameStr: string = name.toString()
+                if (nameStr.length < 3) {
+                    return {
+                        error: "La longueur du nom doit être supérieure à 3 caractères"
+                    }
+                } else data.name = nameStr
+            } else {
+                return {
+                    error: "Le nom n'est pas valide ou n'est pas du bon format"
+                }
             }
-        }
-        const parsedDate: Date = new Date(Date.parse(startDateStr))
-        parsedDate.setHours(Number(startHourStr))
-        parsedDate.setMinutes(Number(startMinuteStr))
-        data.startTime = parsedDate
-    } else {
-        return {
-            error: "La date ou l'heure de départ ne sont correctes"
-        }
-    }
 
-    // Event End Time
-    if (
-        endDate != null &&
-        typeof endDate === "string" &&
-        endHour != null &&
-        endMinute != null
-    ) {
-        const endDateStr: string = endDate.toString()
-        const endHourStr: string = endHour.toString()
-        const endMinuteStr: string = endMinute.toString()
-        if (
-            Number.isNaN(Number(endHourStr)) ||
-            Number.isNaN(Number(endMinuteStr))
-        ) {
-            return {
-                error: "L'heure ou les minutes de fin ne sont pas sous le bon format"
+            if (description != null && typeof description === "string") {
+                const descriptionStr: string = description.toString()
+                if (descriptionStr.length < 10) {
+                    return {
+                        error: "La longueur de la description doit être supérieure à 10 caractères"
+                    }
+                } else data.desc = descriptionStr
+            } else {
+                return {
+                    error: "La description n'est pas valide ou n'est pas du bon format"
+                }
             }
-        }
-        const parsedDate: Date = new Date(Date.parse(endDateStr))
-        parsedDate.setHours(Number(endHourStr))
-        parsedDate.setMinutes(Number(endMinuteStr))
-        data.endTime = parsedDate
-    } else {
-        return {
-            error: "La date ou l'heure de fin ne sont pas correctes"
-        }
-    }
 
-    if (visibility != null && typeof visibility === "string") {
-        const visibilityStr: string = visibility.toString()
-        switch (visibilityStr) {
-            case "on":
-                data.visibility = true
-                break
-            case "off":
+            if (picture != null && picture instanceof File) {
+                // if there is a new file
+                const pictureFile: File = picture
+                if (
+                    pictureFile.size > 0 &&
+                    pictureFile.size / (1024 * 1024) <= 10
+                ) {
+                    // valid picture file and size < 10mb
+                    // TODO : Some Logic to remove previous file from S3 and reupload another one
+
+                    // Remove Old Path if its possible
+                    if (
+                        previousPath != null &&
+                        typeof previousPath === "string"
+                    ) {
+                        const _res = await supabase.storage
+                            .from("EventPictures")
+                            .remove([previousPath.toString()])
+                    }
+
+                    // Upload new picture
+                    const response = await supabase.storage
+                        .from("EventPictures")
+                        .upload(
+                            `${data.name}:${crypto.randomUUID()}`,
+                            pictureFile
+                        )
+
+                    if (response.error) {
+                        // Upload Failed
+                        console.log(response.error)
+                        return {
+                            error: "L'upload de l'image à échoué, veuillez réessayer"
+                        }
+                    } else {
+                        // Upload Success
+                        data.image = response.data.path
+                    }
+                } else if (
+                    previousPath != null &&
+                    typeof previousPath === "string"
+                ) {
+                    // keep old picture
+                    data.image = previousPath.toString()
+                } else {
+                    return {
+                        error: "L'image n'est pas valide ou la taille de l'image excède 10 mo"
+                    }
+                }
+            } else if (
+                previousPath != null &&
+                typeof previousPath === "string"
+            ) {
+                data.image = previousPath.toString()
+            } else {
+                return {
+                    error: "L'image n'est pas valide ou n'est pas du bon format"
+                }
+            }
+
+            if (location != null && typeof location === "string") {
+                if (location.length > 0) {
+                    // non null string
+                    data.location = location.toString()
+                } else {
+                    return {
+                        error: "Lieu non-valide"
+                    }
+                }
+            } else {
+                return {
+                    error: "Le lieu n'est pas valide ou n'est pas du bon format"
+                }
+            }
+
+            if (category != null && typeof category === "string") {
+                const categoryStr: string = category.toString()
+
+                // Retrives a single data record or return NonFoundError (code : 'P2025')
+                const found = await tryCatch(
+                    prisma.category.findUniqueOrThrow({
+                        where: {
+                            name: categoryStr
+                        }
+                    })
+                )
+                if (!found.success) {
+                    if ("code" in found.error && found.error.code === "P2025") {
+                        return {
+                            error: `La catégorie ${categoryStr} n'existe pas`
+                        }
+                    }
+                    captureActionError(found.error)
+                    return {
+                        error: "Une erreur à eu lieu lors de la récupération de la catégorie"
+                    }
+                }
+                data.categoryId = found.value.id
+            } else {
+                return {
+                    error: "La catégorie n'est pas valide ou n'est pas du bon format"
+                }
+            }
+
+            // Event Start Time
+            if (
+                startDate != null &&
+                typeof startDate === "string" &&
+                startHour != null &&
+                startMinute != null
+            ) {
+                const startDateStr: string = startDate.toString()
+                const startHourStr: string = startHour.toString()
+                const startMinuteStr: string = startMinute.toString()
+                if (
+                    Number.isNaN(Number(startHourStr)) ||
+                    Number.isNaN(Number(startMinuteStr))
+                ) {
+                    return {
+                        error: "L'heure ou les minutes de départ ne sont pas sous le bon format"
+                    }
+                }
+                const parsedDate: Date = new Date(Date.parse(startDateStr))
+                parsedDate.setHours(Number(startHourStr))
+                parsedDate.setMinutes(Number(startMinuteStr))
+                data.startTime = parsedDate
+            } else {
+                return {
+                    error: "La date ou l'heure de départ ne sont correctes"
+                }
+            }
+
+            // Event End Time
+            if (
+                endDate != null &&
+                typeof endDate === "string" &&
+                endHour != null &&
+                endMinute != null
+            ) {
+                const endDateStr: string = endDate.toString()
+                const endHourStr: string = endHour.toString()
+                const endMinuteStr: string = endMinute.toString()
+                if (
+                    Number.isNaN(Number(endHourStr)) ||
+                    Number.isNaN(Number(endMinuteStr))
+                ) {
+                    return {
+                        error: "L'heure ou les minutes de fin ne sont pas sous le bon format"
+                    }
+                }
+                const parsedDate: Date = new Date(Date.parse(endDateStr))
+                parsedDate.setHours(Number(endHourStr))
+                parsedDate.setMinutes(Number(endMinuteStr))
+                data.endTime = parsedDate
+            } else {
+                return {
+                    error: "La date ou l'heure de fin ne sont pas correctes"
+                }
+            }
+
+            if (visibility != null && typeof visibility === "string") {
+                const visibilityStr: string = visibility.toString()
+                switch (visibilityStr) {
+                    case "on":
+                        data.visibility = true
+                        break
+                    case "off":
+                        data.visibility = false
+                        break
+                    default:
+                        return {
+                            error: "Wrong type of visibility"
+                        }
+                }
+            } else {
                 data.visibility = false
-                break
-            default:
-                return {
-                    error: "Wrong type of visibility"
-                }
-        }
-    } else {
-        data.visibility = false
-    }
-
-    // current user id
-    const res = await getCurrentUserId()
-
-    if (res.error) {
-        return {
-            error: "Echec de la récupération de l'utilisateur"
-        }
-    }
-
-    // create event record in the DB
-    if (!data.name || !data.desc || !data.categoryId || !data.location) {
-        return {
-            error: "Des champs obligatoires sont manquants"
-        }
-    }
-
-    const updated = await tryCatch(
-        prisma.event.update({
-            where: {
-                id: data.id
-            },
-            data: {
-                name: data.name,
-                desc: data.desc,
-                categoryId: data.categoryId,
-                image: data.image,
-                startTime: data.startTime,
-                endTime: data.endTime,
-                location: data.location,
-                creatorId: res.userId,
-                visibility: data.visibility
             }
+
+            // current user id
+            const res = await getCurrentUserId()
+
+            if (res.error) {
+                return {
+                    error: "Echec de la récupération de l'utilisateur"
+                }
+            }
+
+            // create event record in the DB
+            if (
+                !data.name ||
+                !data.desc ||
+                !data.categoryId ||
+                !data.location
+            ) {
+                return {
+                    error: "Des champs obligatoires sont manquants"
+                }
+            }
+
+            const updated = await tryCatch(
+                prisma.event.update({
+                    where: {
+                        id: data.id
+                    },
+                    data: {
+                        name: data.name,
+                        desc: data.desc,
+                        categoryId: data.categoryId,
+                        image: data.image,
+                        startTime: data.startTime,
+                        endTime: data.endTime,
+                        location: data.location,
+                        creatorId: res.userId,
+                        visibility: data.visibility
+                    }
+                })
+            )
+            if (!updated.success) {
+                captureActionError(updated.error)
+                return {
+                    error: "La modification de l'évènement à échoué, veuillez réessayer"
+                }
+            }
+
+            return { success: true }
         })
     )
-    if (!updated.success) {
-        captureActionError(updated.error)
-        return {
-            error: "La modification de l'évènement à échoué, veuillez réessayer"
-        }
-    }
-
-    return { success: true }
-}
-
-const editEventActionServerFn = createServerFn({ method: "POST" })
-    .validator(
-        (data: ActionPayload<Parameters<typeof editEventActionImpl>>) => data
-    )
-    .handler(({ data }) =>
-        withServerAction("editEventAction", editEventActionImpl, {
-            attachFormData: true
-        })(...unpackActionArgs<Parameters<typeof editEventActionImpl>>(data))
-    )
-
-export default async (
-    ...args: Parameters<typeof editEventActionImpl>
-): ReturnType<typeof editEventActionImpl> =>
-    editEventActionServerFn({ data: await packActionArgs(args) }) as ReturnType<
-        typeof editEventActionImpl
-    >

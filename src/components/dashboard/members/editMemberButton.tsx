@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editMemberAction from "@/actions/members/editMemberAction"
+import { editMemberAction } from "@/actions/members/editMemberAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -46,7 +46,17 @@ export default function EditMemberButton({ member }: { member: Member }) {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editMemberAction(value)
+                const fd = new FormData()
+                fd.set("id", String(value.id))
+                fd.set("firstName", value.firstName)
+                fd.set("lastName", value.lastName)
+                fd.set("position", value.position)
+                fd.set("email", value.email)
+                fd.set("facebook", value.facebook ?? "")
+                fd.set("instagram", value.instagram ?? "")
+                fd.set("twitter", value.twitter ?? "")
+                if (value.picture) fd.set("picture", value.picture)
+                const res = await editMemberAction({ data: fd })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

@@ -31,9 +31,20 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import editPartenaireAction from "../editPartenaireAction"
+import type { TEditPartenaire } from "@/schemas/partenaires"
+
+import { editPartenaireAction } from "../editPartenaireAction"
+
+const fd = (input: TEditPartenaire): FormData => {
+    const f = new FormData()
+    f.set("id", String(input.id))
+    f.set("name", input.name)
+    f.set("description", input.description)
+    if (input.logo) f.set("logo", input.logo)
+    return f
+}
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:partner"]))
@@ -53,7 +64,9 @@ beforeEach(() => {
 describe("editPartenaireAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        const res = await editPartenaireAction(validEditPartenaire())
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire())
+        })
         expect(res).toEqual({
             success: false,
             error: "Authentification requise"
@@ -63,14 +76,18 @@ describe("editPartenaireAction", () => {
 
     it("requires the edit:partner permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await editPartenaireAction(validEditPartenaire())
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire())
+        })
         expect(res.success).toBe(false)
         if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid id", async () => {
-        const res = await editPartenaireAction(validEditPartenaire({ id: 0 }))
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire({ id: 0 }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -79,9 +96,9 @@ describe("editPartenaireAction", () => {
     })
 
     it("rejects an empty name", async () => {
-        const res = await editPartenaireAction(
-            validEditPartenaire({ name: "" })
-        )
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire({ name: "" }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -90,9 +107,9 @@ describe("editPartenaireAction", () => {
     })
 
     it("rejects a description over 1000 characters", async () => {
-        const res = await editPartenaireAction(
-            validEditPartenaire({ description: "a".repeat(1001) })
-        )
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire({ description: "a".repeat(1001) }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -101,9 +118,9 @@ describe("editPartenaireAction", () => {
     })
 
     it("rejects a non-image logo", async () => {
-        const res = await editPartenaireAction(
-            validEditPartenaire({ logo: pdfFile("x.pdf") })
-        )
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire({ logo: pdfFile("x.pdf") }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -113,7 +130,9 @@ describe("editPartenaireAction", () => {
 
     it("returns an error when the partenaire does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
-        const res = await editPartenaireAction(validEditPartenaire())
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire())
+        })
         expect(res).toEqual({
             success: false,
             error: "Partenaire introuvable."
@@ -122,7 +141,9 @@ describe("editPartenaireAction", () => {
     })
 
     it("skips the storage upload when no logo is provided", async () => {
-        const res = await editPartenaireAction(validEditPartenaire())
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire())
+        })
         expect(res).toEqual({ success: true })
         expect(h.storageUpload).not.toHaveBeenCalled()
         expect(h.storageRemove).not.toHaveBeenCalled()
@@ -138,9 +159,9 @@ describe("editPartenaireAction", () => {
 
     it("captures and fails when the storage upload throws", async () => {
         h.storageUpload.mockRejectedValue(new Error("storage down"))
-        const res = await editPartenaireAction(
-            validEditPartenaire({ logo: imageFile("new.png") })
-        )
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire({ logo: imageFile("new.png") }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de l'upload du logo."
@@ -155,9 +176,9 @@ describe("editPartenaireAction", () => {
             data: null,
             error: { message: "boom" }
         })
-        const res = await editPartenaireAction(
-            validEditPartenaire({ logo: imageFile("new.png") })
-        )
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire({ logo: imageFile("new.png") }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de l'upload du logo."
@@ -169,7 +190,9 @@ describe("editPartenaireAction", () => {
 
     it("captures and fails when the db update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        const res = await editPartenaireAction(validEditPartenaire())
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire())
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de la modification du partenaire."
@@ -179,14 +202,16 @@ describe("editPartenaireAction", () => {
 
     it("uploads a new logo, removes the old one and updates the partenaire on the happy path", async () => {
         const logo = imageFile("new.png")
-        const res = await editPartenaireAction(
-            validEditPartenaire({
-                id: 7,
-                name: "New ACME",
-                description: "New description",
-                logo
-            })
-        )
+        const res = await editPartenaireAction({
+            data: fd(
+                validEditPartenaire({
+                    id: 7,
+                    name: "New ACME",
+                    description: "New description",
+                    logo
+                })
+            )
+        })
         expect(res).toEqual({ success: true })
         expect(h.storageUpload).toHaveBeenCalledTimes(1)
         const [path, file, opts] = h.storageUpload.mock.calls[0]
@@ -207,9 +232,9 @@ describe("editPartenaireAction", () => {
 
     it("skips the remove when the previous logoPath is empty", async () => {
         h.findUnique.mockResolvedValue({ logoPath: "" })
-        const res = await editPartenaireAction(
-            validEditPartenaire({ logo: imageFile("new.png") })
-        )
+        const res = await editPartenaireAction({
+            data: fd(validEditPartenaire({ logo: imageFile("new.png") }))
+        })
         expect(res).toEqual({ success: true })
         expect(h.storageUpload).toHaveBeenCalledTimes(1)
         expect(h.storageRemove).not.toHaveBeenCalled()

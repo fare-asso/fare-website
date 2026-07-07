@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import updateUserInfo from "@/actions/users/updateUserInfo"
+import { updateUserInfoAction } from "@/actions/users/updateUserInfo"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
@@ -102,7 +102,9 @@ export function UserInfoForm({ user }: { user: User }) {
     }
 
     const submitData = async (data: SchemaType) => {
-        const res = await updateUserInfo(user.id, data)
+        const res = await updateUserInfoAction({
+            data: { userId: user.id, info: data }
+        })
         if (res.success) {
             form.reset(data)
             setInitialInfo(data)

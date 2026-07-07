@@ -25,9 +25,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import downloadTutorApplicationsZipAction from "../downloadTutorApplicationsZipAction"
+import { downloadTutorApplicationsZipAction } from "../downloadTutorApplicationsZipAction"
 
 const blob = (): Blob => new Blob([new Uint8Array([1, 2, 3])])
 
@@ -43,23 +43,25 @@ beforeEach(() => {
 describe("downloadTutorApplicationsZipAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await downloadTutorApplicationsZipAction([1])).toEqual({
-            success: false,
-            error: "Authentification requise"
-        })
+        expect(await downloadTutorApplicationsZipAction({ data: [1] })).toEqual(
+            {
+                success: false,
+                error: "Authentification requise"
+            }
+        )
         expect(h.findMany).not.toHaveBeenCalled()
     })
 
     it("requires the access:btp permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await downloadTutorApplicationsZipAction([1])
+        const res = await downloadTutorApplicationsZipAction({ data: [1] })
         expect(res.success).toBe(false)
         expect(res.success === false && res.error).toMatch(/permission/)
         expect(h.findMany).not.toHaveBeenCalled()
     })
 
     it("rejects an empty selection", async () => {
-        const res = await downloadTutorApplicationsZipAction([])
+        const res = await downloadTutorApplicationsZipAction({ data: [] })
         expect(res.success).toBe(false)
         expect(res.success === false && res.error).toMatch(/invalide/i)
         expect(h.findMany).not.toHaveBeenCalled()
@@ -67,38 +69,42 @@ describe("downloadTutorApplicationsZipAction", () => {
 
     it("rejects a selection over the cap", async () => {
         const ids = Array.from({ length: 76 }, (_, i) => i + 1)
-        const res = await downloadTutorApplicationsZipAction(ids)
+        const res = await downloadTutorApplicationsZipAction({ data: ids })
         expect(res.success).toBe(false)
         expect(h.findMany).not.toHaveBeenCalled()
     })
 
     it("rejects non-integer ids", async () => {
-        const res = await downloadTutorApplicationsZipAction([1.5])
+        const res = await downloadTutorApplicationsZipAction({ data: [1.5] })
         expect(res.success).toBe(false)
         expect(h.findMany).not.toHaveBeenCalled()
     })
 
     it("captures and errors when fetching applications fails", async () => {
         h.findMany.mockRejectedValue(new Error("db down"))
-        expect(await downloadTutorApplicationsZipAction([1])).toEqual({
-            success: false,
-            error: "Erreur lors de la création du fichier zip"
-        })
+        expect(await downloadTutorApplicationsZipAction({ data: [1] })).toEqual(
+            {
+                success: false,
+                error: "Erreur lors de la création du fichier zip"
+            }
+        )
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.download).not.toHaveBeenCalled()
     })
 
     it("errors when no application matches the selection", async () => {
         h.findMany.mockResolvedValue([])
-        expect(await downloadTutorApplicationsZipAction([1])).toEqual({
-            success: false,
-            error: "Aucune candidature ne correspond à la sélection"
-        })
+        expect(await downloadTutorApplicationsZipAction({ data: [1] })).toEqual(
+            {
+                success: false,
+                error: "Aucune candidature ne correspond à la sélection"
+            }
+        )
         expect(h.download).not.toHaveBeenCalled()
     })
 
     it("zips both files per candidate with a CSV manifest", async () => {
-        const res = await downloadTutorApplicationsZipAction([1])
+        const res = await downloadTutorApplicationsZipAction({ data: [1] })
         expect(res.success).toBe(true)
         if (!res.success) return
         expect(res.missing).toBe(0)
@@ -126,7 +132,7 @@ describe("downloadTutorApplicationsZipAction", () => {
                 ? { data: null, error: { message: "gone" } }
                 : { data: blob(), error: null }
         )
-        const res = await downloadTutorApplicationsZipAction([1])
+        const res = await downloadTutorApplicationsZipAction({ data: [1] })
         expect(res.success).toBe(true)
         if (!res.success) return
         expect(res.missing).toBe(1)
@@ -146,7 +152,7 @@ describe("downloadTutorApplicationsZipAction", () => {
                 lastName: '=HYPERLINK("http://evil")'
             })
         ])
-        const res = await downloadTutorApplicationsZipAction([1])
+        const res = await downloadTutorApplicationsZipAction({ data: [1] })
         expect(res.success).toBe(true)
         if (!res.success) return
 

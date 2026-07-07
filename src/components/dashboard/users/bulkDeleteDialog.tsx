@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 
-import bulkDeleteUsers from "@/actions/users/bulkDeleteUsers"
+import { bulkDeleteUsersAction } from "@/actions/users/bulkDeleteUsers"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
@@ -34,7 +34,7 @@ export function BulkDeleteDialog({
     const handleDelete = () => {
         setError(null)
         startTransition(async () => {
-            const result = await bulkDeleteUsers(userIds)
+            const result = await bulkDeleteUsersAction({ data: { userIds } })
             if (result.success) {
                 await router.invalidate()
                 onOpenChange(false)

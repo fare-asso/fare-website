@@ -11,7 +11,7 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock("@/actions/partenaires/editPartenaireAction", () => ({
-    default: h.action
+    editPartenaireAction: h.action
 }))
 vi.mock("@tanstack/react-router", () => ({
     useRouter: () => ({ invalidate: vi.fn() })
@@ -74,13 +74,11 @@ describe("<EditPartenaireButton />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
-        expect(submitted).toMatchObject({
-            id: 1,
-            name: "ACME 2",
-            description: "Description initiale."
-        })
-        expect(submitted.logo).toBeUndefined()
+        const { data } = h.action.mock.calls[0][0] as { data: FormData }
+        expect(data.get("id")).toBe("1")
+        expect(data.get("name")).toBe("ACME 2")
+        expect(data.get("description")).toBe("Description initiale.")
+        expect(data.get("logo")).toBeNull()
     })
 
     it("submits the payload with a logo when one is picked", async () => {
@@ -91,8 +89,8 @@ describe("<EditPartenaireButton />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
-        expect(submitted.logo).toBeInstanceOf(File)
+        const { data } = h.action.mock.calls[0][0] as { data: FormData }
+        expect(data.get("logo")).toBeInstanceOf(File)
     })
 
     it("blocks an empty name submit and does not call the action", async () => {

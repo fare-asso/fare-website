@@ -7,19 +7,21 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock("@/actions/links/updateLinkCategoryOrderAction", () => ({
-    default: h.updateCategoryOrder
+    updateLinkCategoryOrderAction: h.updateCategoryOrder
 }))
 vi.mock("@/actions/links/updateLinkOrderAction", () => ({
-    default: h.noop
+    updateLinkOrderAction: h.noop
 }))
-vi.mock("@/actions/links/addLinkAction", () => ({ default: h.noop }))
-vi.mock("@/actions/links/editLinkAction", () => ({ default: h.noop }))
-vi.mock("@/actions/links/deleteLinkAction", () => ({ default: h.noop }))
+vi.mock("@/actions/links/addLinkAction", () => ({ addLinkAction: h.noop }))
+vi.mock("@/actions/links/editLinkAction", () => ({ editLinkAction: h.noop }))
+vi.mock("@/actions/links/deleteLinkAction", () => ({
+    deleteLinkAction: h.noop
+}))
 vi.mock("@/actions/links/editLinkCategoryAction", () => ({
-    default: h.noop
+    editLinkCategoryAction: h.noop
 }))
 vi.mock("@/actions/links/deleteLinkCategoryAction", () => ({
-    default: h.noop
+    deleteLinkCategoryAction: h.noop
 }))
 
 vi.mock("@tanstack/react-router", () => ({
@@ -84,10 +86,12 @@ describe("<LinksManager />", () => {
         await vi.waitFor(() =>
             expect(headings(screen)).toEqual(["Documents", "Réseaux sociaux"])
         )
-        expect(h.updateCategoryOrder).toHaveBeenCalledWith([
-            { id: 2, order: 0 },
-            { id: 1, order: 1 }
-        ])
+        expect(h.updateCategoryOrder).toHaveBeenCalledWith({
+            data: [
+                { id: 2, order: 0 },
+                { id: 1, order: 1 }
+            ]
+        })
         resolveAction({ success: true })
     })
 

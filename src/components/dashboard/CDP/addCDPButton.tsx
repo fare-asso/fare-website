@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import { useCallback, useState, useTransition } from "react"
 
-import createCDPAction from "@/actions/CDP/createCDPAction"
+import { createCDPAction } from "@/actions/CDP/createCDPAction"
 import { uploadFile } from "@/actions/storage/uploadFileAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -62,14 +62,17 @@ export default function AddNewCDPButton() {
             return
         }
 
-        const uploadResponse = await uploadFile(
-            "communique-de-presse",
-            undefined,
-            file,
-            formData.get("name") as string,
-            maxUploadSizeInMb,
-            ["pdf"]
-        )
+        const uploadFormData = new FormData()
+        uploadFormData.set("bucket", "communique-de-presse")
+        uploadFormData.set("file", file)
+        const name = formData.get("name")
+        if (typeof name === "string" && name) {
+            uploadFormData.set("name", name)
+        }
+        uploadFormData.set("maxSizeInMb", String(maxUploadSizeInMb))
+        uploadFormData.set("acceptedExtensions", JSON.stringify(["pdf"]))
+
+        const uploadResponse = await uploadFile({ data: uploadFormData })
 
         if (uploadResponse.error) {
             setIsLoading(false)
@@ -86,7 +89,7 @@ export default function AddNewCDPButton() {
         formData.set("CDPfilePath", uploadResponse.path)
 
         startTransition(async () => {
-            const result = await createCDPAction(formData)
+            const result = await createCDPAction({ data: formData })
             if (result?.success) {
                 await router.invalidate()
                 handleOpenChange(false)

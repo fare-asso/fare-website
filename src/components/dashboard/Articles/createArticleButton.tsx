@@ -3,7 +3,7 @@ import type { JSONContent } from "@tiptap/react"
 import { useCallback, useState, useTransition } from "react"
 import { v4 as uuidv4 } from "uuid"
 
-import createArticleAction from "@/actions/articles/createArticleAction"
+import { createArticleAction } from "@/actions/articles/createArticleAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -92,7 +92,7 @@ export default function CreateArticleButton() {
         formData.append("content", JSON.stringify(updatedContent))
 
         startTransition(async () => {
-            const result = await createArticleAction(formData)
+            const result = await createArticleAction({ data: formData })
             if (result?.success) {
                 await router.invalidate()
                 handleOpenChange(false)

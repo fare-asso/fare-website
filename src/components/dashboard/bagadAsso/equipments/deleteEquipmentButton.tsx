@@ -2,7 +2,7 @@ import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
 import { useEffect, useState, useTransition } from "react"
 
-import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction"
+import { deleteEquipmentAction } from "@/actions/bagadAsso/deleteEquipmentAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -42,7 +42,9 @@ export default function DeleteEquipmentButton({
         event.preventDefault()
 
         startTransition(async () => {
-            const result = await deleteEquipmentAction(equipmentId)
+            const result = await deleteEquipmentAction({
+                data: { equipmentId }
+            })
             if (result?.success) {
                 await router.invalidate()
             }

@@ -11,9 +11,9 @@ const h = vi.hoisted(() => ({
 
 vi.mock("@/helpers/db.server", () => dbModule({ elu: { update: h.updateElu } }))
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import restoreEluAction from "../restoreEluAction"
+import { restoreEluAction } from "../restoreEluAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:elu"]))
@@ -23,7 +23,7 @@ beforeEach(() => {
 describe("restoreEluAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await restoreEluAction(1)).toEqual({
+        expect(await restoreEluAction({ data: 1 })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -32,7 +32,7 @@ describe("restoreEluAction", () => {
 
     it("requires the delete:elu permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await restoreEluAction(1)
+        const res = await restoreEluAction({ data: 1 })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.updateElu).not.toHaveBeenCalled()
@@ -40,13 +40,13 @@ describe("restoreEluAction", () => {
 
     it("captures and fails when the restore throws", async () => {
         h.updateElu.mockRejectedValue(new Error("update failed"))
-        const res = await restoreEluAction(1)
+        const res = await restoreEluAction({ data: 1 })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("restores the elu and revalidates on the happy path", async () => {
-        const res = await restoreEluAction(7)
+        const res = await restoreEluAction({ data: 7 })
         expect(res).toEqual({ success: true })
         expect(h.updateElu).toHaveBeenCalledWith({
             where: { id: 7 },

@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import {
+    assistanceFormToFormData,
+    type TAssistanceForm
+} from "@/schemas/assistance"
 import { validAssistanceForm } from "@/test/factories/assistance"
 import { imageFile, pdfFile } from "@/test/factories/files"
 import {
@@ -27,9 +31,12 @@ vi.mock("@/components/captcha/verify.server", () =>
     captchaModule(h.verifyCaptcha)
 )
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
 import { processAssistance } from "../processAssistance"
+
+const submit = (form: TAssistanceForm = validAssistanceForm()) =>
+    processAssistance({ data: assistanceFormToFormData(form) })
 
 beforeEach(() => {
     stdenv.isDevelopment = false
@@ -43,9 +50,7 @@ beforeEach(() => {
 
 describe("processAssistance — validation & captcha", () => {
     it("rejects an invalid payload before any side effect", async () => {
-        const res = await processAssistance(
-            validAssistanceForm({ email: "nope" })
-        )
+        const res = await submit(validAssistanceForm({ email: "nope" }))
         expect(res.success).toBe(false)
         expect(h.sendEmail).not.toHaveBeenCalled()
         expect(h.getAssistanceConfig).not.toHaveBeenCalled()
@@ -54,14 +59,14 @@ describe("processAssistance — validation & captcha", () => {
 
     it("skips captcha verification in development", async () => {
         stdenv.isDevelopment = true
-        const res = await processAssistance(validAssistanceForm())
+        const res = await submit()
         expect(h.verifyCaptcha).not.toHaveBeenCalled()
         expect(res.success).toBe(true)
     })
 
     it("fails when the captcha is invalid in non-dev", async () => {
         h.verifyCaptcha.mockResolvedValue(false)
-        const res = await processAssistance(validAssistanceForm())
+        const res = await submit()
         expect(res).toEqual({
             success: false,
             error: "La vérification du captcha a échoué. Veuillez réessayer."
@@ -73,7 +78,7 @@ describe("processAssistance — validation & captcha", () => {
 
 describe("processAssistance — attachments", () => {
     it("rejects more than 3 files (schema-enforced)", async () => {
-        const res = await processAssistance(
+        const res = await submit(
             validAssistanceForm({
                 pieces: [pdfFile(), pdfFile(), pdfFile(), pdfFile()]
             })
@@ -89,9 +94,7 @@ describe("processAssistance — attachments", () => {
         const big = new File([new Uint8Array(2 * 1024 * 1024 + 1)], "big.pdf", {
             type: "application/pdf"
         })
-        const res = await processAssistance(
-            validAssistanceForm({ pieces: [big] })
-        )
+        const res = await submit(validAssistanceForm({ pieces: [big] }))
         expect(res).toEqual({
             success: false,
             error: "Chaque fichier doit faire moins de 2 Mo."
@@ -100,7 +103,7 @@ describe("processAssistance — attachments", () => {
     })
 
     it("attaches provided files to the internal email", async () => {
-        await processAssistance(
+        await submit(
             validAssistanceForm({
                 pieces: [imageFile("photo.png"), pdfFile("preuve.pdf")]
             })
@@ -116,7 +119,7 @@ describe("processAssistance — attachments", () => {
 
 describe("processAssistance — happy path & emails", () => {
     it("sends the internal email to the configured recipient and acks the student", async () => {
-        const res = await processAssistance(validAssistanceForm())
+        const res = await submit()
 
         expect(res).toEqual({ success: true })
         expect(h.sendEmail).toHaveBeenCalledTimes(2)
@@ -134,14 +137,14 @@ describe("processAssistance — happy path & emails", () => {
         h.sendEmail
             .mockResolvedValueOnce({ success: true })
             .mockResolvedValueOnce({ success: false })
-        const res = await processAssistance(validAssistanceForm())
+        const res = await submit()
         expect(res).toEqual({ success: true })
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
     it("fails when the internal email fails (handled inside sendEmail)", async () => {
         h.sendEmail.mockResolvedValueOnce({ success: false })
-        const res = await processAssistance(validAssistanceForm())
+        const res = await submit()
         expect(res).toEqual({
             success: false,
             error: "Échec de l'envoi de votre demande. Veuillez réessayer plus tard."
@@ -151,7 +154,7 @@ describe("processAssistance — happy path & emails", () => {
 
     it("captures and fails when loading the config throws", async () => {
         h.getAssistanceConfig.mockRejectedValue(new Error("db down"))
-        const res = await processAssistance(validAssistanceForm())
+        const res = await submit()
         expect(res).toEqual({
             success: false,
             error: "Échec de l'envoi de votre demande. Veuillez réessayer plus tard."

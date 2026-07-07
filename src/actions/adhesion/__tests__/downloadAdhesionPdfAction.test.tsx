@@ -18,9 +18,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/adhesion/generatePdf.server", () => ({
     generateAdhesionPdfFromRecord: h.genPdf
 }))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import downloadAdhesionPdfAction from "../downloadAdhesionPdfAction"
+import { downloadAdhesionPdfAction } from "../downloadAdhesionPdfAction"
 
 const bytes = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d])
 
@@ -33,7 +33,7 @@ beforeEach(() => {
 describe("downloadAdhesionPdfAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await downloadAdhesionPdfAction(1)).toEqual({
+        expect(await downloadAdhesionPdfAction({ data: 1 })).toEqual({
             error: "Authentification requise"
         })
         expect(h.findUnique).not.toHaveBeenCalled()
@@ -42,7 +42,7 @@ describe("downloadAdhesionPdfAction", () => {
 
     it("requires the access:adhesions permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await downloadAdhesionPdfAction(1)
+        const res = await downloadAdhesionPdfAction({ data: 1 })
         expect(res.error).toMatch(/permission/)
         expect(h.findUnique).not.toHaveBeenCalled()
         expect(h.captureActionError).not.toHaveBeenCalled()
@@ -50,14 +50,14 @@ describe("downloadAdhesionPdfAction", () => {
 
     it("errors when the adhesion does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
-        expect(await downloadAdhesionPdfAction(1)).toEqual({
+        expect(await downloadAdhesionPdfAction({ data: 1 })).toEqual({
             error: "Demande d'adhésion introuvable"
         })
         expect(h.genPdf).not.toHaveBeenCalled()
     })
 
     it("returns the base64 PDF and a sigle-based filename", async () => {
-        const res = await downloadAdhesionPdfAction(1)
+        const res = await downloadAdhesionPdfAction({ data: 1 })
         expect(res).toEqual({
             success: true,
             pdfData: Buffer.from(bytes).toString("base64"),
@@ -69,13 +69,13 @@ describe("downloadAdhesionPdfAction", () => {
         h.findUnique.mockResolvedValue(
             validAdhesionRecord({ sigle: "", id: 42 })
         )
-        const res = await downloadAdhesionPdfAction(42)
+        const res = await downloadAdhesionPdfAction({ data: 42 })
         expect(res.filename).toBe("formulaire-adhesion-adhesion-42.pdf")
     })
 
     it("captures and returns an error when PDF generation throws", async () => {
         h.genPdf.mockRejectedValue(new Error("boom"))
-        expect(await downloadAdhesionPdfAction(1)).toEqual({
+        expect(await downloadAdhesionPdfAction({ data: 1 })).toEqual({
             error: "Erreur lors de la génération du PDF"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -83,7 +83,7 @@ describe("downloadAdhesionPdfAction", () => {
 
     it("captures and returns an error when the db lookup throws", async () => {
         h.findUnique.mockRejectedValue(new Error("db down"))
-        expect(await downloadAdhesionPdfAction(1)).toEqual({
+        expect(await downloadAdhesionPdfAction({ data: 1 })).toEqual({
             error: "Erreur lors de la génération du PDF"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

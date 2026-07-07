@@ -3,7 +3,7 @@ import { Trash2Icon } from "lucide-react"
 import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
-import deletePartenaireAction from "@/actions/partenaires/deletePartenaireAction"
+import { deletePartenaireAction } from "@/actions/partenaires/deletePartenaireAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -56,7 +56,9 @@ export default function DeletePartenaireButton({
         setIsLoading(true)
 
         startTransition(async () => {
-            const result = await deletePartenaireAction(partenaire.id)
+            const result = await deletePartenaireAction({
+                data: partenaire.id
+            })
             if (result?.success) {
                 await router.invalidate()
             }

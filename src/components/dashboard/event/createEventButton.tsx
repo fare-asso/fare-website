@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import { startTransition, useCallback, useEffect, useState } from "react"
 
-import createEventAction from "@/actions/events/createEventAction"
+import { createEventAction } from "@/actions/events/createEventAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -59,7 +59,7 @@ export default function CreateEventButton() {
         setIsLoading(true)
 
         startTransition(async () => {
-            const result = await createEventAction(formData)
+            const result = await createEventAction({ data: formData })
             if (result?.success) {
                 await router.invalidate()
             }

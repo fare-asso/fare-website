@@ -10,9 +10,9 @@ const h = vi.hoisted(() => ({
 vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorQuestion: { update: h.update } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import archiveTutorQuestion from "../archiveTutorQuestion"
+import { archiveTutorQuestionAction } from "../archiveTutorQuestion"
 
 beforeEach(() => {
     h.update.mockResolvedValue({ id: 1 })
@@ -20,7 +20,7 @@ beforeEach(() => {
 
 describe("archiveTutorQuestion", () => {
     it("archives the question and revalidates", async () => {
-        const res = await archiveTutorQuestion(2)
+        const res = await archiveTutorQuestionAction({ data: { id: 2 } })
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 2 },
@@ -30,7 +30,7 @@ describe("archiveTutorQuestion", () => {
 
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await archiveTutorQuestion(2)).toEqual({
+        expect(await archiveTutorQuestionAction({ data: { id: 2 } })).toEqual({
             error: "Echec de l'archivage de la question"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

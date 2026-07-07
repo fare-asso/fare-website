@@ -13,9 +13,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorApplication: { updateMany: h.updateMany } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import bulkArchiveTutorApplicationsAction from "../bulkArchiveTutorApplicationsAction"
+import { bulkArchiveTutorApplicationsAction } from "../bulkArchiveTutorApplicationsAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["access:btp"]))
@@ -26,8 +26,7 @@ describe("bulkArchiveTutorApplicationsAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         const res = await bulkArchiveTutorApplicationsAction({
-            ids: [1],
-            archive: true
+            data: { ids: [1], archive: true }
         })
         expect(res).toEqual({
             success: false,
@@ -39,8 +38,7 @@ describe("bulkArchiveTutorApplicationsAction", () => {
     it("requires the access:btp permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await bulkArchiveTutorApplicationsAction({
-            ids: [1],
-            archive: true
+            data: { ids: [1], archive: true }
         })
         expect(res.success).toBe(false)
         expect(res.success === false && res.error).toMatch(/permission/)
@@ -49,8 +47,7 @@ describe("bulkArchiveTutorApplicationsAction", () => {
 
     it("rejects an empty selection", async () => {
         const res = await bulkArchiveTutorApplicationsAction({
-            ids: [],
-            archive: true
+            data: { ids: [], archive: true }
         })
         expect(res.success).toBe(false)
         expect(h.updateMany).not.toHaveBeenCalled()
@@ -59,8 +56,7 @@ describe("bulkArchiveTutorApplicationsAction", () => {
     it("captures and errors when the update fails", async () => {
         h.updateMany.mockRejectedValue(new Error("db down"))
         const res = await bulkArchiveTutorApplicationsAction({
-            ids: [1, 2],
-            archive: true
+            data: { ids: [1, 2], archive: true }
         })
         expect(res.success).toBe(false)
         expect(res.success === false && res.error).toMatch(/archivage/i)
@@ -69,8 +65,7 @@ describe("bulkArchiveTutorApplicationsAction", () => {
 
     it("archives the selected applications and revalidates", async () => {
         const res = await bulkArchiveTutorApplicationsAction({
-            ids: [1, 2],
-            archive: true
+            data: { ids: [1, 2], archive: true }
         })
         expect(res).toEqual({ success: true, value: { count: 2 } })
         const call = h.updateMany.mock.calls[0][0]
@@ -79,7 +74,9 @@ describe("bulkArchiveTutorApplicationsAction", () => {
     })
 
     it("unarchives by setting archived to null", async () => {
-        await bulkArchiveTutorApplicationsAction({ ids: [1], archive: false })
+        await bulkArchiveTutorApplicationsAction({
+            data: { ids: [1], archive: false }
+        })
         expect(h.updateMany.mock.calls[0][0].data).toEqual({ archived: null })
     })
 })

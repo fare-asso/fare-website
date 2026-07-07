@@ -19,9 +19,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import editLinkAction from "../editLinkAction"
+import { editLinkAction } from "../editLinkAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:lien"]))
@@ -31,14 +31,14 @@ beforeEach(() => {
 
 describe("editLinkAction", () => {
     itIsGatedBy({
-        action: () => editLinkAction(validEditLink()),
+        action: () => editLinkAction({ data: validEditLink() }),
         permission: "edit:lien",
         getUser: h.getUser,
         writes: [h.updateLink]
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await editLinkAction(validEditLink({ label: "" }))
+        const res = await editLinkAction({ data: validEditLink({ label: "" }) })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -48,7 +48,7 @@ describe("editLinkAction", () => {
 
     it("returns an error when the category is not found", async () => {
         h.findCategory.mockResolvedValue(null)
-        const res = await editLinkAction(validEditLink())
+        const res = await editLinkAction({ data: validEditLink() })
         expect(res).toEqual({
             success: false,
             error: "Catégorie introuvable."
@@ -58,7 +58,7 @@ describe("editLinkAction", () => {
 
     it("captures and fails when the category lookup throws", async () => {
         h.findCategory.mockRejectedValue(new Error("db down"))
-        const res = await editLinkAction(validEditLink())
+        const res = await editLinkAction({ data: validEditLink() })
         expect(res).toEqual({
             success: false,
             error: "Échec de la modification du lien."
@@ -69,7 +69,7 @@ describe("editLinkAction", () => {
 
     it("captures and fails when the update throws", async () => {
         h.updateLink.mockRejectedValue(new Error("db down"))
-        const res = await editLinkAction(validEditLink())
+        const res = await editLinkAction({ data: validEditLink() })
         expect(res).toEqual({
             success: false,
             error: "Échec de la modification du lien."
@@ -78,14 +78,14 @@ describe("editLinkAction", () => {
     })
 
     it("updates the link and revalidates on the happy path", async () => {
-        const res = await editLinkAction(
-            validEditLink({
+        const res = await editLinkAction({
+            data: validEditLink({
                 id: 7,
                 categoryId: 3,
                 label: "Discord",
                 url: "https://discord.gg/fare"
             })
-        )
+        })
         expect(res).toEqual({ success: true })
         expect(h.findCategory).toHaveBeenCalledWith({
             where: { id: 3 },

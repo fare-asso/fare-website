@@ -4,8 +4,9 @@ import { fr } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
 import { memo, Suspense, useCallback, useState, useTransition } from "react"
 
-import submitBagadAssoFormAction, {
-    type FormState
+import {
+    type FormState,
+    submitBagadAssoFormAction
 } from "@/actions/bagadAsso/submitBagadAssoFormAction"
 import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
@@ -132,7 +133,9 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
             }
 
             startTransition(async () => {
-                setFormState(await submitBagadAssoFormAction(submitData))
+                setFormState(
+                    await submitBagadAssoFormAction({ data: submitData })
+                )
             })
         }
     })

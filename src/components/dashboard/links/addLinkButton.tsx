@@ -4,7 +4,7 @@ import { FileTextIcon, Loader2Icon, PlusIcon } from "lucide-react"
 import type { Dispatch, SetStateAction } from "react"
 import { useState, useTransition } from "react"
 
-import addLinkAction from "@/actions/links/addLinkAction"
+import { addLinkAction } from "@/actions/links/addLinkAction"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -115,7 +115,7 @@ function AddLink({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addLinkAction(value)
+                const res = await addLinkAction({ data: value })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)
@@ -212,7 +212,7 @@ function AddFile({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addLinkAction(value)
+                const res = await addLinkAction({ data: value })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

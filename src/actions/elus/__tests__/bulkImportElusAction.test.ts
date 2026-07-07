@@ -19,9 +19,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import bulkImportElusAction from "../bulkImportElusAction"
+import { bulkImportElusAction } from "../bulkImportElusAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:elu"]))
@@ -33,7 +33,9 @@ beforeEach(() => {
 describe("bulkImportElusAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await bulkImportElusAction(validBulkImportElu())).toEqual({
+        expect(
+            await bulkImportElusAction({ data: validBulkImportElu() })
+        ).toEqual({
             success: false,
             error: "Authentication requise"
         })
@@ -42,14 +44,16 @@ describe("bulkImportElusAction", () => {
 
     it("requires the create:elu permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await bulkImportElusAction(validBulkImportElu())
+        const res = await bulkImportElusAction({ data: validBulkImportElu() })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.createMany).not.toHaveBeenCalled()
     })
 
     it("rejects an empty elus list", async () => {
-        const res = await bulkImportElusAction(validBulkImportElu({ elus: [] }))
+        const res = await bulkImportElusAction({
+            data: validBulkImportElu({ elus: [] })
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides"
@@ -59,14 +63,14 @@ describe("bulkImportElusAction", () => {
 
     it("returns an error when the conseil is not found", async () => {
         h.findConseil.mockResolvedValue(null)
-        const res = await bulkImportElusAction(validBulkImportElu())
+        const res = await bulkImportElusAction({ data: validBulkImportElu() })
         expect(res).toEqual({ success: false, error: "Conseil non trouvé" })
         expect(h.createMany).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the conseil lookup throws", async () => {
         h.findConseil.mockRejectedValue(new Error("db down"))
-        const res = await bulkImportElusAction(validBulkImportElu())
+        const res = await bulkImportElusAction({ data: validBulkImportElu() })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.createMany).not.toHaveBeenCalled()
@@ -74,7 +78,7 @@ describe("bulkImportElusAction", () => {
 
     it("captures and fails when the max-order lookup throws", async () => {
         h.aggregate.mockRejectedValue(new Error("db down"))
-        const res = await bulkImportElusAction(validBulkImportElu())
+        const res = await bulkImportElusAction({ data: validBulkImportElu() })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.createMany).not.toHaveBeenCalled()
@@ -82,13 +86,13 @@ describe("bulkImportElusAction", () => {
 
     it("captures and fails when the createMany throws", async () => {
         h.createMany.mockRejectedValue(new Error("db down"))
-        const res = await bulkImportElusAction(validBulkImportElu())
+        const res = await bulkImportElusAction({ data: validBulkImportElu() })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("appends rows after the current max order", async () => {
-        const res = await bulkImportElusAction(validBulkImportElu())
+        const res = await bulkImportElusAction({ data: validBulkImportElu() })
         expect(res).toEqual({ success: true, value: { count: 2 } })
         expect(h.createMany).toHaveBeenCalledWith({
             data: [
@@ -112,7 +116,7 @@ describe("bulkImportElusAction", () => {
 
     it("starts ordering at 0 when the conseil has no elus", async () => {
         h.aggregate.mockResolvedValue({ _max: { order: null } })
-        await bulkImportElusAction(validBulkImportElu())
+        await bulkImportElusAction({ data: validBulkImportElu() })
         expect(h.createMany).toHaveBeenCalledWith({
             data: [
                 expect.objectContaining({ order: 0 }),

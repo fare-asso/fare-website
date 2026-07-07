@@ -18,9 +18,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import editConseilAction from "../editConseilAction"
+import { editConseilAction } from "../editConseilAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:instance"]))
@@ -31,7 +31,7 @@ beforeEach(() => {
 describe("editConseilAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await editConseilAction(validEditConseil())).toEqual({
+        expect(await editConseilAction({ data: validEditConseil() })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -40,14 +40,16 @@ describe("editConseilAction", () => {
 
     it("is gated on the edit:instance permission (reused for conseils)", async () => {
         h.getUser.mockResolvedValue(mockUser(["edit:elu"]))
-        const res = await editConseilAction(validEditConseil())
+        const res = await editConseilAction({ data: validEditConseil() })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.updateConseil).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await editConseilAction(validEditConseil({ name: "" }))
+        const res = await editConseilAction({
+            data: validEditConseil({ name: "" })
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -57,20 +59,20 @@ describe("editConseilAction", () => {
 
     it("returns an error when the instance is not found", async () => {
         h.findInstance.mockResolvedValue(null)
-        const res = await editConseilAction(validEditConseil())
+        const res = await editConseilAction({ data: validEditConseil() })
         expect(res).toEqual({ success: false, error: "Instance introuvable." })
         expect(h.updateConseil).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the update throws", async () => {
         h.updateConseil.mockRejectedValue(new Error("db down"))
-        const res = await editConseilAction(validEditConseil())
+        const res = await editConseilAction({ data: validEditConseil() })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("updates the conseil and revalidates on the happy path", async () => {
-        const res = await editConseilAction(validEditConseil())
+        const res = await editConseilAction({ data: validEditConseil() })
         expect(res).toEqual({ success: true })
         expect(h.updateConseil).toHaveBeenCalledWith({
             where: { id: 1 },

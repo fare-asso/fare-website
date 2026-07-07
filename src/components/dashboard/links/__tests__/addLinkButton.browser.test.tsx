@@ -3,7 +3,7 @@ import { render } from "vitest-browser-react"
 
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
-vi.mock("@/actions/links/addLinkAction", () => ({ default: h.action }))
+vi.mock("@/actions/links/addLinkAction", () => ({ addLinkAction: h.action }))
 vi.mock("@tanstack/react-router", () => ({
     useRouter: () => ({ invalidate: vi.fn() })
 }))
@@ -90,9 +90,11 @@ describe("<AddLinkButton />", () => {
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
         expect(h.action).toHaveBeenCalledWith({
-            categoryId: 3,
-            label: "Notre Instagram",
-            url: "https://instagram.com/fare_hautebretagne"
+            data: {
+                categoryId: 3,
+                label: "Notre Instagram",
+                url: "https://instagram.com/fare_hautebretagne"
+            }
         })
     })
 

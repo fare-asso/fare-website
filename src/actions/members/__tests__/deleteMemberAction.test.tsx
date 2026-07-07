@@ -24,9 +24,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteMemberAction from "../deleteMemberAction"
+import { deleteMemberAction } from "../deleteMemberAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:member"]))
@@ -37,7 +37,7 @@ beforeEach(() => {
 describe("deleteMemberAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteMemberAction({ id: 1 })).toEqual({
+        expect(await deleteMemberAction({ data: { id: 1 } })).toEqual({
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -45,14 +45,14 @@ describe("deleteMemberAction", () => {
 
     it("requires the delete:member permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await deleteMemberAction({ id: 1 })
+        const res = await deleteMemberAction({ data: { id: 1 } })
         expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
-        expect(await deleteMemberAction({ id: 1 })).toEqual({
+        expect(await deleteMemberAction({ data: { id: 1 } })).toEqual({
             error: "Echec de la suppression du membre"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -60,13 +60,13 @@ describe("deleteMemberAction", () => {
 
     it("returns an error when the storage removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "storage boom" } })
-        expect(await deleteMemberAction({ id: 1 })).toEqual({
+        expect(await deleteMemberAction({ data: { id: 1 } })).toEqual({
             error: "storage boom"
         })
     })
 
     it("deletes the member, removes the picture and revalidates", async () => {
-        const res = await deleteMemberAction({ id: 9 })
+        const res = await deleteMemberAction({ data: { id: 9 } })
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 9 } })
         expect(h.remove).toHaveBeenCalledWith(["members/lea.png"])

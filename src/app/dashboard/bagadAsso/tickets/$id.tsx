@@ -38,7 +38,7 @@ import prisma from "@/helpers/db.server"
 import { locationDisplayName, parseLocation } from "@/helpers/location"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import { captureActionError } from "@/lib/sentry"
+import { captureActionError } from "@/lib/sentry.server"
 import { dashboardTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 

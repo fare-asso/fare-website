@@ -1,8 +1,9 @@
 import { useForm } from "@tanstack/react-form"
 import { memo, useCallback, useState, useTransition } from "react"
 
-import submitContactFormAction, {
-    type FormState
+import {
+    type FormState,
+    submitContactFormAction
 } from "@/actions/contact/submitContactFormAction"
 import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
@@ -76,7 +77,9 @@ export default function ContactForm() {
             }
 
             startTransition(async () => {
-                const result = await submitContactFormAction(submitData)
+                const result = await submitContactFormAction({
+                    data: submitData
+                })
                 setFormState(result)
             })
         }

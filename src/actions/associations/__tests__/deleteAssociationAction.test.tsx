@@ -31,9 +31,9 @@ vi.mock("@/helpers/supabase.server", () =>
         auth: { admin: { deleteUser: h.deleteUser } }
     })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteAssociationAction from "../deleteAssociationAction"
+import { deleteAssociationAction } from "../deleteAssociationAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:association"]))
@@ -46,7 +46,7 @@ beforeEach(() => {
 describe("deleteAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteAssociationAction(1)).toEqual({
+        expect(await deleteAssociationAction({ data: 1 })).toEqual({
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -54,14 +54,14 @@ describe("deleteAssociationAction", () => {
 
     it("requires the delete:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await deleteAssociationAction(1)
+        const res = await deleteAssociationAction({ data: 1 })
         expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("errors when the association does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
-        expect(await deleteAssociationAction(1)).toEqual({
+        expect(await deleteAssociationAction({ data: 1 })).toEqual({
             error: "Echec de la suppression de l'association"
         })
     })
@@ -71,7 +71,7 @@ describe("deleteAssociationAction", () => {
             validAssociationRecord({ representativeId: "rep-1" })
         )
         h.deleteUser.mockRejectedValue(new Error("auth down"))
-        expect(await deleteAssociationAction(1)).toEqual({
+        expect(await deleteAssociationAction({ data: 1 })).toEqual({
             error: "Echec de la suppression du compte représentant"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -79,7 +79,7 @@ describe("deleteAssociationAction", () => {
 
     it("errors when the logo removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "storage boom" } })
-        expect(await deleteAssociationAction(1)).toEqual({
+        expect(await deleteAssociationAction({ data: 1 })).toEqual({
             error: "Echec de la suppression des images dans la base de données"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -87,14 +87,14 @@ describe("deleteAssociationAction", () => {
 
     it("captures and fails when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
-        expect(await deleteAssociationAction(1)).toEqual({
+        expect(await deleteAssociationAction({ data: 1 })).toEqual({
             error: "Echec de la suppression de l'association"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("deletes the association and revalidates on the happy path", async () => {
-        const res = await deleteAssociationAction(8)
+        const res = await deleteAssociationAction({ data: 8 })
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 8 } })
     })

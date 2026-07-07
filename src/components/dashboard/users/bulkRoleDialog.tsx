@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 
-import bulkUpdateRole from "@/actions/users/bulkUpdateRole"
+import { bulkUpdateRoleAction } from "@/actions/users/bulkUpdateRole"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Button } from "@/components/ui/button"
 import {
@@ -49,7 +49,9 @@ export function BulkRoleDialog({
         if (!selectedRole) return
         setError(null)
         startTransition(async () => {
-            const result = await bulkUpdateRole(userIds, selectedRole)
+            const result = await bulkUpdateRoleAction({
+                data: { userIds, newRole: selectedRole }
+            })
             if (result.success) {
                 await router.invalidate()
                 onOpenChange(false)

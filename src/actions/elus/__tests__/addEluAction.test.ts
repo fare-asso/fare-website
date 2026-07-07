@@ -18,9 +18,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import addEluAction from "../addEluAction"
+import { addEluAction } from "../addEluAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:elu"]))
@@ -31,7 +31,7 @@ beforeEach(() => {
 describe("addEluAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await addEluAction(validAddElu())).toEqual({
+        expect(await addEluAction({ data: validAddElu() })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -40,14 +40,14 @@ describe("addEluAction", () => {
 
     it("requires the create:elu permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await addEluAction(validAddElu())
+        const res = await addEluAction({ data: validAddElu() })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.createElu).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await addEluAction(validAddElu({ name: "" }))
+        const res = await addEluAction({ data: validAddElu({ name: "" }) })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -57,14 +57,14 @@ describe("addEluAction", () => {
 
     it("returns an error when the conseil is not found", async () => {
         h.findConseil.mockResolvedValue(null)
-        const res = await addEluAction(validAddElu())
+        const res = await addEluAction({ data: validAddElu() })
         expect(res).toEqual({ success: false, error: "Conseil introuvable." })
         expect(h.createElu).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the conseil lookup throws", async () => {
         h.findConseil.mockRejectedValue(new Error("db down"))
-        const res = await addEluAction(validAddElu())
+        const res = await addEluAction({ data: validAddElu() })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.createElu).not.toHaveBeenCalled()
@@ -72,13 +72,15 @@ describe("addEluAction", () => {
 
     it("captures and fails when the insert throws", async () => {
         h.createElu.mockRejectedValue(new Error("insert failed"))
-        const res = await addEluAction(validAddElu())
+        const res = await addEluAction({ data: validAddElu() })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("creates the elu and revalidates on the happy path", async () => {
-        const res = await addEluAction(validAddElu({ description: "Membre" }))
+        const res = await addEluAction({
+            data: validAddElu({ description: "Membre" })
+        })
         expect(res).toEqual({ success: true })
         expect(h.createElu).toHaveBeenCalledWith({
             data: {
@@ -91,7 +93,7 @@ describe("addEluAction", () => {
     })
 
     it("defaults description to null when omitted", async () => {
-        await addEluAction(validAddElu())
+        await addEluAction({ data: validAddElu() })
         expect(h.createElu).toHaveBeenCalledWith({
             data: expect.objectContaining({ description: null })
         })

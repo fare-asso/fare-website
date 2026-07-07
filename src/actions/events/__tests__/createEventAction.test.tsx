@@ -33,9 +33,9 @@ vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
 vi.mock("@/helpers/user/id.server", () => ({ default: h.getUserId }))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import createEventAction from "../createEventAction"
+import { createEventAction } from "../createEventAction"
 
 const p2025 = (): Error => {
     const e = new Error("not found") as Error & { code: string }
@@ -55,35 +55,39 @@ beforeEach(() => {
 describe("createEventAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await createEventAction(validEventFormData())).toEqual({
-            error: "Authentification requise"
-        })
+        expect(await createEventAction({ data: validEventFormData() })).toEqual(
+            {
+                error: "Authentification requise"
+            }
+        )
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("requires the create:event permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await createEventAction(validEventFormData())
+        const res = await createEventAction({ data: validEventFormData() })
         expect(res.error).toMatch(/permission/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects a too-short name", async () => {
-        const res = await createEventAction(validEventFormData({ name: "ab" }))
+        const res = await createEventAction({
+            data: validEventFormData({ name: "ab" })
+        })
         expect(res.error).toMatch(/nom/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects an unknown category", async () => {
         h.findCategory.mockRejectedValue(p2025())
-        const res = await createEventAction(validEventFormData())
+        const res = await createEventAction({ data: validEventFormData() })
         expect(res.error).toMatch(/catégorie/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("returns an error when the picture upload fails", async () => {
         h.upload.mockResolvedValue({ data: null, error: { message: "boom" } })
-        const res = await createEventAction(validEventFormData())
+        const res = await createEventAction({ data: validEventFormData() })
         expect(res).toEqual({
             error: "L'upload de l'image à échoué, veuillez réessayer"
         })
@@ -92,7 +96,7 @@ describe("createEventAction", () => {
 
     it("errors when the current user cannot be resolved", async () => {
         h.getUserId.mockResolvedValue({ error: "no user" })
-        const res = await createEventAction(validEventFormData())
+        const res = await createEventAction({ data: validEventFormData() })
         expect(res).toEqual({
             error: "Echec de la récupération de l'utilisateur"
         })
@@ -100,7 +104,7 @@ describe("createEventAction", () => {
 
     it("captures, cleans up and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await createEventAction(validEventFormData())
+        const res = await createEventAction({ data: validEventFormData() })
         expect(res).toEqual({
             error: "La création de l'évènement à échoué, veuillez réessayer"
         })
@@ -109,7 +113,7 @@ describe("createEventAction", () => {
     })
 
     it("creates the event and revalidates on the happy path", async () => {
-        const res = await createEventAction(validEventFormData())
+        const res = await createEventAction({ data: validEventFormData() })
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({

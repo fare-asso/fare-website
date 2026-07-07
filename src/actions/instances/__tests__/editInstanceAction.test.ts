@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { instanceFormData, type TEditInstance } from "@/schemas/instance"
 import { imageFile, validEditInstance } from "@/test/factories/instances"
 import { mockUser } from "@/test/factories/user"
 import {
@@ -30,9 +31,15 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import editInstanceAction from "../editInstanceAction"
+import { editInstanceAction } from "../editInstanceAction"
+
+const payload = (
+    overrides: Partial<TEditInstance> = {}
+): { data: FormData } => ({
+    data: instanceFormData(validEditInstance(overrides))
+})
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:instance"]))
@@ -45,7 +52,7 @@ beforeEach(() => {
 describe("editInstanceAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await editInstanceAction(validEditInstance())).toEqual({
+        expect(await editInstanceAction(payload())).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -54,16 +61,14 @@ describe("editInstanceAction", () => {
 
     it("requires the edit:instance permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await editInstanceAction(validEditInstance())
+        const res = await editInstanceAction(payload())
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.updateInstance).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await editInstanceAction(
-            validEditInstance({ contactEmail: "nope" })
-        )
+        const res = await editInstanceAction(payload({ contactEmail: "nope" }))
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -73,21 +78,21 @@ describe("editInstanceAction", () => {
 
     it("returns an error when the instance is not found", async () => {
         h.findInstance.mockResolvedValue(null)
-        const res = await editInstanceAction(validEditInstance())
+        const res = await editInstanceAction(payload())
         expect(res).toEqual({ success: false, error: "Instance introuvable." })
         expect(h.updateInstance).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the lookup throws", async () => {
         h.findInstance.mockRejectedValue(new Error("db down"))
-        const res = await editInstanceAction(validEditInstance())
+        const res = await editInstanceAction(payload())
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.updateInstance).not.toHaveBeenCalled()
     })
 
     it("keeps the existing logos when no new ones are uploaded", async () => {
-        const res = await editInstanceAction(validEditInstance())
+        const res = await editInstanceAction(payload())
         expect(res).toEqual({ success: true })
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.remove).not.toHaveBeenCalled()
@@ -103,9 +108,7 @@ describe("editInstanceAction", () => {
     })
 
     it("removes the old logos only after a successful update", async () => {
-        const res = await editInstanceAction(
-            validEditInstance({ logos: [imageFile()] })
-        )
+        const res = await editInstanceAction(payload({ logos: [imageFile()] }))
         expect(res).toEqual({ success: true })
         expect(h.updateInstance).toHaveBeenCalledWith({
             where: { id: 1 },
@@ -120,9 +123,7 @@ describe("editInstanceAction", () => {
 
     it("preserves the old logos and cleans up new ones when the update fails", async () => {
         h.updateInstance.mockRejectedValue(new Error("update failed"))
-        const res = await editInstanceAction(
-            validEditInstance({ logos: [imageFile()] })
-        )
+        const res = await editInstanceAction(payload({ logos: [imageFile()] }))
         expect(res).toEqual({
             success: false,
             error: "Échec de la modification de l'instance."
@@ -135,7 +136,7 @@ describe("editInstanceAction", () => {
 
     it("does not remove anything when the update fails without new logos", async () => {
         h.updateInstance.mockRejectedValue(new Error("update failed"))
-        const res = await editInstanceAction(validEditInstance())
+        const res = await editInstanceAction(payload())
         expect(res.success).toBe(false)
         expect(h.remove).not.toHaveBeenCalled()
     })
@@ -145,7 +146,7 @@ describe("editInstanceAction", () => {
             .mockResolvedValueOnce({ data: { path: "a.png" }, error: null })
             .mockResolvedValueOnce({ data: null, error: { message: "boom" } })
         const res = await editInstanceAction(
-            validEditInstance({
+            payload({
                 logos: [imageFile("a.png"), imageFile("b.png")]
             })
         )

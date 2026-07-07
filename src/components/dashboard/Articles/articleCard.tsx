@@ -5,8 +5,8 @@ import { useState, useTransition } from "react"
 import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
 import { toast } from "sonner"
 
-import deleteArticleAction from "@/actions/articles/deleteArticleAction"
-import switchVisibilityAction from "@/actions/articles/switchVisibilityAction"
+import { deleteArticleAction } from "@/actions/articles/deleteArticleAction"
+import { switchVisibilityAction } from "@/actions/articles/switchVisibilityAction"
 import Link from "@/components/link"
 import { Button } from "@/components/ui/button"
 import type { Article } from "@/generated/prisma/client"
@@ -37,7 +37,7 @@ export default function ArticleCard({
         event.stopPropagation()
 
         startTransition(async () => {
-            const result = await deleteArticleAction(article.id)
+            const result = await deleteArticleAction({ data: article.id })
             if (result?.success) {
                 await router.invalidate()
                 toast.success(`L'article ${article.title} a bien été supprimé`)
@@ -49,7 +49,7 @@ export default function ArticleCard({
 
     async function HandleVisibility() {
         setIsSwitchingVisibility(true)
-        await switchVisibilityAction(article.id)
+        await switchVisibilityAction({ data: article.id })
         await router.invalidate()
         setIsSwitchingVisibility(false)
     }

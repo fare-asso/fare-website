@@ -17,7 +17,7 @@ import { useRouter } from "@tanstack/react-router"
 import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
-import updateLinkOrderAction from "@/actions/links/updateLinkOrderAction"
+import { updateLinkOrderAction } from "@/actions/links/updateLinkOrderAction"
 import SortableLinkCard from "@/components/dashboard/links/sortableLinkCard"
 import type { LinkItem, PresseType } from "@/generated/prisma/client"
 
@@ -77,7 +77,7 @@ export default function SortableLinkList({
                     order: index
                 }))
 
-                const result = await updateLinkOrderAction(linkOrder)
+                const result = await updateLinkOrderAction({ data: linkOrder })
 
                 if (result.success) {
                     await router.invalidate()

@@ -2,7 +2,7 @@ import { useRouter } from "@tanstack/react-router"
 import { MailPlusIcon } from "lucide-react"
 import { useCallback, useState, useTransition } from "react"
 
-import inviteRepresentativeAction from "@/actions/associations/inviteRepresentativeAction"
+import { inviteRepresentativeAction } from "@/actions/associations/inviteRepresentativeAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -49,7 +49,9 @@ export default function SendInvitationLinkButton({
         const formData = new FormData(event.currentTarget)
 
         startTransition(async () => {
-            const result = await inviteRepresentativeAction(formData)
+            const result = await inviteRepresentativeAction({
+                data: formData
+            })
             if (result?.success) {
                 await router.invalidate()
                 handleOpenChange(false)

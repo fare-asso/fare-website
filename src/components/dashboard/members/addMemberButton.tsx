@@ -2,7 +2,7 @@ import { useForm } from "@tanstack/react-form"
 import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 
-import addMemberAction from "@/actions/members/addMemberAction"
+import { addMemberAction } from "@/actions/members/addMemberAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -45,7 +45,16 @@ export default function AddMemberButton() {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addMemberAction(value)
+                const fd = new FormData()
+                fd.set("firstName", value.firstName)
+                fd.set("lastName", value.lastName)
+                fd.set("position", value.position)
+                fd.set("email", value.email)
+                fd.set("facebook", value.facebook ?? "")
+                fd.set("instagram", value.instagram ?? "")
+                fd.set("twitter", value.twitter ?? "")
+                fd.set("picture", value.picture)
+                const res = await addMemberAction({ data: fd })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

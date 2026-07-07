@@ -2,7 +2,7 @@ import { useForm } from "@tanstack/react-form"
 import { Loader2Icon } from "lucide-react"
 import { memo, useCallback, useState, useTransition } from "react"
 
-import submitTutorApplication from "@/actions/bouge-ta-prison/submitTutorApplication"
+import { submitTutorApplicationAction } from "@/actions/bouge-ta-prison/submitTutorApplication"
 import { Captcha } from "@/components/captcha"
 import { Button } from "@/components/ui/button"
 import {
@@ -84,7 +84,9 @@ export default function TutorApplicationForm(): React.ReactNode {
                     formData.append(key, val)
                 }
 
-                const res = await submitTutorApplication(formData)
+                const res = await submitTutorApplicationAction({
+                    data: formData
+                })
                 if (res.success) {
                     setIsSubmitted(true)
                 } else {

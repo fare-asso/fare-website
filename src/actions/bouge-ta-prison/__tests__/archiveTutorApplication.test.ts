@@ -13,9 +13,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ bTPTutorApplication: { update: h.update } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import archiveTutorApplication from "../archiveTutorApplication"
+import { archiveTutorApplicationAction } from "../archiveTutorApplication"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["access:btp"]))
@@ -25,7 +25,9 @@ beforeEach(() => {
 describe("archiveTutorApplication", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await archiveTutorApplication(3)).toEqual({
+        expect(
+            await archiveTutorApplicationAction({ data: { id: 3 } })
+        ).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -34,14 +36,14 @@ describe("archiveTutorApplication", () => {
 
     it("requires the access:btp permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await archiveTutorApplication(3)
+        const res = await archiveTutorApplicationAction({ data: { id: 3 } })
         expect(res.success).toBe(false)
         expect(res.success === false && res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("archives the application and revalidates", async () => {
-        const res = await archiveTutorApplication(3)
+        const res = await archiveTutorApplicationAction({ data: { id: 3 } })
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 3 },
@@ -51,7 +53,9 @@ describe("archiveTutorApplication", () => {
 
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await archiveTutorApplication(3)).toEqual({
+        expect(
+            await archiveTutorApplicationAction({ data: { id: 3 } })
+        ).toEqual({
             success: false,
             error: "Echec de l'archivage de la candidature"
         })

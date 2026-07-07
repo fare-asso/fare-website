@@ -16,7 +16,7 @@ import {
 import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import { captureActionError } from "@/lib/sentry"
+import { captureActionError } from "@/lib/sentry.server"
 import { tryCatch } from "@/lib/utils"
 
 const getTicketsPageData = createServerFn().handler(async () => {

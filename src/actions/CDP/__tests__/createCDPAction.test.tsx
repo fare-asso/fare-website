@@ -24,9 +24,9 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import createCDPAction from "../createCDPAction"
+import { createCDPAction } from "../createCDPAction"
 
 const fd = (o: Record<string, string> = {}): FormData => {
     const f = new FormData()
@@ -51,7 +51,7 @@ beforeEach(() => {
 describe("createCDPAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await createCDPAction(fd())).toEqual({
+        expect(await createCDPAction({ data: fd() })).toEqual({
             error: "Authentification requise"
         })
         expect(h.create).not.toHaveBeenCalled()
@@ -59,19 +59,19 @@ describe("createCDPAction", () => {
 
     it("requires the create:cdp permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await createCDPAction(fd())
+        const res = await createCDPAction({ data: fd() })
         expect(res.error).toMatch(/permission/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects a payload missing required fields", async () => {
-        const res = await createCDPAction(fd({ name: "" }))
+        const res = await createCDPAction({ data: fd({ name: "" }) })
         expect(res).toEqual({ error: "Un ou plusieurs champs sont invalides" })
     })
 
     it("errors when the file info cannot be fetched", async () => {
         h.info.mockResolvedValue({ data: null, error: { message: "gone" } })
-        const res = await createCDPAction(fd())
+        const res = await createCDPAction({ data: fd() })
         expect(res.error).toMatch(/récupération du fichier/)
     })
 
@@ -80,13 +80,13 @@ describe("createCDPAction", () => {
             data: { size: 1024, contentType: "image/png" },
             error: null
         })
-        const res = await createCDPAction(fd())
+        const res = await createCDPAction({ data: fd() })
         expect(res).toEqual({ error: "Le fichier doit être de format PDF" })
     })
 
     it("captures, removes the file and fails when the insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await createCDPAction(fd())
+        const res = await createCDPAction({ data: fd() })
         expect(res).toEqual({
             error: "Echec de l'ajout du CDP dans la base de données"
         })
@@ -95,7 +95,7 @@ describe("createCDPAction", () => {
     })
 
     it("creates the CDP and revalidates on the happy path", async () => {
-        const res = await createCDPAction(fd())
+        const res = await createCDPAction({ data: fd() })
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({

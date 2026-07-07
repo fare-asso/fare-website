@@ -3,7 +3,7 @@ import { Trash2Icon } from "lucide-react"
 import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
-import deleteLinkCategoryAction from "@/actions/links/deleteLinkCategoryAction"
+import { deleteLinkCategoryAction } from "@/actions/links/deleteLinkCategoryAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -60,7 +60,9 @@ export default function DeleteLinkCategoryButton({
         setIsLoading(true)
 
         startTransition(async () => {
-            const result = await deleteLinkCategoryAction(category.id)
+            const result = await deleteLinkCategoryAction({
+                data: category.id
+            })
             if (result?.success) {
                 await router.invalidate()
             }

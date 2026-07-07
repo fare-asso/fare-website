@@ -18,7 +18,7 @@ import {
 
 import Link from "@/components/link"
 import prisma from "@/helpers/db.server"
-import { captureActionError } from "@/lib/sentry"
+import { captureActionError } from "@/lib/sentry.server"
 import { pageTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 

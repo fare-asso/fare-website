@@ -15,9 +15,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ linkCategory: { create: h.createCategory } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import addLinkCategoryAction from "../addLinkCategoryAction"
+import { addLinkCategoryAction } from "../addLinkCategoryAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:lien"]))
@@ -26,16 +26,16 @@ beforeEach(() => {
 
 describe("addLinkCategoryAction", () => {
     itIsGatedBy({
-        action: () => addLinkCategoryAction(validAddLinkCategory()),
+        action: () => addLinkCategoryAction({ data: validAddLinkCategory() }),
         permission: "create:lien",
         getUser: h.getUser,
         writes: [h.createCategory]
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await addLinkCategoryAction(
-            validAddLinkCategory({ name: "" })
-        )
+        const res = await addLinkCategoryAction({
+            data: validAddLinkCategory({ name: "" })
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -45,7 +45,9 @@ describe("addLinkCategoryAction", () => {
 
     it("captures and fails when the insert throws", async () => {
         h.createCategory.mockRejectedValue(new Error("db down"))
-        const res = await addLinkCategoryAction(validAddLinkCategory())
+        const res = await addLinkCategoryAction({
+            data: validAddLinkCategory()
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de la création de la catégorie."
@@ -54,9 +56,9 @@ describe("addLinkCategoryAction", () => {
     })
 
     it("creates the category and revalidates on the happy path", async () => {
-        const res = await addLinkCategoryAction(
-            validAddLinkCategory({ name: "Projets" })
-        )
+        const res = await addLinkCategoryAction({
+            data: validAddLinkCategory({ name: "Projets" })
+        })
         expect(res).toEqual({ success: true })
         expect(h.createCategory).toHaveBeenCalledWith({
             data: { name: "Projets" }

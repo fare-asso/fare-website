@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { instanceFormData, type TAddInstance } from "@/schemas/instance"
 import { imageFile, validAddInstance } from "@/test/factories/instances"
 import { mockUser } from "@/test/factories/user"
 import {
@@ -27,9 +28,15 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import addInstanceAction from "../addInstanceAction"
+import { addInstanceAction } from "../addInstanceAction"
+
+const payload = (
+    overrides: Partial<TAddInstance> = {}
+): { data: FormData } => ({
+    data: instanceFormData(validAddInstance(overrides))
+})
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:instance"]))
@@ -41,7 +48,7 @@ beforeEach(() => {
 describe("addInstanceAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await addInstanceAction(validAddInstance())).toEqual({
+        expect(await addInstanceAction(payload())).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -50,16 +57,14 @@ describe("addInstanceAction", () => {
 
     it("requires the create:instance permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await addInstanceAction(validAddInstance())
+        const res = await addInstanceAction(payload())
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.createInstance).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await addInstanceAction(
-            validAddInstance({ contactEmail: "nope" })
-        )
+        const res = await addInstanceAction(payload({ contactEmail: "nope" }))
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -68,7 +73,7 @@ describe("addInstanceAction", () => {
     })
 
     it("creates the instance without logos on the happy path", async () => {
-        const res = await addInstanceAction(validAddInstance())
+        const res = await addInstanceAction(payload())
         expect(res).toEqual({ success: true })
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.createInstance).toHaveBeenCalledWith({
@@ -83,9 +88,7 @@ describe("addInstanceAction", () => {
 
     it("uploads logos and stores their paths", async () => {
         h.upload.mockResolvedValue({ data: { path: "a.png" }, error: null })
-        const res = await addInstanceAction(
-            validAddInstance({ logos: [imageFile()] })
-        )
+        const res = await addInstanceAction(payload({ logos: [imageFile()] }))
         expect(res).toEqual({ success: true })
         expect(h.upload).toHaveBeenCalledOnce()
         expect(h.createInstance).toHaveBeenCalledWith({
@@ -98,7 +101,7 @@ describe("addInstanceAction", () => {
             .mockResolvedValueOnce({ data: { path: "a.png" }, error: null })
             .mockResolvedValueOnce({ data: null, error: { message: "boom" } })
         const res = await addInstanceAction(
-            validAddInstance({
+            payload({
                 logos: [imageFile("a.png"), imageFile("b.png")]
             })
         )
@@ -113,9 +116,7 @@ describe("addInstanceAction", () => {
     it("removes uploaded logos when the insert fails", async () => {
         h.upload.mockResolvedValue({ data: { path: "a.png" }, error: null })
         h.createInstance.mockRejectedValue(new Error("insert failed"))
-        const res = await addInstanceAction(
-            validAddInstance({ logos: [imageFile()] })
-        )
+        const res = await addInstanceAction(payload({ logos: [imageFile()] }))
         expect(res).toEqual({
             success: false,
             error: "Échec de la création de l'instance."
@@ -126,7 +127,7 @@ describe("addInstanceAction", () => {
 
     it("fails without cleanup when the insert fails and there are no logos", async () => {
         h.createInstance.mockRejectedValue(new Error("insert failed"))
-        const res = await addInstanceAction(validAddInstance())
+        const res = await addInstanceAction(payload())
         expect(res).toEqual({
             success: false,
             error: "Échec de la création de l'instance."

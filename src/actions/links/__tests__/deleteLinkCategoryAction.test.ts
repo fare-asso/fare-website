@@ -14,9 +14,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ linkCategory: { delete: h.deleteCategory } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteLinkCategoryAction from "../deleteLinkCategoryAction"
+import { deleteLinkCategoryAction } from "../deleteLinkCategoryAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:lien"]))
@@ -25,7 +25,7 @@ beforeEach(() => {
 
 describe("deleteLinkCategoryAction", () => {
     itIsGatedBy({
-        action: () => deleteLinkCategoryAction(1),
+        action: () => deleteLinkCategoryAction({ data: 1 }),
         permission: "delete:lien",
         getUser: h.getUser,
         writes: [h.deleteCategory]
@@ -33,7 +33,7 @@ describe("deleteLinkCategoryAction", () => {
 
     it("captures and fails when the delete throws", async () => {
         h.deleteCategory.mockRejectedValue(new Error("db down"))
-        const res = await deleteLinkCategoryAction(1)
+        const res = await deleteLinkCategoryAction({ data: 1 })
         expect(res).toEqual({
             success: false,
             error: "Echec de la suppression de la catégorie"
@@ -42,7 +42,7 @@ describe("deleteLinkCategoryAction", () => {
     })
 
     it("deletes the category and revalidates on the happy path", async () => {
-        const res = await deleteLinkCategoryAction(9)
+        const res = await deleteLinkCategoryAction({ data: 9 })
         expect(res).toEqual({ success: true })
         expect(h.deleteCategory).toHaveBeenCalledWith({ where: { id: 9 } })
     })

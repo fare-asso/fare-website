@@ -22,7 +22,7 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
 import { updateAssistanceConfig } from "../updateAssistanceConfig"
 
@@ -38,7 +38,7 @@ beforeEach(() => {
 describe("updateAssistanceConfig — authorisation", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        const res = await updateAssistanceConfig(valid)
+        const res = await updateAssistanceConfig({ data: valid })
         expect(res).toEqual({
             success: false,
             error: "Authentification requise"
@@ -49,7 +49,7 @@ describe("updateAssistanceConfig — authorisation", () => {
 
     it("requires the access:defense-droits permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await updateAssistanceConfig(valid)
+        const res = await updateAssistanceConfig({ data: valid })
         expect(res.success).toBe(false)
         expect(h.update).not.toHaveBeenCalled()
         expect(h.create).not.toHaveBeenCalled()
@@ -60,8 +60,7 @@ describe("updateAssistanceConfig — authorisation", () => {
 describe("updateAssistanceConfig — validation", () => {
     it("rejects an invalid recipient email", async () => {
         const res = await updateAssistanceConfig({
-            recipientEmail: "not-an-email",
-            delay: "24h"
+            data: { recipientEmail: "not-an-email", delay: "24h" }
         })
         expect(res.success).toBe(false)
         expect(h.update).not.toHaveBeenCalled()
@@ -69,8 +68,7 @@ describe("updateAssistanceConfig — validation", () => {
 
     it("rejects an empty delay", async () => {
         const res = await updateAssistanceConfig({
-            recipientEmail: "ok@fare-asso.fr",
-            delay: ""
+            data: { recipientEmail: "ok@fare-asso.fr", delay: "" }
         })
         expect(res.success).toBe(false)
     })
@@ -79,7 +77,7 @@ describe("updateAssistanceConfig — validation", () => {
 describe("updateAssistanceConfig — persistence", () => {
     it("updates the existing row", async () => {
         h.findFirst.mockResolvedValue(assistanceConfigRecord({ id: 7 }))
-        const res = await updateAssistanceConfig(valid)
+        const res = await updateAssistanceConfig({ data: valid })
 
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
@@ -91,7 +89,7 @@ describe("updateAssistanceConfig — persistence", () => {
 
     it("creates the row when none exists", async () => {
         h.findFirst.mockResolvedValue(null)
-        const res = await updateAssistanceConfig(valid)
+        const res = await updateAssistanceConfig({ data: valid })
 
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
@@ -103,7 +101,7 @@ describe("updateAssistanceConfig — persistence", () => {
     it("captures and fails when the write throws", async () => {
         h.findFirst.mockResolvedValue(assistanceConfigRecord({ id: 7 }))
         h.update.mockRejectedValue(new Error("db down"))
-        const res = await updateAssistanceConfig(valid)
+        const res = await updateAssistanceConfig({ data: valid })
 
         expect(res).toEqual({
             success: false,

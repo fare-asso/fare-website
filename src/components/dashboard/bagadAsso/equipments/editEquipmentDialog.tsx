@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { PencilIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import editEquipmentAction from "@/actions/bagadAsso/editEquipmentAction"
+import { editEquipmentAction } from "@/actions/bagadAsso/editEquipmentAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -53,7 +53,14 @@ export default function EditEquipmentDialog({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editEquipmentAction(value)
+                const formData = new FormData()
+                formData.set("id", String(value.id))
+                formData.set("name", value.name)
+                formData.set("quantity", String(value.quantity))
+                formData.set("deposit", String(value.deposit))
+                formData.set("removeImage", String(value.removeImage))
+                if (value.image) formData.set("image", value.image)
+                const res = await editEquipmentAction({ data: formData })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

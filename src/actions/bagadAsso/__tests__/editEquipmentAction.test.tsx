@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import type { TEditEquipment } from "@/schemas/bagadEquipment"
 import { validEditEquipmentInput } from "@/test/factories/bagadAsso"
 import { imageFile } from "@/test/factories/files"
 import { mockUser } from "@/test/factories/user"
@@ -31,9 +32,20 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import editEquipmentAction from "../editEquipmentAction"
+import { editEquipmentAction } from "../editEquipmentAction"
+
+const fd = (input: TEditEquipment): FormData => {
+    const f = new FormData()
+    f.set("id", String(input.id))
+    f.set("name", input.name)
+    f.set("quantity", String(input.quantity))
+    f.set("deposit", String(input.deposit))
+    f.set("removeImage", String(input.removeImage))
+    if (input.image) f.set("image", input.image)
+    return f
+}
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:bagad-equipment"]))
@@ -46,7 +58,9 @@ beforeEach(() => {
 describe("editEquipmentAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await editEquipmentAction(validEditEquipmentInput())).toEqual({
+        expect(
+            await editEquipmentAction({ data: fd(validEditEquipmentInput()) })
+        ).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -55,7 +69,9 @@ describe("editEquipmentAction", () => {
 
     it("requires the edit:bagad-equipment permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await editEquipmentAction(validEditEquipmentInput())
+        const res = await editEquipmentAction({
+            data: fd(validEditEquipmentInput())
+        })
         expect(res).toEqual({
             success: false,
             error: expect.stringMatching(/permission/)
@@ -64,9 +80,9 @@ describe("editEquipmentAction", () => {
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await editEquipmentAction(
-            validEditEquipmentInput({ name: "" })
-        )
+        const res = await editEquipmentAction({
+            data: fd(validEditEquipmentInput({ name: "" }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -76,7 +92,9 @@ describe("editEquipmentAction", () => {
 
     it("errors when the equipment does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
-        expect(await editEquipmentAction(validEditEquipmentInput())).toEqual({
+        expect(
+            await editEquipmentAction({ data: fd(validEditEquipmentInput()) })
+        ).toEqual({
             success: false,
             error: "Équipement non trouvé."
         })
@@ -85,7 +103,9 @@ describe("editEquipmentAction", () => {
 
     it("captures and fails when the db update throws, keeping the old image", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        const res = await editEquipmentAction(validEditEquipmentInput())
+        const res = await editEquipmentAction({
+            data: fd(validEditEquipmentInput())
+        })
         expect(res).toEqual({
             success: false,
             error: "Echec de la modification de l'équipement. Veuillez réessayer."
@@ -97,9 +117,9 @@ describe("editEquipmentAction", () => {
 
     it("rolls back the new upload when the db update throws on replace", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        const res = await editEquipmentAction(
-            validEditEquipmentInput({ image: imageFile("tent.png") })
-        )
+        const res = await editEquipmentAction({
+            data: fd(validEditEquipmentInput({ image: imageFile("tent.png") }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Echec de la modification de l'équipement. Veuillez réessayer."
@@ -110,7 +130,9 @@ describe("editEquipmentAction", () => {
     })
 
     it("keeps the current image when none is provided", async () => {
-        const res = await editEquipmentAction(validEditEquipmentInput())
+        const res = await editEquipmentAction({
+            data: fd(validEditEquipmentInput())
+        })
         expect(res).toEqual({ success: true })
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.remove).not.toHaveBeenCalled()
@@ -126,9 +148,9 @@ describe("editEquipmentAction", () => {
     })
 
     it("uploads a new image and removes the old one on replace", async () => {
-        const res = await editEquipmentAction(
-            validEditEquipmentInput({ image: imageFile("tent.png") })
-        )
+        const res = await editEquipmentAction({
+            data: fd(validEditEquipmentInput({ image: imageFile("tent.png") }))
+        })
         expect(res).toEqual({ success: true })
         expect(h.upload).toHaveBeenCalledOnce()
         expect(h.remove).toHaveBeenCalledWith(["old.png"])
@@ -139,9 +161,9 @@ describe("editEquipmentAction", () => {
     })
 
     it("removes the current image when removeImage is set", async () => {
-        const res = await editEquipmentAction(
-            validEditEquipmentInput({ removeImage: true })
-        )
+        const res = await editEquipmentAction({
+            data: fd(validEditEquipmentInput({ removeImage: true }))
+        })
         expect(res).toEqual({ success: true })
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.remove).toHaveBeenCalledWith(["old.png"])

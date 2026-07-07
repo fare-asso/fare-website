@@ -29,9 +29,25 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import editMemberAction from "../editMemberAction"
+import type { TEditMember } from "@/schemas/members"
+
+import { editMemberAction } from "../editMemberAction"
+
+const fd = (input: TEditMember): FormData => {
+    const f = new FormData()
+    f.set("id", String(input.id))
+    f.set("firstName", input.firstName)
+    f.set("lastName", input.lastName)
+    f.set("position", input.position)
+    f.set("email", input.email)
+    f.set("facebook", input.facebook ?? "")
+    f.set("instagram", input.instagram ?? "")
+    f.set("twitter", input.twitter ?? "")
+    if (input.picture) f.set("picture", input.picture)
+    return f
+}
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:member"]))
@@ -46,7 +62,7 @@ beforeEach(() => {
 describe("editMemberAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        const res = await editMemberAction(validEditMember())
+        const res = await editMemberAction({ data: fd(validEditMember()) })
         expect(res).toEqual({
             success: false,
             error: "Authentification requise"
@@ -56,14 +72,16 @@ describe("editMemberAction", () => {
 
     it("requires the edit:member permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await editMemberAction(validEditMember())
+        const res = await editMemberAction({ data: fd(validEditMember()) })
         expect(res.success).toBe(false)
         if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid id", async () => {
-        const res = await editMemberAction(validEditMember({ id: 0 }))
+        const res = await editMemberAction({
+            data: fd(validEditMember({ id: 0 }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -72,7 +90,9 @@ describe("editMemberAction", () => {
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await editMemberAction(validEditMember({ email: "nope" }))
+        const res = await editMemberAction({
+            data: fd(validEditMember({ email: "nope" }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -81,9 +101,9 @@ describe("editMemberAction", () => {
     })
 
     it("rejects a non-image picture", async () => {
-        const res = await editMemberAction(
-            validEditMember({ picture: pdfFile("x.pdf") })
-        )
+        const res = await editMemberAction({
+            data: fd(validEditMember({ picture: pdfFile("x.pdf") }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -93,7 +113,7 @@ describe("editMemberAction", () => {
 
     it("returns an error when the member does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
-        const res = await editMemberAction(validEditMember())
+        const res = await editMemberAction({ data: fd(validEditMember()) })
         expect(res).toEqual({
             success: false,
             error: "Membre introuvable."
@@ -102,7 +122,7 @@ describe("editMemberAction", () => {
     })
 
     it("skips the storage upload when no picture is provided", async () => {
-        const res = await editMemberAction(validEditMember())
+        const res = await editMemberAction({ data: fd(validEditMember()) })
         expect(res).toEqual({ success: true })
         expect(h.storageUpload).not.toHaveBeenCalled()
         expect(h.storageRemove).not.toHaveBeenCalled()
@@ -118,9 +138,9 @@ describe("editMemberAction", () => {
 
     it("captures and fails when the storage upload throws", async () => {
         h.storageUpload.mockRejectedValue(new Error("storage down"))
-        const res = await editMemberAction(
-            validEditMember({ picture: imageFile("new.png") })
-        )
+        const res = await editMemberAction({
+            data: fd(validEditMember({ picture: imageFile("new.png") }))
+        })
         expect(res).toEqual({
             success: false,
             error: "Échec de l'upload de la photo."
@@ -132,7 +152,7 @@ describe("editMemberAction", () => {
 
     it("captures and fails when the db update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        const res = await editMemberAction(validEditMember())
+        const res = await editMemberAction({ data: fd(validEditMember()) })
         expect(res).toEqual({
             success: false,
             error: "Échec de la modification du membre."
@@ -142,9 +162,9 @@ describe("editMemberAction", () => {
 
     it("uploads a new picture, removes the old one and updates on the happy path", async () => {
         const picture = imageFile("new.png")
-        const res = await editMemberAction(
-            validEditMember({ id: 7, firstName: "Lou", picture })
-        )
+        const res = await editMemberAction({
+            data: fd(validEditMember({ id: 7, firstName: "Lou", picture }))
+        })
         expect(res).toEqual({ success: true })
         expect(h.storageUpload).toHaveBeenCalledTimes(1)
         const [path, file, opts] = h.storageUpload.mock.calls[0]
@@ -163,9 +183,9 @@ describe("editMemberAction", () => {
 
     it("skips the remove when the previous picturePath is empty", async () => {
         h.findUnique.mockResolvedValue({ picturePath: "" })
-        const res = await editMemberAction(
-            validEditMember({ picture: imageFile("new.png") })
-        )
+        const res = await editMemberAction({
+            data: fd(validEditMember({ picture: imageFile("new.png") }))
+        })
         expect(res).toEqual({ success: true })
         expect(h.storageUpload).toHaveBeenCalledTimes(1)
         expect(h.storageRemove).not.toHaveBeenCalled()

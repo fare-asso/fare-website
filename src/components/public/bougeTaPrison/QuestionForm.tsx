@@ -2,7 +2,7 @@ import { useForm } from "@tanstack/react-form"
 import { Loader2Icon } from "lucide-react"
 import { memo, useCallback, useState, useTransition } from "react"
 
-import submitTutorQuestion from "@/actions/bouge-ta-prison/submitTutorQuestion"
+import { submitTutorQuestionAction } from "@/actions/bouge-ta-prison/submitTutorQuestion"
 import { Captcha } from "@/components/captcha"
 import { Button } from "@/components/ui/button"
 import {
@@ -72,7 +72,7 @@ export default function QuestionForm(): React.ReactNode {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submitForm(async () => {
-                const res = await submitTutorQuestion(value)
+                const res = await submitTutorQuestionAction({ data: value })
                 if (res.success) {
                     setIsSubmitted(true)
                 } else {

@@ -13,9 +13,9 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ bagadAssoTicket: { update: h.update } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteBagadAssoTicketAction from "../deleteTicketAction"
+import { deleteBagadAssoTicketAction } from "../deleteTicketAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:bagad-ticket"]))
@@ -25,7 +25,9 @@ beforeEach(() => {
 describe("deleteBagadAssoTicketAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteBagadAssoTicketAction(1)).toEqual({
+        expect(
+            await deleteBagadAssoTicketAction({ data: { ticketId: 1 } })
+        ).toEqual({
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -33,13 +35,17 @@ describe("deleteBagadAssoTicketAction", () => {
 
     it("requires the delete:bagad-ticket permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await deleteBagadAssoTicketAction(1)
+        const res = await deleteBagadAssoTicketAction({
+            data: { ticketId: 1 }
+        })
         expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("soft-deletes the ticket and revalidates", async () => {
-        const res = await deleteBagadAssoTicketAction(5)
+        const res = await deleteBagadAssoTicketAction({
+            data: { ticketId: 5 }
+        })
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 5 },
@@ -49,7 +55,9 @@ describe("deleteBagadAssoTicketAction", () => {
 
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await deleteBagadAssoTicketAction(5)).toEqual({
+        expect(
+            await deleteBagadAssoTicketAction({ data: { ticketId: 5 } })
+        ).toEqual({
             error: "Echec de la suppression du ticket"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

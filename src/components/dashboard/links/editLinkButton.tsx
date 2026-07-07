@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editLinkAction from "@/actions/links/editLinkAction"
+import { editLinkAction } from "@/actions/links/editLinkAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -37,7 +37,7 @@ export default function EditLinkButton({ link }: { link: LinkItem }) {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editLinkAction(value)
+                const res = await editLinkAction({ data: value })
                 if (res.success) {
                     await router.invalidate()
                     setOpen(false)

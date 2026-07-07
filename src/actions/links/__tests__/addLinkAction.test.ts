@@ -19,9 +19,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import addLinkAction from "../addLinkAction"
+import { addLinkAction } from "../addLinkAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:lien"]))
@@ -31,14 +31,16 @@ beforeEach(() => {
 
 describe("addLinkAction", () => {
     itIsGatedBy({
-        action: () => addLinkAction(validAddLink()),
+        action: () => addLinkAction({ data: validAddLink() }),
         permission: "create:lien",
         getUser: h.getUser,
         writes: [h.createLink]
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await addLinkAction(validAddLink({ url: "/relatif" }))
+        const res = await addLinkAction({
+            data: validAddLink({ url: "/relatif" })
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -48,7 +50,7 @@ describe("addLinkAction", () => {
 
     it("returns an error when the category is not found", async () => {
         h.findCategory.mockResolvedValue(null)
-        const res = await addLinkAction(validAddLink())
+        const res = await addLinkAction({ data: validAddLink() })
         expect(res).toEqual({
             success: false,
             error: "Catégorie introuvable."
@@ -58,7 +60,7 @@ describe("addLinkAction", () => {
 
     it("captures and fails when the category lookup throws", async () => {
         h.findCategory.mockRejectedValue(new Error("db down"))
-        const res = await addLinkAction(validAddLink())
+        const res = await addLinkAction({ data: validAddLink() })
         expect(res).toEqual({
             success: false,
             error: "Échec de la création du lien."
@@ -69,7 +71,7 @@ describe("addLinkAction", () => {
 
     it("captures and fails when the insert throws", async () => {
         h.createLink.mockRejectedValue(new Error("db down"))
-        const res = await addLinkAction(validAddLink())
+        const res = await addLinkAction({ data: validAddLink() })
         expect(res).toEqual({
             success: false,
             error: "Échec de la création du lien."
@@ -78,13 +80,13 @@ describe("addLinkAction", () => {
     })
 
     it("creates the link and revalidates on the happy path", async () => {
-        const res = await addLinkAction(
-            validAddLink({
+        const res = await addLinkAction({
+            data: validAddLink({
                 categoryId: 3,
                 label: "Discord",
                 url: "https://discord.gg/fare"
             })
-        )
+        })
         expect(res).toEqual({ success: true })
         expect(h.findCategory).toHaveBeenCalledWith({
             where: { id: 3 },

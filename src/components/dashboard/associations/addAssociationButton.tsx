@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import { useCallback, useState, useTransition } from "react"
 
-import addAssociationAction from "@/actions/associations/addAssociationAction"
+import { addAssociationAction } from "@/actions/associations/addAssociationAction"
 import {
     Accordion,
     AccordionContent,
@@ -47,7 +47,7 @@ export default function AddAssociationButton() {
         const formData = new FormData(event.currentTarget)
 
         startTransition(async () => {
-            const result = await addAssociationAction(formData)
+            const result = await addAssociationAction({ data: formData })
             if (result?.success) {
                 await router.invalidate()
                 handleOpenChange(false)

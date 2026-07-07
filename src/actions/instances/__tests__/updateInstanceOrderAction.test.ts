@@ -17,9 +17,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import updateInstanceOrderAction from "../updateInstanceOrderAction"
+import { updateInstanceOrderAction } from "../updateInstanceOrderAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:instance"]))
@@ -34,7 +34,7 @@ const order = [
 describe("updateInstanceOrderAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await updateInstanceOrderAction(order)).toEqual({
+        expect(await updateInstanceOrderAction({ data: order })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -43,7 +43,7 @@ describe("updateInstanceOrderAction", () => {
 
     it("requires the edit:instance permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await updateInstanceOrderAction(order)
+        const res = await updateInstanceOrderAction({ data: order })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.transaction).not.toHaveBeenCalled()
@@ -51,13 +51,13 @@ describe("updateInstanceOrderAction", () => {
 
     it("captures and fails when the transaction throws", async () => {
         h.transaction.mockRejectedValue(new Error("tx failed"))
-        const res = await updateInstanceOrderAction(order)
+        const res = await updateInstanceOrderAction({ data: order })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("updates every order in a transaction on the happy path", async () => {
-        const res = await updateInstanceOrderAction(order)
+        const res = await updateInstanceOrderAction({ data: order })
         expect(res).toEqual({ success: true })
         expect(h.updateInstance).toHaveBeenCalledWith({
             where: { id: 1 },

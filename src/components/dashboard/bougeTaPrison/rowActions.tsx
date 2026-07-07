@@ -3,8 +3,8 @@ import { ArchiveIcon, ArchiveRestoreIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-import archiveTutorApplication from "@/actions/bouge-ta-prison/archiveTutorApplication"
-import unarchiveTutorApplication from "@/actions/bouge-ta-prison/unarchiveTutorApplication"
+import { archiveTutorApplicationAction } from "@/actions/bouge-ta-prison/archiveTutorApplication"
+import { unarchiveTutorApplicationAction } from "@/actions/bouge-ta-prison/unarchiveTutorApplication"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
@@ -36,7 +36,9 @@ export default function RowActions({
 
     const onArchive = async () => {
         setIsLoading(true)
-        const response = await archiveTutorApplication(application.id)
+        const response = await archiveTutorApplicationAction({
+            data: { id: application.id }
+        })
         if (response.success) {
             await router.invalidate()
             toast.success("La candidature a été archivée.")
@@ -48,7 +50,9 @@ export default function RowActions({
 
     const onUnarchive = async () => {
         setIsLoading(true)
-        const response = await unarchiveTutorApplication(application.id)
+        const response = await unarchiveTutorApplicationAction({
+            data: { id: application.id }
+        })
         if (response.success) {
             await router.invalidate()
             toast.success("La candidature a été désarchivée.")

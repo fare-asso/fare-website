@@ -6,7 +6,7 @@ import type { Permission } from "@/generated/prisma/client"
 const h = vi.hoisted(() => ({ action: vi.fn(), invalidate: vi.fn() }))
 
 vi.mock("@/actions/users/updateUserPermissions", () => ({
-    default: h.action
+    updateUserPermissionsAction: h.action
 }))
 
 vi.mock("@tanstack/react-router", () => ({
@@ -64,7 +64,9 @@ describe("<UserPermissionsForm />", () => {
         await screen.getByRole("button", { name: /Créer article/ }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        expect(h.action).toHaveBeenCalledWith("user-1", [1])
+        expect(h.action).toHaveBeenCalledWith({
+            data: { userId: "user-1", permissions: [1] }
+        })
     })
 
     it("selects every permission in a category at once", async () => {
@@ -78,7 +80,7 @@ describe("<UserPermissionsForm />", () => {
         await screen.getByRole("button", { name: "Tout selectionner" }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const [, ids] = h.action.mock.calls[0]
-        expect([...ids].sort()).toEqual([1, 2])
+        const [{ data }] = h.action.mock.calls[0]
+        expect([...data.permissions].sort()).toEqual([1, 2])
     })
 })

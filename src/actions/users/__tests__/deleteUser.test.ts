@@ -11,9 +11,9 @@ const h = vi.hoisted(() => ({
 
 vi.mock("@/helpers/db.server", () => dbModule({ user: { update: h.update } }))
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import deleteUser from "../deleteUser"
+import { deleteUserAction } from "../deleteUser"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:user"], "ADMIN"))
@@ -23,7 +23,7 @@ beforeEach(() => {
 describe("deleteUser", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteUser("u2")).toEqual({
+        expect(await deleteUserAction({ data: { userId: "u2" } })).toEqual({
             success: false,
             error: "Non authentifié"
         })
@@ -31,7 +31,7 @@ describe("deleteUser", () => {
 
     it("requires the ADMIN role", async () => {
         h.getUser.mockResolvedValue(mockUser(["delete:user"], "MEMBER"))
-        expect(await deleteUser("u2")).toEqual({
+        expect(await deleteUserAction({ data: { userId: "u2" } })).toEqual({
             success: false,
             error: "Accès réservé aux administrateurs"
         })
@@ -39,21 +39,21 @@ describe("deleteUser", () => {
 
     it("requires the delete:user permission", async () => {
         h.getUser.mockResolvedValue(mockUser([], "ADMIN"))
-        expect(await deleteUser("u2")).toEqual({
+        expect(await deleteUserAction({ data: { userId: "u2" } })).toEqual({
             success: false,
             error: "Permission insuffisante"
         })
     })
 
     it("prevents self-deletion", async () => {
-        const res = await deleteUser("user-1")
+        const res = await deleteUserAction({ data: { userId: "user-1" } })
         expect(res.success).toBe(false)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await deleteUser("u2")).toEqual({
+        expect(await deleteUserAction({ data: { userId: "u2" } })).toEqual({
             success: false,
             error: "Une erreur s'est produite lors de la suppression"
         })
@@ -61,7 +61,7 @@ describe("deleteUser", () => {
     })
 
     it("soft-deletes the user and revalidates", async () => {
-        const res = await deleteUser("u2")
+        const res = await deleteUserAction({ data: { userId: "u2" } })
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: "u2" },

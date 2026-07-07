@@ -35,9 +35,9 @@ vi.mock("@/helpers/db.server", () => {
     return dbModule(client)
 })
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import updateUserPermissions from "../updateUserPermissions"
+import { updateUserPermissionsAction } from "../updateUserPermissions"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:user-permissions"], "ADMIN"))
@@ -48,30 +48,40 @@ beforeEach(() => {
 describe("updateUserPermissions", () => {
     it("throws when not authenticated", async () => {
         h.getUser.mockResolvedValue(null)
-        await expect(updateUserPermissions("u2", [1])).rejects.toThrow(
-            /Unauthorized/
-        )
+        await expect(
+            updateUserPermissionsAction({
+                data: { userId: "u2", permissions: [1] }
+            })
+        ).rejects.toThrow(/Unauthorized/)
     })
 
     it("throws when not an ADMIN", async () => {
         h.getUser.mockResolvedValue(
             mockUser(["edit:user-permissions"], "MEMBER")
         )
-        await expect(updateUserPermissions("u2", [1])).rejects.toThrow(
-            /Admin only/
-        )
+        await expect(
+            updateUserPermissionsAction({
+                data: { userId: "u2", permissions: [1] }
+            })
+        ).rejects.toThrow(/Admin only/)
     })
 
     it("throws when lacking the edit:user-permissions permission", async () => {
         h.getUser.mockResolvedValue(mockUser([], "ADMIN"))
-        await expect(updateUserPermissions("u2", [1])).rejects.toThrow(
-            /Insufficient permissions/
-        )
+        await expect(
+            updateUserPermissionsAction({
+                data: { userId: "u2", permissions: [1] }
+            })
+        ).rejects.toThrow(/Insufficient permissions/)
     })
 
     it("captures and fails when the transaction throws", async () => {
         transaction.mockRejectedValueOnce(new Error("db down"))
-        expect(await updateUserPermissions("u2", [1])).toEqual({
+        expect(
+            await updateUserPermissionsAction({
+                data: { userId: "u2", permissions: [1] }
+            })
+        ).toEqual({
             success: false,
             error: "An error occurred while updating permissions."
         })
@@ -79,7 +89,9 @@ describe("updateUserPermissions", () => {
     })
 
     it("replaces the permissions and revalidates on the happy path", async () => {
-        const res = await updateUserPermissions("u2", [1, 2])
+        const res = await updateUserPermissionsAction({
+            data: { userId: "u2", permissions: [1, 2] }
+        })
         expect(res).toEqual({ success: true })
         expect(h.deleteMany).toHaveBeenCalledWith({
             where: { userId: "u2" }

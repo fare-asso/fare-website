@@ -9,10 +9,10 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock("@/actions/members/deleteMemberAction", () => ({
-    default: h.deleteAction
+    deleteMemberAction: h.deleteAction
 }))
 vi.mock("@/actions/members/updateMemberOrderAction", () => ({
-    default: h.orderAction
+    updateMemberOrderAction: h.orderAction
 }))
 // Stub the edit button to avoid pulling its server action (and prisma) into
 // the browser bundle, and the image to keep rendering deterministic.
@@ -87,7 +87,7 @@ describe("<SortableMemberList />", () => {
         await screen.getByRole("button").first().click()
 
         await vi.waitFor(() => expect(names(screen)).toEqual(["Lou Durand"]))
-        expect(h.deleteAction).toHaveBeenCalledWith({ id: 1 })
+        expect(h.deleteAction).toHaveBeenCalledWith({ data: { id: 1 } })
         resolveAction({ success: true })
     })
 

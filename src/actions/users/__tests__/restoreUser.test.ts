@@ -11,9 +11,9 @@ const h = vi.hoisted(() => ({
 
 vi.mock("@/helpers/db.server", () => dbModule({ user: { update: h.update } }))
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import restoreUser from "../restoreUser"
+import { restoreUserAction } from "../restoreUser"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:user"], "ADMIN"))
@@ -23,7 +23,7 @@ beforeEach(() => {
 describe("restoreUser", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await restoreUser("u2")).toEqual({
+        expect(await restoreUserAction({ data: { userId: "u2" } })).toEqual({
             success: false,
             error: "Non authentifié"
         })
@@ -31,7 +31,7 @@ describe("restoreUser", () => {
 
     it("requires the ADMIN role", async () => {
         h.getUser.mockResolvedValue(mockUser(["delete:user"], "MEMBER"))
-        expect(await restoreUser("u2")).toEqual({
+        expect(await restoreUserAction({ data: { userId: "u2" } })).toEqual({
             success: false,
             error: "Accès réservé aux administrateurs"
         })
@@ -39,7 +39,7 @@ describe("restoreUser", () => {
 
     it("requires the delete:user permission", async () => {
         h.getUser.mockResolvedValue(mockUser([], "ADMIN"))
-        expect(await restoreUser("u2")).toEqual({
+        expect(await restoreUserAction({ data: { userId: "u2" } })).toEqual({
             success: false,
             error: "Permission insuffisante"
         })
@@ -47,7 +47,7 @@ describe("restoreUser", () => {
 
     it("captures and fails when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await restoreUser("u2")).toEqual({
+        expect(await restoreUserAction({ data: { userId: "u2" } })).toEqual({
             success: false,
             error: "Une erreur s'est produite lors de la restauration"
         })
@@ -55,7 +55,7 @@ describe("restoreUser", () => {
     })
 
     it("restores the user and revalidates", async () => {
-        const res = await restoreUser("u2")
+        const res = await restoreUserAction({ data: { userId: "u2" } })
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: "u2" },

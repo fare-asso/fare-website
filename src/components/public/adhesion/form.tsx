@@ -43,6 +43,7 @@ import {
 import { cn } from "@/lib/utils"
 import {
     AdhesionFormSchema,
+    adhesionFormToFormData,
     type BureauMember,
     type TAdhesionForm
 } from "@/schemas/adhesion"
@@ -121,7 +122,9 @@ export function AdhesionForm(): React.ReactNode {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submitForm(async () => {
-                const res = await processAdhesion(value)
+                const res = await processAdhesion({
+                    data: adhesionFormToFormData(value)
+                })
                 if (res.success) {
                     setIsSubmitted(true)
                 } else {

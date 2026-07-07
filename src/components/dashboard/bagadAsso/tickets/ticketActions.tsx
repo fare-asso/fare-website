@@ -3,9 +3,9 @@ import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction"
-import hardDeleteBagadAssoTicketAction from "@/actions/bagadAsso/hardDeleteTicketAction"
-import unarchiveBagadAssoTicketAction from "@/actions/bagadAsso/unarchiveTicketAction"
+import { deleteBagadAssoTicketAction } from "@/actions/bagadAsso/deleteTicketAction"
+import { hardDeleteBagadAssoTicketAction } from "@/actions/bagadAsso/hardDeleteTicketAction"
+import { unarchiveBagadAssoTicketAction } from "@/actions/bagadAsso/unarchiveTicketAction"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
@@ -42,7 +42,9 @@ export default function TicketActions({
     const onArchive = async () => {
         setIsArchiveLoading(true)
 
-        const response = await deleteBagadAssoTicketAction(ticketId)
+        const response = await deleteBagadAssoTicketAction({
+            data: { ticketId }
+        })
 
         if (response.error) {
             toast.error(response.error)
@@ -56,7 +58,9 @@ export default function TicketActions({
     const onUnarchive = async () => {
         setIsArchiveLoading(true)
 
-        const response = await unarchiveBagadAssoTicketAction(ticketId)
+        const response = await unarchiveBagadAssoTicketAction({
+            data: { ticketId }
+        })
 
         if (response.error) {
             toast.error(response.error)
@@ -70,7 +74,9 @@ export default function TicketActions({
     const onHardDelete = async () => {
         setIsDeleteLoading(true)
 
-        const response = await hardDeleteBagadAssoTicketAction(ticketId)
+        const response = await hardDeleteBagadAssoTicketAction({
+            data: { ticketId }
+        })
 
         if (response.error) {
             toast.error(response.error)

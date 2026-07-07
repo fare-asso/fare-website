@@ -57,7 +57,7 @@ export function LoginWithPasswordButton() {
 
     const loginWithPassword = (formData: FormData) => {
         startTransition(async () => {
-            const result = await loginWithPasswordFn(formData)
+            const result = await loginWithPasswordFn({ data: formData })
             setPasswordError(result)
         })
     }

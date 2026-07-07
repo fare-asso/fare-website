@@ -27,9 +27,9 @@ vi.mock("@/helpers/db.server", () =>
 )
 vi.mock("@/helpers/email.server", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import submitTutorQuestion from "../submitTutorQuestion"
+import { submitTutorQuestionAction } from "../submitTutorQuestion"
 
 beforeEach(() => {
     stdenv.isDevelopment = false
@@ -40,9 +40,9 @@ beforeEach(() => {
 
 describe("submitTutorQuestion", () => {
     it("rejects an invalid payload before any side effect", async () => {
-        const res = await submitTutorQuestion(
-            validTutorQuestion({ email: "nope" })
-        )
+        const res = await submitTutorQuestionAction({
+            data: validTutorQuestion({ email: "nope" })
+        })
         expect(res.error).toBe("Un ou plusieurs champs sont invalides.")
         expect(res.fieldErrors?.email).toBeDefined()
         expect(h.create).not.toHaveBeenCalled()
@@ -50,7 +50,9 @@ describe("submitTutorQuestion", () => {
 
     it("fails when the captcha is invalid", async () => {
         h.verifyCaptcha.mockResolvedValue(false)
-        const res = await submitTutorQuestion(validTutorQuestion())
+        const res = await submitTutorQuestionAction({
+            data: validTutorQuestion()
+        })
         expect(res).toEqual({
             error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         })
@@ -59,7 +61,9 @@ describe("submitTutorQuestion", () => {
 
     it("captures and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await submitTutorQuestion(validTutorQuestion())
+        const res = await submitTutorQuestionAction({
+            data: validTutorQuestion()
+        })
         expect(res).toEqual({
             error: "Echec de l'enregistrement de la question. Veuillez réessayer."
         })
@@ -68,14 +72,18 @@ describe("submitTutorQuestion", () => {
 
     it("still succeeds when the notification email fails (handled inside sendEmail)", async () => {
         h.sendEmail.mockResolvedValue({ success: false })
-        const res = await submitTutorQuestion(validTutorQuestion())
+        const res = await submitTutorQuestionAction({
+            data: validTutorQuestion()
+        })
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledOnce()
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
     it("persists, emails and revalidates on the happy path", async () => {
-        const res = await submitTutorQuestion(validTutorQuestion())
+        const res = await submitTutorQuestionAction({
+            data: validTutorQuestion()
+        })
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({

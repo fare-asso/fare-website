@@ -53,6 +53,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { tryCatch } from "@/lib/utils"
 import {
     AssistanceFormSchema,
+    assistanceFormToFormData,
     MOYEN_CONTACT,
     SITUATIONS,
     type TAssistanceForm
@@ -164,7 +165,9 @@ export function AssistanceForm(): React.ReactNode {
         setConfirmOpen(false)
         setSubmitError(null)
         submitForm(async () => {
-            const res = await processAssistance(value)
+            const res = await processAssistance({
+                data: assistanceFormToFormData(value)
+            })
             if (res.success) {
                 // ignore — best-effort cleanup
                 tryCatch(() => window.localStorage.removeItem(DRAFT_KEY))

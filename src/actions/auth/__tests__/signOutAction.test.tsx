@@ -11,7 +11,7 @@ const h = vi.hoisted(() => ({
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ auth: { signOut: h.signOut } })
 )
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
 import { signOut } from "../signOutAction"
 

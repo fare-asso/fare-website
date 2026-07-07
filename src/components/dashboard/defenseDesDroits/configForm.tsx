@@ -29,8 +29,7 @@ export default function ConfigForm({
         e.preventDefault()
         startTransition(async () => {
             const res = await updateAssistanceConfig({
-                recipientEmail: email,
-                delay: delayValue
+                data: { recipientEmail: email, delay: delayValue }
             })
             if (res.success) {
                 await router.invalidate()

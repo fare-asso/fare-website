@@ -18,9 +18,9 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
+vi.mock("@/lib/sentry.server", () => sentryModule(h.captureActionError))
 
-import editEluAction from "../editEluAction"
+import { editEluAction } from "../editEluAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:elu"]))
@@ -31,7 +31,7 @@ beforeEach(() => {
 describe("editEluAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await editEluAction(validEditElu())).toEqual({
+        expect(await editEluAction({ data: validEditElu() })).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -40,14 +40,16 @@ describe("editEluAction", () => {
 
     it("requires the edit:elu permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await editEluAction(validEditElu())
+        const res = await editEluAction({ data: validEditElu() })
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.updateElu).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid payload", async () => {
-        const res = await editEluAction(validEditElu({ position: "" }))
+        const res = await editEluAction({
+            data: validEditElu({ position: "" })
+        })
         expect(res).toEqual({
             success: false,
             error: "Un ou plusieurs champs sont invalides."
@@ -57,20 +59,22 @@ describe("editEluAction", () => {
 
     it("returns an error when the conseil is not found", async () => {
         h.findConseil.mockResolvedValue(null)
-        const res = await editEluAction(validEditElu())
+        const res = await editEluAction({ data: validEditElu() })
         expect(res).toEqual({ success: false, error: "Conseil introuvable." })
         expect(h.updateElu).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the update throws", async () => {
         h.updateElu.mockRejectedValue(new Error("update failed"))
-        const res = await editEluAction(validEditElu())
+        const res = await editEluAction({ data: validEditElu() })
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("updates the elu and revalidates on the happy path", async () => {
-        const res = await editEluAction(validEditElu({ description: "Membre" }))
+        const res = await editEluAction({
+            data: validEditElu({ description: "Membre" })
+        })
         expect(res).toEqual({ success: true })
         expect(h.updateElu).toHaveBeenCalledWith({
             where: { id: 1 },
