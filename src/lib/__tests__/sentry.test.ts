@@ -77,7 +77,8 @@ describe("withServerAction", () => {
 
 describe("packActionArgs / unpackActionArgs", () => {
     it("round-trips a file larger than seroval's ~750 KB buffer cap", async () => {
-        const big = new Uint8Array(1_500_000).map((_, i) => i % 251)
+        const big = new Uint8Array(1_500_000)
+        for (let i = 0; i < big.length; i++) big[i] = i % 251
         const file = new File([big], "logo.png", {
             type: "image/png",
             lastModified: 42
@@ -98,7 +99,11 @@ describe("packActionArgs / unpackActionArgs", () => {
         expect(arg.logo).toBeInstanceOf(File)
         expect(arg.logo.name).toBe("logo.png")
         expect(arg.logo.type).toBe("image/png")
-        expect(new Uint8Array(await arg.logo.arrayBuffer())).toEqual(big)
+        // Buffer.compare instead of toEqual: deep-equality over 1.5M
+        // elements times out on slow CI runners
+        const roundTripped = new Uint8Array(await arg.logo.arrayBuffer())
+        expect(roundTripped.byteLength).toBe(big.byteLength)
+        expect(Buffer.compare(roundTripped, big)).toBe(0)
     })
 
     it("passes top-level FormData through untouched", async () => {
