@@ -3,10 +3,10 @@
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import clsx from "clsx"
-import Image from "next/image"
 import type { MouseEvent } from "react"
 import { MdDelete, MdDragIndicator } from "react-icons/md"
 
+import Image from "@/components/image"
 import { Button } from "@/components/ui/button"
 import type { Member } from "@/generated/prisma/client"
 

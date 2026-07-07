@@ -1,8 +1,8 @@
-import Image from "next/image"
-import Link from "next/link"
 import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6"
 import { MdAlternateEmail } from "react-icons/md"
 
+import Image from "@/components/image"
+import Link from "@/components/link"
 import type { Member } from "@/generated/prisma/client"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 

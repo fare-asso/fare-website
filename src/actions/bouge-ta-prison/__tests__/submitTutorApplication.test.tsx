@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validTutorApplicationFormData } from "@/test/factories/bougeTaPrison"
 import {
-    cacheModule,
     captchaModule,
     dbModule,
     emailModule,
@@ -19,7 +18,6 @@ const h = vi.hoisted(() => ({
     create: vi.fn(),
     sendEmail: vi.fn(),
     verifyCaptcha: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -36,7 +34,6 @@ vi.mock("@/helpers/db", () =>
 )
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import submitTutorApplication from "../submitTutorApplication"
@@ -150,9 +147,6 @@ describe("submitTutorApplication", () => {
                 to: "intervention-carceral@fare-asso.fr",
                 subject: "Nouvelle candidature de tuteur Bouge Ta Prison"
             })
-        )
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/dashboard/bouge-ta-prison"
         )
     })
 })

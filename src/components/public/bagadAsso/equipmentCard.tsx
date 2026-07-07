@@ -1,5 +1,4 @@
-import Image from "next/image"
-
+import Image from "@/components/image"
 import NumberInput from "@/components/ui/input/numberInput"
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
 import { createClient } from "@/helpers/supabase/client"

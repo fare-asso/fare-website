@@ -4,7 +4,6 @@ import { validPartenaireRecord } from "@/test/factories/partenaires"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -15,7 +14,6 @@ const h = vi.hoisted(() => ({
     deleteFn: vi.fn(),
     getUser: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
@@ -29,7 +27,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import deletePartenaireAction from "../deletePartenaireAction"
@@ -110,8 +107,6 @@ describe("deletePartenaireAction", () => {
         expect(res).toEqual({ success: true })
         expect(h.remove).not.toHaveBeenCalled()
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/partenaires")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/partenaires")
     })
 
     it("captures and fails when the delete throws", async () => {
@@ -121,7 +116,6 @@ describe("deletePartenaireAction", () => {
             error: "Echec de la suppression du partenaire"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("removes the logo, deletes the record and revalidates on the happy path", async () => {
@@ -132,8 +126,6 @@ describe("deletePartenaireAction", () => {
         expect(res).toEqual({ success: true })
         expect(h.remove).toHaveBeenCalledWith(["uuid-abc.png"])
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 9 } })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/partenaires")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/partenaires")
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 })

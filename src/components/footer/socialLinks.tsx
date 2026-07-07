@@ -1,5 +1,6 @@
-import Link from "next/link"
 import { FaFacebook, FaInstagram, FaCompass } from "react-icons/fa6"
+
+import Link from "@/components/link"
 
 export default function SocialLinks() {
     return (

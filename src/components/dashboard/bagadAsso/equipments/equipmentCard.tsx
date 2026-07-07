@@ -1,10 +1,10 @@
 import { format, formatDistanceToNow, isToday, isTomorrow } from "date-fns"
 import { fr } from "date-fns/locale"
 import { BoxIcon, CalendarClockIcon, CoinsIcon } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
 import { MdOutlineHideImage } from "react-icons/md"
 
+import Image from "@/components/image"
+import Link from "@/components/link"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import type { BagadAssoEquipment } from "@/generated/prisma/client"

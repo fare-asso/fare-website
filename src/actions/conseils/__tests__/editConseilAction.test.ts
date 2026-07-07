@@ -2,13 +2,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validEditConseil } from "@/test/factories/conseils"
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     findInstance: vi.fn(),
     updateConseil: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -19,7 +18,6 @@ vi.mock("@/helpers/db", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import editConseilAction from "../editConseilAction"
@@ -78,8 +76,5 @@ describe("editConseilAction", () => {
             where: { id: 1 },
             data: { name: "Bureau", description: null, instanceId: 1 }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/representation/nos-elues"
-        )
     })
 })

@@ -2,18 +2,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
 import { itIsGatedBy } from "@/test/gates"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     deleteLink: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () => dbModule({ linkItem: { delete: h.deleteLink } }))
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import deleteLinkAction from "../deleteLinkAction"
@@ -39,14 +37,11 @@ describe("deleteLinkAction", () => {
             error: "Echec de la suppression du lien"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("deletes the link and revalidates on the happy path", async () => {
         const res = await deleteLinkAction(undefined, 9)
         expect(res).toEqual({ success: true })
         expect(h.deleteLink).toHaveBeenCalledWith({ where: { id: 9 } })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/liens")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/liens")
     })
 })

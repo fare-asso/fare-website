@@ -6,8 +6,8 @@
     "scripts": {
         "dev": "vite dev",
         "email:dev": "email dev",
-        "build": "vite build",
-        "start": "node .output/server/index.mjs",
+        "build": "vite build && cp instrument.server.mjs .output/server/",
+        "start": "node --import ./.output/server/instrument.server.mjs .output/server/index.mjs",
         "knip": "knip",
         "test": "vitest run",
         "test:node": "vitest run --project node",

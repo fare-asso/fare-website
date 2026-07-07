@@ -2,7 +2,6 @@
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 // import EditArticleButton from "./editArticleButton";
 import { startTransition, useActionState, useEffect, useState } from "react"
 import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
@@ -10,6 +9,7 @@ import { toast } from "sonner"
 
 import deleteArticleAction from "@/actions/articles/deleteArticleAction"
 import switchVisibilityAction from "@/actions/articles/switchVisibilityAction"
+import Link from "@/components/link"
 import { Button } from "@/components/ui/button"
 import type { Article } from "@/generated/prisma/client"
 

@@ -1,18 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     updateMany: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () => dbModule({ user: { updateMany: h.updateMany } }))
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import bulkRestoreUsers from "../bulkRestoreUsers"
@@ -71,6 +69,5 @@ describe("bulkRestoreUsers", () => {
             where: { id: { in: ["u2", "u3"] } },
             data: { deletedAt: null }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/users")
     })
 })

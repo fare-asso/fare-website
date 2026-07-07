@@ -1,18 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () => dbModule({ adhesion: { update: h.update } }))
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import archiveAdhesionAction from "../archiveAdhesionAction"
@@ -45,7 +43,6 @@ describe("archiveAdhesionAction", () => {
             where: { id: 7 },
             data: { archived: expect.any(Date) }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/adhesions")
     })
 
     it("captures and returns an error when the update throws", async () => {
@@ -54,6 +51,5 @@ describe("archiveAdhesionAction", () => {
             error: "Echec de l'archivage de la demande d'adhésion"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 })

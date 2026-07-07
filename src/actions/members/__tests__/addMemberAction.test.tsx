@@ -5,7 +5,6 @@ import { validAddMember } from "@/test/factories/members"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -16,7 +15,6 @@ const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     upload: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -28,7 +26,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import addMemberAction from "../addMemberAction"
@@ -107,7 +104,6 @@ describe("addMemberAction", () => {
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.remove).toHaveBeenCalledWith(["uuid-lea.png"])
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("creates the member and revalidates on the happy path", async () => {
@@ -135,8 +131,6 @@ describe("addMemberAction", () => {
                 twitterUrl: null
             })
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/membres")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/bureau")
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 })

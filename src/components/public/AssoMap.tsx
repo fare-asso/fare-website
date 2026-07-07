@@ -1,22 +1,12 @@
-import prisma from "@/helpers/db"
-import { captureActionError } from "@/lib/sentry"
-import { tryCatch } from "@/lib/utils"
+import type { Association } from "@/generated/prisma/client"
 
 import AssociationMapCaller from "./associations/map/associationMapCaller"
 
-export default async function AssoMap() {
-    const result = await tryCatch(
-        prisma.association.findMany({
-            where: {
-                approved: { not: null }
-            }
-        })
-    )
-    if (!result.success) {
-        captureActionError(result.error)
-    }
-    const associations = result.success ? result.value : undefined
-
+export default function AssoMap({
+    associations
+}: {
+    associations: Association[] | undefined
+}) {
     return (
         <div className="flex flex-col items-center">
             {associations ? (

@@ -1,7 +1,7 @@
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 
+import Link from "@/components/link"
 import type { Article } from "@/generated/prisma/client"
 import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml"
 

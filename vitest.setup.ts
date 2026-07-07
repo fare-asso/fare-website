@@ -1,6 +1,11 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest"
 
+import { startModule } from "./src/test/mocks"
 import { server } from "./src/test/msw"
+
+// Server functions have no Start runtime in node tests; `createServerFn`
+// becomes a builder that calls the handler directly.
+vi.mock("@tanstack/react-start", () => startModule())
 
 // `FileList` is a browser global used by client-side Zod schemas
 // (e.g. `@/schemas/members`). It is absent in the node environment, so

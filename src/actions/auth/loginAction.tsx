@@ -1,0 +1,154 @@
+import { redirect } from "@tanstack/react-router"
+import { createServerFn } from "@tanstack/react-start"
+import { getRequestHeader } from "@tanstack/react-start/server"
+import { isDevelopment } from "std-env"
+
+import { clientEnv } from "@/env/client"
+import { env } from "@/env/server"
+import { createClient } from "@/helpers/supabase/server"
+import getCurrentUserRole from "@/helpers/user/role"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
+
+async function loginWithGoogleActionImpl() {
+    const supabase = createClient()
+
+    // Only trust x-forwarded-host (set by the ingress); never the raw Host
+    // header, which is client-controllable. Fall back to the canonical URL.
+    const fallback = new URL(env.DOKPLOY_DEPLOY_URL || clientEnv.VITE_SITE_URL)
+    const host = getRequestHeader("x-forwarded-host") ?? fallback.host
+    const proto =
+        getRequestHeader("x-forwarded-proto") ??
+        fallback.protocol.replace(":", "")
+    const origin = `${proto}://${host}`
+
+    console.log(
+        "loginWithGoogleAction - redirectTo:",
+        `${origin}/login/callback/google`
+    )
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+            redirectTo: `${origin}/login/callback/google`
+        }
+    })
+
+    if (error) {
+        console.error(error.message)
+        throw new Error("Failed to login with Google")
+    }
+
+    if (data.url) {
+        throw redirect({ href: data.url })
+    }
+
+    throw new Error("Unexpected error")
+}
+
+async function loginWithPasswordActionImpl(formData: FormData) {
+    if (!isDevelopment) return
+
+    const supabase = createClient()
+
+    const email = formData.get("email")?.toString()
+    const password = formData.get("password")?.toString()
+
+    // Fields validation
+    if (!email) {
+        return {
+            emailError: "Veuillez entrer une adresse email"
+        }
+    }
+
+    if (!password) {
+        return {
+            passwordError: "Veuillez entrer un mot de passe"
+        }
+    }
+
+    const signIn = await tryCatch(
+        supabase.auth.signInWithPassword({
+            email,
+            password
+        })
+    )
+    if (!signIn.success) {
+        const err = signIn.error
+        const code =
+            err && typeof err === "object" && "code" in err ? err.code : null
+        if (code === "invalid_credentials") {
+            return {
+                passwordError: "Mot de passe ou nom d'utilisateur invalide"
+            }
+        }
+        captureActionError(err)
+        return {
+            passwordError: "Une erreur inattendue est survenue"
+        }
+    }
+
+    // fetch user role
+    const { error: roleError } = await getCurrentUserRole()
+
+    if (roleError) {
+        return {
+            passwordError:
+                "Impossible de récupérer les informations de l'utilisateur"
+        }
+    }
+
+    throw redirect({ href: "/dashboard" })
+}
+
+const loginWithGoogleServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof loginWithGoogleActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "loginWithGoogleAction",
+            loginWithGoogleActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof loginWithGoogleActionImpl>>(
+                data
+            )
+        )
+    )
+
+export const loginWithGoogleAction = async (
+    ...args: Parameters<typeof loginWithGoogleActionImpl>
+): ReturnType<typeof loginWithGoogleActionImpl> =>
+    loginWithGoogleServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof loginWithGoogleActionImpl>
+
+const loginWithPasswordServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof loginWithPasswordActionImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "loginWithPasswordAction",
+            loginWithPasswordActionImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof loginWithPasswordActionImpl>>(
+                data
+            )
+        )
+    )
+
+export const loginWithPasswordAction = async (
+    ...args: Parameters<typeof loginWithPasswordActionImpl>
+): ReturnType<typeof loginWithPasswordActionImpl> =>
+    loginWithPasswordServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof loginWithPasswordActionImpl>

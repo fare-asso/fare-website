@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import {
     type ChangeEvent,
     useActionState,
@@ -10,6 +9,7 @@ import {
 } from "react"
 
 import editEventAction from "@/actions/events/editEventAction"
+import Image from "@/components/image"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {

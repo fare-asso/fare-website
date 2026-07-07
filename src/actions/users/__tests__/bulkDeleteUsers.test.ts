@@ -1,18 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     updateMany: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () => dbModule({ user: { updateMany: h.updateMany } }))
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import bulkDeleteUsers from "../bulkDeleteUsers"
@@ -73,6 +71,5 @@ describe("bulkDeleteUsers", () => {
             where: { id: { in: ["u2"] } },
             data: { deletedAt: expect.any(Date) }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/users")
     })
 })

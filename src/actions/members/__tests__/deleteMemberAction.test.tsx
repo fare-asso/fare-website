@@ -4,7 +4,6 @@ import { validMemberRecord } from "@/test/factories/members"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -14,7 +13,6 @@ const h = vi.hoisted(() => ({
     deleteFn: vi.fn(),
     getUser: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
@@ -24,7 +22,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import deleteMemberAction from "../deleteMemberAction"
@@ -64,7 +61,6 @@ describe("deleteMemberAction", () => {
         expect(await deleteMemberAction({ id: 1 })).toEqual({
             error: "storage boom"
         })
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("deletes the member, removes the picture and revalidates", async () => {
@@ -72,6 +68,5 @@ describe("deleteMemberAction", () => {
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 9 } })
         expect(h.remove).toHaveBeenCalledWith(["members/lea.png"])
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/membres")
     })
 })

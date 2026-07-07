@@ -3,12 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { validEditLinkCategory } from "@/test/factories/links"
 import { mockUser } from "@/test/factories/user"
 import { itIsGatedBy } from "@/test/gates"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     updateCategory: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -16,7 +15,6 @@ vi.mock("@/helpers/db", () =>
     dbModule({ linkCategory: { update: h.updateCategory } })
 )
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import editLinkCategoryAction from "../editLinkCategoryAction"
@@ -53,7 +51,6 @@ describe("editLinkCategoryAction", () => {
             error: "Échec de la modification de la catégorie."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("updates the category and revalidates on the happy path", async () => {
@@ -65,7 +62,5 @@ describe("editLinkCategoryAction", () => {
             where: { id: 4 },
             data: { name: "Projets" }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/liens")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/liens")
     })
 })

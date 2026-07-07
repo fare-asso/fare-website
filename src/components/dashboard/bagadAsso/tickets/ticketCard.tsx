@@ -10,12 +10,12 @@ import {
     UserIcon,
     UsersIcon
 } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 
 import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction"
 import unarchiveBagadAssoTicketAction from "@/actions/bagadAsso/unarchiveTicketAction"
+import Link from "@/components/link"
 import {
     AlertDialog,
     AlertDialogAction,

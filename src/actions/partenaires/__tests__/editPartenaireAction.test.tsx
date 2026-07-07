@@ -5,7 +5,6 @@ import { validEditPartenaire } from "@/test/factories/partenaires"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -17,7 +16,6 @@ const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     storageUpload: vi.fn(),
     storageRemove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -33,7 +31,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import editPartenaireAction from "../editPartenaireAction"
@@ -137,8 +134,6 @@ describe("editPartenaireAction", () => {
                 logoPath: "old-uuid.png"
             }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/partenaires")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/partenaires")
     })
 
     it("captures and fails when the storage upload throws", async () => {
@@ -180,7 +175,6 @@ describe("editPartenaireAction", () => {
             error: "Échec de la modification du partenaire."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("uploads a new logo, removes the old one and updates the partenaire on the happy path", async () => {
@@ -209,8 +203,6 @@ describe("editPartenaireAction", () => {
                 logoPath: path
             }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/partenaires")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/partenaires")
     })
 
     it("skips the remove when the previous logoPath is empty", async () => {

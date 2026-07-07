@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     findElu: vi.fn(),
     updateElu: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -15,7 +14,6 @@ vi.mock("@/helpers/db", () =>
     dbModule({ elu: { findUnique: h.findElu, update: h.updateElu } })
 )
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import deleteEluAction from "../deleteEluAction"
@@ -73,6 +71,5 @@ describe("deleteEluAction", () => {
             where: { id: 7 },
             data: { deletedAt: expect.any(Date) }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/elus")
     })
 })

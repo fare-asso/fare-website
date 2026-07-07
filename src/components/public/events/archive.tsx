@@ -1,28 +1,10 @@
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import type { Event } from "@/generated/prisma/client"
 
 import EventCard from "./eventCard"
 
-export default async function EventArchive() {
-    const supabase = await createClient()
+type AgendaEvent = Event & { category: { name: string }; imageUrl: string }
 
-    const now = new Date()
-
-    const events = await prisma.event.findMany({
-        where: {
-            endTime: {
-                lt: now
-            }
-        },
-        include: {
-            category: {
-                select: {
-                    name: true
-                }
-            }
-        }
-    })
-
+export default function EventArchive({ events }: { events: AgendaEvent[] }) {
     if (events.length === 0) {
         return null
     }
@@ -31,20 +13,14 @@ export default async function EventArchive() {
         <div className="mb-8 flex w-full flex-col">
             <span className="mb-4 text-2xl font-semibold">Archives</span>
             <div className="flex h-auto w-full flex-col items-center space-y-3">
-                {events.length > 0
-                    ? events.map((event) => (
-                          <EventCard
-                              key={event.id}
-                              event={event}
-                              archive={true}
-                              imageUrl={
-                                  supabase.storage
-                                      .from("EventPictures")
-                                      .getPublicUrl(event.image).data.publicUrl
-                              }
-                          />
-                      ))
-                    : null}
+                {events.map((event) => (
+                    <EventCard
+                        key={event.id}
+                        event={event}
+                        archive={true}
+                        imageUrl={event.imageUrl}
+                    />
+                ))}
             </div>
         </div>
     )

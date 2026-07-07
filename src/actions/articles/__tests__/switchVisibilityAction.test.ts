@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     findUnique: vi.fn(),
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -15,7 +14,6 @@ vi.mock("@/helpers/db", () =>
     dbModule({ article: { findUnique: h.findUnique, update: h.update } })
 )
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import switchVisibilityAction from "../switchVisibilityAction"
@@ -64,6 +62,5 @@ describe("switchVisibilityAction", () => {
             where: { id: 9 },
             data: { published: true }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/articles")
     })
 })

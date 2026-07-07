@@ -50,7 +50,7 @@ describe("<ContactForm />", () => {
         await screen.getByRole("button", { name: "Envoyer" }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][1]
+        const submitted = h.action.mock.calls[0][0]
         expect(submitted).toEqual({
             firstName: "Jean",
             lastName: "Dupont",

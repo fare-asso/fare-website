@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validBagadAssoForm } from "@/test/factories/bagadAsso"
 import {
-    cacheModule,
     captchaModule,
     dbModule,
     emailModule,
@@ -16,7 +15,6 @@ const h = vi.hoisted(() => ({
     create: vi.fn(),
     sendEmail: vi.fn(),
     verifyCaptcha: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -27,7 +25,6 @@ vi.mock("@/helpers/db", () =>
 )
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import submitBagadAssoFormAction from "../submitBagadAssoFormAction"
@@ -111,6 +108,5 @@ describe("submitBagadAssoFormAction", () => {
             })
         })
         expect(h.sendEmail).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
     })
 })

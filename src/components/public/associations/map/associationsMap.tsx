@@ -3,18 +3,15 @@
 import L from "leaflet"
 
 import "leaflet/dist/leaflet.css"
-import { Inter } from "next/font/google"
-import Image from "next/image"
 import { type ChangeEvent, useRef, useState } from "react"
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 
+import Image from "@/components/image"
 import type { Association } from "@/generated/prisma/client"
 import { parseLocation } from "@/helpers/location"
 import { createClient } from "@/helpers/supabase/client"
 
 import AssociationMapSearchBar from "./associationMapSearchBar"
-
-const inter = Inter({ subsets: ["latin"] })
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -69,8 +66,7 @@ export default function AssociationMap({
             zoom={9}
             scrollWheelZoom={false}
             className={
-                "h-[400px] w-full rounded-xl border-[1.5px] border-black md:h-[600px]" +
-                inter.className
+                "h-[400px] w-full rounded-xl border-[1.5px] border-black font-sans md:h-[600px]"
             }
             ref={mapRef}
         >

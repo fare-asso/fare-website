@@ -4,7 +4,6 @@ import { validAssociationRecord } from "@/test/factories/associations"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -16,7 +15,6 @@ const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     remove: vi.fn(),
     deleteUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
@@ -33,7 +31,6 @@ vi.mock("@/helpers/supabase/server", () =>
         auth: { admin: { deleteUser: h.deleteUser } }
     })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import deleteAssociationAction from "../deleteAssociationAction"
@@ -100,6 +97,5 @@ describe("deleteAssociationAction", () => {
         const res = await deleteAssociationAction(undefined, 8)
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 8 } })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/associations")
     })
 })

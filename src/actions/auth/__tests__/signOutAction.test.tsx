@@ -1,10 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import {
-    navigationModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { sentryModule, supabaseServerModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     signOut: vi.fn(),
@@ -14,7 +10,6 @@ const h = vi.hoisted(() => ({
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ auth: { signOut: h.signOut } })
 )
-vi.mock("next/navigation", () => navigationModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import { signOut } from "../signOutAction"

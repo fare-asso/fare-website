@@ -1,7 +1,6 @@
 "use client"
 
-import Image from "next/image"
-
+import Image from "@/components/image"
 import type { Partenaire } from "@/generated/prisma/client"
 
 import DeletePartenaireButton from "./deletePartenaireButton"

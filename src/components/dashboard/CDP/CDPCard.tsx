@@ -2,7 +2,6 @@
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 import { useState } from "react"
 import { FaRegFilePdf } from "react-icons/fa"
 import { FaRegFolderOpen } from "react-icons/fa6"
@@ -10,6 +9,7 @@ import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
 import { toast } from "sonner"
 
 import deleteCDPAction from "@/actions/CDP/deleteCDPAction"
+import Link from "@/components/link"
 import {
     AlertDialog,
     AlertDialogAction,

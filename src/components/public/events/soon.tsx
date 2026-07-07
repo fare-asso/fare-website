@@ -1,50 +1,26 @@
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import type { Event } from "@/generated/prisma/client"
 
 import EventCard from "./eventCard"
 
-export default async function SoonEvents() {
-    const now = new Date()
+type AgendaEvent = Event & { category: { name: string }; imageUrl: string }
 
-    const events = await prisma.event.findMany({
-        where: {
-            startTime: {
-                gt: now
-            }
-        },
-        include: {
-            category: {
-                select: {
-                    name: true
-                }
-            }
-        }
-    })
-
+export default function SoonEvents({ events }: { events: AgendaEvent[] }) {
     if (events.length === 0) {
         return null
     }
-
-    const supabase = await createClient()
 
     return (
         <div className="mb-8 flex w-full flex-col">
             <span className="mb-4 text-2xl font-semibold">Bientôt</span>
             <div className="flex h-auto w-full flex-col items-center">
-                {events.length > 0
-                    ? events.map((event) => (
-                          <EventCard
-                              key={event.id}
-                              event={event}
-                              archive={false}
-                              imageUrl={
-                                  supabase.storage
-                                      .from("EventPictures")
-                                      .getPublicUrl(event.image).data.publicUrl
-                              }
-                          />
-                      ))
-                    : null}
+                {events.map((event) => (
+                    <EventCard
+                        key={event.id}
+                        event={event}
+                        archive={false}
+                        imageUrl={event.imageUrl}
+                    />
+                ))}
             </div>
         </div>
     )

@@ -2,14 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validBulkImportElu } from "@/test/factories/elus"
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     findConseil: vi.fn(),
     aggregate: vi.fn(),
     createMany: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -20,7 +19,6 @@ vi.mock("@/helpers/db", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import bulkImportElusAction from "../bulkImportElusAction"
@@ -110,9 +108,6 @@ describe("bulkImportElusAction", () => {
                 }
             ]
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/representation/nos-elues"
-        )
     })
 
     it("starts ordering at 0 when the conseil has no elus", async () => {

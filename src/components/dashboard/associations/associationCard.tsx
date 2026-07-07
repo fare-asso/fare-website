@@ -6,8 +6,8 @@ import {
     MailIcon,
     MapPinIcon
 } from "lucide-react"
-import Image from "next/image"
 
+import Image from "@/components/image"
 import { Badge } from "@/components/ui/badge"
 import type { Association } from "@/generated/prisma/client"
 import { parseLocation } from "@/helpers/location"

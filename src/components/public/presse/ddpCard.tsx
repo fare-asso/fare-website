@@ -1,9 +1,9 @@
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 import { FaRegFolderOpen } from "react-icons/fa6"
 import { FiDownload, FiExternalLink } from "react-icons/fi"
 
+import Link from "@/components/link"
 import type { CommuniqueDePresse } from "@/generated/prisma/client"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 

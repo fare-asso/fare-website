@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     transaction: vi.fn(),
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -19,7 +18,6 @@ vi.mock("@/helpers/db", () => {
     return dbModule(client)
 })
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import updateMemberOrderAction from "../updateMemberOrderAction"
@@ -64,7 +62,5 @@ describe("updateMemberOrderAction", () => {
         expect(res).toEqual({ success: true })
         expect(h.transaction).toHaveBeenCalledOnce()
         expect(h.update).toHaveBeenCalledTimes(2)
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/membres")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/bureau")
     })
 })

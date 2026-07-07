@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -14,7 +13,6 @@ const h = vi.hoisted(() => ({
     deleteFn: vi.fn(),
     getUser: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
@@ -26,7 +24,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import deleteEventAction from "../deleteEventAction"
@@ -57,7 +54,6 @@ describe("deleteEventAction", () => {
         const res = await deleteEventAction({ eventId: 4 })
         expect(res).toBeUndefined()
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/events")
     })
 
     it("captures when the delete throws", async () => {
@@ -65,6 +61,5 @@ describe("deleteEventAction", () => {
         const res = await deleteEventAction({ eventId: 4 })
         expect(res).toBeUndefined()
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 })

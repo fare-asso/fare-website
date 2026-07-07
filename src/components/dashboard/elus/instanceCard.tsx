@@ -4,11 +4,11 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import clsx from "clsx"
 import { Building2Icon, MailIcon, UsersIcon } from "lucide-react"
-import Image from "next/image"
 import { MdDragIndicator } from "react-icons/md"
 
 import DeleteInstanceButton from "@/components/dashboard/elus/deleteInstanceButton"
 import EditInstanceButton from "@/components/dashboard/elus/editInstanceButton"
+import Image from "@/components/image"
 import type { Instance } from "@/generated/prisma/client"
 
 type InstanceWithCount = Instance & {

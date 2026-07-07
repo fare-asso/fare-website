@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -14,7 +13,6 @@ const h = vi.hoisted(() => ({
     assoUpdate: vi.fn(),
     getUser: vi.fn(),
     invite: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -28,7 +26,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ auth: { admin: { inviteUserByEmail: h.invite } } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import inviteRepresentativeAction from "../inviteRepresentativeAction"
@@ -129,6 +126,5 @@ describe("inviteRepresentativeAction", () => {
             where: { id: 7 },
             data: { representativeId: "rep-1" }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/associations")
     })
 })

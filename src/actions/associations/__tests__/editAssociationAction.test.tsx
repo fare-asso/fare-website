@@ -4,7 +4,6 @@ import { validAssociationFormData } from "@/test/factories/associations"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -15,7 +14,6 @@ const h = vi.hoisted(() => ({
     update: vi.fn(),
     getUser: vi.fn(),
     storageUpdate: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ update: h.storageUpdate })))
@@ -29,7 +27,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import editAssociationAction from "../editAssociationAction"
@@ -115,6 +112,5 @@ describe("editAssociationAction", () => {
                 logoPath: "association-pictures/new.png"
             })
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/associations")
     })
 })

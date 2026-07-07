@@ -4,13 +4,7 @@ import { useForm } from "@tanstack/react-form"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
-import {
-    memo,
-    Suspense,
-    startTransition,
-    useActionState,
-    useCallback
-} from "react"
+import { memo, Suspense, useCallback, useState, useTransition } from "react"
 
 import submitBagadAssoFormAction, {
     type FormState
@@ -92,10 +86,8 @@ function CaptchaValidation({
 }
 
 export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
-    const [formState, formAction, pending] = useActionState<
-        FormState | undefined,
-        BagadAssoFormData
-    >(submitBagadAssoFormAction, undefined)
+    const [formState, setFormState] = useState<FormState | undefined>(undefined)
+    const [pending, startTransition] = useTransition()
 
     const form = useForm({
         defaultValues: {
@@ -139,8 +131,8 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                 captchaToken: value.captchaToken
             }
 
-            startTransition(() => {
-                formAction(submitData)
+            startTransition(async () => {
+                setFormState(await submitBagadAssoFormAction(submitData))
             })
         }
     })

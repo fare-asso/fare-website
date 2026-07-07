@@ -1,5 +1,6 @@
 "use client"
 
+import { useLocation } from "@tanstack/react-router"
 import {
     FileUserIcon,
     LinkIcon,
@@ -13,9 +14,6 @@ import {
     TicketIcon,
     BoxIcon
 } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
 import { FaHandcuffs, FaPeopleGroup, FaUsers } from "react-icons/fa6" // Bouge Ta Prison
@@ -23,6 +21,8 @@ import { FaHandcuffs, FaPeopleGroup, FaUsers } from "react-icons/fa6" // Bouge T
 import { LuHandshake, LuNetwork, LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
 
 import LogoFARE from "#public/logo_fare.png"
+import Image from "@/components/image"
+import Link from "@/components/link"
 import type { Permission } from "@/generated/prisma/client"
 
 // UI components
@@ -62,7 +62,7 @@ export default function SideBarApp({
     name?: string | null
     image?: string | null
 }) {
-    const pathname = usePathname()
+    const pathname = useLocation({ select: (l) => l.pathname })
 
     const menuGroups: { title?: string; links: SidebarLink[] }[] = [
         {

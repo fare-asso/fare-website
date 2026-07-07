@@ -1,5 +1,4 @@
-import { vi } from "vitest"
-
+import { isNotFound, isRedirect } from "@tanstack/react-router"
 /**
  * Shared module-shape builders for `vi.mock` factories.
  *
@@ -16,31 +15,26 @@ import { vi } from "vitest"
  *     vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
  *     vi.mock("next/cache", () => cacheModule(h.revalidatePath))
  */
+import { vi } from "vitest"
 
 type Fn = ReturnType<typeof vi.fn>
 
-const NEXT_CONTROL_FLOW_DIGESTS = ["NEXT_REDIRECT", "NEXT_NOT_FOUND"]
-
-function isNextControlFlow(error: unknown): boolean {
-    if (typeof error !== "object" || error === null) return false
-    const digest = (error as { digest?: unknown }).digest
-    return (
-        typeof digest === "string" &&
-        NEXT_CONTROL_FLOW_DIGESTS.some((d) => digest.startsWith(d))
-    )
+function isRouterControlFlow(error: unknown): boolean {
+    return isRedirect(error) || isNotFound(error)
 }
 
 /**
  * `@/lib/sentry` mock: `withServerAction` becomes a transparent passthrough so
  * tests exercise the real action body; `captureActionError` is a spy that still
- * rethrows Next `redirect()` / `notFound()` control-flow errors like the real
- * implementation does via `unstable_rethrow`.
+ * rethrows router `redirect()` / `notFound()` control-flow errors like the
+ * real implementation. `packActionArgs`/`unpackActionArgs` mirror the real
+ * payload packing so the serverFn wrappers stay functional under test.
  */
 export function sentryModule(captureActionError?: Fn) {
     const spy =
         captureActionError ??
         vi.fn((error: unknown) => {
-            if (isNextControlFlow(error)) throw error
+            if (isRouterControlFlow(error)) throw error
         })
     return {
         withServerAction:
@@ -50,7 +44,38 @@ export function sentryModule(captureActionError?: Fn) {
             ) =>
             (...args: A): Promise<R> =>
                 handler(...args),
-        captureActionError: spy
+        captureActionError: spy,
+        packActionArgs: async <A extends unknown[]>(args: A) =>
+            args.length === 1 && args[0] instanceof FormData ? args[0] : args,
+        unpackActionArgs: <A extends unknown[]>(data: A | FormData): A =>
+            (data instanceof FormData ? [data] : data) as A
+    }
+}
+
+/**
+ * `@tanstack/react-start` mock — `createServerFn` becomes a plain builder that
+ * invokes the handler directly (no RPC / compilation step in node tests).
+ */
+export function startModule() {
+    const builder = (handlers: {
+        validator?: (input: unknown) => unknown
+    }) => ({
+        inputValidator: (validator: (input: unknown) => unknown) =>
+            builder({ validator }),
+        validator: (validator: (input: unknown) => unknown) =>
+            builder({ validator }),
+        middleware: () => builder(handlers),
+        handler:
+            (fn: (ctx: { data: unknown }) => unknown) =>
+            (opts?: { data?: unknown }) =>
+                fn({
+                    data: handlers.validator
+                        ? handlers.validator(opts?.data)
+                        : opts?.data
+                })
+    })
+    return {
+        createServerFn: () => builder({})
     }
 }
 

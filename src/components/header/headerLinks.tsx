@@ -1,16 +1,17 @@
 "use client"
 
+import { useLocation } from "@tanstack/react-router"
 import { ChevronDownIcon, MenuIcon, XIcon } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import type { CSSProperties } from "react"
+
+import Link from "@/components/link"
 
 import { links } from "./nav.config"
 
 const MOBILE_MENU_ID = "fare-mobile-menu"
 
 export default function HeaderLinks() {
-    const pathname = usePathname()
+    const pathname = useLocation({ select: (l) => l.pathname })
     const visible = links.filter((l) => !l.hidden)
 
     return (

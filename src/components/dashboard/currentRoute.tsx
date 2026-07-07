@@ -1,8 +1,9 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useLocation } from "@tanstack/react-router"
 import React from "react"
+
+import Link from "@/components/link"
 
 import {
     Breadcrumb,
@@ -14,7 +15,7 @@ import {
 } from "../ui/breadcrumb"
 
 export default function CurrentRoute() {
-    const path = usePathname()
+    const path = useLocation({ select: (l) => l.pathname })
 
     const pathArray = path.split("/").filter((p) => p !== "")
 

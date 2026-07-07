@@ -1,7 +1,5 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
-import { memo, startTransition, useActionState, useCallback } from "react"
+import { memo, useCallback, useState, useTransition } from "react"
 
 import submitContactFormAction, {
     type FormState
@@ -53,10 +51,8 @@ function CaptchaValidation({
 }
 
 export default function ContactForm() {
-    const [formState, formAction, pending] = useActionState<
-        FormState | undefined,
-        Contact
-    >(submitContactFormAction, undefined)
+    const [pending, startTransition] = useTransition()
+    const [formState, setFormState] = useState<FormState | undefined>(undefined)
 
     const form = useForm({
         defaultValues: {
@@ -79,8 +75,9 @@ export default function ContactForm() {
                 captchaToken: value.captchaToken
             }
 
-            startTransition(() => {
-                formAction(submitData)
+            startTransition(async () => {
+                const result = await submitContactFormAction(submitData)
+                setFormState(result)
             })
         }
     })

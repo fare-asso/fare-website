@@ -1,9 +1,5 @@
 import type { ReactNode } from "react"
 
-import prisma from "@/helpers/db"
-import { captureActionError } from "@/lib/sentry"
-import { tryCatch } from "@/lib/utils"
-
 import { AutoAnimatedNumber } from "../ui/animated-number"
 
 function GridItem({
@@ -40,19 +36,17 @@ function Grid({
     )
 }
 
-export default async function KeyNumbers() {
-    const result = await tryCatch(prisma.association.findMany())
-    if (!result.success) {
-        captureActionError(result.error)
-    }
-    const associations = result.success ? result.value : undefined
-
+export default function KeyNumbers({
+    associationCount
+}: {
+    associationCount: number | undefined
+}) {
     return (
         <Grid
             values={[
                 {
                     title: "Associations étudiantes",
-                    value: associations ? associations.length : 20
+                    value: associationCount ?? 20
                 },
                 { title: "Étudiant.e.s", value: 88000 },
                 {

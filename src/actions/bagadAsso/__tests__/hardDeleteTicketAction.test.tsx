@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     deleteFn: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -14,7 +13,6 @@ vi.mock("@/helpers/db", () =>
     dbModule({ bagadAssoTicket: { delete: h.deleteFn } })
 )
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import hardDeleteBagadAssoTicketAction from "../hardDeleteTicketAction"
@@ -44,7 +42,6 @@ describe("hardDeleteBagadAssoTicketAction", () => {
         const res = await hardDeleteBagadAssoTicketAction(7)
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 7 } })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
     })
 
     it("captures and returns an error when the delete throws", async () => {

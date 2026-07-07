@@ -1,7 +1,6 @@
-import Image from "next/image"
-import Link from "next/link"
-
 import logo from "#public/logo_fare.png"
+import Image from "@/components/image"
+import Link from "@/components/link"
 
 import HeaderLinks from "./headerLinks"
 

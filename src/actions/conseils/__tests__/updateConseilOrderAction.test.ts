@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     updateConseil: vi.fn(),
     transaction: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -18,7 +17,6 @@ vi.mock("@/helpers/db", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import updateConseilOrderAction from "../updateConseilOrderAction"
@@ -70,6 +68,5 @@ describe("updateConseilOrderAction", () => {
             data: { order: 1 }
         })
         expect(h.transaction).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/elus")
     })
 })

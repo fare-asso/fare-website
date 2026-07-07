@@ -5,7 +5,6 @@ import { imageFile } from "@/test/factories/files"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -16,7 +15,6 @@ const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     upload: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -30,7 +28,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import addEquipmentAction from "../addEquipmentAction"
@@ -118,8 +115,6 @@ describe("addEquipmentAction", () => {
         expect(h.create).toHaveBeenCalledWith({
             data: { name: "Barnum", deposit: 50, quantity: 2, imagePath: null }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/projets/bagad-asso")
     })
 
     it("uploads the image and stores its path on the happy path", async () => {

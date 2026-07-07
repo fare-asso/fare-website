@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -14,7 +13,6 @@ const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     info: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ info: h.info, remove: h.remove })))
@@ -26,7 +24,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import createCDPAction from "../createCDPAction"
@@ -108,6 +105,5 @@ describe("createCDPAction", () => {
                 type: "CDP"
             })
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/presse")
     })
 })

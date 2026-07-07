@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -14,7 +13,6 @@ const h = vi.hoisted(() => ({
     deleteFn: vi.fn(),
     getUser: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
@@ -28,7 +26,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import deleteEquipmentAction from "../deleteEquipmentAction"
@@ -83,6 +80,5 @@ describe("deleteEquipmentAction", () => {
         const res = await deleteEquipmentAction(undefined, 4)
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
     })
 })

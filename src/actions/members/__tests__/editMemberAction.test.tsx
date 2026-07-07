@@ -5,7 +5,6 @@ import { validEditMember } from "@/test/factories/members"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -17,7 +16,6 @@ const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     storageUpload: vi.fn(),
     storageRemove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -31,7 +29,6 @@ vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import editMemberAction from "../editMemberAction"
@@ -117,8 +114,6 @@ describe("editMemberAction", () => {
                 picturePath: "old-uuid.png"
             })
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/membres")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/bureau")
     })
 
     it("captures and fails when the storage upload throws", async () => {
@@ -143,7 +138,6 @@ describe("editMemberAction", () => {
             error: "Échec de la modification du membre."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("uploads a new picture, removes the old one and updates on the happy path", async () => {
@@ -165,7 +159,6 @@ describe("editMemberAction", () => {
                 picturePath: path
             })
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/membres")
     })
 
     it("skips the remove when the previous picturePath is empty", async () => {

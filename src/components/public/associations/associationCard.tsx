@@ -1,6 +1,5 @@
-import Image from "next/image"
-import Link from "next/link"
-
+import Image from "@/components/image"
+import Link from "@/components/link"
 import type { Association } from "@/generated/prisma/client"
 import { createClient } from "@/helpers/supabase/server"
 

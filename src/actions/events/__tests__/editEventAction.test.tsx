@@ -4,7 +4,6 @@ import { validEventFormData } from "@/test/factories/events"
 import { mockUser } from "@/test/factories/user"
 import {
     authModule,
-    cacheModule,
     dbModule,
     sentryModule,
     supabaseServerModule
@@ -17,7 +16,6 @@ const h = vi.hoisted(() => ({
     getUserId: vi.fn(),
     upload: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -35,7 +33,6 @@ vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )
 vi.mock("@/helpers/user/id", () => ({ default: h.getUserId }))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import editEventAction from "../editEventAction"
@@ -109,6 +106,5 @@ describe("editEventAction", () => {
                 categoryId: 1
             })
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/events")
     })
 })

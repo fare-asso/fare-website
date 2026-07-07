@@ -2,14 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validAssociationRecord } from "@/test/factories/associations"
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     findUnique: vi.fn(),
     updateAsso: vi.fn(),
     updateAdhesion: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -20,7 +19,6 @@ vi.mock("@/helpers/db", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import approveAssociationAction from "../approveAssociationAction"
@@ -73,7 +71,6 @@ describe("approveAssociationAction", () => {
             data: { approved: expect.any(Date) }
         })
         expect(h.updateAdhesion).not.toHaveBeenCalled()
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/associations")
     })
 
     it("archives the linked adhesion when present", async () => {
@@ -86,7 +83,6 @@ describe("approveAssociationAction", () => {
             where: { id: 42 },
             data: { archived: expect.any(Date) }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/adhesions")
     })
 
     it("captures and fails when the update throws", async () => {
