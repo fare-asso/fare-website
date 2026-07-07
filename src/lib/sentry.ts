@@ -29,12 +29,16 @@ function isControlFlowResult(
 // serialized array. Files nested in typed args are not supported by the
 // serverFn serializer, so they are packed as Uint8Array records and revived
 // server-side.
+// seroval rejects ArrayBuffers whose base64 exceeds 1e6 chars (~750 KB), so
+// bytes travel as independent chunks safely under that limit.
+const FILE_CHUNK_BYTES = 512 * 1024
+
 type PackedFile = {
     __tssFile: true
     name: string
     type: string
     lastModified: number
-    bytes: Uint8Array
+    bytes: Uint8Array[]
 }
 
 type Packed<T> = T extends File
@@ -62,12 +66,18 @@ function isPackedFile(value: unknown): value is PackedFile {
 
 async function packFiles(value: unknown): Promise<unknown> {
     if (value instanceof File) {
+        const buffer = new Uint8Array(await value.arrayBuffer())
+        const bytes: Uint8Array[] = []
+        for (let i = 0; i < buffer.length; i += FILE_CHUNK_BYTES) {
+            // .slice() copies, so each chunk gets its own ArrayBuffer
+            bytes.push(buffer.slice(i, i + FILE_CHUNK_BYTES))
+        }
         return {
             __tssFile: true,
             name: value.name,
             type: value.type,
             lastModified: value.lastModified,
-            bytes: new Uint8Array(await value.arrayBuffer())
+            bytes
         } satisfies PackedFile
     }
     if (Array.isArray(value)) {
@@ -90,7 +100,7 @@ async function packFiles(value: unknown): Promise<unknown> {
 
 function unpackFiles(value: unknown): unknown {
     if (isPackedFile(value)) {
-        return new File([value.bytes as BlobPart], value.name, {
+        return new File(value.bytes as BlobPart[], value.name, {
             type: value.type,
             lastModified: value.lastModified
         })

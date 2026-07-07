@@ -22,7 +22,7 @@ vi.mock("@sentry/nextjs", () => ({
 vi.mock("next/headers", () => ({ headers: vi.fn(async () => new Headers()) }))
 vi.mock("next/navigation", () => ({ unstable_rethrow: vi.fn() }))
 
-import { withServerAction } from "../sentry"
+import { packActionArgs, unpackActionArgs, withServerAction } from "../sentry"
 
 beforeEach(() => {
     vi.clearAllMocks()
@@ -72,5 +72,38 @@ describe("withServerAction", () => {
         const action = withServerAction("argsAction", argsActionImpl)
         await action("a", 2, { c: true })
         expect(argsActionImpl).toHaveBeenCalledWith("a", 2, { c: true })
+    })
+})
+
+describe("packActionArgs / unpackActionArgs", () => {
+    it("round-trips a file larger than seroval's ~750 KB buffer cap", async () => {
+        const big = new Uint8Array(1_500_000).map((_, i) => i % 251)
+        const file = new File([big], "logo.png", {
+            type: "image/png",
+            lastModified: 42
+        })
+        const packed = await packActionArgs([{ name: "FARE", logo: file }])
+
+        const packedFile = (
+            packed as unknown as [{ logo: { bytes: Uint8Array[] } }]
+        )[0].logo
+        expect(packedFile.bytes.length).toBeGreaterThan(1)
+        for (const chunk of packedFile.bytes) {
+            // base64 length must stay under seroval's 1e6-char deserialize cap
+            expect(Math.ceil(chunk.byteLength / 3) * 4).toBeLessThan(1_000_000)
+        }
+
+        const [arg] = unpackActionArgs<[{ name: string; logo: File }]>(packed)
+        expect(arg.name).toBe("FARE")
+        expect(arg.logo).toBeInstanceOf(File)
+        expect(arg.logo.name).toBe("logo.png")
+        expect(arg.logo.type).toBe("image/png")
+        expect(new Uint8Array(await arg.logo.arrayBuffer())).toEqual(big)
+    })
+
+    it("passes top-level FormData through untouched", async () => {
+        const fd = new FormData()
+        expect(await packActionArgs([fd])).toBe(fd)
+        expect(unpackActionArgs<[FormData]>(fd)).toEqual([fd])
     })
 })
