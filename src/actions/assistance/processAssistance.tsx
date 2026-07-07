@@ -129,7 +129,7 @@ async function processAssistanceImpl(
 }
 
 const processAssistanceServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof processAssistanceImpl>>) => data
     )
     .handler(({ data }) =>

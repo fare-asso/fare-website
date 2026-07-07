@@ -60,7 +60,7 @@ async function updateLinkCategoryOrderActionImpl(
 }
 
 const updateLinkCategoryOrderActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof updateLinkCategoryOrderActionImpl>

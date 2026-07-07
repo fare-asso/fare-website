@@ -21,7 +21,7 @@ import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { dashboardTitle } from "@/lib/seo"
 
 const getUsersPageData = createServerFn()
-    .inputValidator((data: { showDeleted?: boolean }) => data)
+    .validator((data: { showDeleted?: boolean }) => data)
     .handler(async ({ data }) => {
         const users = await prisma.user.findMany({
             where: data.showDeleted ? {} : { deletedAt: null },

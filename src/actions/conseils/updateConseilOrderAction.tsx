@@ -58,7 +58,7 @@ async function updateConseilOrderActionImpl(
 }
 
 const updateConseilOrderActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<Parameters<typeof updateConseilOrderActionImpl>>
         ) => data

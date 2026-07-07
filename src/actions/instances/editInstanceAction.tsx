@@ -152,7 +152,7 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
 }
 
 const editInstanceActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof editInstanceActionImpl>>) => data
     )
     .handler(({ data }) =>

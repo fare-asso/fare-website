@@ -41,7 +41,7 @@ async function deleteLinkCategoryActionImpl(id: number): Promise<Result> {
 }
 
 const deleteLinkCategoryActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<Parameters<typeof deleteLinkCategoryActionImpl>>
         ) => data

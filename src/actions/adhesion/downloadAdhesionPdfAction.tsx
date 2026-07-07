@@ -61,7 +61,7 @@ async function downloadAdhesionPdfActionImpl(adhesionId: number): Promise<{
 }
 
 const downloadAdhesionPdfActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof downloadAdhesionPdfActionImpl>

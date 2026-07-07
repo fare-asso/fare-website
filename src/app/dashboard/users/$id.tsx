@@ -16,7 +16,7 @@ import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 import { dashboardTitle } from "@/lib/seo"
 
 const getUserPageData = createServerFn()
-    .inputValidator((id: string) => id)
+    .validator((id: string) => id)
     .handler(async ({ data: id }) => {
         const user = await prisma.user.findUnique({
             where: { id },

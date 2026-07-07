@@ -2,11 +2,6 @@ import { createFileRoute } from "@tanstack/react-router"
 import { FaRegFilePdf } from "react-icons/fa6"
 import { FiDownload, FiExternalLink } from "react-icons/fi"
 
-import food from "#public/AGORAe/food.jpg"
-import logoAgoraE from "#public/AGORAe/logo_AgoraE.png"
-import recettesParMois from "#public/AGORAe/recettes_par_mois.png"
-import salle from "#public/AGORAe/salle.jpg"
-import tableauRAV from "#public/AGORAe/tableau_rav.png"
 import Image from "@/components/image"
 import Link from "@/components/link"
 import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
@@ -25,7 +20,7 @@ function AGORAe() {
             {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">AGORAé</h1> */}
 
             <Image
-                src={logoAgoraE}
+                src="/AGORAe/logo_AgoraE.png"
                 alt="Logo de l'AGORAé"
                 className="mb-10 w-full md:w-1/2"
             />
@@ -99,8 +94,11 @@ function AGORAe() {
                 </section>
 
                 <div className="flex flex-col space-y-3 space-x-0 md:flex-row md:space-y-0 md:space-x-2 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
-                    <Image src={salle} alt="Cantine de l'AGORAé" />
-                    <Image src={food} alt="Nourriture proposée à l'AGORAé" />
+                    <Image src="/AGORAe/salle.jpg" alt="Cantine de l'AGORAé" />
+                    <Image
+                        src="/AGORAe/food.jpg"
+                        alt="Nourriture proposée à l'AGORAé"
+                    />
                 </div>
 
                 <section>
@@ -117,7 +115,7 @@ function AGORAe() {
 
                     <div className="flex w-full flex-col items-center">
                         <Image
-                            src={recettesParMois}
+                            src="/AGORAe/recettes_par_mois.png"
                             alt="Schéma du calcul pour devenir bénéficiaire de l'AGORAé"
                             className="w-full md:w-1/2"
                         />
@@ -130,7 +128,7 @@ function AGORAe() {
 
                     <div className="flex w-full flex-col items-center">
                         <Image
-                            src={tableauRAV}
+                            src="/AGORAe/tableau_rav.png"
                             alt="Tableau de calcul d'éligibilité à l'aide alimentaire mensuel"
                             className="w-full md:w-1/2"
                         />

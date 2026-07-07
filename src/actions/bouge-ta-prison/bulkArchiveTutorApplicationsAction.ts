@@ -62,7 +62,7 @@ async function bulkArchiveTutorApplicationsActionImpl(
 const bulkArchiveTutorApplicationsActionServerFn = createServerFn({
     method: "POST"
 })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof bulkArchiveTutorApplicationsActionImpl>

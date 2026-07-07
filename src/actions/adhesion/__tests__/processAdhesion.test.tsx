@@ -24,21 +24,6 @@ const from = vi.hoisted(() =>
     vi.fn(() => ({ upload: h.upload, remove: h.remove }))
 )
 
-// serverFn passthrough — vitest node has no Start runtime, so the wrapper
-// calls its handler directly with the packed payload.
-vi.mock("@tanstack/react-start", () => {
-    type Handler = (ctx: { data: unknown }) => unknown
-    type Builder = {
-        inputValidator: () => Builder
-        handler: (fn: Handler) => (opts: { data: unknown }) => unknown
-    }
-    const builder: Builder = {
-        inputValidator: () => builder,
-        handler: (fn) => (opts) => fn(opts)
-    }
-    return { createServerFn: (): Builder => builder }
-})
-
 vi.mock("std-env", () => stdEnvModule(stdenv))
 // createClient is sync under TanStack Start — the shared supabaseServerModule
 // mock still returns a Promise, so mock it inline.

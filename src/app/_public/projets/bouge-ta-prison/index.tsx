@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import assemblee0 from "#public/BTP/assemblee1.jpg"
-import assemblee1 from "#public/BTP/assemblee2.jpg"
-import logoBTP from "#public/BTP/Logo_BTP.png"
 import Image from "@/components/image"
 import Link from "@/components/link"
 import { pageTitle } from "@/lib/seo"
@@ -16,7 +13,7 @@ function BougeTaPrison() {
     return (
         <div className="mb-20 flex w-full flex-col items-center justify-start gap-6 px-4 md:px-8 lg:px-16">
             <Image
-                src={logoBTP}
+                src="/BTP/Logo_BTP.png"
                 alt="Logo du projet Bouge Ta Prison"
                 className="w-72"
             />
@@ -46,11 +43,11 @@ function BougeTaPrison() {
 
                     <div className="mb-4 flex flex-col space-y-3 space-x-0 md:flex-row md:space-y-0 md:space-x-2 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2">
                         <Image
-                            src={assemblee0}
+                            src="/BTP/assemblee1.jpg"
                             alt="Photo d'une conférence de sensibilisation du milieu carcéral à l'Université de Rennes 2 qui s'est déroulée en février 2024"
                         />
                         <Image
-                            src={assemblee1}
+                            src="/BTP/assemblee2.jpg"
                             alt="Deuxième photo de la conférence de sensibilisation du milieu carcéral à l'Université de Rennes 2"
                         />
                     </div>

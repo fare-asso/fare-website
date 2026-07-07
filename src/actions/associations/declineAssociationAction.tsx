@@ -77,7 +77,7 @@ async function declineAssociationActionImpl(
 }
 
 const declineAssociationActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<Parameters<typeof declineAssociationActionImpl>>
         ) => data

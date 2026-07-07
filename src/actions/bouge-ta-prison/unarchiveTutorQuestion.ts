@@ -32,7 +32,7 @@ async function unarchiveTutorQuestionImpl(
 }
 
 const unarchiveTutorQuestionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof unarchiveTutorQuestionImpl>>) =>
             data
     )

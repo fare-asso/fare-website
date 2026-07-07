@@ -63,7 +63,7 @@ async function updateUserPermissionsImpl(
 }
 
 const updateUserPermissionsServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof updateUserPermissionsImpl>>) =>
             data
     )

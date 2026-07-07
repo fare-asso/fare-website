@@ -53,7 +53,7 @@ async function updateMemberOrderActionImpl(memberOrder: MemberOrder[]) {
 }
 
 const updateMemberOrderActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof updateMemberOrderActionImpl>>) =>
             data
     )

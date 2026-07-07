@@ -133,7 +133,7 @@ async function editArticleActionImpl(formData: FormData) {
 }
 
 const editArticleActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof editArticleActionImpl>>) => data
     )
     .handler(({ data }) =>

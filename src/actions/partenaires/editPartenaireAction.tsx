@@ -109,7 +109,7 @@ async function editPartenaireActionImpl(
 }
 
 const editPartenaireActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof editPartenaireActionImpl>>) =>
             data
     )

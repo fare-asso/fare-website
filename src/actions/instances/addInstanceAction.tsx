@@ -110,7 +110,7 @@ async function addInstanceActionImpl(
 }
 
 const addInstanceActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof addInstanceActionImpl>>) => data
     )
     .handler(({ data }) =>

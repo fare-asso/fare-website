@@ -73,7 +73,7 @@ async function editConseilActionImpl(input: TEditConseil): Promise<Result> {
 }
 
 const editConseilActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof editConseilActionImpl>>) => data
     )
     .handler(({ data }) =>

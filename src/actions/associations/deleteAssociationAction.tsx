@@ -85,7 +85,7 @@ async function deleteAssociationActionImpl(id: number) {
 }
 
 const deleteAssociationActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteAssociationActionImpl>>) =>
             data
     )

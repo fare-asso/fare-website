@@ -67,7 +67,7 @@ async function editLinkActionImpl(input: TEditLink): Promise<Result> {
 }
 
 const editLinkActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof editLinkActionImpl>>) => data
     )
     .handler(({ data }) =>

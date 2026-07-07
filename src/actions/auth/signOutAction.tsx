@@ -30,9 +30,7 @@ async function signOutImpl(): Promise<{ success: boolean; error?: string }> {
 }
 
 const signOutServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
-        (data: ActionPayload<Parameters<typeof signOutImpl>>) => data
-    )
+    .validator((data: ActionPayload<Parameters<typeof signOutImpl>>) => data)
     .handler(({ data }) =>
         withServerAction(
             "signOut",

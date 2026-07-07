@@ -67,7 +67,7 @@ async function sendApprovalEmailImpl(
 }
 
 const sendApprovalEmailServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof sendApprovalEmailImpl>>) => data
     )
     .handler(({ data }) =>

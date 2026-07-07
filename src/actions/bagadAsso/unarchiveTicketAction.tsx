@@ -48,7 +48,7 @@ async function unarchiveBagadAssoTicketActionImpl(ticketId: number): Promise<{
 const unarchiveBagadAssoTicketActionServerFn = createServerFn({
     method: "POST"
 })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof unarchiveBagadAssoTicketActionImpl>

@@ -58,7 +58,7 @@ async function updateLinkOrderActionImpl(linkOrder: TOrder): Promise<Result> {
 }
 
 const updateLinkOrderActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof updateLinkOrderActionImpl>>) =>
             data
     )

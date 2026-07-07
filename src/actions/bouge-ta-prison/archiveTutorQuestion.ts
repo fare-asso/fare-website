@@ -32,7 +32,7 @@ async function archiveTutorQuestionImpl(
 }
 
 const archiveTutorQuestionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof archiveTutorQuestionImpl>>) =>
             data
     )

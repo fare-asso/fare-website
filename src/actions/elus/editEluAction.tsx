@@ -74,7 +74,7 @@ async function editEluActionImpl(input: TEditElu): Promise<Result> {
 }
 
 const editEluActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof editEluActionImpl>>) => data
     )
     .handler(({ data }) =>

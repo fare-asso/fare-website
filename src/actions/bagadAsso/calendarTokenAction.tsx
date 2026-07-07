@@ -77,7 +77,7 @@ async function revokeBagadCalendarTokenActionImpl(): Promise<RevokeResult> {
 const generateBagadCalendarTokenActionServerFn = createServerFn({
     method: "POST"
 })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof generateBagadCalendarTokenActionImpl>
@@ -105,7 +105,7 @@ export const generateBagadCalendarTokenAction = async (
 const revokeBagadCalendarTokenActionServerFn = createServerFn({
     method: "POST"
 })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof revokeBagadCalendarTokenActionImpl>

@@ -102,7 +102,7 @@ async function editMemberActionImpl(input: TEditMember): Promise<Result> {
 }
 
 const editMemberActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof editMemberActionImpl>>) => data
     )
     .handler(({ data }) =>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useServerFn } from "@tanstack/react-start"
 import { LogOut } from "lucide-react"
 import { useTransition } from "react"
 import { toast } from "sonner"
@@ -29,10 +30,11 @@ export default function AccountButton({
     image
 }: AccountButtonProps): React.JSX.Element {
     const [isPending, startTransition] = useTransition()
+    const signOutFn = useServerFn(signOut)
 
     function handleSignOut(): void {
         startTransition(async () => {
-            const result = await signOut()
+            const result = await signOutFn()
             if (!result.success) {
                 toast.error(result.error || "Erreur lors de la déconnexion")
             }

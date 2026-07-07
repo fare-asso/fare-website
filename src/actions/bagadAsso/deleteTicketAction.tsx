@@ -46,7 +46,7 @@ async function deleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
 }
 
 const deleteBagadAssoTicketActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof deleteBagadAssoTicketActionImpl>

@@ -28,26 +28,29 @@ export default function Image({
     quality: _quality,
     ...props
 }: ImageProps) {
+    const priorityProps = priority
+        ? ({ loading: "eager", fetchPriority: "high" } as const)
+        : {}
     if (fill || width === undefined || height === undefined) {
         return (
             <UnpicImage
                 {...props}
+                {...priorityProps}
                 src={src}
                 alt={alt}
                 layout="fullWidth"
-                priority={priority}
             />
         )
     }
     return (
         <UnpicImage
             {...props}
+            {...priorityProps}
             src={src}
             alt={alt}
             layout="constrained"
             width={Number(width)}
             height={Number(height)}
-            priority={priority}
         />
     )
 }

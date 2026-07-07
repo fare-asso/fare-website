@@ -36,7 +36,7 @@ async function deleteLinkActionImpl(id: number): Promise<Result> {
 }
 
 const deleteLinkActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteLinkActionImpl>>) => data
     )
     .handler(({ data }) =>

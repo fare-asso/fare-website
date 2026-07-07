@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 
-import logoBagadAsso from "#public/Logo_Bagadasso.png"
 import Image from "@/components/image"
 import BagadAssoForm from "@/components/public/bagadAsso/form"
 import prisma from "@/helpers/db"
@@ -33,7 +32,7 @@ function BagadAsso() {
     return (
         <div className="flex w-full flex-col items-center justify-start">
             <Image
-                src={logoBagadAsso}
+                src="/Logo_Bagadasso.png"
                 alt="Logo du projet Bagad'Asso"
                 className="mb-12 w-72"
             />

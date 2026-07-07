@@ -108,7 +108,7 @@ async function loginWithPasswordActionImpl(formData: FormData) {
 }
 
 const loginWithGoogleServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof loginWithGoogleActionImpl>>) =>
             data
     )
@@ -131,7 +131,7 @@ export const loginWithGoogleAction = async (
     }) as ReturnType<typeof loginWithGoogleActionImpl>
 
 const loginWithPasswordServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof loginWithPasswordActionImpl>>) =>
             data
     )

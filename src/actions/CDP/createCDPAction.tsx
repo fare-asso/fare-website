@@ -130,7 +130,7 @@ async function createCDPActionImpl(formData: FormData) {
 }
 
 const createCDPActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof createCDPActionImpl>>) => data
     )
     .handler(({ data }) =>

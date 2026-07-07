@@ -1,3 +1,4 @@
+import { useServerFn } from "@tanstack/react-start"
 import { LoaderIcon, MailIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { FcGoogle } from "react-icons/fc"
@@ -12,10 +13,11 @@ import { Label } from "@/components/ui/label"
 
 export function LoginWithGoogleButton() {
     const [googlePending, startTransition] = useTransition()
+    const loginWithGoogle = useServerFn(loginWithGoogleAction)
 
     const handleGoogleLogin = () => {
         startTransition(async () => {
-            await loginWithGoogleAction()
+            await loginWithGoogle()
         })
     }
 
@@ -48,10 +50,11 @@ export function LoginWithPasswordButton() {
         { emailError?: string; passwordError?: string } | undefined
     >(undefined)
     const [passwordPending, startTransition] = useTransition()
+    const loginWithPasswordFn = useServerFn(loginWithPasswordAction)
 
     const loginWithPassword = (formData: FormData) => {
         startTransition(async () => {
-            const result = await loginWithPasswordAction(formData)
+            const result = await loginWithPasswordFn(formData)
             setPasswordError(result)
         })
     }

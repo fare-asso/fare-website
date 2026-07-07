@@ -5,8 +5,7 @@ import { playwright } from "@vitest/browser-playwright"
 import { defineConfig } from "vitest/config"
 
 const srcAlias = {
-    "@": fileURLToPath(new URL("./src", import.meta.url)),
-    "#public": fileURLToPath(new URL("./public", import.meta.url))
+    "@": fileURLToPath(new URL("./src", import.meta.url))
 }
 
 const testEnv = {

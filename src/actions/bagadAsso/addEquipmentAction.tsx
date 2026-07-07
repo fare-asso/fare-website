@@ -86,7 +86,7 @@ async function addEquipmentActionImpl(
 }
 
 const addEquipmentActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof addEquipmentActionImpl>>) => data
     )
     .handler(({ data }) =>

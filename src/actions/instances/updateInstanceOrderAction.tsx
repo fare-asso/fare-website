@@ -63,7 +63,7 @@ async function updateInstanceOrderActionImpl(
 }
 
 const updateInstanceOrderActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof updateInstanceOrderActionImpl>

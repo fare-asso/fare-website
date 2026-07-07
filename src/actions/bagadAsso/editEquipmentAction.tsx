@@ -119,7 +119,7 @@ async function editEquipmentActionImpl(input: TEditEquipment): Promise<Result> {
 }
 
 const editEquipmentActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof editEquipmentActionImpl>>) =>
             data
     )

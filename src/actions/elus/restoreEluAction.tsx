@@ -44,7 +44,7 @@ async function restoreEluActionImpl(id: number): Promise<RestoreEluResult> {
 }
 
 const restoreEluActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof restoreEluActionImpl>>) => data
     )
     .handler(({ data }) =>

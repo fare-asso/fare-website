@@ -69,7 +69,7 @@ async function deleteEquipmentActionImpl(equipmentId: number) {
 }
 
 const deleteEquipmentActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteEquipmentActionImpl>>) =>
             data
     )

@@ -54,7 +54,7 @@ async function deleteMemberActionImpl({ id }: { id: number }) {
 }
 
 const deleteMemberActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteMemberActionImpl>>) => data
     )
     .handler(({ data }) =>

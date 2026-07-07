@@ -1,10 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import logoBTC from "#public/elues/logo-Bouge-Ton-Crous.png"
-import logoCrous from "#public/Logo_Crous_vectorisé.png"
-import logoFage from "#public/Logo_FAGE.png"
-import logoUR2 from "#public/univ/Logo_univ-rennes2-2016.png"
-import logoUR from "#public/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
 import Image from "@/components/image"
 import Link from "@/components/link"
 import { pageTitle } from "@/lib/seo"
@@ -27,7 +22,7 @@ function Representation() {
                 >
                     <span className="text-3xl font-bold md:text-4xl">LA</span>
                     <Image
-                        src={logoFage}
+                        src="/Logo_FAGE.png"
                         alt="Logo de la FAGE"
                         className="h-24 w-auto object-contain md:h-32"
                         placeholder="empty"
@@ -40,22 +35,22 @@ function Representation() {
                 >
                     <div className="flex flex-wrap items-center justify-center gap-3">
                         <Image
-                            src={logoBTC}
+                            src="/elues/logo-Bouge-Ton-Crous.png"
                             alt="Logo Bouge Ton Crous"
                             className="h-16 w-16 object-contain"
                         />
                         <Image
-                            src={logoCrous}
+                            src="/Logo_Crous_vectorisé.png"
                             alt="Logo les Crous"
                             className="h-16 w-16 object-contain"
                         />
                         <Image
-                            src={logoUR}
+                            src="/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
                             alt="Logo Université de Rennes"
                             className="h-16 w-16 object-contain"
                         />
                         <Image
-                            src={logoUR2}
+                            src="/univ/Logo_univ-rennes2-2016.png"
                             alt="Logo Université Rennes 2"
                             className="h-16 w-16 object-contain"
                         />

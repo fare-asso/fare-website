@@ -8,7 +8,7 @@ import { createClient } from "@/helpers/supabase/server"
 import { tryCatch } from "@/lib/utils"
 
 const getAssociation = createServerFn()
-    .inputValidator((id: number) => id)
+    .validator((id: number) => id)
     .handler(async ({ data }) => {
         const supabase = createClient()
         const result = await tryCatch(

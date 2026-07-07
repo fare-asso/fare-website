@@ -66,7 +66,7 @@ async function switchVisibilityActionImpl(
 }
 
 const switchVisibilityActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof switchVisibilityActionImpl>>) =>
             data
     )

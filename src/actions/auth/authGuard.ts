@@ -28,7 +28,7 @@ const permissionProtectedRoutes: {
 ]
 
 export const dashboardGuard = createServerFn({ method: "GET" })
-    .inputValidator((data: { pathname: string }) => data)
+    .validator((data: { pathname: string }) => data)
     .handler(async ({ data }) => {
         const supabase = createClient()
         const userResult = await supabase.auth.getUser()

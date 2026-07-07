@@ -46,7 +46,7 @@ async function archiveAdhesionActionImpl(adhesionId: number): Promise<{
 }
 
 const archiveAdhesionActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof archiveAdhesionActionImpl>>) =>
             data
     )

@@ -56,7 +56,7 @@ async function deleteEluActionImpl(id: number): Promise<DeleteEluResult> {
 }
 
 const deleteEluActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteEluActionImpl>>) => data
     )
     .handler(({ data }) =>

@@ -53,7 +53,7 @@ async function addLinkCategoryActionImpl(
 }
 
 const addLinkCategoryActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof addLinkCategoryActionImpl>>) =>
             data
     )

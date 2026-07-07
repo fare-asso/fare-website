@@ -223,7 +223,7 @@ async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
 }
 
 const processAdhesionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof processAdhesionImpl>>) => data
     )
     .handler(({ data }) =>

@@ -80,7 +80,7 @@ async function updateAssistanceConfigImpl(input: {
 }
 
 const updateAssistanceConfigServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof updateAssistanceConfigImpl>>) =>
             data
     )

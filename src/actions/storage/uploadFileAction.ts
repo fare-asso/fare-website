@@ -79,9 +79,7 @@ async function uploadFileImpl(
 }
 
 const uploadFileServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
-        (data: ActionPayload<Parameters<typeof uploadFileImpl>>) => data
-    )
+    .validator((data: ActionPayload<Parameters<typeof uploadFileImpl>>) => data)
     .handler(({ data }) =>
         withServerAction(
             "uploadFile",

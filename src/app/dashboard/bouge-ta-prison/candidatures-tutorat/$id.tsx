@@ -30,7 +30,7 @@ import { dashboardTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 
 const getTutorApplication = createServerFn()
-    .inputValidator((id: number) => id)
+    .validator((id: number) => id)
     .handler(async ({ data: id }) => {
         const result = await tryCatch(
             prisma.bTPTutorApplication.findUnique({ where: { id } })

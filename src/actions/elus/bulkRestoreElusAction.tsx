@@ -51,7 +51,7 @@ async function bulkRestoreElusActionImpl(ids: number[]): Promise<Result> {
 }
 
 const bulkRestoreElusActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof bulkRestoreElusActionImpl>>) =>
             data
     )

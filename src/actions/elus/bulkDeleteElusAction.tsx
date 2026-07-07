@@ -58,7 +58,7 @@ async function bulkDeleteElusActionImpl(ids: TBulkDeleteElus): Promise<Result> {
 }
 
 const bulkDeleteElusActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof bulkDeleteElusActionImpl>>) =>
             data
     )

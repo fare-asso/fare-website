@@ -71,7 +71,7 @@ async function deleteCDPActionImpl({ id }: { id: number }) {
 }
 
 const deleteCDPActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteCDPActionImpl>>) => data
     )
     .handler(({ data }) =>

@@ -30,7 +30,7 @@ async function deleteTutorQuestionImpl(
 }
 
 const deleteTutorQuestionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteTutorQuestionImpl>>) =>
             data
     )

@@ -70,7 +70,7 @@ async function deleteEventActionImpl({ eventId }: { eventId: number }) {
 }
 
 const deleteEventActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteEventActionImpl>>) => data
     )
     .handler(({ data }) =>

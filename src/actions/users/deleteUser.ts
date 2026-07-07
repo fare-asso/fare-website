@@ -53,9 +53,7 @@ async function deleteUserImpl(userId: string) {
 }
 
 const deleteUserServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
-        (data: ActionPayload<Parameters<typeof deleteUserImpl>>) => data
-    )
+    .validator((data: ActionPayload<Parameters<typeof deleteUserImpl>>) => data)
     .handler(({ data }) =>
         withServerAction(
             "deleteUser",

@@ -74,7 +74,7 @@ async function approveAssociationActionImpl(
 }
 
 const approveAssociationActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<Parameters<typeof approveAssociationActionImpl>>
         ) => data

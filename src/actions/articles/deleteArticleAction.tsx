@@ -76,7 +76,7 @@ async function deleteArticleActionImpl(id: number) {
 }
 
 const deleteArticleActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteArticleActionImpl>>) =>
             data
     )

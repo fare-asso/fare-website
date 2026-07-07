@@ -9,7 +9,6 @@ import {
 import { Image } from "@unpic/react"
 import { useEffect } from "react"
 
-import FareLoutreSad from "#public/fare_loutre_sad.jpeg"
 import { pageTitle } from "@/lib/seo"
 
 import globalsCss from "@/styles/globals.css?url"
@@ -64,7 +63,7 @@ function NotFoundPage() {
                         Vous vous êtes perdu·e...?
                     </h2>
                     <Image
-                        src={FareLoutreSad}
+                        src="/fare_loutre_sad.jpeg"
                         width={312}
                         height={312}
                         alt="404"

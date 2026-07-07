@@ -44,7 +44,7 @@ async function archiveTutorApplicationImpl(id: number): Promise<Result> {
 }
 
 const archiveTutorApplicationServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof archiveTutorApplicationImpl>>) =>
             data
     )

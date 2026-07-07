@@ -78,7 +78,7 @@ async function submitContactFormActionImpl(data: Contact): Promise<FormState> {
 }
 
 const submitContactFormActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof submitContactFormActionImpl>>) =>
             data
     )

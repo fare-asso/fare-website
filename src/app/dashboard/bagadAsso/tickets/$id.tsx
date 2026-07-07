@@ -43,7 +43,7 @@ import { dashboardTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 
 const getTicketData = createServerFn()
-    .inputValidator((id: number) => id)
+    .validator((id: number) => id)
     .handler(async ({ data: ticketId }) => {
         const user = await getCurrentUserWithPermissions()
         const canEdit = !!user && hasPermission(user, "edit:bagad-ticket")

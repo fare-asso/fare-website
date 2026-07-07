@@ -44,7 +44,7 @@ async function unarchiveTutorApplicationImpl(id: number): Promise<Result> {
 }
 
 const unarchiveTutorApplicationServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof unarchiveTutorApplicationImpl>

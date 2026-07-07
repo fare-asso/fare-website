@@ -122,7 +122,7 @@ async function downloadFolderActionImpl(
 }
 
 const downloadFolderActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof downloadFolderActionImpl>>) =>
             data
     )

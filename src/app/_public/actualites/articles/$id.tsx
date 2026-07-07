@@ -12,7 +12,7 @@ import { pageTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 
 const getArticle = createServerFn()
-    .inputValidator((id: number) => id)
+    .validator((id: number) => id)
     .handler(async ({ data }) => {
         const result = await tryCatch(
             prisma.article.findUnique({
@@ -29,7 +29,7 @@ const getArticle = createServerFn()
     })
 
 const getMoreArticles = createServerFn()
-    .inputValidator((currentArticleId: number) => currentArticleId)
+    .validator((currentArticleId: number) => currentArticleId)
     .handler(async ({ data }) => {
         const result = await tryCatch(
             prisma.article.findMany({

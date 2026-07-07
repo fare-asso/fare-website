@@ -92,7 +92,7 @@ async function deleteInstanceActionImpl(
 }
 
 const deleteInstanceActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteInstanceActionImpl>>) =>
             data
     )

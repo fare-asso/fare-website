@@ -59,7 +59,7 @@ async function bulkDeleteUsersImpl(userIds: string[]) {
 }
 
 const bulkDeleteUsersServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof bulkDeleteUsersImpl>>) => data
     )
     .handler(({ data }) =>

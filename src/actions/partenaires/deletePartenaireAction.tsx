@@ -75,7 +75,7 @@ async function deletePartenaireActionImpl(
 }
 
 const deletePartenaireActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deletePartenaireActionImpl>>) =>
             data
     )

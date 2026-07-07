@@ -135,7 +135,7 @@ async function submitTutorApplicationImpl(
 }
 
 const submitTutorApplicationServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof submitTutorApplicationImpl>>) =>
             data
     )

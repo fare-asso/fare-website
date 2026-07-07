@@ -62,7 +62,7 @@ async function updateEluOrderActionImpl(
 }
 
 const updateEluOrderActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof updateEluOrderActionImpl>>) =>
             data
     )

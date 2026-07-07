@@ -113,7 +113,7 @@ async function submitBagadAssoFormActionImpl(
 }
 
 const submitBagadAssoFormActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof submitBagadAssoFormActionImpl>

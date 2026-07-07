@@ -49,7 +49,7 @@ async function bulkRestoreUsersImpl(userIds: string[]) {
 }
 
 const bulkRestoreUsersServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof bulkRestoreUsersImpl>>) => data
     )
     .handler(({ data }) =>

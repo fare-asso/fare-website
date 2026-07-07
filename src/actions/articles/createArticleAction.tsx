@@ -96,7 +96,7 @@ async function createArticleActionImpl(
 }
 
 const createArticleActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof createArticleActionImpl>>) =>
             data
     )

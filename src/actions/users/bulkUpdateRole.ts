@@ -59,7 +59,7 @@ async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
 }
 
 const bulkUpdateRoleServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof bulkUpdateRoleImpl>>) => data
     )
     .handler(({ data }) =>

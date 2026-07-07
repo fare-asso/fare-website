@@ -205,7 +205,7 @@ async function downloadTutorApplicationsZipActionImpl(
 const downloadTutorApplicationsZipActionServerFn = createServerFn({
     method: "POST"
 })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof downloadTutorApplicationsZipActionImpl>

@@ -94,7 +94,7 @@ async function bulkImportElusActionImpl(
 }
 
 const bulkImportElusActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof bulkImportElusActionImpl>>) =>
             data
     )

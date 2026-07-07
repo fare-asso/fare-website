@@ -133,7 +133,7 @@ async function addAssociationActionImpl(formData: FormData) {
 }
 
 const addAssociationActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof addAssociationActionImpl>>) =>
             data
     )

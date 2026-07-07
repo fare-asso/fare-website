@@ -66,7 +66,7 @@ async function addLinkActionImpl(input: TAddLink): Promise<Result> {
 }
 
 const addLinkActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof addLinkActionImpl>>) => data
     )
     .handler(({ data }) =>

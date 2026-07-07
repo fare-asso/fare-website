@@ -54,7 +54,7 @@ async function editLinkCategoryActionImpl(
 }
 
 const editLinkCategoryActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof editLinkCategoryActionImpl>>) =>
             data
     )

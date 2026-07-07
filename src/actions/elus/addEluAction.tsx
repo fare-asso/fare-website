@@ -73,7 +73,7 @@ async function addEluActionImpl(input: TAddElu): Promise<Result> {
 }
 
 const addEluActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof addEluActionImpl>>) => data
     )
     .handler(({ data }) =>

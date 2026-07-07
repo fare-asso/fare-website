@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router"
 import { ShieldUserIcon } from "lucide-react"
 import { isDevelopment } from "std-env"
 
-import FARELogo from "#public/logo_fare.png"
 import Image from "@/components/image"
 import {
     LoginWithGoogleButton,
@@ -33,7 +32,7 @@ function LoginPage() {
         <Card className="mx-auto max-w-full min-w-1/3">
             <CardHeader className="flex flex-col items-start">
                 <Image
-                    src={FARELogo}
+                    src="/logo_fare.png"
                     alt="Logo de la FARE"
                     className="mx-auto mb-6 w-1/5 text-center"
                 />

@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import logoAgoraE from "#public/AGORAe/logo_AgoraE.png"
-import logoBTP from "#public/BTP/Logo_BTP.png"
-import logoBA from "#public/Logo_Bagadasso.png"
 import Image from "@/components/image"
 import Link from "@/components/link"
 import { pageTitle } from "@/lib/seo"
@@ -25,7 +22,7 @@ function Projets() {
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
                     <Image
-                        src={logoAgoraE}
+                        src="/AGORAe/logo_AgoraE.png"
                         alt="Logo de l'AGORAé"
                         className="aspect-square h-auto w-52 object-contain"
                     />
@@ -37,7 +34,7 @@ function Projets() {
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
                     <Image
-                        src={logoBTP}
+                        src="/BTP/Logo_BTP.png"
                         alt="Logo du projet Bouge Ta Prison"
                         className="aspect-square h-auto w-52 object-contain"
                     />
@@ -49,7 +46,7 @@ function Projets() {
                     className="flex flex-col items-center p-4 transition-all hover:scale-105"
                 >
                     <Image
-                        src={logoBA}
+                        src="/Logo_Bagadasso.png"
                         alt="Logo du projet Bagad'Asso"
                         className="aspect-square h-auto w-52 object-contain"
                     />

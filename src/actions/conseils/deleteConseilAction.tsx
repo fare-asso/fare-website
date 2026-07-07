@@ -70,7 +70,7 @@ async function deleteConseilActionImpl(
 }
 
 const deleteConseilActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof deleteConseilActionImpl>>) =>
             data
     )

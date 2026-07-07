@@ -20,7 +20,6 @@ import { FaHandcuffs, FaPeopleGroup, FaUsers } from "react-icons/fa6" // Bouge T
 // Link icons
 import { LuHandshake, LuNetwork, LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
 
-import LogoFARE from "#public/logo_fare.png"
 import Image from "@/components/image"
 import Link from "@/components/link"
 import type { Permission } from "@/generated/prisma/client"
@@ -222,7 +221,7 @@ export default function SideBarApp({
             <SidebarHeader className="flex flex-row items-center justify-start gap-6 py-4">
                 <Link href="/dashboard" className="flex items-center gap-2">
                     <Image
-                        src={LogoFARE}
+                        src="/logo_fare.png"
                         alt="Logo de la FARE"
                         className="w-16 opacity-85"
                         priority={true}

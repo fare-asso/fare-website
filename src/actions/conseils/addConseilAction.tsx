@@ -72,7 +72,7 @@ async function addConseilActionImpl(input: TAddConseil): Promise<Result> {
 }
 
 const addConseilActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof addConseilActionImpl>>) => data
     )
     .handler(({ data }) =>

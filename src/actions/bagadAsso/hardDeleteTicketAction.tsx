@@ -45,7 +45,7 @@ async function hardDeleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
 const hardDeleteBagadAssoTicketActionServerFn = createServerFn({
     method: "POST"
 })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof hardDeleteBagadAssoTicketActionImpl>

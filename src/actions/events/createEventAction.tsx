@@ -303,7 +303,7 @@ async function createEventActionImpl(formData: FormData) {
 }
 
 const createEventActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof createEventActionImpl>>) => data
     )
     .handler(({ data }) =>

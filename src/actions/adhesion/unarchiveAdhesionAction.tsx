@@ -46,7 +46,7 @@ async function unarchiveAdhesionActionImpl(adhesionId: number): Promise<{
 }
 
 const unarchiveAdhesionActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof unarchiveAdhesionActionImpl>>) =>
             data
     )

@@ -45,7 +45,7 @@ async function restoreUserImpl(userId: string) {
 }
 
 const restoreUserServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof restoreUserImpl>>) => data
     )
     .handler(({ data }) =>

@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import logoFage from "#public/Logo_FAGE.png"
 import Image from "@/components/image"
 import { pageTitle } from "@/lib/seo"
 
@@ -15,7 +14,7 @@ function FAGE() {
             {/* <h1 className="py-12 sm:py-24 text-4xl font-bold text-center">Fédération des Associations du Réseau Étudiant de Haute-Bretagne (FAGE)</h1> */}
 
             <Image
-                src={logoFage}
+                src="/Logo_FAGE.png"
                 alt="Logo de la FAGE"
                 className="w-full md:w-1/2"
             />

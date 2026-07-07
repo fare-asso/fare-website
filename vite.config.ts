@@ -31,6 +31,7 @@ export default defineConfig(async ({ mode }) => {
                 // instead of failing the build.
                 importProtection: {
                     behavior: "mock",
+                    log: "once",
                     client: {
                         specifiers: ["@tanstack/react-start/server"],
                         // `files` (not `specifiers`) so relative imports of

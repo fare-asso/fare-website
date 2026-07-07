@@ -75,7 +75,7 @@ async function addMemberActionImpl(
 }
 
 const addMemberActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof addMemberActionImpl>>) => data
     )
     .handler(({ data }) =>

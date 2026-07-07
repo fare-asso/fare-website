@@ -2,7 +2,6 @@ import { Await, createFileRoute, Link } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 import { Image } from "@unpic/react"
 
-import WelcomeImage from "#public/hero-image.jpg"
 import AssoMap from "@/components/public/AssoMap"
 import DiscordWidget from "@/components/public/discordWidget"
 import KeyNumbers, { KeyNumbersSkeleton } from "@/components/public/keyNumbers"
@@ -79,7 +78,7 @@ function Home() {
         <div className="flex w-full flex-col items-center md:w-[90%]">
             <section className="hero gap-4 md:gap-6">
                 <Image
-                    src={WelcomeImage}
+                    src="/hero-image.jpg"
                     alt="Image des membres du bureau"
                     className="w-full rounded-xl"
                     priority={true}

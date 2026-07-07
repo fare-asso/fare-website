@@ -54,7 +54,7 @@ async function updateUserInfoImpl(
 }
 
 const updateUserInfoServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (data: ActionPayload<Parameters<typeof updateUserInfoImpl>>) => data
     )
     .handler(({ data }) =>

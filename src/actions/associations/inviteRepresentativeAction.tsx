@@ -99,7 +99,7 @@ async function inviteRepresentativeActionImpl(formData: FormData) {
 }
 
 const inviteRepresentativeActionServerFn = createServerFn({ method: "POST" })
-    .inputValidator(
+    .validator(
         (
             data: ActionPayload<
                 Parameters<typeof inviteRepresentativeActionImpl>
