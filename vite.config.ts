@@ -32,13 +32,18 @@ export default defineConfig(async ({ mode }) => {
                 importProtection: {
                     behavior: "mock",
                     client: {
-                        specifiers: [
-                            "@tanstack/react-start/server",
-                            "@/helpers/db",
-                            "@/helpers/supabase/server",
-                            "@/helpers/email",
-                            "@/env/server",
-                            "@/lib/evlog"
+                        specifiers: ["@tanstack/react-start/server"],
+                        // `files` (not `specifiers`) so relative imports of
+                        // these modules are caught too.
+                        files: [
+                            "**/*.server.*",
+                            "**/src/helpers/db.ts",
+                            "**/src/helpers/supabase/server.ts",
+                            "**/src/helpers/supabase/auth.ts",
+                            "**/src/helpers/email.ts",
+                            "**/src/env/server.ts",
+                            "**/src/lib/evlog.ts",
+                            "**/src/generated/prisma/**"
                         ]
                     }
                 }
