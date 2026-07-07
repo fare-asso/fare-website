@@ -57,7 +57,7 @@ Always use `pnpm`, never use `npm`
 - All functions must have return type annotations
 - No `any` types unless absolutely necessary with `// @ts-expect-error` comments
 - Use Zod schemas for runtime validation of form inputs and API data
-- Validate environment variables at build time via `src/env/server.ts` and `src/env/client.ts` (imported by `vite.config.ts`)
+- Validate environment variables at build time via `src/env.server.ts` and `src/env/client.ts` (imported by `vite.config.ts`)
 
 ### Imports & Exports
 
@@ -140,9 +140,10 @@ src/
 │   ├── image.tsx         # unpic-based Image wrapper
 │   └── [feature]/        # Feature-specific components
 ├── helpers/              # Utility functions
-│   ├── supabase/         # Server-only Supabase clients + auth
-│   ├── db.ts             # Database helpers
-│   ├── email.ts          # Email utilities
+│   ├── supabase.server.ts # Server-only Supabase clients
+│   ├── supabase/auth.server.ts # getCurrentUserWithPermissions
+│   ├── db.server.ts      # Prisma client (server-only)
+│   ├── email.server.ts   # Email utilities (server-only)
 │   ├── permissions.ts    # PBAC checks
 │   └── [domain]/         # Domain-specific helpers
 ├── hooks/                # Custom React hooks
@@ -186,7 +187,7 @@ The application uses **granular permission-based access control** instead of rol
 
 ```typescript
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 
 async function someActionImpl(): Promise<
     { success: true } | { success: false; error: string }
@@ -255,7 +256,7 @@ model Permission {
 ⚠️ **CRITICAL:** Do NOT commit `.env` or `.env.local` files
 
 - `.env.example` documents required variables
-- Two env modules: `src/env/server.ts` (server-only, reads `process.env`) and `src/env/client.ts` (public, `VITE_` prefix, reads `import.meta.env`). Both are imported by `vite.config.ts`, so `pnpm run build` validates all required vars
+- Two env modules: `src/env.server.ts` (server-only, reads `process.env`) and `src/env/client.ts` (public, `VITE_` prefix, reads `import.meta.env`). Both are imported by `vite.config.ts`, so `pnpm run build` validates all required vars
 - **All public vars use the `VITE_` prefix** (e.g. `VITE_SUPABASE_URL`, `VITE_SENTRY_DSN`) — there is no `NEXT_PUBLIC_`. `VITE_*` values are baked into the client bundle; never put secrets there
 - Secrets include: `SUPABASE_SERVICE_ROLE_KEY`, Prisma URLs, SMTP credentials, `FRIENDLY_CAPTCHA_API_KEY`
 
@@ -319,9 +320,9 @@ top-level `FormData`) across the serverFn RPC boundary.
 // src/actions/items/createItemAction.ts
 import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
-import prisma from "@/helpers/db"
+import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
+import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import {
     type ActionPayload,
     captureActionError,
@@ -466,7 +467,7 @@ export function CreateForm() {
 
 ### Supabase (server-only)
 
-- Supabase runs ONLY on the server via `@/helpers/supabase/server`:
+- Supabase runs ONLY on the server via `@/helpers/supabase.server`:
   `createClient()` (cookie-bridged through Start server utils
   `getCookies`/`setCookie`) and `createAdminClient()` (service role, bypasses
   RLS). **There is no browser Supabase client**
@@ -508,7 +509,7 @@ wrap the call in `try/catch`; narrow on `.success` only if you want to
 abort the surrounding action on failure.
 
 ```typescript
-import { sendEmail } from "@/helpers/email"
+import { sendEmail } from "@/helpers/email.server"
 
 // Abort-on-failure (action fails if the email fails)
 const email = await sendEmail({

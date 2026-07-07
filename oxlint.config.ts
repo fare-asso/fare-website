@@ -49,7 +49,12 @@ export default defineConfig({
             }
         },
         {
-            files: ["src/env.server.ts", "src/env/*.ts", "instrument.server.mjs", "vite.config.ts"],
+            files: [
+                "src/env.server.ts",
+                "src/env/*.ts",
+                "instrument.server.mjs",
+                "vite.config.ts"
+            ],
             rules: { "node/no-process-env": "off" }
         },
         {
