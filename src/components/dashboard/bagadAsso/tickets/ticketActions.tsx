@@ -1,7 +1,5 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -49,6 +47,7 @@ export default function TicketActions({
         if (response.error) {
             toast.error(response.error)
         } else {
+            await router.invalidate()
             toast.success("Le ticket a été archivé.")
         }
         setIsArchiveLoading(false)
@@ -62,6 +61,7 @@ export default function TicketActions({
         if (response.error) {
             toast.error(response.error)
         } else {
+            await router.invalidate()
             toast.success("Le ticket a été désarchivé.")
         }
         setIsArchiveLoading(false)
@@ -77,7 +77,11 @@ export default function TicketActions({
             setIsDeleteLoading(false)
         } else {
             toast.success("Le ticket a été supprimé définitivement.")
-            router.push("/dashboard/bagadAsso")
+            await router.invalidate()
+            router.navigate({
+                to: "/dashboard/bagadAsso",
+                search: { month: undefined }
+            })
         }
     }
 

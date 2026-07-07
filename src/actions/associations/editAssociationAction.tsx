@@ -26,7 +26,7 @@ async function editAssociationActionImpl(formData: FormData) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // retrieve form data fields
     const id = Number(formData.get("id")?.toString() ?? Number.NaN)

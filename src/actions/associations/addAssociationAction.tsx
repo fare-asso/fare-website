@@ -28,7 +28,7 @@ async function addAssociationActionImpl(formData: FormData) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // retrieve form data fields
     const name = formData.get("name")?.toString()

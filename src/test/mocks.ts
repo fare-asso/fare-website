@@ -8,12 +8,10 @@ import { isNotFound, isRedirect } from "@tanstack/react-router"
  *
  *     const h = vi.hoisted(() => ({
  *         create: vi.fn(),
- *         captureActionError: vi.fn(),
- *         revalidatePath: vi.fn()
+ *         captureActionError: vi.fn()
  *     }))
  *     vi.mock("@/helpers/db", () => dbModule({ adhesion: { create: h.create } }))
  *     vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
- *     vi.mock("next/cache", () => cacheModule(h.revalidatePath))
  */
 import { vi } from "vitest"
 
@@ -94,7 +92,7 @@ export function supabaseServerModule(client: {
     from?: unknown
 }) {
     return {
-        createClient: vi.fn(async () => client),
+        createClient: vi.fn(() => client),
         createAdminClient: vi.fn(() => client)
     }
 }
@@ -112,38 +110,6 @@ export function emailModule(sendEmail: Fn) {
 /** `@/components/captcha/verify` mock. */
 export function captchaModule(verifyCaptcha: Fn) {
     return { verifyCaptcha }
-}
-
-/** `next/cache` mock. */
-export function cacheModule(revalidatePath: Fn, revalidateTag?: Fn) {
-    return {
-        revalidatePath,
-        revalidateTag: revalidateTag ?? vi.fn()
-    }
-}
-
-/** `next/navigation` mock — `redirect` throws a real `NEXT_REDIRECT` digest. */
-export function navigationModule(redirect?: Fn, notFound?: Fn) {
-    return {
-        redirect:
-            redirect ??
-            vi.fn((url: string) => {
-                const error = new Error("NEXT_REDIRECT") as Error & {
-                    digest: string
-                }
-                error.digest = `NEXT_REDIRECT;replace;${url};307;`
-                throw error
-            }),
-        notFound:
-            notFound ??
-            vi.fn(() => {
-                const error = new Error("NEXT_NOT_FOUND") as Error & {
-                    digest: string
-                }
-                error.digest = "NEXT_NOT_FOUND"
-                throw error
-            })
-    }
 }
 
 /** `react-email` mock — returns static markup. */

@@ -1,4 +1,3 @@
-"use client"
 import "./styles.css"
 import Color from "@tiptap/extension-color"
 import Image from "@tiptap/extension-image"

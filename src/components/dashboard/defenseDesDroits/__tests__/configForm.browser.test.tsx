@@ -3,12 +3,16 @@ import { render } from "vitest-browser-react"
 
 const h = vi.hoisted(() => ({
     action: vi.fn(),
+    invalidate: vi.fn(),
     toastSuccess: vi.fn(),
     toastError: vi.fn()
 }))
 
-vi.mock("@/app/dashboard/defense-des-droits/actions", () => ({
+vi.mock("@/actions/defenseDesDroits/updateAssistanceConfig", () => ({
     updateAssistanceConfig: h.action
+}))
+vi.mock("@tanstack/react-router", () => ({
+    useRouter: () => ({ invalidate: h.invalidate })
 }))
 vi.mock("sonner", () => ({
     toast: { success: h.toastSuccess, error: h.toastError }

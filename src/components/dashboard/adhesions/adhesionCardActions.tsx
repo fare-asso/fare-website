@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import {
     ArchiveIcon,
     ArchiveRestoreIcon,
@@ -47,6 +46,7 @@ export default function AdhesionCardActions({
     canEdit,
     canDownload
 }: AdhesionCardActionsProps) {
+    const router = useRouter()
     const [isDownloading, setIsDownloading] = useState(false)
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
@@ -56,9 +56,7 @@ export default function AdhesionCardActions({
 
     const handleDownload = async () => {
         setIsDownloading(true)
-        const call = await tryCatch(
-            downloadFolderAction(undefined, adhesion.folderPath)
-        )
+        const call = await tryCatch(downloadFolderAction(adhesion.folderPath))
         if (!call.success) {
             console.error("Erreur lors du téléchargement:", call.error)
             toast.error("Erreur lors du téléchargement du dossier.")
@@ -111,6 +109,7 @@ export default function AdhesionCardActions({
         if (response.error) {
             toast.error(response.error)
         } else {
+            await router.invalidate()
             toast.success(
                 isArchived
                     ? "La demande d'adhésion a été désarchivée."

@@ -1,26 +1,19 @@
 import Image from "@/components/image"
 import Link from "@/components/link"
 import type { Association } from "@/generated/prisma/client"
-import { createClient } from "@/helpers/supabase/server"
 
-export default async function AssociationCard({
+export default function AssociationCard({
     association
 }: {
-    association: Association
+    association: Association & { logoUrl: string }
 }) {
-    const supabase = await createClient()
-
     return (
         <Link
             href={`/a-propos/reseau/associations/${association.id}`}
             className="relative flex flex-col rounded-lg bg-white p-4 outline-1 outline-black transition-all hover:scale-105"
         >
             <Image
-                src={
-                    supabase.storage
-                        .from("association-pictures")
-                        .getPublicUrl(association.logoPath).data.publicUrl
-                }
+                src={association.logoUrl}
                 width={400}
                 height={400}
                 alt={`${association.name} logo`}

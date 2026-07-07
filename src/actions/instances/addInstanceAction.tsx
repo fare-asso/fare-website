@@ -37,7 +37,7 @@ async function addInstanceActionImpl(
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const logoPaths: string[] = []
     if (data.logos && data.logos.length > 0) {

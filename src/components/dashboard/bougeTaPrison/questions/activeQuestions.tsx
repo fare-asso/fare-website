@@ -1,17 +1,12 @@
-import prisma from "@/helpers/db"
+import type { BTPTutorQuestion } from "@/generated/prisma/client"
 
 import QuestionCard from "./questionCard"
 
-export default async function ActiveQuestions() {
-    const questions = await prisma.bTPTutorQuestion.findMany({
-        where: {
-            archived: null
-        },
-        orderBy: {
-            createdAt: "desc"
-        }
-    })
-
+export default function ActiveQuestions({
+    questions
+}: {
+    questions: BTPTutorQuestion[]
+}) {
     return (
         <div className="@container flex h-full flex-col">
             <p className="my-4 text-sm text-gray-500">

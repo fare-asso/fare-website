@@ -1,9 +1,7 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-// import EditArticleButton from "./editArticleButton";
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { useState, useTransition } from "react"
 import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
 import { toast } from "sonner"
 
@@ -29,11 +27,8 @@ export default function ArticleCard({
     canDelete,
     canPublish
 }: ArticleCardProps) {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        number
-    >(deleteArticleAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const router = useRouter()
+    const [isLoading, startTransition] = useTransition()
     const [isSwitchingVisibility, setIsSwitchingVisibility] =
         useState<boolean>(false)
 
@@ -41,25 +36,21 @@ export default function ArticleCard({
         event.preventDefault()
         event.stopPropagation()
 
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(article.id)
+        startTransition(async () => {
+            const result = await deleteArticleAction(article.id)
+            if (result?.success) {
+                await router.invalidate()
+                toast.success(`L'article ${article.title} a bien été supprimé`)
+            } else if (result?.error) {
+                toast.error(result.error)
+            }
         })
     }
-
-    useEffect(() => {
-        if (formState?.success) {
-            toast.success(`L'article ${article.title} a bien été supprimé`)
-        } else if (formState?.error) {
-            toast.error(formState.error)
-        }
-        setIsLoading(false)
-    }, [formState, article.title])
 
     async function HandleVisibility() {
         setIsSwitchingVisibility(true)
         await switchVisibilityAction(article.id)
+        await router.invalidate()
         setIsSwitchingVisibility(false)
     }
 

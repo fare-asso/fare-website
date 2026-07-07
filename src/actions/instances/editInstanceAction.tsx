@@ -37,7 +37,7 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const current = await tryCatch(
         prisma.instance.findUnique({

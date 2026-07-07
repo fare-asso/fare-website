@@ -65,7 +65,7 @@ async function downloadFolderActionImpl(
         ...adhesion.value.photosPaths
     ].filter((path): path is string => Boolean(path))
 
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // Téléchargement parallèle des fichiers référencés en base
     const downloads = await tryCatch(

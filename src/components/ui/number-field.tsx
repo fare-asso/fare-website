@@ -1,5 +1,3 @@
-"use client"
-
 import type { AnyFieldApi } from "@tanstack/react-form"
 import { MinusIcon, PlusIcon } from "lucide-react"
 import { type ReactNode, useState } from "react"

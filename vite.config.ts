@@ -1,7 +1,8 @@
+import babel from "@rolldown/plugin-babel"
 import { sentryTanstackStart } from "@sentry/tanstackstart-react/vite"
 import tailwindcss from "@tailwindcss/vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
-import viteReact from "@vitejs/plugin-react"
+import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react"
 import { nitro } from "nitro/vite"
 import { defineConfig, loadEnv } from "vite"
 
@@ -24,20 +25,54 @@ export default defineConfig(async ({ mode }) => {
                 srcDirectory: "src",
                 router: {
                     routesDirectory: "app"
+                },
+                // Server-only modules reachable from client-imported action
+                // files are mocked out of the client bundle (access throws)
+                // instead of failing the build.
+                importProtection: {
+                    behavior: "mock",
+                    client: {
+                        specifiers: [
+                            "@tanstack/react-start/server",
+                            "@/helpers/db",
+                            "@/helpers/supabase/server",
+                            "@/helpers/email",
+                            "@/env/server",
+                            "@/lib/evlog"
+                        ]
+                    }
                 }
             }),
-            viteReact({
-                babel: {
-                    plugins: ["babel-plugin-react-compiler"]
-                }
-            }),
+            viteReact(),
+            babel({ presets: [reactCompilerPreset()] }),
             sentryTanstackStart({
                 org: "fare-m2",
                 project: "javascript-nextjs",
                 authToken: process.env.SENTRY_AUTH_TOKEN,
                 silent: !process.env.CI
             }),
-            nitro()
+            nitro({
+                routeRules: {
+                    "/bouge-ta-prison/**": {
+                        redirect: {
+                            to: "/projets/bouge-ta-prison/**",
+                            status: 301
+                        }
+                    },
+                    "/bagadAsso/**": {
+                        redirect: {
+                            to: "/projets/bagad-asso/**",
+                            status: 301
+                        }
+                    },
+                    "/agorae/**": {
+                        redirect: {
+                            to: "/projets/agorae/**",
+                            status: 301
+                        }
+                    }
+                }
+            })
         ]
     }
 })

@@ -1,26 +1,17 @@
 import AdhesionList from "@/components/dashboard/adhesions/adhesionList"
-import prisma from "@/helpers/db"
+import type { Adhesion } from "@/generated/prisma/client"
 
 interface ArchivedAdhesionsProps {
+    adhesions: Adhesion[]
     canEdit: boolean
     canDownload: boolean
 }
 
-export default async function ArchivedAdhesions({
+export default function ArchivedAdhesions({
+    adhesions,
     canEdit,
     canDownload
 }: ArchivedAdhesionsProps) {
-    const adhesions = await prisma.adhesion.findMany({
-        where: {
-            archived: {
-                not: null
-            }
-        },
-        orderBy: {
-            createdAt: "desc"
-        }
-    })
-
     return (
         <div>
             <p className="my-4 text-sm text-gray-500">

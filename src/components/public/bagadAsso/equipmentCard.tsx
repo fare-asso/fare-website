@@ -1,10 +1,9 @@
 import Image from "@/components/image"
 import NumberInput from "@/components/ui/input/numberInput"
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
-import { createClient } from "@/helpers/supabase/client"
 
 type EquipmentCardProps = {
-    equipment: BagadAssoEquipment
+    equipment: BagadAssoEquipment & { imageUrl: string | null }
     onQuantityChange: (id: number, quantity: number) => void
 }
 
@@ -12,21 +11,14 @@ export default function EquipmentCard({
     equipment,
     onQuantityChange
 }: EquipmentCardProps) {
-    const supabase = createClient()
-
     return (
         <div className="border-grey-300 flex h-full flex-col rounded-lg border p-4">
             <div className="mb-4 w-full">
-                {equipment.imagePath ? (
+                {equipment.imageUrl ? (
                     <Image
                         width={300}
                         height={300}
-                        src={
-                            supabase.storage
-                                .from("equipment-pictures")
-                                .getPublicUrl(equipment.imagePath).data
-                                .publicUrl
-                        }
+                        src={equipment.imageUrl}
                         alt={`${equipment.name} picture`}
                         className="aspect-square"
                     />

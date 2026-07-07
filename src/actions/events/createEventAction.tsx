@@ -42,7 +42,7 @@ async function createEventActionImpl(formData: FormData) {
     }
 
     // instantiate supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // retrieve form data fields
     const name = formData.get("name")

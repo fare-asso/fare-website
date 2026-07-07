@@ -42,7 +42,7 @@ async function editPartenaireActionImpl(
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const current = await tryCatch(
         prisma.partenaire.findUnique({

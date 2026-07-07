@@ -1,25 +1,20 @@
-import prisma from "@/helpers/db"
+import type { Article } from "@/generated/prisma/client"
 
 import ArticleCard from "./articleCard"
 
 interface ArticleListProps {
+    articles: Article[] | null
     canEdit: boolean
     canDelete: boolean
     canPublish: boolean
 }
 
-export default async function ArticleList({
+export default function ArticleList({
+    articles,
     canEdit,
     canDelete,
     canPublish
 }: ArticleListProps) {
-    // fetch all members from DB
-    const articles = await prisma.article.findMany({
-        orderBy: {
-            writtenOn: "desc"
-        }
-    })
-
     if (articles == null) {
         return (
             <span className="text-xl text-red-800">

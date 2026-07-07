@@ -1,7 +1,5 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { SendIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import sendApprovalEmail from "@/actions/bouge-ta-prison/sendApprovalEmail"
@@ -20,7 +18,11 @@ export default function SendApprovalButton({
     const handleSendApproval = async () => {
         setIsLoading(true)
         await sendApprovalEmail(application)
-        router.push("/dashboard/bouge-ta-prison?tab=approved")
+        await router.invalidate()
+        router.navigate({
+            to: "/dashboard/bouge-ta-prison",
+            search: { tab: "approved" }
+        })
     }
 
     return (

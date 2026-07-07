@@ -36,7 +36,7 @@ function DossiersDePresse() {
             </h1>
 
             <div className="flex w-3/4 flex-col items-center space-y-2">
-                {!dossiers ? (
+                {dossiers === null ? (
                     <p className="text-destructive text-lg font-medium">
                         Echec du chargement des dossiers de presse
                     </p>

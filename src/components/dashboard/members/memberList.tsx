@@ -1,25 +1,23 @@
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import type { Member } from "@/generated/prisma/client"
 
 import SortableMemberList from "./sortableMemberList"
 
+export type MemberWithPicture = {
+    member: Member
+    pictureUrl: string
+}
+
 interface MemberListProps {
+    members: MemberWithPicture[] | null
     canEdit: boolean
     canDelete: boolean
 }
 
-export default async function MemberList({
+export default function MemberList({
+    members,
     canEdit,
     canDelete
 }: MemberListProps) {
-    // create supabase client
-    const supabase = await createClient()
-
-    // fetch all members from DB, ordered by order field then by id
-    const members = await prisma.member.findMany({
-        orderBy: [{ order: "asc" }, { id: "asc" }]
-    })
-
     if (members == null) {
         return (
             <span className="text-xl text-red-800">
@@ -28,20 +26,9 @@ export default async function MemberList({
         )
     }
 
-    // Prepare members with their picture URLs
-    const membersWithPictures = members.map((member) => ({
-        member: {
-            ...member,
-            order: member.order ?? 0
-        },
-        pictureUrl: supabase.storage
-            .from("member-pictures")
-            .getPublicUrl(member.picturePath).data.publicUrl
-    }))
-
     return (
         <SortableMemberList
-            initialMembers={membersWithPictures}
+            initialMembers={members}
             canEdit={canEdit}
             canDelete={canDelete}
         />

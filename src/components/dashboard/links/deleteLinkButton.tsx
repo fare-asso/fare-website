@@ -1,7 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import deleteLinkAction from "@/actions/links/deleteLinkAction"
@@ -31,10 +30,10 @@ function isPdf(url: string): boolean {
 }
 
 export default function DeleteLinkButton({ link }: { link: LinkItem }) {
-    const [formState, formAction] = useActionState<
-        { success: true } | { success: false; error: string } | undefined,
-        number
-    >(deleteLinkAction, undefined)
+    const router = useRouter()
+    const [formState, setFormState] = useState<
+        { success: true } | { success: false; error: string } | undefined
+    >(undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -60,8 +59,12 @@ export default function DeleteLinkButton({ link }: { link: LinkItem }) {
 
         setIsLoading(true)
 
-        startTransition(() => {
-            formAction(link.id)
+        startTransition(async () => {
+            const result = await deleteLinkAction(link.id)
+            if (result?.success) {
+                await router.invalidate()
+            }
+            setFormState(result)
         })
     }
 

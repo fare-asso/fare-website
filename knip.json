@@ -2,12 +2,19 @@
     "$schema": "https://unpkg.com/knip@6/schema.json",
     "entry": [
         "taze.config.ts",
+        "instrument.server.mjs",
+        "src/router.tsx",
+        "src/start.ts",
+        "src/client.tsx",
+        "src/server.ts",
+        "src/instrument.client.ts",
+        "src/app/**/*.{ts,tsx}",
         "src/**/*.test.{ts,tsx}",
         "src/test/**",
         "emails/**/*.test.tsx",
         "src/components/header/defenseDroitsButton.tsx"
     ],
-    "ignoreDependencies": ["postcss-load-config", "@prisma/client"],
+    "ignoreDependencies": ["@prisma/client"],
     "ignoreIssues": {
         "src/components/ui/**": [
             "exports",

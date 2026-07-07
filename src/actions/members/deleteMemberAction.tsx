@@ -26,7 +26,7 @@ async function deleteMemberActionImpl({ id }: { id: number }) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const deleted = await tryCatch(
         prisma.member.delete({

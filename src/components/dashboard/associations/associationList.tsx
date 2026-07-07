@@ -1,39 +1,26 @@
 import { BuildingIcon } from "lucide-react"
 
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import type { Association } from "@/generated/prisma/client"
 
 import AssociationCard from "./associationCard"
 
 interface AssociationListProps {
+    assos:
+        | (Association & { logoUrl: string; hasRepresentative: boolean })[]
+        | null
     canEdit: boolean
     canDelete: boolean
     canInvite: boolean
     canApprove: boolean
 }
 
-export default async function AssociationList({
+export default function AssociationList({
+    assos,
     canEdit,
     canDelete,
     canInvite,
     canApprove
-}: AssociationListProps): Promise<React.JSX.Element> {
-    const supabase = await createClient()
-
-    const assos = (
-        await prisma.association.findMany({
-            orderBy: { name: "asc" },
-            include: {
-                representative: true
-            }
-        })
-    ).sort((a, b) => {
-        // Pending (approved === null) first, then alphabetical by name
-        if (a.approved === null && b.approved !== null) return -1
-        if (a.approved !== null && b.approved === null) return 1
-        return 0
-    })
-
+}: AssociationListProps): React.JSX.Element {
     if (assos == null) {
         return (
             <div className="flex h-full flex-col items-center justify-center gap-3 py-12">
@@ -74,12 +61,8 @@ export default async function AssociationList({
                     <AssociationCard
                         key={asso.id}
                         association={asso}
-                        logoUrl={
-                            supabase.storage
-                                .from("association-pictures")
-                                .getPublicUrl(asso.logoPath).data.publicUrl
-                        }
-                        hasRepresentative={!!asso.representative}
+                        logoUrl={asso.logoUrl}
+                        hasRepresentative={asso.hasRepresentative}
                         canEdit={canEdit}
                         canDelete={canDelete}
                         canInvite={canInvite}

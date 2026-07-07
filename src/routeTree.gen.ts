@@ -13,11 +13,26 @@ import { Route as PublicRouteImport } from './app/_public'
 import { Route as LoginRouteRouteImport } from './app/login/route'
 import { Route as DashboardRouteRouteImport } from './app/dashboard/route'
 import { Route as LoginIndexRouteImport } from './app/login/index'
+import { Route as DashboardIndexRouteImport } from './app/dashboard/index'
 import { Route as PublicIndexRouteImport } from './app/_public/index'
+import { Route as DashboardUnauthorizedRouteImport } from './app/dashboard/unauthorized'
 import { Route as ApiSearchLocationRouteImport } from './app/api/searchLocation'
 import { Route as ApiHealthRouteImport } from './app/api/health'
 import { Route as ApiEventImageRouteImport } from './app/api/eventImage'
 import { Route as ApiCategoriesRouteImport } from './app/api/categories'
+import { Route as DashboardUsersIndexRouteImport } from './app/dashboard/users/index'
+import { Route as DashboardPartenairesIndexRouteImport } from './app/dashboard/partenaires/index'
+import { Route as DashboardMembresIndexRouteImport } from './app/dashboard/membres/index'
+import { Route as DashboardLiensIndexRouteImport } from './app/dashboard/liens/index'
+import { Route as DashboardEventsIndexRouteImport } from './app/dashboard/events/index'
+import { Route as DashboardElusIndexRouteImport } from './app/dashboard/elus/index'
+import { Route as DashboardDefenseDesDroitsIndexRouteImport } from './app/dashboard/defense-des-droits/index'
+import { Route as DashboardCommuniquesDePresseIndexRouteImport } from './app/dashboard/communiques-de-presse/index'
+import { Route as DashboardBougeTaPrisonIndexRouteImport } from './app/dashboard/bouge-ta-prison/index'
+import { Route as DashboardBagadAssoIndexRouteImport } from './app/dashboard/bagadAsso/index'
+import { Route as DashboardAssociationsIndexRouteImport } from './app/dashboard/associations/index'
+import { Route as DashboardArticlesIndexRouteImport } from './app/dashboard/articles/index'
+import { Route as DashboardAdhesionsIndexRouteImport } from './app/dashboard/adhesions/index'
 import { Route as PublicRepresentationIndexRouteImport } from './app/_public/representation/index'
 import { Route as PublicProjetsIndexRouteImport } from './app/_public/projets/index'
 import { Route as PublicPresseIndexRouteImport } from './app/_public/presse/index'
@@ -28,7 +43,12 @@ import { Route as PublicAgendaIndexRouteImport } from './app/_public/agenda/inde
 import { Route as PublicActualitesIndexRouteImport } from './app/_public/actualites/index'
 import { Route as PublicAProposIndexRouteImport } from './app/_public/a-propos/index'
 import { Route as LoginCallbackGoogleRouteImport } from './app/login/callback/google'
+import { Route as DashboardUsersIdRouteImport } from './app/dashboard/users/$id'
 import { Route as ApiBagadAssoCalendarDoticsRouteImport } from './app/api/bagad-asso/calendar[.]ics'
+import { Route as DashboardElusInstancesIndexRouteImport } from './app/dashboard/elus/instances/index'
+import { Route as DashboardBougeTaPrisonQuestionsIndexRouteImport } from './app/dashboard/bouge-ta-prison/questions/index'
+import { Route as DashboardBagadAssoTicketsIndexRouteImport } from './app/dashboard/bagadAsso/tickets/index'
+import { Route as DashboardBagadAssoEquipmentsIndexRouteImport } from './app/dashboard/bagadAsso/equipments/index'
 import { Route as PublicRepresentationNosEluesIndexRouteImport } from './app/_public/representation/nos-elues/index'
 import { Route as PublicRepresentationFageIndexRouteImport } from './app/_public/representation/fage/index'
 import { Route as PublicProjetsBougeTaPrisonIndexRouteImport } from './app/_public/projets/bouge-ta-prison/index'
@@ -41,6 +61,9 @@ import { Route as PublicAProposPartenairesIndexRouteImport } from './app/_public
 import { Route as PublicAProposContactIndexRouteImport } from './app/_public/a-propos/contact/index'
 import { Route as PublicAProposBureauIndexRouteImport } from './app/_public/a-propos/bureau/index'
 import { Route as PublicAProposAdhesionIndexRouteImport } from './app/_public/a-propos/adhesion/index'
+import { Route as DashboardBougeTaPrisonQuestionsIdRouteImport } from './app/dashboard/bouge-ta-prison/questions/$id'
+import { Route as DashboardBougeTaPrisonCandidaturesTutoratIdRouteImport } from './app/dashboard/bouge-ta-prison/candidatures-tutorat/$id'
+import { Route as DashboardBagadAssoTicketsIdRouteImport } from './app/dashboard/bagadAsso/tickets/$id'
 import { Route as PublicActualitesArticlesIdRouteImport } from './app/_public/actualites/articles/$id'
 import { Route as PublicProjetsBougeTaPrisonTutoratIndexRouteImport } from './app/_public/projets/bouge-ta-prison/tutorat/index'
 import { Route as PublicProjetsAgoraeCalculateurBeneficiaireIndexRouteImport } from './app/_public/projets/agorae/calculateur-beneficiaire/index'
@@ -66,10 +89,20 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LoginRouteRoute,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PublicRoute,
+} as any)
+const DashboardUnauthorizedRoute = DashboardUnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const ApiSearchLocationRoute = ApiSearchLocationRouteImport.update({
   id: '/api/searchLocation',
@@ -90,6 +123,76 @@ const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
   id: '/api/categories',
   path: '/api/categories',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardUsersIndexRoute = DashboardUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardPartenairesIndexRoute =
+  DashboardPartenairesIndexRouteImport.update({
+    id: '/partenaires/',
+    path: '/partenaires/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardMembresIndexRoute = DashboardMembresIndexRouteImport.update({
+  id: '/membres/',
+  path: '/membres/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardLiensIndexRoute = DashboardLiensIndexRouteImport.update({
+  id: '/liens/',
+  path: '/liens/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardEventsIndexRoute = DashboardEventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardElusIndexRoute = DashboardElusIndexRouteImport.update({
+  id: '/elus/',
+  path: '/elus/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardDefenseDesDroitsIndexRoute =
+  DashboardDefenseDesDroitsIndexRouteImport.update({
+    id: '/defense-des-droits/',
+    path: '/defense-des-droits/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardCommuniquesDePresseIndexRoute =
+  DashboardCommuniquesDePresseIndexRouteImport.update({
+    id: '/communiques-de-presse/',
+    path: '/communiques-de-presse/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardBougeTaPrisonIndexRoute =
+  DashboardBougeTaPrisonIndexRouteImport.update({
+    id: '/bouge-ta-prison/',
+    path: '/bouge-ta-prison/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardBagadAssoIndexRoute = DashboardBagadAssoIndexRouteImport.update({
+  id: '/bagadAsso/',
+  path: '/bagadAsso/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardAssociationsIndexRoute =
+  DashboardAssociationsIndexRouteImport.update({
+    id: '/associations/',
+    path: '/associations/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardArticlesIndexRoute = DashboardArticlesIndexRouteImport.update({
+  id: '/articles/',
+  path: '/articles/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardAdhesionsIndexRoute = DashboardAdhesionsIndexRouteImport.update({
+  id: '/adhesions/',
+  path: '/adhesions/',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const PublicRepresentationIndexRoute =
   PublicRepresentationIndexRouteImport.update({
@@ -143,11 +246,40 @@ const LoginCallbackGoogleRoute = LoginCallbackGoogleRouteImport.update({
   path: '/callback/google',
   getParentRoute: () => LoginRouteRoute,
 } as any)
+const DashboardUsersIdRoute = DashboardUsersIdRouteImport.update({
+  id: '/users/$id',
+  path: '/users/$id',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const ApiBagadAssoCalendarDoticsRoute =
   ApiBagadAssoCalendarDoticsRouteImport.update({
     id: '/api/bagad-asso/calendar.ics',
     path: '/api/bagad-asso/calendar.ics',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const DashboardElusInstancesIndexRoute =
+  DashboardElusInstancesIndexRouteImport.update({
+    id: '/elus/instances/',
+    path: '/elus/instances/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardBougeTaPrisonQuestionsIndexRoute =
+  DashboardBougeTaPrisonQuestionsIndexRouteImport.update({
+    id: '/bouge-ta-prison/questions/',
+    path: '/bouge-ta-prison/questions/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardBagadAssoTicketsIndexRoute =
+  DashboardBagadAssoTicketsIndexRouteImport.update({
+    id: '/bagadAsso/tickets/',
+    path: '/bagadAsso/tickets/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardBagadAssoEquipmentsIndexRoute =
+  DashboardBagadAssoEquipmentsIndexRouteImport.update({
+    id: '/bagadAsso/equipments/',
+    path: '/bagadAsso/equipments/',
+    getParentRoute: () => DashboardRouteRoute,
   } as any)
 const PublicRepresentationNosEluesIndexRoute =
   PublicRepresentationNosEluesIndexRouteImport.update({
@@ -221,6 +353,24 @@ const PublicAProposAdhesionIndexRoute =
     path: '/a-propos/adhesion/',
     getParentRoute: () => PublicRoute,
   } as any)
+const DashboardBougeTaPrisonQuestionsIdRoute =
+  DashboardBougeTaPrisonQuestionsIdRouteImport.update({
+    id: '/bouge-ta-prison/questions/$id',
+    path: '/bouge-ta-prison/questions/$id',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardBougeTaPrisonCandidaturesTutoratIdRoute =
+  DashboardBougeTaPrisonCandidaturesTutoratIdRouteImport.update({
+    id: '/bouge-ta-prison/candidatures-tutorat/$id',
+    path: '/bouge-ta-prison/candidatures-tutorat/$id',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardBagadAssoTicketsIdRoute =
+  DashboardBagadAssoTicketsIdRouteImport.update({
+    id: '/bagadAsso/tickets/$id',
+    path: '/bagadAsso/tickets/$id',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
 const PublicActualitesArticlesIdRoute =
   PublicActualitesArticlesIdRouteImport.update({
     id: '/actualites/articles/$id',
@@ -253,15 +403,18 @@ const PublicProjetsBougeTaPrisonTutoratQuestionIndexRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/dashboard': typeof DashboardRouteRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof LoginRouteRouteWithChildren
   '/': typeof PublicIndexRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/eventImage': typeof ApiEventImageRoute
   '/api/health': typeof ApiHealthRoute
   '/api/searchLocation': typeof ApiSearchLocationRoute
+  '/dashboard/unauthorized': typeof DashboardUnauthorizedRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/login/': typeof LoginIndexRoute
   '/api/bagad-asso/calendar.ics': typeof ApiBagadAssoCalendarDoticsRoute
+  '/dashboard/users/$id': typeof DashboardUsersIdRoute
   '/login/callback/google': typeof LoginCallbackGoogleRoute
   '/a-propos/': typeof PublicAProposIndexRoute
   '/actualites/': typeof PublicActualitesIndexRoute
@@ -272,7 +425,23 @@ export interface FileRoutesByFullPath {
   '/presse/': typeof PublicPresseIndexRoute
   '/projets/': typeof PublicProjetsIndexRoute
   '/representation/': typeof PublicRepresentationIndexRoute
+  '/dashboard/adhesions/': typeof DashboardAdhesionsIndexRoute
+  '/dashboard/articles/': typeof DashboardArticlesIndexRoute
+  '/dashboard/associations/': typeof DashboardAssociationsIndexRoute
+  '/dashboard/bagadAsso/': typeof DashboardBagadAssoIndexRoute
+  '/dashboard/bouge-ta-prison/': typeof DashboardBougeTaPrisonIndexRoute
+  '/dashboard/communiques-de-presse/': typeof DashboardCommuniquesDePresseIndexRoute
+  '/dashboard/defense-des-droits/': typeof DashboardDefenseDesDroitsIndexRoute
+  '/dashboard/elus/': typeof DashboardElusIndexRoute
+  '/dashboard/events/': typeof DashboardEventsIndexRoute
+  '/dashboard/liens/': typeof DashboardLiensIndexRoute
+  '/dashboard/membres/': typeof DashboardMembresIndexRoute
+  '/dashboard/partenaires/': typeof DashboardPartenairesIndexRoute
+  '/dashboard/users/': typeof DashboardUsersIndexRoute
   '/actualites/articles/$id': typeof PublicActualitesArticlesIdRoute
+  '/dashboard/bagadAsso/tickets/$id': typeof DashboardBagadAssoTicketsIdRoute
+  '/dashboard/bouge-ta-prison/candidatures-tutorat/$id': typeof DashboardBougeTaPrisonCandidaturesTutoratIdRoute
+  '/dashboard/bouge-ta-prison/questions/$id': typeof DashboardBougeTaPrisonQuestionsIdRoute
   '/a-propos/adhesion/': typeof PublicAProposAdhesionIndexRoute
   '/a-propos/bureau/': typeof PublicAProposBureauIndexRoute
   '/a-propos/contact/': typeof PublicAProposContactIndexRoute
@@ -285,20 +454,26 @@ export interface FileRoutesByFullPath {
   '/projets/bouge-ta-prison/': typeof PublicProjetsBougeTaPrisonIndexRoute
   '/representation/fage/': typeof PublicRepresentationFageIndexRoute
   '/representation/nos-elues/': typeof PublicRepresentationNosEluesIndexRoute
+  '/dashboard/bagadAsso/equipments/': typeof DashboardBagadAssoEquipmentsIndexRoute
+  '/dashboard/bagadAsso/tickets/': typeof DashboardBagadAssoTicketsIndexRoute
+  '/dashboard/bouge-ta-prison/questions/': typeof DashboardBougeTaPrisonQuestionsIndexRoute
+  '/dashboard/elus/instances/': typeof DashboardElusInstancesIndexRoute
   '/a-propos/reseau/associations/$id': typeof PublicAProposReseauAssociationsIdRoute
   '/projets/agorae/calculateur-beneficiaire/': typeof PublicProjetsAgoraeCalculateurBeneficiaireIndexRoute
   '/projets/bouge-ta-prison/tutorat/': typeof PublicProjetsBougeTaPrisonTutoratIndexRoute
   '/projets/bouge-ta-prison/tutorat/question/': typeof PublicProjetsBougeTaPrisonTutoratQuestionIndexRoute
 }
 export interface FileRoutesByTo {
-  '/dashboard': typeof DashboardRouteRoute
   '/api/categories': typeof ApiCategoriesRoute
   '/api/eventImage': typeof ApiEventImageRoute
   '/api/health': typeof ApiHealthRoute
   '/api/searchLocation': typeof ApiSearchLocationRoute
+  '/dashboard/unauthorized': typeof DashboardUnauthorizedRoute
   '/': typeof PublicIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/login': typeof LoginIndexRoute
   '/api/bagad-asso/calendar.ics': typeof ApiBagadAssoCalendarDoticsRoute
+  '/dashboard/users/$id': typeof DashboardUsersIdRoute
   '/login/callback/google': typeof LoginCallbackGoogleRoute
   '/a-propos': typeof PublicAProposIndexRoute
   '/actualites': typeof PublicActualitesIndexRoute
@@ -309,7 +484,23 @@ export interface FileRoutesByTo {
   '/presse': typeof PublicPresseIndexRoute
   '/projets': typeof PublicProjetsIndexRoute
   '/representation': typeof PublicRepresentationIndexRoute
+  '/dashboard/adhesions': typeof DashboardAdhesionsIndexRoute
+  '/dashboard/articles': typeof DashboardArticlesIndexRoute
+  '/dashboard/associations': typeof DashboardAssociationsIndexRoute
+  '/dashboard/bagadAsso': typeof DashboardBagadAssoIndexRoute
+  '/dashboard/bouge-ta-prison': typeof DashboardBougeTaPrisonIndexRoute
+  '/dashboard/communiques-de-presse': typeof DashboardCommuniquesDePresseIndexRoute
+  '/dashboard/defense-des-droits': typeof DashboardDefenseDesDroitsIndexRoute
+  '/dashboard/elus': typeof DashboardElusIndexRoute
+  '/dashboard/events': typeof DashboardEventsIndexRoute
+  '/dashboard/liens': typeof DashboardLiensIndexRoute
+  '/dashboard/membres': typeof DashboardMembresIndexRoute
+  '/dashboard/partenaires': typeof DashboardPartenairesIndexRoute
+  '/dashboard/users': typeof DashboardUsersIndexRoute
   '/actualites/articles/$id': typeof PublicActualitesArticlesIdRoute
+  '/dashboard/bagadAsso/tickets/$id': typeof DashboardBagadAssoTicketsIdRoute
+  '/dashboard/bouge-ta-prison/candidatures-tutorat/$id': typeof DashboardBougeTaPrisonCandidaturesTutoratIdRoute
+  '/dashboard/bouge-ta-prison/questions/$id': typeof DashboardBougeTaPrisonQuestionsIdRoute
   '/a-propos/adhesion': typeof PublicAProposAdhesionIndexRoute
   '/a-propos/bureau': typeof PublicAProposBureauIndexRoute
   '/a-propos/contact': typeof PublicAProposContactIndexRoute
@@ -322,6 +513,10 @@ export interface FileRoutesByTo {
   '/projets/bouge-ta-prison': typeof PublicProjetsBougeTaPrisonIndexRoute
   '/representation/fage': typeof PublicRepresentationFageIndexRoute
   '/representation/nos-elues': typeof PublicRepresentationNosEluesIndexRoute
+  '/dashboard/bagadAsso/equipments': typeof DashboardBagadAssoEquipmentsIndexRoute
+  '/dashboard/bagadAsso/tickets': typeof DashboardBagadAssoTicketsIndexRoute
+  '/dashboard/bouge-ta-prison/questions': typeof DashboardBougeTaPrisonQuestionsIndexRoute
+  '/dashboard/elus/instances': typeof DashboardElusInstancesIndexRoute
   '/a-propos/reseau/associations/$id': typeof PublicAProposReseauAssociationsIdRoute
   '/projets/agorae/calculateur-beneficiaire': typeof PublicProjetsAgoraeCalculateurBeneficiaireIndexRoute
   '/projets/bouge-ta-prison/tutorat': typeof PublicProjetsBougeTaPrisonTutoratIndexRoute
@@ -329,16 +524,19 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/dashboard': typeof DashboardRouteRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof LoginRouteRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/api/categories': typeof ApiCategoriesRoute
   '/api/eventImage': typeof ApiEventImageRoute
   '/api/health': typeof ApiHealthRoute
   '/api/searchLocation': typeof ApiSearchLocationRoute
+  '/dashboard/unauthorized': typeof DashboardUnauthorizedRoute
   '/_public/': typeof PublicIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/login/': typeof LoginIndexRoute
   '/api/bagad-asso/calendar.ics': typeof ApiBagadAssoCalendarDoticsRoute
+  '/dashboard/users/$id': typeof DashboardUsersIdRoute
   '/login/callback/google': typeof LoginCallbackGoogleRoute
   '/_public/a-propos/': typeof PublicAProposIndexRoute
   '/_public/actualites/': typeof PublicActualitesIndexRoute
@@ -349,7 +547,23 @@ export interface FileRoutesById {
   '/_public/presse/': typeof PublicPresseIndexRoute
   '/_public/projets/': typeof PublicProjetsIndexRoute
   '/_public/representation/': typeof PublicRepresentationIndexRoute
+  '/dashboard/adhesions/': typeof DashboardAdhesionsIndexRoute
+  '/dashboard/articles/': typeof DashboardArticlesIndexRoute
+  '/dashboard/associations/': typeof DashboardAssociationsIndexRoute
+  '/dashboard/bagadAsso/': typeof DashboardBagadAssoIndexRoute
+  '/dashboard/bouge-ta-prison/': typeof DashboardBougeTaPrisonIndexRoute
+  '/dashboard/communiques-de-presse/': typeof DashboardCommuniquesDePresseIndexRoute
+  '/dashboard/defense-des-droits/': typeof DashboardDefenseDesDroitsIndexRoute
+  '/dashboard/elus/': typeof DashboardElusIndexRoute
+  '/dashboard/events/': typeof DashboardEventsIndexRoute
+  '/dashboard/liens/': typeof DashboardLiensIndexRoute
+  '/dashboard/membres/': typeof DashboardMembresIndexRoute
+  '/dashboard/partenaires/': typeof DashboardPartenairesIndexRoute
+  '/dashboard/users/': typeof DashboardUsersIndexRoute
   '/_public/actualites/articles/$id': typeof PublicActualitesArticlesIdRoute
+  '/dashboard/bagadAsso/tickets/$id': typeof DashboardBagadAssoTicketsIdRoute
+  '/dashboard/bouge-ta-prison/candidatures-tutorat/$id': typeof DashboardBougeTaPrisonCandidaturesTutoratIdRoute
+  '/dashboard/bouge-ta-prison/questions/$id': typeof DashboardBougeTaPrisonQuestionsIdRoute
   '/_public/a-propos/adhesion/': typeof PublicAProposAdhesionIndexRoute
   '/_public/a-propos/bureau/': typeof PublicAProposBureauIndexRoute
   '/_public/a-propos/contact/': typeof PublicAProposContactIndexRoute
@@ -362,6 +576,10 @@ export interface FileRoutesById {
   '/_public/projets/bouge-ta-prison/': typeof PublicProjetsBougeTaPrisonIndexRoute
   '/_public/representation/fage/': typeof PublicRepresentationFageIndexRoute
   '/_public/representation/nos-elues/': typeof PublicRepresentationNosEluesIndexRoute
+  '/dashboard/bagadAsso/equipments/': typeof DashboardBagadAssoEquipmentsIndexRoute
+  '/dashboard/bagadAsso/tickets/': typeof DashboardBagadAssoTicketsIndexRoute
+  '/dashboard/bouge-ta-prison/questions/': typeof DashboardBougeTaPrisonQuestionsIndexRoute
+  '/dashboard/elus/instances/': typeof DashboardElusInstancesIndexRoute
   '/_public/a-propos/reseau/associations/$id': typeof PublicAProposReseauAssociationsIdRoute
   '/_public/projets/agorae/calculateur-beneficiaire/': typeof PublicProjetsAgoraeCalculateurBeneficiaireIndexRoute
   '/_public/projets/bouge-ta-prison/tutorat/': typeof PublicProjetsBougeTaPrisonTutoratIndexRoute
@@ -377,8 +595,11 @@ export interface FileRouteTypes {
     | '/api/eventImage'
     | '/api/health'
     | '/api/searchLocation'
+    | '/dashboard/unauthorized'
+    | '/dashboard/'
     | '/login/'
     | '/api/bagad-asso/calendar.ics'
+    | '/dashboard/users/$id'
     | '/login/callback/google'
     | '/a-propos/'
     | '/actualites/'
@@ -389,7 +610,23 @@ export interface FileRouteTypes {
     | '/presse/'
     | '/projets/'
     | '/representation/'
+    | '/dashboard/adhesions/'
+    | '/dashboard/articles/'
+    | '/dashboard/associations/'
+    | '/dashboard/bagadAsso/'
+    | '/dashboard/bouge-ta-prison/'
+    | '/dashboard/communiques-de-presse/'
+    | '/dashboard/defense-des-droits/'
+    | '/dashboard/elus/'
+    | '/dashboard/events/'
+    | '/dashboard/liens/'
+    | '/dashboard/membres/'
+    | '/dashboard/partenaires/'
+    | '/dashboard/users/'
     | '/actualites/articles/$id'
+    | '/dashboard/bagadAsso/tickets/$id'
+    | '/dashboard/bouge-ta-prison/candidatures-tutorat/$id'
+    | '/dashboard/bouge-ta-prison/questions/$id'
     | '/a-propos/adhesion/'
     | '/a-propos/bureau/'
     | '/a-propos/contact/'
@@ -402,20 +639,26 @@ export interface FileRouteTypes {
     | '/projets/bouge-ta-prison/'
     | '/representation/fage/'
     | '/representation/nos-elues/'
+    | '/dashboard/bagadAsso/equipments/'
+    | '/dashboard/bagadAsso/tickets/'
+    | '/dashboard/bouge-ta-prison/questions/'
+    | '/dashboard/elus/instances/'
     | '/a-propos/reseau/associations/$id'
     | '/projets/agorae/calculateur-beneficiaire/'
     | '/projets/bouge-ta-prison/tutorat/'
     | '/projets/bouge-ta-prison/tutorat/question/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/dashboard'
     | '/api/categories'
     | '/api/eventImage'
     | '/api/health'
     | '/api/searchLocation'
+    | '/dashboard/unauthorized'
     | '/'
+    | '/dashboard'
     | '/login'
     | '/api/bagad-asso/calendar.ics'
+    | '/dashboard/users/$id'
     | '/login/callback/google'
     | '/a-propos'
     | '/actualites'
@@ -426,7 +669,23 @@ export interface FileRouteTypes {
     | '/presse'
     | '/projets'
     | '/representation'
+    | '/dashboard/adhesions'
+    | '/dashboard/articles'
+    | '/dashboard/associations'
+    | '/dashboard/bagadAsso'
+    | '/dashboard/bouge-ta-prison'
+    | '/dashboard/communiques-de-presse'
+    | '/dashboard/defense-des-droits'
+    | '/dashboard/elus'
+    | '/dashboard/events'
+    | '/dashboard/liens'
+    | '/dashboard/membres'
+    | '/dashboard/partenaires'
+    | '/dashboard/users'
     | '/actualites/articles/$id'
+    | '/dashboard/bagadAsso/tickets/$id'
+    | '/dashboard/bouge-ta-prison/candidatures-tutorat/$id'
+    | '/dashboard/bouge-ta-prison/questions/$id'
     | '/a-propos/adhesion'
     | '/a-propos/bureau'
     | '/a-propos/contact'
@@ -439,6 +698,10 @@ export interface FileRouteTypes {
     | '/projets/bouge-ta-prison'
     | '/representation/fage'
     | '/representation/nos-elues'
+    | '/dashboard/bagadAsso/equipments'
+    | '/dashboard/bagadAsso/tickets'
+    | '/dashboard/bouge-ta-prison/questions'
+    | '/dashboard/elus/instances'
     | '/a-propos/reseau/associations/$id'
     | '/projets/agorae/calculateur-beneficiaire'
     | '/projets/bouge-ta-prison/tutorat'
@@ -452,9 +715,12 @@ export interface FileRouteTypes {
     | '/api/eventImage'
     | '/api/health'
     | '/api/searchLocation'
+    | '/dashboard/unauthorized'
     | '/_public/'
+    | '/dashboard/'
     | '/login/'
     | '/api/bagad-asso/calendar.ics'
+    | '/dashboard/users/$id'
     | '/login/callback/google'
     | '/_public/a-propos/'
     | '/_public/actualites/'
@@ -465,7 +731,23 @@ export interface FileRouteTypes {
     | '/_public/presse/'
     | '/_public/projets/'
     | '/_public/representation/'
+    | '/dashboard/adhesions/'
+    | '/dashboard/articles/'
+    | '/dashboard/associations/'
+    | '/dashboard/bagadAsso/'
+    | '/dashboard/bouge-ta-prison/'
+    | '/dashboard/communiques-de-presse/'
+    | '/dashboard/defense-des-droits/'
+    | '/dashboard/elus/'
+    | '/dashboard/events/'
+    | '/dashboard/liens/'
+    | '/dashboard/membres/'
+    | '/dashboard/partenaires/'
+    | '/dashboard/users/'
     | '/_public/actualites/articles/$id'
+    | '/dashboard/bagadAsso/tickets/$id'
+    | '/dashboard/bouge-ta-prison/candidatures-tutorat/$id'
+    | '/dashboard/bouge-ta-prison/questions/$id'
     | '/_public/a-propos/adhesion/'
     | '/_public/a-propos/bureau/'
     | '/_public/a-propos/contact/'
@@ -478,6 +760,10 @@ export interface FileRouteTypes {
     | '/_public/projets/bouge-ta-prison/'
     | '/_public/representation/fage/'
     | '/_public/representation/nos-elues/'
+    | '/dashboard/bagadAsso/equipments/'
+    | '/dashboard/bagadAsso/tickets/'
+    | '/dashboard/bouge-ta-prison/questions/'
+    | '/dashboard/elus/instances/'
     | '/_public/a-propos/reseau/associations/$id'
     | '/_public/projets/agorae/calculateur-beneficiaire/'
     | '/_public/projets/bouge-ta-prison/tutorat/'
@@ -485,7 +771,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  DashboardRouteRoute: typeof DashboardRouteRoute
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   LoginRouteRoute: typeof LoginRouteRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   ApiCategoriesRoute: typeof ApiCategoriesRoute
@@ -525,12 +811,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof LoginRouteRoute
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/_public/': {
       id: '/_public/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRoute
+    }
+    '/dashboard/unauthorized': {
+      id: '/dashboard/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/dashboard/unauthorized'
+      preLoaderRoute: typeof DashboardUnauthorizedRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/api/searchLocation': {
       id: '/api/searchLocation'
@@ -559,6 +859,97 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/categories'
       preLoaderRoute: typeof ApiCategoriesRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/users/': {
+      id: '/dashboard/users/'
+      path: '/users'
+      fullPath: '/dashboard/users/'
+      preLoaderRoute: typeof DashboardUsersIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/partenaires/': {
+      id: '/dashboard/partenaires/'
+      path: '/partenaires'
+      fullPath: '/dashboard/partenaires/'
+      preLoaderRoute: typeof DashboardPartenairesIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/membres/': {
+      id: '/dashboard/membres/'
+      path: '/membres'
+      fullPath: '/dashboard/membres/'
+      preLoaderRoute: typeof DashboardMembresIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/liens/': {
+      id: '/dashboard/liens/'
+      path: '/liens'
+      fullPath: '/dashboard/liens/'
+      preLoaderRoute: typeof DashboardLiensIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/events/': {
+      id: '/dashboard/events/'
+      path: '/events'
+      fullPath: '/dashboard/events/'
+      preLoaderRoute: typeof DashboardEventsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/elus/': {
+      id: '/dashboard/elus/'
+      path: '/elus'
+      fullPath: '/dashboard/elus/'
+      preLoaderRoute: typeof DashboardElusIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/defense-des-droits/': {
+      id: '/dashboard/defense-des-droits/'
+      path: '/defense-des-droits'
+      fullPath: '/dashboard/defense-des-droits/'
+      preLoaderRoute: typeof DashboardDefenseDesDroitsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/communiques-de-presse/': {
+      id: '/dashboard/communiques-de-presse/'
+      path: '/communiques-de-presse'
+      fullPath: '/dashboard/communiques-de-presse/'
+      preLoaderRoute: typeof DashboardCommuniquesDePresseIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/bouge-ta-prison/': {
+      id: '/dashboard/bouge-ta-prison/'
+      path: '/bouge-ta-prison'
+      fullPath: '/dashboard/bouge-ta-prison/'
+      preLoaderRoute: typeof DashboardBougeTaPrisonIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/bagadAsso/': {
+      id: '/dashboard/bagadAsso/'
+      path: '/bagadAsso'
+      fullPath: '/dashboard/bagadAsso/'
+      preLoaderRoute: typeof DashboardBagadAssoIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/associations/': {
+      id: '/dashboard/associations/'
+      path: '/associations'
+      fullPath: '/dashboard/associations/'
+      preLoaderRoute: typeof DashboardAssociationsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/articles/': {
+      id: '/dashboard/articles/'
+      path: '/articles'
+      fullPath: '/dashboard/articles/'
+      preLoaderRoute: typeof DashboardArticlesIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/adhesions/': {
+      id: '/dashboard/adhesions/'
+      path: '/adhesions'
+      fullPath: '/dashboard/adhesions/'
+      preLoaderRoute: typeof DashboardAdhesionsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/_public/representation/': {
       id: '/_public/representation/'
@@ -630,12 +1021,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginCallbackGoogleRouteImport
       parentRoute: typeof LoginRouteRoute
     }
+    '/dashboard/users/$id': {
+      id: '/dashboard/users/$id'
+      path: '/users/$id'
+      fullPath: '/dashboard/users/$id'
+      preLoaderRoute: typeof DashboardUsersIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/api/bagad-asso/calendar.ics': {
       id: '/api/bagad-asso/calendar.ics'
       path: '/api/bagad-asso/calendar.ics'
       fullPath: '/api/bagad-asso/calendar.ics'
       preLoaderRoute: typeof ApiBagadAssoCalendarDoticsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/elus/instances/': {
+      id: '/dashboard/elus/instances/'
+      path: '/elus/instances'
+      fullPath: '/dashboard/elus/instances/'
+      preLoaderRoute: typeof DashboardElusInstancesIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/bouge-ta-prison/questions/': {
+      id: '/dashboard/bouge-ta-prison/questions/'
+      path: '/bouge-ta-prison/questions'
+      fullPath: '/dashboard/bouge-ta-prison/questions/'
+      preLoaderRoute: typeof DashboardBougeTaPrisonQuestionsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/bagadAsso/tickets/': {
+      id: '/dashboard/bagadAsso/tickets/'
+      path: '/bagadAsso/tickets'
+      fullPath: '/dashboard/bagadAsso/tickets/'
+      preLoaderRoute: typeof DashboardBagadAssoTicketsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/bagadAsso/equipments/': {
+      id: '/dashboard/bagadAsso/equipments/'
+      path: '/bagadAsso/equipments'
+      fullPath: '/dashboard/bagadAsso/equipments/'
+      preLoaderRoute: typeof DashboardBagadAssoEquipmentsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/_public/representation/nos-elues/': {
       id: '/_public/representation/nos-elues/'
@@ -721,6 +1147,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicAProposAdhesionIndexRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/dashboard/bouge-ta-prison/questions/$id': {
+      id: '/dashboard/bouge-ta-prison/questions/$id'
+      path: '/bouge-ta-prison/questions/$id'
+      fullPath: '/dashboard/bouge-ta-prison/questions/$id'
+      preLoaderRoute: typeof DashboardBougeTaPrisonQuestionsIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/bouge-ta-prison/candidatures-tutorat/$id': {
+      id: '/dashboard/bouge-ta-prison/candidatures-tutorat/$id'
+      path: '/bouge-ta-prison/candidatures-tutorat/$id'
+      fullPath: '/dashboard/bouge-ta-prison/candidatures-tutorat/$id'
+      preLoaderRoute: typeof DashboardBougeTaPrisonCandidaturesTutoratIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/bagadAsso/tickets/$id': {
+      id: '/dashboard/bagadAsso/tickets/$id'
+      path: '/bagadAsso/tickets/$id'
+      fullPath: '/dashboard/bagadAsso/tickets/$id'
+      preLoaderRoute: typeof DashboardBagadAssoTicketsIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/_public/actualites/articles/$id': {
       id: '/_public/actualites/articles/$id'
       path: '/actualites/articles/$id'
@@ -758,6 +1205,67 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface DashboardRouteRouteChildren {
+  DashboardUnauthorizedRoute: typeof DashboardUnauthorizedRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardUsersIdRoute: typeof DashboardUsersIdRoute
+  DashboardAdhesionsIndexRoute: typeof DashboardAdhesionsIndexRoute
+  DashboardArticlesIndexRoute: typeof DashboardArticlesIndexRoute
+  DashboardAssociationsIndexRoute: typeof DashboardAssociationsIndexRoute
+  DashboardBagadAssoIndexRoute: typeof DashboardBagadAssoIndexRoute
+  DashboardBougeTaPrisonIndexRoute: typeof DashboardBougeTaPrisonIndexRoute
+  DashboardCommuniquesDePresseIndexRoute: typeof DashboardCommuniquesDePresseIndexRoute
+  DashboardDefenseDesDroitsIndexRoute: typeof DashboardDefenseDesDroitsIndexRoute
+  DashboardElusIndexRoute: typeof DashboardElusIndexRoute
+  DashboardEventsIndexRoute: typeof DashboardEventsIndexRoute
+  DashboardLiensIndexRoute: typeof DashboardLiensIndexRoute
+  DashboardMembresIndexRoute: typeof DashboardMembresIndexRoute
+  DashboardPartenairesIndexRoute: typeof DashboardPartenairesIndexRoute
+  DashboardUsersIndexRoute: typeof DashboardUsersIndexRoute
+  DashboardBagadAssoTicketsIdRoute: typeof DashboardBagadAssoTicketsIdRoute
+  DashboardBougeTaPrisonCandidaturesTutoratIdRoute: typeof DashboardBougeTaPrisonCandidaturesTutoratIdRoute
+  DashboardBougeTaPrisonQuestionsIdRoute: typeof DashboardBougeTaPrisonQuestionsIdRoute
+  DashboardBagadAssoEquipmentsIndexRoute: typeof DashboardBagadAssoEquipmentsIndexRoute
+  DashboardBagadAssoTicketsIndexRoute: typeof DashboardBagadAssoTicketsIndexRoute
+  DashboardBougeTaPrisonQuestionsIndexRoute: typeof DashboardBougeTaPrisonQuestionsIndexRoute
+  DashboardElusInstancesIndexRoute: typeof DashboardElusInstancesIndexRoute
+}
+
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardUnauthorizedRoute: DashboardUnauthorizedRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardUsersIdRoute: DashboardUsersIdRoute,
+  DashboardAdhesionsIndexRoute: DashboardAdhesionsIndexRoute,
+  DashboardArticlesIndexRoute: DashboardArticlesIndexRoute,
+  DashboardAssociationsIndexRoute: DashboardAssociationsIndexRoute,
+  DashboardBagadAssoIndexRoute: DashboardBagadAssoIndexRoute,
+  DashboardBougeTaPrisonIndexRoute: DashboardBougeTaPrisonIndexRoute,
+  DashboardCommuniquesDePresseIndexRoute:
+    DashboardCommuniquesDePresseIndexRoute,
+  DashboardDefenseDesDroitsIndexRoute: DashboardDefenseDesDroitsIndexRoute,
+  DashboardElusIndexRoute: DashboardElusIndexRoute,
+  DashboardEventsIndexRoute: DashboardEventsIndexRoute,
+  DashboardLiensIndexRoute: DashboardLiensIndexRoute,
+  DashboardMembresIndexRoute: DashboardMembresIndexRoute,
+  DashboardPartenairesIndexRoute: DashboardPartenairesIndexRoute,
+  DashboardUsersIndexRoute: DashboardUsersIndexRoute,
+  DashboardBagadAssoTicketsIdRoute: DashboardBagadAssoTicketsIdRoute,
+  DashboardBougeTaPrisonCandidaturesTutoratIdRoute:
+    DashboardBougeTaPrisonCandidaturesTutoratIdRoute,
+  DashboardBougeTaPrisonQuestionsIdRoute:
+    DashboardBougeTaPrisonQuestionsIdRoute,
+  DashboardBagadAssoEquipmentsIndexRoute:
+    DashboardBagadAssoEquipmentsIndexRoute,
+  DashboardBagadAssoTicketsIndexRoute: DashboardBagadAssoTicketsIndexRoute,
+  DashboardBougeTaPrisonQuestionsIndexRoute:
+    DashboardBougeTaPrisonQuestionsIndexRoute,
+  DashboardElusInstancesIndexRoute: DashboardElusInstancesIndexRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
 
 interface LoginRouteRouteChildren {
   LoginIndexRoute: typeof LoginIndexRoute
@@ -844,7 +1352,7 @@ const PublicRouteWithChildren =
   PublicRoute._addFileChildren(PublicRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  DashboardRouteRoute: DashboardRouteRoute,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   LoginRouteRoute: LoginRouteRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   ApiCategoriesRoute: ApiCategoriesRoute,

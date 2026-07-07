@@ -1,5 +1,3 @@
-"use client"
-
 import type { Table } from "@tanstack/react-table"
 import { RotateCcw, Trash2, UserCog, X } from "lucide-react"
 import { useState } from "react"

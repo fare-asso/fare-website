@@ -7,7 +7,6 @@ LABEL repository="https://github.com/fare-asso/fare-website"
 RUN apk update
 RUN apk add --no-cache libc6-compat curl
 
-ENV NEXT_TELEMETRY_DISABLED=1
 ENV HUSKY=0
 ENV NODE_ENV=production
 
@@ -35,21 +34,21 @@ COPY . .
 # Generate Prisma client (schema only, no DB connection needed)
 RUN pnpm exec prisma generate --no-hints
 
-# Public (NEXT_PUBLIC_*) vars are baked into the client bundle — fine as ARG/ENV
-ARG NEXT_PUBLIC_SUPABASE_URL
-ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+# Public (VITE_*) vars are baked into the client bundle — fine as ARG/ENV
+ARG VITE_SUPABASE_URL
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+ARG VITE_SUPABASE_ANON_KEY
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 
-ARG NEXT_PUBLIC_SITE_URL
-ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ARG VITE_SITE_URL
+ENV VITE_SITE_URL=$VITE_SITE_URL
 
-ARG NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
-ENV NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY=$NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
+ARG VITE_FRIENDLY_CAPTCHA_SITE_KEY
+ENV VITE_FRIENDLY_CAPTCHA_SITE_KEY=$VITE_FRIENDLY_CAPTCHA_SITE_KEY
 
-ARG NEXT_PUBLIC_SENTRY_DSN
-ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
+ARG VITE_SENTRY_DSN
+ENV VITE_SENTRY_DSN=$VITE_SENTRY_DSN
 
 # Non-sensitive SMTP config (host/port/etc.) — kept as ARG so values flow through
 ARG SMTP_PORT
@@ -80,16 +79,8 @@ FROM base AS runner
 RUN addgroup --system --gid 1001 runner
 RUN adduser --system --uid 1001 runner
 
-# Copy public assets
-COPY --from=builder --chown=runner:runner /app/public ./public
-
-# Set correct permissions for prerender cache
-RUN mkdir .next
-RUN chown runner:runner .next
-
-# Copy standalone build output
-COPY --from=builder --chown=runner:runner /app/.next/standalone ./
-COPY --from=builder --chown=runner:runner /app/.next/static ./.next/static
+# Copy the self-contained Nitro output (server bundle + public assets)
+COPY --from=builder --chown=runner:runner /app/.output ./.output
 
 # Copy Prisma files for runtime migrations
 COPY --from=builder --chown=runner:runner /app/prisma ./prisma
@@ -101,4 +92,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["node", "--import", "./.output/server/instrument.server.mjs", ".output/server/index.mjs"]

@@ -1,7 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect } from "react"
+import { useEffect, useState, useTransition } from "react"
 
 import deleteEquipmentAction from "@/actions/bagadAsso/deleteEquipmentAction"
 import {
@@ -24,10 +23,11 @@ export default function DeleteEquipmentButton({
 }: {
     equipmentId: number
 }) {
-    const [formState, formAction, pending] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        number
-    >(deleteEquipmentAction, undefined)
+    const router = useRouter()
+    const [formState, setFormState] = useState<
+        { error?: string; success?: boolean } | undefined
+    >(undefined)
+    const [pending, startTransition] = useTransition()
 
     // Fermer le dialogue lorsque l'action du formulaire indique un succès
     useEffect(() => {
@@ -41,8 +41,12 @@ export default function DeleteEquipmentButton({
     ) => {
         event.preventDefault()
 
-        startTransition(() => {
-            formAction(equipmentId)
+        startTransition(async () => {
+            const result = await deleteEquipmentAction(equipmentId)
+            if (result?.success) {
+                await router.invalidate()
+            }
+            setFormState(result)
         })
     }
 

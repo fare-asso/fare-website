@@ -3,10 +3,14 @@ import { render } from "vitest-browser-react"
 
 import type { Permission } from "@/generated/prisma/client"
 
-const h = vi.hoisted(() => ({ action: vi.fn() }))
+const h = vi.hoisted(() => ({ action: vi.fn(), invalidate: vi.fn() }))
 
 vi.mock("@/actions/users/updateUserPermissions", () => ({
     default: h.action
+}))
+
+vi.mock("@tanstack/react-router", () => ({
+    useRouter: () => ({ invalidate: h.invalidate })
 }))
 
 import { UserPermissionsForm } from "../userPermissionForm"

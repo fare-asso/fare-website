@@ -1,7 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import deleteConseilAction from "@/actions/conseils/deleteConseilAction"
@@ -27,10 +26,10 @@ import type { Conseil } from "@/generated/prisma/client"
 import LoadingRing from "../loadingRing"
 
 export default function DeleteConseilButton({ conseil }: { conseil: Conseil }) {
-    const [formState, formAction] = useActionState<
-        { success: true } | { success: false; error: string } | undefined,
-        number
-    >(deleteConseilAction, undefined)
+    const router = useRouter()
+    const [formState, setFormState] = useState<
+        { success: true } | { success: false; error: string } | undefined
+    >(undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -57,8 +56,12 @@ export default function DeleteConseilButton({ conseil }: { conseil: Conseil }) {
 
         setIsLoading(true)
 
-        startTransition(() => {
-            formAction(conseil.id)
+        startTransition(async () => {
+            const result = await deleteConseilAction(conseil.id)
+            if (result?.success) {
+                await router.invalidate()
+            }
+            setFormState(result)
         })
     }
 

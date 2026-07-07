@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import {
     flexRender,
     getCoreRowModel,
@@ -24,7 +23,8 @@ interface DataTableProps<TData> {
 }
 
 export function DataTable({ data, canEdit, canDelete }: DataTableProps<Event>) {
-    const columns = getColumns(canEdit, canDelete)
+    const router = useRouter()
+    const columns = getColumns(canEdit, canDelete, () => router.invalidate())
 
     const table = useReactTable({
         data,

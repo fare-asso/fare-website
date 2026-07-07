@@ -1,5 +1,3 @@
-"use client"
-
 import { Check, MapPin } from "lucide-react"
 import type React from "react"
 import { useId, useRef, useState } from "react"

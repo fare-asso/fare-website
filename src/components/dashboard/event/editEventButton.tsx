@@ -1,8 +1,7 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import {
     type ChangeEvent,
-    useActionState,
+    startTransition,
     useCallback,
     useEffect,
     useState
@@ -51,10 +50,10 @@ export default function EditEventButtonClient({
 }: {
     eventInfo: EventInfo
 }) {
-    const [formState, formAction, _isPending] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(editEventAction, undefined)
+    const router = useRouter()
+    const [formState, setFormState] = useState<
+        { error?: string; success?: boolean } | undefined
+    >(undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
     const [switchState, setSwitchState] = useState<boolean>(
@@ -119,6 +118,20 @@ export default function EditEventButtonClient({
         }
     }, [formState, handleOpenChange])
 
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+
+        const formData = new FormData(event.currentTarget)
+
+        startTransition(async () => {
+            const result = await editEventAction(formData)
+            if (result?.success) {
+                await router.invalidate()
+            }
+            setFormState(result)
+        })
+    }
+
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
@@ -138,7 +151,7 @@ export default function EditEventButtonClient({
 
                 {/* Form */}
                 <form
-                    action={formAction}
+                    onSubmit={handleSubmit}
                     id="editEventForm"
                     className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
                 >

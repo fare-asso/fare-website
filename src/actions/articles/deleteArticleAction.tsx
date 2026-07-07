@@ -26,7 +26,7 @@ async function deleteArticleActionImpl(id: number) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // fetch article to delete
     const articleResult = await tryCatch(

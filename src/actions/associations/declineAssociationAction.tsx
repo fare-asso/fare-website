@@ -49,7 +49,7 @@ async function declineAssociationActionImpl(
 
     // Remove logo from association-pictures storage
     if (association.logoPath.length > 0) {
-        const supabase = await createClient()
+        const supabase = createClient()
         const { error: storageError } = await supabase.storage
             .from("association-pictures")
             .remove([association.logoPath])

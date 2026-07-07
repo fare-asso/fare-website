@@ -5,10 +5,20 @@ import logoBagadAsso from "#public/Logo_Bagadasso.png"
 import Image from "@/components/image"
 import BagadAssoForm from "@/components/public/bagadAsso/form"
 import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
 import { pageTitle } from "@/lib/seo"
 
 const getEquipmentList = createServerFn().handler(async () => {
-    return await prisma.bagadAssoEquipment.findMany()
+    const supabase = createClient()
+    const equipments = await prisma.bagadAssoEquipment.findMany()
+    return equipments.map((equipment) => ({
+        ...equipment,
+        imageUrl: equipment.imagePath
+            ? supabase.storage
+                  .from("equipment-pictures")
+                  .getPublicUrl(equipment.imagePath).data.publicUrl
+            : null
+    }))
 })
 
 export const Route = createFileRoute("/_public/projets/bagad-asso/")({

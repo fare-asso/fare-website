@@ -1,7 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import deleteInstanceAction from "@/actions/instances/deleteInstanceAction"
@@ -31,10 +30,10 @@ export default function DeleteInstanceButton({
 }: {
     instance: Instance
 }) {
-    const [formState, formAction] = useActionState<
-        { success: true } | { success: false; error: string } | undefined,
-        number
-    >(deleteInstanceAction, undefined)
+    const router = useRouter()
+    const [formState, setFormState] = useState<
+        { success: true } | { success: false; error: string } | undefined
+    >(undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -61,8 +60,12 @@ export default function DeleteInstanceButton({
 
         setIsLoading(true)
 
-        startTransition(() => {
-            formAction(instance.id)
+        startTransition(async () => {
+            const result = await deleteInstanceAction(instance.id)
+            if (result?.success) {
+                await router.invalidate()
+            }
+            setFormState(result)
         })
     }
 

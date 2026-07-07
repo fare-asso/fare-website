@@ -1,5 +1,4 @@
-"use client"
-
+import { useNavigate } from "@tanstack/react-router"
 import {
     type ColumnDef,
     flexRender,
@@ -7,7 +6,6 @@ import {
     getFilteredRowModel,
     useReactTable
 } from "@tanstack/react-table"
-import { useRouter } from "next/navigation"
 
 import {
     Table,
@@ -38,7 +36,7 @@ export function DataTable<
     canEdit,
     canDelete
 }: DataTableProps<TData, TValue>) {
-    const router = useRouter()
+    const navigate = useNavigate()
     const table = useReactTable({
         data,
         columns,
@@ -60,7 +58,10 @@ export function DataTable<
             target.closest("[role='menuitem']")
 
         if (!isInteractive) {
-            router.push(`/dashboard/users/${userId}`)
+            void navigate({
+                to: "/dashboard/users/$id",
+                params: { id: userId }
+            })
         }
     }
 

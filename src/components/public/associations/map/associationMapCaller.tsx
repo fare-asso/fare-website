@@ -3,6 +3,8 @@ import { lazy, Suspense } from "react"
 
 import type { Association } from "@/generated/prisma/client"
 
+type AssociationWithLogo = Association & { logoUrl: string }
+
 const LazyMap = lazy(
     () => import("@/components/public/associations/map/associationsMap")
 )
@@ -10,7 +12,7 @@ const LazyMap = lazy(
 export default function AssociationMapCaller({
     associations
 }: {
-    associations: Association[]
+    associations: AssociationWithLogo[]
 }) {
     return (
         <ClientOnly fallback={<p>Loading...</p>}>

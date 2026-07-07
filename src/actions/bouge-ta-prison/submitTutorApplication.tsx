@@ -72,7 +72,7 @@ async function submitTutorApplicationImpl(
     const folderName = `${crypto.randomUUID()}-${sanitizedName}`
 
     // Upload the CV and the motivation letter to the storage
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const { data: cvUploadData, error: cvUploadError } = await supabase.storage
         .from("btp-tutor-application")

@@ -1,4 +1,4 @@
-import type { Event } from "@/app/dashboard/events/columns"
+import type { Event } from "@/components/dashboard/events/columns"
 import prisma from "@/helpers/db"
 
 export async function getData(): Promise<Event[]> {

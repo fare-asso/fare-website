@@ -1,13 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import type { JSONContent } from "@tiptap/react"
-import {
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
+import { useCallback, useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 import { v4 as uuidv4 } from "uuid"
 
@@ -113,10 +106,9 @@ async function replaceImagesWithBase64(
 }
 
 export default function EditArticleButton({ article }: { article: Article }) {
-    const [formState, formAction, pending] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(editArticleAction, undefined)
+    const router = useRouter()
+    const [pending, startTransition] = useTransition()
+    const [error, setError] = useState<string | undefined>(undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
     const [content, setContent] = useState<JSONContent | undefined>(undefined) // Rich Text Editor content
@@ -130,17 +122,12 @@ export default function EditArticleButton({ article }: { article: Article }) {
                     JSON.parse(JSON.stringify(article.content))
                 )
                 setContent(updatedContent)
+            } else {
+                setError(undefined)
             }
         },
         [article.content]
     )
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            void handleOpenChange(false)
-        }
-    }, [formState, handleOpenChange])
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -155,8 +142,14 @@ export default function EditArticleButton({ article }: { article: Article }) {
         }
         formData.append("content", JSON.stringify(updatedContent))
 
-        startTransition(() => {
-            formAction(formData)
+        startTransition(async () => {
+            const result = await editArticleAction(formData)
+            if (result?.success) {
+                await router.invalidate()
+                void handleOpenChange(false)
+            } else {
+                setError(result?.error)
+            }
         })
     }
 
@@ -212,12 +205,10 @@ export default function EditArticleButton({ article }: { article: Article }) {
                         )}
                     </div>
 
-                    {formState?.error ? (
+                    {error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
+                            <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     ) : null}
                 </form>

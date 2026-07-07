@@ -33,7 +33,7 @@ beforeEach(() => {
 describe("approveAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await approveAssociationAction(undefined, 1)).toEqual({
+        expect(await approveAssociationAction(1)).toEqual({
             error: "Authentification requise"
         })
         expect(h.updateAsso).not.toHaveBeenCalled()
@@ -41,14 +41,14 @@ describe("approveAssociationAction", () => {
 
     it("requires the approve:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await approveAssociationAction(undefined, 1)
+        const res = await approveAssociationAction(1)
         expect(res.error).toMatch(/permission/)
         expect(h.updateAsso).not.toHaveBeenCalled()
     })
 
     it("errors when the association does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
-        expect(await approveAssociationAction(undefined, 1)).toEqual({
+        expect(await approveAssociationAction(1)).toEqual({
             error: "Association introuvable"
         })
     })
@@ -57,14 +57,14 @@ describe("approveAssociationAction", () => {
         h.findUnique.mockResolvedValue(
             validAssociationRecord({ approved: new Date() })
         )
-        expect(await approveAssociationAction(undefined, 1)).toEqual({
+        expect(await approveAssociationAction(1)).toEqual({
             error: "Cette association est déjà approuvée"
         })
         expect(h.updateAsso).not.toHaveBeenCalled()
     })
 
     it("approves and revalidates without a linked adhesion", async () => {
-        const res = await approveAssociationAction(undefined, 3)
+        const res = await approveAssociationAction(3)
         expect(res).toEqual({ success: true })
         expect(h.updateAsso).toHaveBeenCalledWith({
             where: { id: 3 },
@@ -77,7 +77,7 @@ describe("approveAssociationAction", () => {
         h.findUnique.mockResolvedValue(
             validAssociationRecord({ adhesionId: 42 })
         )
-        const res = await approveAssociationAction(undefined, 3)
+        const res = await approveAssociationAction(3)
         expect(res).toEqual({ success: true })
         expect(h.updateAdhesion).toHaveBeenCalledWith({
             where: { id: 42 },
@@ -87,7 +87,7 @@ describe("approveAssociationAction", () => {
 
     it("captures and fails when the update throws", async () => {
         h.updateAsso.mockRejectedValue(new Error("db down"))
-        expect(await approveAssociationAction(undefined, 1)).toEqual({
+        expect(await approveAssociationAction(1)).toEqual({
             error: "Échec de l'approbation de l'association"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

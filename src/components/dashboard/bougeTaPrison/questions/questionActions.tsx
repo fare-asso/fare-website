@@ -1,7 +1,5 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -43,6 +41,7 @@ export default function QuestionActions({
         if (response.error) {
             toast.error(response.error)
         } else {
+            await router.invalidate()
             toast.success("La question a été archivée.")
         }
         setIsArchiveLoading(false)
@@ -56,6 +55,7 @@ export default function QuestionActions({
         if (response.error) {
             toast.error(response.error)
         } else {
+            await router.invalidate()
             toast.success("La question a été désarchivée.")
         }
         setIsArchiveLoading(false)
@@ -71,7 +71,11 @@ export default function QuestionActions({
             setIsDeleteLoading(false)
         } else {
             toast.success("La question a été supprimée définitivement.")
-            router.push("/dashboard/bouge-ta-prison/questions")
+            await router.invalidate()
+            router.navigate({
+                to: "/dashboard/bouge-ta-prison/questions",
+                search: { tab: "active" }
+            })
         }
     }
 

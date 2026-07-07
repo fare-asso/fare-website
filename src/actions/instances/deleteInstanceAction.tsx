@@ -31,7 +31,7 @@ async function deleteInstanceActionImpl(
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const instance = await tryCatch(
         prisma.instance.findUnique({ where: { id } })

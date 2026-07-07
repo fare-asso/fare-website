@@ -5,18 +5,8 @@ import { playwright } from "@vitest/browser-playwright"
 import { defineConfig } from "vitest/config"
 
 const srcAlias = {
-    "@": fileURLToPath(new URL("./src", import.meta.url))
-}
-
-// `next/image`'s CJS-wrapping (`module.exports = require('./image-external')`)
-// produces a double-default shape under Vite's browser interop, so
-// `import Image from "next/image"` resolves to an object at runtime and
-// React rejects it. Alias to a thin stub in the browser project only.
-const browserAlias = {
-    ...srcAlias,
-    "next/image": fileURLToPath(
-        new URL("./src/test/stubs/next-image.tsx", import.meta.url)
-    )
+    "@": fileURLToPath(new URL("./src", import.meta.url)),
+    "#public": fileURLToPath(new URL("./public", import.meta.url))
 }
 
 const testEnv = {
@@ -29,11 +19,24 @@ const testEnv = {
     SMTP_USER: "test-user",
     SMTP_PASS: "test-pass",
     SMTP_FROM_EMAIL: "noreply@fare-asso.fr",
-    NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321",
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
-    NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
-    NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key",
-    NEXT_PUBLIC_SENTRY_DSN: "https://test@test.ingest.sentry.io/0"
+    VITE_SUPABASE_URL: "http://localhost:54321",
+    VITE_SUPABASE_ANON_KEY: "test-anon-key",
+    VITE_SITE_URL: "http://localhost:3000",
+    VITE_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key",
+    VITE_SENTRY_DSN: "https://test@test.ingest.sentry.io/0"
+}
+
+// `@tanstack/react-start` needs the Start vite plugin's virtual modules, which
+// the browser test project doesn't run; alias it to a stub whose
+// `createServerFn` calls handlers directly.
+const browserAlias = {
+    ...srcAlias,
+    "@tanstack/react-start/server": fileURLToPath(
+        new URL("./src/test/stubs/tanstack-start-server.ts", import.meta.url)
+    ),
+    "@tanstack/react-start": fileURLToPath(
+        new URL("./src/test/stubs/tanstack-start.ts", import.meta.url)
+    )
 }
 
 const browserTestGlob = "src/**/__tests__/**/*.browser.test.tsx"
@@ -66,9 +69,8 @@ export default defineConfig({
                     include: [
                         "@supabase/ssr",
                         "@tanstack/react-table",
-                        "lucide-react",
-                        "next/cache",
-                        "next/link"
+                        "@tanstack/react-router",
+                        "lucide-react"
                     ]
                 },
                 test: {

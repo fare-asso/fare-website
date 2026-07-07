@@ -1,4 +1,3 @@
-"use client"
 import { File, Upload } from "lucide-react"
 import type React from "react"
 import { forwardRef, useState } from "react"

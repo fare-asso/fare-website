@@ -1,5 +1,3 @@
-"use client"
-
 import { useLocation } from "@tanstack/react-router"
 import { ChevronDownIcon, MenuIcon, XIcon } from "lucide-react"
 import type { CSSProperties } from "react"

@@ -40,25 +40,21 @@ beforeEach(() => {
 describe("addAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(
-            await addAssociationAction(undefined, validAssociationFormData())
-        ).toEqual({ error: "Authentification requise" })
+        expect(await addAssociationAction(validAssociationFormData())).toEqual({
+            error: "Authentification requise"
+        })
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("requires the create:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await addAssociationAction(
-            undefined,
-            validAssociationFormData()
-        )
+        const res = await addAssociationAction(validAssociationFormData())
         expect(res.error).toMatch(/permission/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects a payload missing required fields", async () => {
         const res = await addAssociationAction(
-            undefined,
             validAssociationFormData({ name: "" })
         )
         expect(res).toEqual({
@@ -69,7 +65,6 @@ describe("addAssociationAction", () => {
 
     it("rejects a non-file logo", async () => {
         const res = await addAssociationAction(
-            undefined,
             validAssociationFormData({ "logo-picture": "not-a-file" })
         )
         expect(res).toEqual({ error: "Logo non-valide." })
@@ -77,7 +72,6 @@ describe("addAssociationAction", () => {
 
     it("rejects an oversized logo", async () => {
         const res = await addAssociationAction(
-            undefined,
             validAssociationFormData({ "logo-picture": bigImage() })
         )
         expect(res.error).toMatch(/taille/)
@@ -85,7 +79,6 @@ describe("addAssociationAction", () => {
 
     it("rejects an unsupported image type", async () => {
         const res = await addAssociationAction(
-            undefined,
             validAssociationFormData({
                 "logo-picture": new File([new Uint8Array([1])], "f.txt", {
                     type: "text/plain"
@@ -100,29 +93,20 @@ describe("addAssociationAction", () => {
             data: null,
             error: { message: "upload boom" }
         })
-        const res = await addAssociationAction(
-            undefined,
-            validAssociationFormData()
-        )
+        const res = await addAssociationAction(validAssociationFormData())
         expect(res).toEqual({ error: "upload boom" })
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await addAssociationAction(
-            undefined,
-            validAssociationFormData()
-        )
+        const res = await addAssociationAction(validAssociationFormData())
         expect(res).toEqual({ error: "db down" })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("creates the association and revalidates on the happy path", async () => {
-        const res = await addAssociationAction(
-            undefined,
-            validAssociationFormData()
-        )
+        const res = await addAssociationAction(validAssociationFormData())
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({

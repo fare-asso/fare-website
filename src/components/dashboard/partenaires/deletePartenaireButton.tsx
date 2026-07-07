@@ -1,7 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import deletePartenaireAction from "@/actions/partenaires/deletePartenaireAction"
@@ -31,10 +30,10 @@ export default function DeletePartenaireButton({
 }: {
     partenaire: Partenaire
 }) {
-    const [formState, formAction] = useActionState<
-        { success: true } | { success: false; error: string } | undefined,
-        number
-    >(deletePartenaireAction, undefined)
+    const router = useRouter()
+    const [formState, setFormState] = useState<
+        { success: true } | { success: false; error: string } | undefined
+    >(undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -56,8 +55,12 @@ export default function DeletePartenaireButton({
 
         setIsLoading(true)
 
-        startTransition(() => {
-            formAction(partenaire.id)
+        startTransition(async () => {
+            const result = await deletePartenaireAction(partenaire.id)
+            if (result?.success) {
+                await router.invalidate()
+            }
+            setFormState(result)
         })
     }
 

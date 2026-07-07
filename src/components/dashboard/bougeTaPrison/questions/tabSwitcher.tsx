@@ -1,16 +1,23 @@
-"use client"
-
-import { useQueryState } from "nuqs"
+import { getRouteApi, useNavigate } from "@tanstack/react-router"
 import React from "react"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+const route = getRouteApi("/dashboard/bouge-ta-prison/questions/")
 
 export default function TabSwitcher({
     children
 }: {
     children: React.ReactNode
 }) {
-    const [tab, setTab] = useQueryState("tab", { defaultValue: "active" })
+    const { tab } = route.useSearch()
+    const navigate = useNavigate()
+    const setTab = (tab: string) =>
+        navigate({
+            to: ".",
+            search: (prev) => ({ ...prev, tab }),
+            replace: true
+        })
 
     return (
         <Tabs

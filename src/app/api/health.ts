@@ -39,10 +39,7 @@ export const Route = createFileRoute("/api/health")({
 
                 // Check Supabase connection
                 const supabaseResult = await tryCatch(
-                    (async () => {
-                        const supabase = createClient()
-                        return supabase.auth.getSession()
-                    })()
+                    createClient().auth.getSession()
                 )
                 if (supabaseResult.success) {
                     supabaseHealthy = true

@@ -26,7 +26,7 @@ async function deleteAssociationActionImpl(id: number) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // create supabase admin client (only on server)
     const supabaseAdmin = createAdminClient()

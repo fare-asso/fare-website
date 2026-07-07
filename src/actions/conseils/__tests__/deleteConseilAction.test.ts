@@ -32,7 +32,7 @@ beforeEach(() => {
 describe("deleteConseilAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteConseilAction(undefined, 1)).toEqual({
+        expect(await deleteConseilAction(1)).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -41,7 +41,7 @@ describe("deleteConseilAction", () => {
 
     it("is gated on the delete:instance permission (reused for conseils)", async () => {
         h.getUser.mockResolvedValue(mockUser(["delete:elu"]))
-        const res = await deleteConseilAction(undefined, 1)
+        const res = await deleteConseilAction(1)
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.deleteConseil).not.toHaveBeenCalled()
@@ -49,14 +49,14 @@ describe("deleteConseilAction", () => {
 
     it("returns an error when the conseil is not found", async () => {
         h.findConseil.mockResolvedValue(null)
-        const res = await deleteConseilAction(undefined, 1)
+        const res = await deleteConseilAction(1)
         expect(res).toEqual({ success: false, error: "Conseil introuvable." })
         expect(h.deleteConseil).not.toHaveBeenCalled()
     })
 
     it("refuses to delete a conseil that still has elus", async () => {
         h.countElu.mockResolvedValue(3)
-        const res = await deleteConseilAction(undefined, 1)
+        const res = await deleteConseilAction(1)
         expect(res).toEqual({
             success: false,
             error: "Supprimez d'abord les éluEs de ce conseil avant de le supprimer."
@@ -66,13 +66,13 @@ describe("deleteConseilAction", () => {
 
     it("captures and fails when the delete throws", async () => {
         h.deleteConseil.mockRejectedValue(new Error("db down"))
-        const res = await deleteConseilAction(undefined, 1)
+        const res = await deleteConseilAction(1)
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("deletes the conseil and revalidates on the happy path", async () => {
-        const res = await deleteConseilAction(undefined, 9)
+        const res = await deleteConseilAction(9)
         expect(res).toEqual({ success: true })
         expect(h.countElu).toHaveBeenCalledWith({
             where: { conseilId: 9, deletedAt: null }

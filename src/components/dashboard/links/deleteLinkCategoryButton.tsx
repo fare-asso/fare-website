@@ -1,7 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import deleteLinkCategoryAction from "@/actions/links/deleteLinkCategoryAction"
@@ -31,10 +30,10 @@ export default function DeleteLinkCategoryButton({
 }: {
     category: LinkCategory
 }) {
-    const [formState, formAction] = useActionState<
-        { success: true } | { success: false; error: string } | undefined,
-        number
-    >(deleteLinkCategoryAction, undefined)
+    const router = useRouter()
+    const [formState, setFormState] = useState<
+        { success: true } | { success: false; error: string } | undefined
+    >(undefined)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -60,8 +59,12 @@ export default function DeleteLinkCategoryButton({
 
         setIsLoading(true)
 
-        startTransition(() => {
-            formAction(category.id)
+        startTransition(async () => {
+            const result = await deleteLinkCategoryAction(category.id)
+            if (result?.success) {
+                await router.invalidate()
+            }
+            setFormState(result)
         })
     }
 

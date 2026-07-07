@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 
 import bulkDeleteUsers from "@/actions/users/bulkDeleteUsers"
@@ -28,6 +27,7 @@ export function BulkDeleteDialog({
     onOpenChange,
     onSuccess
 }: Props) {
+    const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
 
@@ -36,6 +36,7 @@ export function BulkDeleteDialog({
         startTransition(async () => {
             const result = await bulkDeleteUsers(userIds)
             if (result.success) {
+                await router.invalidate()
                 onOpenChange(false)
                 onSuccess()
             } else {

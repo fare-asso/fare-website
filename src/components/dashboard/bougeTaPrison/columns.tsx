@@ -1,10 +1,8 @@
-"use client"
-
 import type { ColumnDef, RowData } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 
+import Link from "@/components/link"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { BTPTutorApplication } from "@/generated/prisma/client"

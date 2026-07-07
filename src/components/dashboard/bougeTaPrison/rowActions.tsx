@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { ArchiveIcon, ArchiveRestoreIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -33,11 +32,13 @@ export default function RowActions({
 }) {
     const [isLoading, setIsLoading] = useState(false)
     const isArchived = application.archived !== null
+    const router = useRouter()
 
     const onArchive = async () => {
         setIsLoading(true)
         const response = await archiveTutorApplication(application.id)
         if (response.success) {
+            await router.invalidate()
             toast.success("La candidature a été archivée.")
         } else {
             toast.error(response.error)
@@ -49,6 +50,7 @@ export default function RowActions({
         setIsLoading(true)
         const response = await unarchiveTutorApplication(application.id)
         if (response.success) {
+            await router.invalidate()
             toast.success("La candidature a été désarchivée.")
         } else {
             toast.error(response.error)

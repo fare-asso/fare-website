@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 
 import bulkRestoreUsers from "@/actions/users/bulkRestoreUsers"
@@ -28,6 +27,7 @@ export function BulkRestoreDialog({
     onOpenChange,
     onSuccess
 }: Props) {
+    const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
 
@@ -36,6 +36,7 @@ export function BulkRestoreDialog({
         startTransition(async () => {
             const result = await bulkRestoreUsers(userIds)
             if (result.success) {
+                await router.invalidate()
                 onOpenChange(false)
                 onSuccess()
             } else {

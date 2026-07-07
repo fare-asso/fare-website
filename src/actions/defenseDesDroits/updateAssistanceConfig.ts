@@ -1,12 +1,16 @@
-"use server"
-
+import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    type ActionPayload,
+    captureActionError,
+    packActionArgs,
+    unpackActionArgs,
+    withServerAction
+} from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 const ConfigInput = type({
@@ -72,11 +76,28 @@ async function updateAssistanceConfigImpl(input: {
         }
     }
 
-    revalidatePath("/dashboard/defense-des-droits")
     return { success: true }
 }
 
-export const updateAssistanceConfig = withServerAction(
-    "updateAssistanceConfig",
-    updateAssistanceConfigImpl
-)
+const updateAssistanceConfigServerFn = createServerFn({ method: "POST" })
+    .inputValidator(
+        (data: ActionPayload<Parameters<typeof updateAssistanceConfigImpl>>) =>
+            data
+    )
+    .handler(({ data }) =>
+        withServerAction(
+            "updateAssistanceConfig",
+            updateAssistanceConfigImpl
+        )(
+            ...unpackActionArgs<Parameters<typeof updateAssistanceConfigImpl>>(
+                data
+            )
+        )
+    )
+
+export const updateAssistanceConfig = async (
+    ...args: Parameters<typeof updateAssistanceConfigImpl>
+): ReturnType<typeof updateAssistanceConfigImpl> =>
+    updateAssistanceConfigServerFn({
+        data: await packActionArgs(args)
+    }) as ReturnType<typeof updateAssistanceConfigImpl>

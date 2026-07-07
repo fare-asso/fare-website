@@ -1,9 +1,9 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Loader2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
+import { updateAssistanceConfig } from "@/actions/defenseDesDroits/updateAssistanceConfig"
 import { Button } from "@/components/ui/button"
 import {
     Field,
@@ -12,8 +12,6 @@ import {
     FieldLabel
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-
-import { updateAssistanceConfig } from "./actions"
 
 export default function ConfigForm({
     recipientEmail,
@@ -25,6 +23,7 @@ export default function ConfigForm({
     const [email, setEmail] = useState(recipientEmail)
     const [delayValue, setDelayValue] = useState(delay)
     const [isPending, startTransition] = useTransition()
+    const router = useRouter()
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
         e.preventDefault()
@@ -34,6 +33,7 @@ export default function ConfigForm({
                 delay: delayValue
             })
             if (res.success) {
+                await router.invalidate()
                 toast.success("La configuration a bien été enregistrée.")
             } else {
                 toast.error(res.error)

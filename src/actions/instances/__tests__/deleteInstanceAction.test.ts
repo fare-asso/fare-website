@@ -43,7 +43,7 @@ beforeEach(() => {
 describe("deleteInstanceAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await deleteInstanceAction(undefined, 1)).toEqual({
+        expect(await deleteInstanceAction(1)).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -52,7 +52,7 @@ describe("deleteInstanceAction", () => {
 
     it("requires the delete:instance permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await deleteInstanceAction(undefined, 1)
+        const res = await deleteInstanceAction(1)
         if (res.success) throw new Error("expected failure")
         expect(res.error).toMatch(/permission/)
         expect(h.deleteInstance).not.toHaveBeenCalled()
@@ -60,14 +60,14 @@ describe("deleteInstanceAction", () => {
 
     it("returns an error when the instance is not found", async () => {
         h.findInstance.mockResolvedValue(null)
-        const res = await deleteInstanceAction(undefined, 1)
+        const res = await deleteInstanceAction(1)
         expect(res).toEqual({ success: false, error: "Instance introuvable." })
         expect(h.deleteInstance).not.toHaveBeenCalled()
     })
 
     it("refuses to delete an instance that still has conseils", async () => {
         h.countConseil.mockResolvedValue(2)
-        const res = await deleteInstanceAction(undefined, 1)
+        const res = await deleteInstanceAction(1)
         expect(res).toEqual({
             success: false,
             error: "Supprimez d'abord les conseils de cette instance avant de la supprimer."
@@ -78,7 +78,7 @@ describe("deleteInstanceAction", () => {
     it("captures and fails when logo removal rejects", async () => {
         h.findInstance.mockResolvedValue({ id: 1, logoPaths: ["x.png"] })
         h.remove.mockRejectedValue(new Error("storage down"))
-        const res = await deleteInstanceAction(undefined, 1)
+        const res = await deleteInstanceAction(1)
         expect(res).toEqual({
             success: false,
             error: "Echec de la suppression des logos de l'instance"
@@ -89,21 +89,21 @@ describe("deleteInstanceAction", () => {
 
     it("captures and fails when the delete throws", async () => {
         h.deleteInstance.mockRejectedValue(new Error("db down"))
-        const res = await deleteInstanceAction(undefined, 1)
+        const res = await deleteInstanceAction(1)
         expect(res.success).toBe(false)
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("removes logos then deletes the instance on the happy path", async () => {
         h.findInstance.mockResolvedValue({ id: 5, logoPaths: ["x.png"] })
-        const res = await deleteInstanceAction(undefined, 5)
+        const res = await deleteInstanceAction(5)
         expect(res).toEqual({ success: true })
         expect(h.remove).toHaveBeenCalledWith(["x.png"])
         expect(h.deleteInstance).toHaveBeenCalledWith({ where: { id: 5 } })
     })
 
     it("skips storage removal when the instance has no logos", async () => {
-        const res = await deleteInstanceAction(undefined, 1)
+        const res = await deleteInstanceAction(1)
         expect(res).toEqual({ success: true })
         expect(h.remove).not.toHaveBeenCalled()
         expect(h.deleteInstance).toHaveBeenCalledWith({ where: { id: 1 } })

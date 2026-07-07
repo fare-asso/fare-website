@@ -1,7 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { CheckCircleIcon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { useState, useTransition } from "react"
 
 import approveAssociationAction from "@/actions/associations/approveAssociationAction"
 import {
@@ -30,29 +29,20 @@ export default function ApproveAssociationButton({
 }: {
     association: Association
 }): React.JSX.Element {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        number
-    >(approveAssociationAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const router = useRouter()
+    const [isLoading, startTransition] = useTransition()
     const [isOpen, setIsOpen] = useState<boolean>(false)
-
-    useEffect(() => {
-        if (formState?.success) {
-            setIsLoading(false)
-            setIsOpen(false)
-        }
-
-        setIsLoading(false)
-    }, [formState])
 
     const handleApprove = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ): void => {
         event.preventDefault()
-        setIsLoading(true)
-        startTransition(() => {
-            formAction(association.id)
+        startTransition(async () => {
+            const result = await approveAssociationAction(association.id)
+            if (result?.success) {
+                await router.invalidate()
+                setIsOpen(false)
+            }
         })
     }
 

@@ -1,5 +1,3 @@
-"use client"
-
 import type { ColumnDef } from "@tanstack/react-table"
 import type { ReactElement } from "react"
 import { MdVisibility, MdVisibilityOff } from "react-icons/md"
@@ -48,7 +46,8 @@ export type Event = {
 
 export function getColumns(
     canEdit: boolean,
-    canDelete: boolean
+    canDelete: boolean,
+    onDeleted: () => Promise<void>
 ): ColumnDef<Event>[] {
     const baseColumns: ColumnDef<Event>[] = [
         {
@@ -222,9 +221,9 @@ export function getColumns(
                                         </AlertDialogCancel>
                                         <AlertDialogAction
                                             onClick={() =>
-                                                deleteEventAction({
+                                                void deleteEventAction({
                                                     eventId: row.getValue("id")
-                                                })
+                                                }).then(() => onDeleted())
                                             }
                                         >
                                             Supprimer

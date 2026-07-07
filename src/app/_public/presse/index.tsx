@@ -34,7 +34,7 @@ function Presse() {
             </h1>
 
             <div className="flex w-3/4 flex-col items-center space-y-2">
-                {!communiques ? (
+                {communiques === null ? (
                     <p className="text-destructive text-lg font-medium">
                         Echec du chargement des documents de presse
                     </p>

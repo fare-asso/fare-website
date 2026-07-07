@@ -84,9 +84,11 @@
         "zod": "^4.4.3"
     },
     "devDependencies": {
+        "@babel/core": "^8.0.1",
         "@react-email/ui": "^6.6.6",
+        "@rolldown/plugin-babel": "^0.2.3",
         "@tailwindcss/vite": "^4.3.2",
-        "@tanstack/react-router-devtools": "^1.167.0",
+        "@types/babel__core": "^7.20.5",
         "@types/leaflet": "^1.9.21",
         "@types/node": "^24.13.2",
         "@types/nodemailer": "^8.0.1",

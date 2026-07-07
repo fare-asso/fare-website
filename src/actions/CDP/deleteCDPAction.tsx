@@ -26,7 +26,7 @@ async function deleteCDPActionImpl({ id }: { id: number }) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // Delete Record from DB
     const deleted = await tryCatch(

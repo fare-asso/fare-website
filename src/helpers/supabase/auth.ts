@@ -14,7 +14,7 @@ export type UserWithPermissions = User & {
 }
 
 export async function getCurrentUserWithPermissions(): Promise<UserWithPermissions | null> {
-    const supabase = await createClient()
+    const supabase = createClient()
     const {
         data: { user }
     } = await supabase.auth.getUser()

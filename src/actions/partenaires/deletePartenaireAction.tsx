@@ -31,7 +31,7 @@ async function deletePartenaireActionImpl(
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const partenaire = await tryCatch(
         prisma.partenaire.findUnique({ where: { id } })

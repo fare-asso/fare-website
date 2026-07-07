@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { useState, useTransition } from "react"
 
 import bulkUpdateRole from "@/actions/users/bulkUpdateRole"
@@ -41,6 +40,7 @@ export function BulkRoleDialog({
     onOpenChange,
     onSuccess
 }: Props) {
+    const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
     const [selectedRole, setSelectedRole] = useState<Role | null>(null)
@@ -51,6 +51,7 @@ export function BulkRoleDialog({
         startTransition(async () => {
             const result = await bulkUpdateRole(userIds, selectedRole)
             if (result.success) {
+                await router.invalidate()
                 onOpenChange(false)
                 setSelectedRole(null)
                 onSuccess()

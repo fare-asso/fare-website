@@ -2,6 +2,8 @@ import { use, useEffect, useRef, useState } from "react"
 
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
 
+type EquipmentWithImage = BagadAssoEquipment & { imageUrl: string | null }
+
 import EquipmentCard from "./equipmentCard"
 
 export default function EquipmentSelection({
@@ -9,7 +11,7 @@ export default function EquipmentSelection({
     name,
     onChange
 }: {
-    equipmentList: Promise<BagadAssoEquipment[]>
+    equipmentList: Promise<EquipmentWithImage[]>
     name?: string
     onChange?: (value: string) => void
 }) {

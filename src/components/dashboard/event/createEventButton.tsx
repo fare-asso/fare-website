@@ -1,6 +1,5 @@
-"use client"
-
-import { useActionState, useCallback, useEffect, useState } from "react"
+import { useRouter } from "@tanstack/react-router"
+import { startTransition, useCallback, useEffect, useState } from "react"
 
 import createEventAction from "@/actions/events/createEventAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -26,10 +25,10 @@ import LocationPicker from "../../ui/location/locationPicker"
 import LoadingRing from "../loadingRing"
 
 export default function CreateEventButton() {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(createEventAction, undefined)
+    const router = useRouter()
+    const [formState, setFormState] = useState<
+        { error?: string; success?: boolean } | undefined
+    >(undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
     const [_startDate, setStartDate] = useState<Date>()
     const [_endDate, setEndDate] = useState<Date>()
@@ -59,7 +58,13 @@ export default function CreateEventButton() {
 
         setIsLoading(true)
 
-        formAction(formData)
+        startTransition(async () => {
+            const result = await createEventAction(formData)
+            if (result?.success) {
+                await router.invalidate()
+            }
+            setFormState(result)
+        })
     }
 
     return (

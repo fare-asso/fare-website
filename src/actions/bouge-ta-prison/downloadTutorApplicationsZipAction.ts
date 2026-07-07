@@ -87,7 +87,7 @@ async function downloadTutorApplicationsZipActionImpl(
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const downloadApplication = async (app: BTPTutorApplication) => {
         const folder = `${sanitizeString(app.lastName)}-${sanitizeString(

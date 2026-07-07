@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
@@ -10,13 +9,13 @@ import {
     MailIcon,
     MessageSquareTextIcon
 } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 
 import archiveTutorQuestion from "@/actions/bouge-ta-prison/archiveTutorQuestion"
 import unarchiveTutorQuestion from "@/actions/bouge-ta-prison/unarchiveTutorQuestion"
 import LoadingRing from "@/components/dashboard/loadingRing"
+import Link from "@/components/link"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -43,6 +42,7 @@ export default function QuestionCard({
     question: BTPTutorQuestion
 }) {
     const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
 
     const isArchived = question.archived !== null
 
@@ -53,6 +53,7 @@ export default function QuestionCard({
         if (response.error) {
             toast.error(response.error)
         } else {
+            await router.invalidate()
             toast.success("La question a été archivée.")
         }
         setIsLoading(false)
@@ -65,6 +66,7 @@ export default function QuestionCard({
         if (response.error) {
             toast.error(response.error)
         } else {
+            await router.invalidate()
             toast.success("La question a été désarchivée.")
         }
         setIsLoading(false)

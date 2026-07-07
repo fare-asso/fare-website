@@ -1,5 +1,3 @@
-"use client"
-
 import { format } from "date-fns"
 import { MdLocationPin } from "react-icons/md"
 

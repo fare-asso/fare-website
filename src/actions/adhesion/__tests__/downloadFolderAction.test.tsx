@@ -50,7 +50,7 @@ beforeEach(() => {
 describe("downloadFolderAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await downloadFolderAction(undefined, "f")).toEqual({
+        expect(await downloadFolderAction("f")).toEqual({
             error: "Authentification requise"
         })
         expect(h.findFirst).not.toHaveBeenCalled()
@@ -58,20 +58,20 @@ describe("downloadFolderAction", () => {
 
     it("requires the access:adhesions permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await downloadFolderAction(undefined, "f")
+        const res = await downloadFolderAction("f")
         expect(res.error).toMatch(/permission/)
         expect(h.findFirst).not.toHaveBeenCalled()
     })
 
     it("rejects an empty folder path", async () => {
-        expect(await downloadFolderAction(undefined, "")).toEqual({
+        expect(await downloadFolderAction("")).toEqual({
             error: "Le nom du dossier est invalide"
         })
     })
 
     it("captures and errors when fetching the adhesion fails", async () => {
         h.findFirst.mockRejectedValue(new Error("db down"))
-        expect(await downloadFolderAction(undefined, "uuid-fare")).toEqual({
+        expect(await downloadFolderAction("uuid-fare")).toEqual({
             error: "Erreur lors de la création du fichier zip"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -83,14 +83,14 @@ describe("downloadFolderAction", () => {
             data: null,
             error: { message: "gone" }
         })
-        expect(await downloadFolderAction(undefined, "uuid-fare")).toEqual({
+        expect(await downloadFolderAction("uuid-fare")).toEqual({
             error: "Erreur lors de la création du fichier zip"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("downloads the files referenced in the db and appends the PDF", async () => {
-        const res = await downloadFolderAction(undefined, "uuid-fare")
+        const res = await downloadFolderAction("uuid-fare")
         expect(res.success).toBe(true)
         expect(res.filename).toBe("uuid-fare.zip")
         expect(res.zipData && isZip(res.zipData)).toBe(true)
@@ -102,7 +102,7 @@ describe("downloadFolderAction", () => {
 
     it("errors when no adhesion matches the folder", async () => {
         h.findFirst.mockResolvedValue(null)
-        expect(await downloadFolderAction(undefined, "uuid-fare")).toEqual({
+        expect(await downloadFolderAction("uuid-fare")).toEqual({
             error: "Aucune adhésion ne correspond à ce dossier"
         })
         expect(h.download).not.toHaveBeenCalled()

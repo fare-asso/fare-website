@@ -1,5 +1,3 @@
-"use client"
-
 import L from "leaflet"
 
 import "leaflet/dist/leaflet.css"
@@ -8,8 +6,9 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 
 import Image from "@/components/image"
 import type { Association } from "@/generated/prisma/client"
+
+type AssociationWithLogo = Association & { logoUrl: string }
 import { parseLocation } from "@/helpers/location"
-import { createClient } from "@/helpers/supabase/client"
 
 import AssociationMapSearchBar from "./associationMapSearchBar"
 
@@ -23,10 +22,8 @@ L.Icon.Default.mergeOptions({
 export default function AssociationMap({
     associations
 }: {
-    associations: Association[]
+    associations: AssociationWithLogo[]
 }) {
-    const supabase = createClient()
-
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [searchError, setSearchError] = useState<string | undefined>(
         undefined
@@ -65,9 +62,7 @@ export default function AssociationMap({
             center={[48.28842852181882, -2.1546832933080085]}
             zoom={9}
             scrollWheelZoom={false}
-            className={
-                "h-[400px] w-full rounded-xl border-[1.5px] border-black font-sans md:h-[600px]"
-            }
+            className="h-[400px] w-full rounded-xl border-[1.5px] border-black font-sans md:h-[600px]"
             ref={mapRef}
         >
             <div className="absolute z-999 mt-5 hidden h-20 w-full md:flex md:flex-col md:items-center md:justify-start">
@@ -104,12 +99,7 @@ export default function AssociationMap({
                         <Popup>
                             <div className="flex w-full flex-row">
                                 <Image
-                                    src={
-                                        supabase.storage
-                                            .from("association-pictures")
-                                            .getPublicUrl(association.logoPath)
-                                            .data.publicUrl
-                                    }
+                                    src={association.logoUrl}
                                     width={100}
                                     height={100}
                                     alt={

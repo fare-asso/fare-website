@@ -1,7 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { useState, useTransition } from "react"
 
 import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
 import {
@@ -30,32 +29,21 @@ export default function DeleteAssociationButton({
 }: {
     association: Association
 }) {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        number
-    >(deleteAssociationAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const router = useRouter()
+    const [isLoading, startTransition] = useTransition()
     const [isOpen, setIsOpen] = useState<boolean>(false)
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            setIsLoading(false)
-            setIsOpen(false)
-        }
-
-        setIsLoading(false)
-    }, [formState])
 
     const handleDelete = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         event.preventDefault()
 
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(association.id)
+        startTransition(async () => {
+            const result = await deleteAssociationAction(association.id)
+            if (result?.success) {
+                await router.invalidate()
+                setIsOpen(false)
+            }
         })
     }
 

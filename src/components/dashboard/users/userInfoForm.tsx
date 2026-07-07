@@ -1,6 +1,5 @@
-"use client"
-
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "@tanstack/react-router"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -57,6 +56,7 @@ const roleWarnings: Record<string, string> = {
 }
 
 export function UserInfoForm({ user }: { user: User }) {
+    const router = useRouter()
     const userInfo = useMemo(
         () => ({
             name: user.name,
@@ -106,6 +106,7 @@ export function UserInfoForm({ user }: { user: User }) {
         if (res.success) {
             form.reset(data)
             setInitialInfo(data)
+            await router.invalidate()
         }
     }
 

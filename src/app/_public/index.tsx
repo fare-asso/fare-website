@@ -35,10 +35,17 @@ const getAssociationCount = createServerFn().handler(async () => {
 })
 
 const getMapAssociations = createServerFn().handler(async () => {
+    const supabase = createClient()
     const result = await tryCatch(
         prisma.association.findMany({ where: { approved: { not: null } } })
     )
-    return result.success ? result.value : undefined
+    if (!result.success) return undefined
+    return result.value.map((association) => ({
+        ...association,
+        logoUrl: supabase.storage
+            .from("association-pictures")
+            .getPublicUrl(association.logoPath).data.publicUrl
+    }))
 })
 
 export const Route = createFileRoute("/_public/")({

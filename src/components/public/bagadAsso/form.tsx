@@ -1,5 +1,3 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -45,6 +43,8 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
+
+type EquipmentWithImage = BagadAssoEquipment & { imageUrl: string | null }
 import { cn } from "@/lib/utils"
 
 import EquipmentSelection from "./equipmentSelection"
@@ -55,7 +55,7 @@ import {
 } from "./form-schema"
 
 interface BagadAssoFormProps {
-    equipmentList: Promise<BagadAssoEquipment[]>
+    equipmentList: Promise<EquipmentWithImage[]>
 }
 
 interface CaptchaFieldProps {

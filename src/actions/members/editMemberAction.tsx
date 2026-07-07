@@ -36,7 +36,7 @@ async function editMemberActionImpl(input: TEditMember): Promise<Result> {
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const current = await tryCatch(
         prisma.member.findUnique({

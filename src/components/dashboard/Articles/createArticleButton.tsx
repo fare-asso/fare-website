@@ -1,13 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import type { JSONContent } from "@tiptap/react"
-import {
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
+import { useCallback, useState, useTransition } from "react"
 import { v4 as uuidv4 } from "uuid"
 
 import createArticleAction from "@/actions/articles/createArticleAction"
@@ -72,10 +65,9 @@ function extractAndReplaceImages(content: JSONContent): {
 }
 
 export default function CreateArticleButton() {
-    const [formState, formAction, pending] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(createArticleAction, undefined)
+    const router = useRouter()
+    const [pending, startTransition] = useTransition()
+    const [error, setError] = useState<string | undefined>(undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
 
     const [content, setContent] = useState<JSONContent>({}) // Rich Text Editor content
@@ -84,15 +76,9 @@ export default function CreateArticleButton() {
         setDialogIsOpen(open)
         if (!open) {
             setContent({}) // Reset editor content
+            setError(undefined)
         }
     }, [])
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-        }
-    }, [formState, handleOpenChange])
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -105,8 +91,14 @@ export default function CreateArticleButton() {
         }
         formData.append("content", JSON.stringify(updatedContent))
 
-        startTransition(() => {
-            formAction(formData)
+        startTransition(async () => {
+            const result = await createArticleAction(formData)
+            if (result?.success) {
+                await router.invalidate()
+                handleOpenChange(false)
+            } else {
+                setError(result?.error)
+            }
         })
     }
 
@@ -153,12 +145,10 @@ export default function CreateArticleButton() {
                         <RichTextEditor onChange={handleRichTextEditorChange} />
                     </div>
 
-                    {formState?.error ? (
+                    {error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
+                            <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     ) : null}
                 </form>

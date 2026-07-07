@@ -41,8 +41,8 @@ type Packed<T> = T extends File
     ? PackedFile
     : T extends Date | Uint8Array
       ? T
-      : T extends Array<infer U>
-        ? Array<Packed<U>>
+      : T extends (infer U)[]
+        ? Packed<U>[]
         : T extends object
           ? { [K in keyof T]: Packed<T[K]> }
           : T
@@ -78,11 +78,12 @@ async function packFiles(value: unknown): Promise<unknown> {
         typeof value === "object" &&
         Object.getPrototypeOf(value) === Object.prototype
     ) {
-        const out: Record<string, unknown> = {}
-        for (const [key, entry] of Object.entries(value)) {
-            out[key] = await packFiles(entry)
-        }
-        return out
+        const entries = await Promise.all(
+            Object.entries(value).map(
+                async ([key, entry]) => [key, await packFiles(entry)] as const
+            )
+        )
+        return Object.fromEntries(entries)
     }
     return value
 }
@@ -163,9 +164,9 @@ export function withServerAction<A extends unknown[], R>(
             )
             if (formData) {
                 const fields: Record<string, string> = {}
-                formData.forEach((value, key) => {
+                for (const [key, value] of formData.entries()) {
                     if (typeof value === "string") fields[key] = value
-                })
+                }
                 Sentry.getCurrentScope().setContext("formData", fields)
             }
         }

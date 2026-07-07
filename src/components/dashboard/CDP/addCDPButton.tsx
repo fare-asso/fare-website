@@ -1,14 +1,8 @@
-"use client"
-
-import {
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
+import { useRouter } from "@tanstack/react-router"
+import { useCallback, useState, useTransition } from "react"
 
 import createCDPAction from "@/actions/CDP/createCDPAction"
+import { uploadFile } from "@/actions/storage/uploadFileAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -31,17 +25,14 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
-import { uploadFile } from "@/helpers/supabase/upload"
 
 import LoadingRing from "../loadingRing"
 
 export default function AddNewCDPButton() {
+    const router = useRouter()
     const [error, setError] = useState<string | undefined>(undefined)
 
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(createCDPAction, undefined)
+    const [isPending, startTransition] = useTransition()
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -55,18 +46,6 @@ export default function AddNewCDPButton() {
             setIsLoading(false)
         }
     }, [])
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-            setError(undefined)
-        } else if (formState?.error) {
-            setError(formState?.error)
-        }
-
-        setIsLoading(false)
-    }, [formState, handleOpenChange])
 
     // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -106,8 +85,16 @@ export default function AddNewCDPButton() {
         }
         formData.set("CDPfilePath", uploadResponse.path)
 
-        startTransition(() => {
-            formAction(formData)
+        startTransition(async () => {
+            const result = await createCDPAction(formData)
+            if (result?.success) {
+                await router.invalidate()
+                handleOpenChange(false)
+                setError(undefined)
+            } else if (result?.error) {
+                setError(result.error)
+            }
+            setIsLoading(false)
         })
     }
 
@@ -188,9 +175,9 @@ export default function AddNewCDPButton() {
                     <Button
                         type="submit"
                         form="createCDPForm"
-                        disabled={isLoading}
+                        disabled={isLoading || isPending}
                     >
-                        {isLoading ? <LoadingRing /> : null}
+                        {isLoading || isPending ? <LoadingRing /> : null}
                         Ajouter
                     </Button>
                 </DialogFooter>

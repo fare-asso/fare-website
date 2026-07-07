@@ -1,27 +1,22 @@
-"use client"
-
+import { getRouteApi, useNavigate } from "@tanstack/react-router"
 import { Eye, EyeOff } from "lucide-react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback } from "react"
 
 import { Button } from "@/components/ui/button"
 
-export function ShowDeletedToggle() {
-    const router = useRouter()
-    const pathname = usePathname()
-    const searchParams = useSearchParams()
+const route = getRouteApi("/dashboard/users/")
 
-    const showDeleted = searchParams.get("showDeleted") === "true"
+export function ShowDeletedToggle() {
+    const { showDeleted: showDeletedParam } = route.useSearch()
+    const showDeleted = showDeletedParam === true
+    const navigate = useNavigate()
 
     const toggleShowDeleted = useCallback(() => {
-        const params = new URLSearchParams(searchParams.toString())
-        if (showDeleted) {
-            params.delete("showDeleted")
-        } else {
-            params.set("showDeleted", "true")
-        }
-        router.push(`${pathname}?${params.toString()}`)
-    }, [router, pathname, searchParams, showDeleted])
+        void navigate({
+            to: ".",
+            search: showDeleted ? {} : { showDeleted: true }
+        })
+    }, [navigate, showDeleted])
 
     return (
         <Button

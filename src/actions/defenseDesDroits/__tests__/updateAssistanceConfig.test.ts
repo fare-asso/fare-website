@@ -2,14 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { assistanceConfigRecord } from "@/test/factories/assistance"
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { authModule, dbModule, sentryModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     findFirst: vi.fn(),
     update: vi.fn(),
     create: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -23,10 +22,9 @@ vi.mock("@/helpers/db", () =>
     })
 )
 vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import { updateAssistanceConfig } from "../actions"
+import { updateAssistanceConfig } from "../updateAssistanceConfig"
 
 const valid = { recipientEmail: "new@fare-asso.fr", delay: "24h" }
 
@@ -79,7 +77,7 @@ describe("updateAssistanceConfig — validation", () => {
 })
 
 describe("updateAssistanceConfig — persistence", () => {
-    it("updates the existing row and revalidates", async () => {
+    it("updates the existing row", async () => {
         h.findFirst.mockResolvedValue(assistanceConfigRecord({ id: 7 }))
         const res = await updateAssistanceConfig(valid)
 
@@ -89,9 +87,6 @@ describe("updateAssistanceConfig — persistence", () => {
             data: { recipientEmail: "new@fare-asso.fr", delay: "24h" }
         })
         expect(h.create).not.toHaveBeenCalled()
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/dashboard/defense-des-droits"
-        )
     })
 
     it("creates the row when none exists", async () => {
@@ -115,6 +110,5 @@ describe("updateAssistanceConfig — persistence", () => {
             error: "Échec de l'enregistrement de la configuration."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 })

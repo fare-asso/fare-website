@@ -37,7 +37,7 @@ export default function DeleteEluButton({ elu }: { elu: Elu }) {
         event.preventDefault()
 
         startTransition(async () => {
-            const res = await deleteEluAction(undefined, elu.id)
+            const res = await deleteEluAction(elu.id)
             if (res.success) {
                 setIsOpen(false)
                 toast.success("Élu·e supprimé·e.", {

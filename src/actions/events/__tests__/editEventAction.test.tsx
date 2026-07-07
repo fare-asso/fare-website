@@ -58,7 +58,7 @@ beforeEach(() => {
 describe("editEventAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await editEventAction(undefined, fd())).toEqual({
+        expect(await editEventAction(fd())).toEqual({
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -66,38 +66,38 @@ describe("editEventAction", () => {
 
     it("requires the edit:event permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await editEventAction(undefined, fd())
+        const res = await editEventAction(fd())
         expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("rejects a non-numeric id", async () => {
-        const res = await editEventAction(undefined, fd({ id: "abc" }))
+        const res = await editEventAction(fd({ id: "abc" }))
         expect(res.error).toMatch(/identifiant/i)
     })
 
     it("rejects a too-short name", async () => {
-        const res = await editEventAction(undefined, fd({ name: "ab" }))
+        const res = await editEventAction(fd({ name: "ab" }))
         expect(res.error).toMatch(/nom/)
     })
 
     it("rejects an unknown category", async () => {
         h.findCategory.mockRejectedValue(p2025())
-        const res = await editEventAction(undefined, fd())
+        const res = await editEventAction(fd())
         expect(res.error).toMatch(/catégorie/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await editEventAction(undefined, fd())).toEqual({
+        expect(await editEventAction(fd())).toEqual({
             error: "La modification de l'évènement à échoué, veuillez réessayer"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("updates the event and revalidates on the happy path", async () => {
-        const res = await editEventAction(undefined, fd())
+        const res = await editEventAction(fd())
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 1 },

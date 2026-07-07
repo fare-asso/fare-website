@@ -1,3 +1,4 @@
+import type * as TanstackRouter from "@tanstack/react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render } from "vitest-browser-react"
 
@@ -11,7 +12,24 @@ const h = vi.hoisted(() => ({
     noop: vi.fn(),
     toastSuccess: vi.fn(),
     toastError: vi.fn(),
-    toastWarning: vi.fn()
+    toastWarning: vi.fn(),
+    invalidate: vi.fn()
+}))
+
+vi.mock("@tanstack/react-router", async (importOriginal) => ({
+    ...(await importOriginal<typeof TanstackRouter>()),
+    useRouter: () => ({ invalidate: h.invalidate })
+}))
+vi.mock("@/components/link", () => ({
+    default: ({
+        href,
+        children,
+        ...props
+    }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => (
+        <a href={href} {...props}>
+            {children}
+        </a>
+    )
 }))
 
 vi.mock("@/actions/bouge-ta-prison/downloadTutorApplicationsZipAction", () => ({

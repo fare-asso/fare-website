@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { ArchiveIcon, ArchiveRestoreIcon, DownloadIcon, X } from "lucide-react"
 import { useState } from "react"
 import { createPortal } from "react-dom"
@@ -35,6 +34,7 @@ export default function BulkActionsBar({
 }) {
     const [isDownloading, setIsDownloading] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
+    const router = useRouter()
     const count = selectedIds.length
 
     if (count === 0 || typeof document === "undefined") return null
@@ -88,6 +88,7 @@ export default function BulkActionsBar({
         }
         const result = call.value
         if (result.success) {
+            await router.invalidate()
             toast.success(
                 archived
                     ? `${result.value.count} candidature${plural} désarchivée${plural}.`

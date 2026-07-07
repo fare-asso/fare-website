@@ -1,3 +1,4 @@
+import { isRedirect } from "@tanstack/react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { sentryModule, supabaseServerModule } from "@/test/mocks"
@@ -34,8 +35,10 @@ describe("signOut", () => {
     })
 
     it("redirects to /login on success", async () => {
-        await expect(signOut()).rejects.toMatchObject({
-            digest: expect.stringContaining("NEXT_REDIRECT")
-        })
+        await expect(signOut()).rejects.toSatisfy(
+            (err) =>
+                isRedirect(err) &&
+                (err as { options: { href: string } }).options.href === "/login"
+        )
     })
 })

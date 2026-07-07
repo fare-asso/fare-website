@@ -63,7 +63,7 @@ export const Route = createFileRoute("/login/callback/google")({
 })
 
 async function upsertUserProfile(
-    supabase: ReturnType<typeof createClient>
+    supabase: Awaited<ReturnType<typeof createClient>>
 ): Promise<void> {
     const userResult = await tryCatch(supabase.auth.getUser())
     if (!userResult.success) {
@@ -100,7 +100,7 @@ async function upsertUserProfile(
 }
 
 async function handleNewUserNotification(
-    supabase: ReturnType<typeof createClient>
+    supabase: Awaited<ReturnType<typeof createClient>>
 ): Promise<void> {
     const userResult = await tryCatch(supabase.auth.getUser())
     if (!userResult.success) {

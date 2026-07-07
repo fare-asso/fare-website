@@ -1,7 +1,6 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { MailPlusIcon } from "lucide-react"
-import { useActionState, useCallback, useEffect, useState } from "react"
+import { useCallback, useState, useTransition } from "react"
 
 import inviteRepresentativeAction from "@/actions/associations/inviteRepresentativeAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -31,38 +30,33 @@ export default function SendInvitationLinkButton({
 }: {
     association: Association
 }) {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(inviteRepresentativeAction, undefined)
+    const router = useRouter()
+    const [isLoading, startTransition] = useTransition()
+    const [error, setError] = useState<string | undefined>(undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const handleOpenChange = useCallback((open: boolean) => {
         setDialogIsOpen(open)
         if (!open) {
-            setIsLoading(false)
             // Réinitialiser le formulaire lorsque le dialogue est fermé
+            setError(undefined)
         }
     }, [])
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-            setIsLoading(false)
-        }
-        setIsLoading(false)
-    }, [formState, handleOpenChange])
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)
 
-        setIsLoading(true)
-
-        formAction(formData)
+        startTransition(async () => {
+            const result = await inviteRepresentativeAction(formData)
+            if (result?.success) {
+                await router.invalidate()
+                handleOpenChange(false)
+            } else {
+                setError(result?.error)
+            }
+        })
     }
 
     return (
@@ -112,12 +106,10 @@ export default function SendInvitationLinkButton({
                         />
                     </div>
 
-                    {formState?.error ? (
+                    {error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
+                            <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     ) : null}
                 </form>

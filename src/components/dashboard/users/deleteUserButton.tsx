@@ -1,7 +1,5 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { Trash2 } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 
 import deleteUser from "@/actions/users/deleteUser"
@@ -35,8 +33,9 @@ export function DeleteUserButton({ userId, userName }: Props) {
         startTransition(async () => {
             const result = await deleteUser(userId)
             if (result.success) {
+                await router.invalidate()
                 setOpen(false)
-                router.push("/dashboard/users")
+                await router.navigate({ to: "/dashboard/users" })
             } else {
                 setError(result.error || "Une erreur s'est produite")
             }

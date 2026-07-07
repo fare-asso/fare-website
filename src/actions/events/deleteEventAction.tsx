@@ -26,7 +26,7 @@ async function deleteEventActionImpl({ eventId }: { eventId: number }) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // fetch event Image url
     const imageUrl = await prisma.event.findUnique({

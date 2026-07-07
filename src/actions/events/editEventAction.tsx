@@ -42,7 +42,7 @@ async function editEventActionImpl(formData: FormData) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // retrieve formdata fields
     const id = formData.get("id")

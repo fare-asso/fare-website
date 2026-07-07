@@ -1,7 +1,5 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { RotateCcw } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 
 import restoreUser from "@/actions/users/restoreUser"
@@ -36,7 +34,7 @@ export function RestoreUserButton({ userId, userName }: Props) {
             const result = await restoreUser(userId)
             if (result.success) {
                 setOpen(false)
-                router.refresh()
+                await router.invalidate()
             } else {
                 setError(result.error || "Une erreur s'est produite")
             }

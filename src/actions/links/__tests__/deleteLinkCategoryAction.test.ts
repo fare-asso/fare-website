@@ -25,7 +25,7 @@ beforeEach(() => {
 
 describe("deleteLinkCategoryAction", () => {
     itIsGatedBy({
-        action: () => deleteLinkCategoryAction(undefined, 1),
+        action: () => deleteLinkCategoryAction(1),
         permission: "delete:lien",
         getUser: h.getUser,
         writes: [h.deleteCategory]
@@ -33,7 +33,7 @@ describe("deleteLinkCategoryAction", () => {
 
     it("captures and fails when the delete throws", async () => {
         h.deleteCategory.mockRejectedValue(new Error("db down"))
-        const res = await deleteLinkCategoryAction(undefined, 1)
+        const res = await deleteLinkCategoryAction(1)
         expect(res).toEqual({
             success: false,
             error: "Echec de la suppression de la catégorie"
@@ -42,7 +42,7 @@ describe("deleteLinkCategoryAction", () => {
     })
 
     it("deletes the category and revalidates on the happy path", async () => {
-        const res = await deleteLinkCategoryAction(undefined, 9)
+        const res = await deleteLinkCategoryAction(9)
         expect(res).toEqual({ success: true })
         expect(h.deleteCategory).toHaveBeenCalledWith({ where: { id: 9 } })
     })

@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { useOptimistic, useTransition } from "react"
 
 import updateUserPermissions from "@/actions/users/updateUserPermissions"
@@ -19,6 +18,7 @@ export function UserPermissionsForm({
     userPermissions,
     allPermissions
 }: Props) {
+    const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [optimisticPermissions, setOptimisticPermissions] =
         useOptimistic(userPermissions)
@@ -31,6 +31,7 @@ export function UserPermissionsForm({
         startTransition(async () => {
             setOptimisticPermissions(newPermissions)
             await updateUserPermissions(userId, newPermissions)
+            await router.invalidate()
         })
     }
 
@@ -53,6 +54,7 @@ export function UserPermissionsForm({
         startTransition(async () => {
             setOptimisticPermissions(newPermissions)
             await updateUserPermissions(userId, newPermissions)
+            await router.invalidate()
         })
     }
 
@@ -65,6 +67,7 @@ export function UserPermissionsForm({
         startTransition(async () => {
             setOptimisticPermissions(newPermissions)
             await updateUserPermissions(userId, newPermissions)
+            await router.invalidate()
         })
     }
 

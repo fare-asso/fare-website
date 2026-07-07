@@ -1,21 +1,17 @@
 import { FaRegFilePdf } from "react-icons/fa"
 
-import prisma from "@/helpers/db"
+import type { CommuniqueDePresse } from "@/generated/prisma/client"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 import CdpCard from "./CDPCard"
 
 interface CDPListProps {
+    communiques: CommuniqueDePresse[] | null
     canDelete: boolean
 }
 
-export default async function CDPList({ canDelete }: CDPListProps) {
+export default function CDPList({ communiques, canDelete }: CDPListProps) {
     const su = new StorageUtils()
-
-    const communiques = await prisma.communiqueDePresse.findMany({
-        take: 32,
-        orderBy: { createdAt: "desc" }
-    })
 
     if (communiques == null) {
         return (

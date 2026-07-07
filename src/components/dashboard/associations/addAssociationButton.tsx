@@ -1,12 +1,5 @@
-"use client"
-
-import {
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
+import { useRouter } from "@tanstack/react-router"
+import { useCallback, useState, useTransition } from "react"
 
 import addAssociationAction from "@/actions/associations/addAssociationAction"
 import {
@@ -35,39 +28,32 @@ import { Textarea } from "@/components/ui/textarea"
 import LoadingRing from "../loadingRing"
 
 export default function AddAssociationButton() {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(addAssociationAction, undefined)
+    const router = useRouter()
+    const [isLoading, startTransition] = useTransition()
+    const [error, setError] = useState<string | undefined>(undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const handleOpenChange = useCallback((open: boolean) => {
         setDialogIsOpen(open)
         if (!open) {
-            setIsLoading(false)
             // Réinitialiser le formulaire lorsque le dialogue est fermé
+            setError(undefined)
         }
     }, [])
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-            setIsLoading(false)
-        }
-        setIsLoading(false)
-    }, [formState, handleOpenChange])
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)
 
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(formData)
+        startTransition(async () => {
+            const result = await addAssociationAction(formData)
+            if (result?.success) {
+                await router.invalidate()
+                handleOpenChange(false)
+            } else {
+                setError(result?.error)
+            }
         })
     }
 
@@ -302,12 +288,10 @@ export default function AddAssociationButton() {
                     </div>
 
                     {/* Error */}
-                    {formState?.error ? (
+                    {error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
+                            <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     ) : null}
                 </form>

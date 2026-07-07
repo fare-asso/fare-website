@@ -1,5 +1,4 @@
-"use client"
-
+import { useRouter } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useState } from "react"
@@ -48,6 +47,7 @@ interface CdpCardProps {
 }
 
 export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
+    const router = useRouter()
     const [isDeleting, setIsDeleting] = useState(false)
 
     const handleDelete = async () => {
@@ -57,6 +57,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
             toast.error(res.error)
             setIsDeleting(false)
         } else {
+            await router.invalidate()
             toast.success(`Le communique ${cdp.name} a bien ete supprime`)
         }
     }

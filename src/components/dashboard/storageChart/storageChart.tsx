@@ -5,17 +5,10 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import { createClient } from "@/helpers/supabase/server"
 
 import { StorageChartClient } from "./storageChartClient"
 
-export default async function StorageChart() {
-    const supabase = await createClient()
-
-    const storageSize: number = (
-        await supabase.rpc("total_storage_used_all_buckets")
-    ).data
-
+export default function StorageChart({ storageSize }: { storageSize: number }) {
     if (Number.isNaN(storageSize)) {
         return (
             <Card>
@@ -46,14 +39,6 @@ export default async function StorageChart() {
                     total={maxStorageSizeInGb}
                 />
             </CardContent>
-            {/* <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 leading-none font-medium">
-                    Trending up by 5.2% this month{" "}
-                </div>
-                <div className="text-muted-foreground leading-none">
-                    Showing total visitors for the last 6 months
-                </div>
-            </CardFooter> */}
         </Card>
     )
 }

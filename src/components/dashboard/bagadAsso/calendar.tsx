@@ -1,7 +1,6 @@
-"use client"
-
 import { useHotkey } from "@tanstack/react-hotkeys"
-import { isSameDay, isSameMonth, isToday } from "date-fns"
+import { getRouteApi, useNavigate } from "@tanstack/react-router"
+import { format, isSameDay, isSameMonth, isToday } from "date-fns"
 import {
     ChevronLeft,
     ChevronRight,
@@ -10,10 +9,9 @@ import {
     UserIcon,
     UsersIcon
 } from "lucide-react"
-import Link from "next/link"
-import { useQueryState, parseAsIsoDate } from "nuqs"
 import { useMemo } from "react"
 
+import Link from "@/components/link"
 import { Button } from "@/components/ui/button"
 import {
     Popover,
@@ -26,6 +24,8 @@ import {
 import type { BagadAssoTicket } from "@/generated/prisma/client"
 import { locationDisplayName } from "@/helpers/location"
 import { cn } from "@/lib/utils"
+
+const route = getRouteApi("/dashboard/bagadAsso/")
 
 const days = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
 
@@ -58,21 +58,29 @@ type Event = Pick<
 >
 
 export function Calendar({ events }: { events?: Event[] }) {
-    const [month, setMonth] = useQueryState(
-        "month",
-        parseAsIsoDate.withDefault(new Date()).withOptions({})
+    const { month: monthParam } = route.useSearch()
+    const navigate = useNavigate()
+    const month = useMemo(
+        () => (monthParam ? new Date(monthParam) : new Date()),
+        [monthParam]
     )
 
     const grid = useMemo(() => monthGrid(month), [month])
 
+    const setMonth = (date: Date) =>
+        navigate({
+            to: ".",
+            search: (prev) => ({ ...prev, month: format(date, "yyyy-MM-dd") }),
+            replace: true
+        })
+
     function changeMonth(dir: "prev" | "next") {
         setMonth(
-            (date) =>
-                new Date(
-                    date.getFullYear(),
-                    date.getMonth() + (dir === "prev" ? -1 : 1),
-                    1
-                )
+            new Date(
+                month.getFullYear(),
+                month.getMonth() + (dir === "prev" ? -1 : 1),
+                1
+            )
         )
     }
 

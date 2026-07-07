@@ -1,4 +1,3 @@
-"use client"
 import type { Editor } from "@tiptap/react"
 import { useEffect, useRef, useState } from "react"
 import {

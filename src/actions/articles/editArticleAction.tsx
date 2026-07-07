@@ -27,7 +27,7 @@ async function editArticleActionImpl(formData: FormData) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient()
 
     // retrieve form data fields
     const title = formData.get("title")?.toString()

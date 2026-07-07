@@ -12,7 +12,7 @@ import {
 import { tryCatch } from "@/lib/utils"
 
 async function signOutImpl(): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createClient()
+    const supabase = createClient()
 
     const result = await tryCatch(supabase.auth.signOut())
     if (!result.success) {

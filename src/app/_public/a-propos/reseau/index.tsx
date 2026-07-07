@@ -5,17 +5,25 @@ import Link from "@/components/link"
 import AssociationList from "@/components/public/associations/associationList"
 import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller"
 import prisma from "@/helpers/db"
+import { createClient } from "@/helpers/supabase/server"
 import { pageTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 
 const getAssociations = createServerFn().handler(async () => {
+    const supabase = createClient()
     const result = await tryCatch(
         prisma.association.findMany({
             where: { approved: { not: null } },
             orderBy: { name: "asc" }
         })
     )
-    return result.success ? result.value : null
+    if (!result.success) return null
+    return result.value.map((association) => ({
+        ...association,
+        logoUrl: supabase.storage
+            .from("association-pictures")
+            .getPublicUrl(association.logoPath).data.publicUrl
+    }))
 })
 
 export const Route = createFileRoute("/_public/a-propos/reseau/")({

@@ -51,7 +51,7 @@ beforeEach(() => {
 describe("inviteRepresentativeAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await inviteRepresentativeAction(undefined, fd())).toEqual({
+        expect(await inviteRepresentativeAction(fd())).toEqual({
             error: "Authentification requise"
         })
         expect(h.invite).not.toHaveBeenCalled()
@@ -59,16 +59,13 @@ describe("inviteRepresentativeAction", () => {
 
     it("requires the invite:representative permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await inviteRepresentativeAction(undefined, fd())
+        const res = await inviteRepresentativeAction(fd())
         expect(res.error).toMatch(/permission/)
         expect(h.invite).not.toHaveBeenCalled()
     })
 
     it("rejects a missing email", async () => {
-        const res = await inviteRepresentativeAction(
-            undefined,
-            fd({ email: "" })
-        )
+        const res = await inviteRepresentativeAction(fd({ email: "" }))
         expect(res).toEqual({
             error: "Veuillez remplir tous les champs obligatoires."
         })
@@ -76,7 +73,6 @@ describe("inviteRepresentativeAction", () => {
 
     it("rejects an invalid email", async () => {
         const res = await inviteRepresentativeAction(
-            undefined,
             fd({ email: "not-an-email" })
         )
         expect(res).toEqual({ error: "Adresse E-mail non valide." })
@@ -88,7 +84,7 @@ describe("inviteRepresentativeAction", () => {
             data: null,
             error: { code: "email_exists" }
         })
-        expect(await inviteRepresentativeAction(undefined, fd())).toEqual({
+        expect(await inviteRepresentativeAction(fd())).toEqual({
             error: "Cet utilisateur existe déjà"
         })
         expect(h.userUpdate).not.toHaveBeenCalled()
@@ -99,24 +95,21 @@ describe("inviteRepresentativeAction", () => {
             data: null,
             error: { code: "other" }
         })
-        expect(await inviteRepresentativeAction(undefined, fd())).toEqual({
+        expect(await inviteRepresentativeAction(fd())).toEqual({
             error: "Echec de l'invitation du représentant"
         })
     })
 
     it("captures and fails when a db update throws", async () => {
         h.userUpdate.mockRejectedValue(new Error("db down"))
-        expect(await inviteRepresentativeAction(undefined, fd())).toEqual({
+        expect(await inviteRepresentativeAction(fd())).toEqual({
             error: "Echec de l'invitation du représentant"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
     it("invites, links and revalidates on the happy path", async () => {
-        const res = await inviteRepresentativeAction(
-            undefined,
-            fd({ associationId: "7" })
-        )
+        const res = await inviteRepresentativeAction(fd({ associationId: "7" }))
         expect(res).toEqual({ success: true })
         expect(h.userUpdate).toHaveBeenCalledWith({
             where: { id: "rep-1" },

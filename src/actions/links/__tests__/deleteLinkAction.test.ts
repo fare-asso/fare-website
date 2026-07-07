@@ -23,7 +23,7 @@ beforeEach(() => {
 
 describe("deleteLinkAction", () => {
     itIsGatedBy({
-        action: () => deleteLinkAction(undefined, 1),
+        action: () => deleteLinkAction(1),
         permission: "delete:lien",
         getUser: h.getUser,
         writes: [h.deleteLink]
@@ -31,7 +31,7 @@ describe("deleteLinkAction", () => {
 
     it("captures and fails when the delete throws", async () => {
         h.deleteLink.mockRejectedValue(new Error("db down"))
-        const res = await deleteLinkAction(undefined, 1)
+        const res = await deleteLinkAction(1)
         expect(res).toEqual({
             success: false,
             error: "Echec de la suppression du lien"
@@ -40,7 +40,7 @@ describe("deleteLinkAction", () => {
     })
 
     it("deletes the link and revalidates on the happy path", async () => {
-        const res = await deleteLinkAction(undefined, 9)
+        const res = await deleteLinkAction(9)
         expect(res).toEqual({ success: true })
         expect(h.deleteLink).toHaveBeenCalledWith({ where: { id: 9 } })
     })

@@ -55,38 +55,35 @@ beforeEach(() => {
 describe("createEventAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(
-            await createEventAction(undefined, validEventFormData())
-        ).toEqual({ error: "Authentification requise" })
+        expect(await createEventAction(validEventFormData())).toEqual({
+            error: "Authentification requise"
+        })
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("requires the create:event permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await createEventAction(undefined, validEventFormData())
+        const res = await createEventAction(validEventFormData())
         expect(res.error).toMatch(/permission/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects a too-short name", async () => {
-        const res = await createEventAction(
-            undefined,
-            validEventFormData({ name: "ab" })
-        )
+        const res = await createEventAction(validEventFormData({ name: "ab" }))
         expect(res.error).toMatch(/nom/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects an unknown category", async () => {
         h.findCategory.mockRejectedValue(p2025())
-        const res = await createEventAction(undefined, validEventFormData())
+        const res = await createEventAction(validEventFormData())
         expect(res.error).toMatch(/catégorie/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("returns an error when the picture upload fails", async () => {
         h.upload.mockResolvedValue({ data: null, error: { message: "boom" } })
-        const res = await createEventAction(undefined, validEventFormData())
+        const res = await createEventAction(validEventFormData())
         expect(res).toEqual({
             error: "L'upload de l'image à échoué, veuillez réessayer"
         })
@@ -95,7 +92,7 @@ describe("createEventAction", () => {
 
     it("errors when the current user cannot be resolved", async () => {
         h.getUserId.mockResolvedValue({ error: "no user" })
-        const res = await createEventAction(undefined, validEventFormData())
+        const res = await createEventAction(validEventFormData())
         expect(res).toEqual({
             error: "Echec de la récupération de l'utilisateur"
         })
@@ -103,7 +100,7 @@ describe("createEventAction", () => {
 
     it("captures, cleans up and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await createEventAction(undefined, validEventFormData())
+        const res = await createEventAction(validEventFormData())
         expect(res).toEqual({
             error: "La création de l'évènement à échoué, veuillez réessayer"
         })
@@ -112,7 +109,7 @@ describe("createEventAction", () => {
     })
 
     it("creates the event and revalidates on the happy path", async () => {
-        const res = await createEventAction(undefined, validEventFormData())
+        const res = await createEventAction(validEventFormData())
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({

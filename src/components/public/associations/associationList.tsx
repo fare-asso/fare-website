@@ -5,7 +5,7 @@ import AssociationCard from "./associationCard"
 export default function AssociationList({
     associations
 }: {
-    associations: Association[]
+    associations: (Association & { logoUrl: string })[]
 }) {
     return (
         <div className="mb-20 w-[90%]">
