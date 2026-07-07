@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
 
@@ -45,7 +43,7 @@ async function addInstanceActionImpl(
             Promise.all(
                 data.logos.map((file) => {
                     const fileExt = file.name.split(".").pop() ?? "bin"
-                    const filePath = `${randomUUID()}.${fileExt}`
+                    const filePath = `${crypto.randomUUID()}.${fileExt}`
                     return supabase.storage
                         .from("instance-pictures")
                         .upload(filePath, file, { contentType: file.type })

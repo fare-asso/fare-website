@@ -33,7 +33,7 @@ import { Separator } from "@/components/ui/separator"
 import {
     computeTotalDeposit,
     joinTicketAndEquipment
-} from "@/helpers/bagadAsso"
+} from "@/helpers/bagadAsso.server"
 import prisma from "@/helpers/db.server"
 import { locationDisplayName, parseLocation } from "@/helpers/location"
 import { hasPermission } from "@/helpers/permissions"

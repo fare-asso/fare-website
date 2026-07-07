@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 
 import { AssistanceForm } from "@/components/public/assistance/form"
-import { getAssistanceConfig } from "@/helpers/assistanceConfig"
+import { getAssistanceConfig } from "@/helpers/assistanceConfig.server"
 import { pageTitle } from "@/lib/seo"
 import { tryCatch } from "@/lib/utils"
 

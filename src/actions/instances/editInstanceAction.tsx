@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
 
@@ -66,7 +64,7 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
             Promise.all(
                 data.logos.map((file) => {
                     const fileExt = file.name.split(".").pop() ?? "bin"
-                    const newPath = `${randomUUID()}.${fileExt}`
+                    const newPath = `${crypto.randomUUID()}.${fileExt}`
                     return supabase.storage
                         .from("instance-pictures")
                         .upload(newPath, file, { contentType: file.type })

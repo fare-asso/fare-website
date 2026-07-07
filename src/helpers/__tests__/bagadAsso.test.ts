@@ -11,7 +11,7 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ bagadAssoTicket: { findMany: h.findMany } })
 )
 
-import { getNextBookingsByEquipment } from "../bagadAsso"
+import { getNextBookingsByEquipment } from "../bagadAsso.server"
 
 beforeEach(() => {
     h.findMany.mockReset()

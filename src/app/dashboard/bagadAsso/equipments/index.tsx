@@ -11,7 +11,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import { getNextBookingsByEquipment } from "@/helpers/bagadAsso"
+import { getNextBookingsByEquipment } from "@/helpers/bagadAsso.server"
 import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient } from "@/helpers/supabase.server"

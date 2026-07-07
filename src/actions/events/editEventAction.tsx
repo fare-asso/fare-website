@@ -1,12 +1,10 @@
-import { randomUUID } from "node:crypto"
-
 import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient } from "@/helpers/supabase.server"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
-import getCurrentUserId from "@/helpers/user/id"
+import getCurrentUserId from "@/helpers/user/id.server"
 import {
     type ActionPayload,
     captureActionError,
@@ -132,7 +130,7 @@ async function editEventActionImpl(formData: FormData) {
             // Upload new picture
             const response = await supabase.storage
                 .from("EventPictures")
-                .upload(`${data.name}:${randomUUID()}`, pictureFile)
+                .upload(`${data.name}:${crypto.randomUUID()}`, pictureFile)
 
             if (response.error) {
                 // Upload Failed

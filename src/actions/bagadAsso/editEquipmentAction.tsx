@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
 
@@ -65,7 +63,7 @@ async function editEquipmentActionImpl(input: TEditEquipment): Promise<Result> {
 
     if (data.image) {
         const fileExt = data.image.name.split(".").pop() ?? "bin"
-        const newPath = `${randomUUID()}.${fileExt}`
+        const newPath = `${crypto.randomUUID()}.${fileExt}`
         const upload = await tryCatch(
             supabase.storage
                 .from("equipment-pictures")

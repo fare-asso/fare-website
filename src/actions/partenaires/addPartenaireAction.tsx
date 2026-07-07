@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
 
@@ -39,7 +37,7 @@ async function addPartenaireActionImpl(
 
     const supabase = createAdminClient()
     const fileExt = data.logo.name.split(".").pop() ?? "bin"
-    const filePath = `${randomUUID()}.${fileExt}`
+    const filePath = `${crypto.randomUUID()}.${fileExt}`
     const upload = await tryCatch(
         supabase.storage
             .from("partner-pictures")

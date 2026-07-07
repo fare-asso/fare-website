@@ -1,10 +1,12 @@
-import { describe, expect, it, vi } from "vitest"
-
-vi.mock("node:crypto", () => ({
-    randomUUID: () => "abcd1234-0000-0000-0000-000000000000"
-}))
+import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import { uniqueFileName } from "../storage"
+
+beforeAll(() => {
+    vi.spyOn(globalThis.crypto, "randomUUID").mockReturnValue(
+        "abcd1234-0000-0000-0000-000000000000"
+    )
+})
 
 describe("uniqueFileName", () => {
     it("keeps alphanumerics, dashes and underscores", () => {

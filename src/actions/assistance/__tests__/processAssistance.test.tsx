@@ -19,7 +19,7 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock("std-env", () => stdEnvModule(stdenv))
-vi.mock("@/helpers/assistanceConfig", () => ({
+vi.mock("@/helpers/assistanceConfig.server", () => ({
     getAssistanceConfig: h.getAssistanceConfig
 }))
 vi.mock("@/helpers/email.server", () => emailModule(h.sendEmail))

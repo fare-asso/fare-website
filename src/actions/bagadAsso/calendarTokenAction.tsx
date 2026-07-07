@@ -1,5 +1,3 @@
-import { randomBytes } from "node:crypto"
-
 import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db.server"
@@ -30,7 +28,11 @@ async function generateBagadCalendarTokenActionImpl(): Promise<GenerateResult> {
         }
     }
 
-    const token = randomBytes(32).toString("base64url")
+    const bytes = crypto.getRandomValues(new Uint8Array(32))
+    const token = btoa(String.fromCharCode(...bytes))
+        .replaceAll("+", "-")
+        .replaceAll("/", "_")
+        .replace(/=+$/, "")
 
     const result = await tryCatch(
         prisma.user.update({

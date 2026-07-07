@@ -6,7 +6,7 @@ import { validAdhesionRecord } from "@/test/factories/adhesion"
 import {
     generateAdhesionPdf,
     generateAdhesionPdfFromRecord
-} from "../generatePdf"
+} from "../generatePdf.server"
 
 const member: BureauMember = {
     isAdmin: true,

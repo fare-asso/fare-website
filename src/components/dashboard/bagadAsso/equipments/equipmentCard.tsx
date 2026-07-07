@@ -8,7 +8,7 @@ import Link from "@/components/link"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
-import type { EquipmentNextBooking } from "@/helpers/bagadAsso"
+import type { EquipmentNextBooking } from "@/helpers/bagadAsso.server"
 
 import DeleteEquipmentButton from "./deleteEquipmentButton"
 import EditEquipmentDialog from "./editEquipmentDialog"

@@ -14,7 +14,7 @@ vi.mock("@/helpers/db.server", () =>
     })
 )
 
-import { getAssistanceConfig } from "../assistanceConfig"
+import { getAssistanceConfig } from "../assistanceConfig.server"
 
 beforeEach(() => {
     h.findFirst.mockReset()

@@ -15,7 +15,7 @@ vi.mock("@/helpers/db.server", () =>
     dbModule({ adhesion: { findUnique: h.findUnique } })
 )
 vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
-vi.mock("@/helpers/adhesion/generatePdf", () => ({
+vi.mock("@/helpers/adhesion/generatePdf.server", () => ({
     generateAdhesionPdfFromRecord: h.genPdf
 }))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))

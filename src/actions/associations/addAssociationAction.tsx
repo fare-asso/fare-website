@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import { createServerFn } from "@tanstack/react-start"
 
 import prisma from "@/helpers/db.server"
@@ -89,7 +87,7 @@ async function addAssociationActionImpl(formData: FormData) {
     // upload logo picture
     const { data, error: err } = await supabase.storage
         .from("association-pictures")
-        .upload(randomUUID(), file)
+        .upload(crypto.randomUUID(), file)
     if (err) return { error: err.message }
 
     const logoPath: string = data.path

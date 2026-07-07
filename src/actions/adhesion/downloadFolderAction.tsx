@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { zip } from "fflate"
 
-import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf"
+import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf.server"
 import prisma from "@/helpers/db.server"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"

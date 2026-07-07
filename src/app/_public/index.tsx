@@ -81,7 +81,8 @@ function Home() {
                     src="/hero-image.jpg"
                     alt="Image des membres du bureau"
                     className="w-full rounded-xl"
-                    priority={true}
+                    loading="eager"
+                    fetchPriority="high"
                     layout="constrained"
                     width={1200}
                     height={800}

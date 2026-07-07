@@ -32,7 +32,7 @@ vi.mock("@/helpers/supabase/auth.server", () => authModule(h.getUser))
 vi.mock("@/helpers/supabase.server", () =>
     supabaseServerModule({ storage: { from } })
 )
-vi.mock("@/helpers/user/id", () => ({ default: h.getUserId }))
+vi.mock("@/helpers/user/id.server", () => ({ default: h.getUserId }))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import createEventAction from "../createEventAction"

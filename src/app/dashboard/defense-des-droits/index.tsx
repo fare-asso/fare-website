@@ -9,7 +9,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import { getAssistanceConfig } from "@/helpers/assistanceConfig"
+import { getAssistanceConfig } from "@/helpers/assistanceConfig.server"
 import { hasPermission } from "@/helpers/permissions"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import { dashboardTitle } from "@/lib/seo"

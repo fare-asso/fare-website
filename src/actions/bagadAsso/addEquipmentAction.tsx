@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import { createServerFn } from "@tanstack/react-start"
 import { type } from "arktype"
 
@@ -46,7 +44,7 @@ async function addEquipmentActionImpl(
     let imagePath: string | null = null
     if (data.image) {
         const fileExt = data.image.name.split(".").pop() ?? "bin"
-        const filePath = `${randomUUID()}.${fileExt}`
+        const filePath = `${crypto.randomUUID()}.${fileExt}`
         const upload = await tryCatch(
             supabase.storage
                 .from("equipment-pictures")

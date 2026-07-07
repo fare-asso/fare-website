@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 
 import CreateEventButton from "@/components/dashboard/event/createEventButton"
-import { getData } from "@/components/dashboard/event/eventDataTable"
+import { getData } from "@/components/dashboard/event/eventDataTable.server"
 import { DataTable } from "@/components/dashboard/events/data-table"
 import {
     Card,
