@@ -13,7 +13,6 @@ export default defineConfig({
         "oxc",
         "node",
         "import",
-        "nextjs",
         "react",
         "react-perf",
         "jsx-a11y",
@@ -122,9 +121,6 @@ export default defineConfig({
 
         // performance
         "oxc/no-barrel-file": ["error", { threshold: 10 }],
-        "nextjs/no-img-element": "warn",
-        "nextjs/no-unwanted-polyfillio": "warn",
-        "nextjs/google-font-preconnect": "warn",
         "no-await-in-loop": "warn",
 
         // style
@@ -154,7 +150,6 @@ export default defineConfig({
             }
         ],
         "react/jsx-fragments": "error",
-        "nextjs/no-head-element": "warn",
         "unicorn/prefer-node-protocol": "error",
         "unicorn/prefer-number-properties": "error",
         "operator-assignment": "error",
@@ -184,9 +179,6 @@ export default defineConfig({
         "no-var": "error",
         "require-await": "error",
         "guard-for-in": "error",
-        "nextjs/no-document-import-in-page": "error",
-        "nextjs/no-head-import-in-document": "error",
-        "nextjs/google-font-display": "warn",
         "array-callback-return": "error",
         "typescript/ban-ts-comment": "error",
         "unicorn/no-document-cookie": "error"

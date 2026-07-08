@@ -1,17 +1,9 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import type { JSONContent } from "@tiptap/react"
-import {
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
-import { MdEdit } from "react-icons/md"
+import { useCallback, useState, useTransition } from "react"
 import { v4 as uuidv4 } from "uuid"
 
-import editArticleAction from "@/actions/articles/editArticleAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,9 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import RichTextEditor from "@/components/ui/rich-text-editor/richTextEditor"
-import type { Article } from "@/generated/prisma/client"
 import { base64ToFile } from "@/helpers/image"
-import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 import LoadingRing from "../loadingRing"
 
@@ -74,78 +64,23 @@ function extractAndReplaceImages(content: JSONContent): {
     return { updatedContent, images }
 }
 
-async function replaceImagesWithBase64(
-    content: JSONContent
-): Promise<JSONContent> {
-    const fetchBase64 = async (url: string): Promise<string> => {
-        const response = await fetch(url)
-        const blob = await response.blob()
-        return new Promise((resolve) => {
-            const reader = new FileReader()
-            reader.onloadend = () => resolve(reader.result as string)
-            reader.readAsDataURL(blob)
-        })
-    }
-
-    const su = new StorageUtils()
-
-    const traverseNodes = async (node: JSONContent) => {
-        if (
-            node.type === "image" &&
-            node.attrs?.src &&
-            node.attrs.src.startsWith("/")
-        ) {
-            const filename = node.attrs.src.slice(1)
-            const imageUrl = su.from("article-pictures").getPublicUrl(filename)
-
-            node.attrs.src = await fetchBase64(imageUrl)
-        }
-
-        if (node.content) {
-            await Promise.all(node.content.map(traverseNodes))
-        }
-    }
-
-    const updatedContent = JSON.parse(JSON.stringify(content)) // Cloner le contenu pour éviter les mutations directes
-    await traverseNodes(updatedContent)
-
-    return updatedContent
-}
-
-export default function EditArticleButton({ article }: { article: Article }) {
-    const [formState, formAction, pending] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(editArticleAction, undefined)
+export default function CreateArticleButton() {
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
+    const [content, setContent] = useState<JSONContent>({}) // Rich Text Editor content
+    const [error, setError] = useState<string | null>(null)
+    const [isPending, startTransition] = useTransition()
+    const queryClient = useQueryClient()
 
-    const [content, setContent] = useState<JSONContent | undefined>(undefined) // Rich Text Editor content
-
-    const handleOpenChange = useCallback(
-        async (open: boolean) => {
-            setDialogIsOpen(open)
-
-            if (open) {
-                const updatedContent = await replaceImagesWithBase64(
-                    JSON.parse(JSON.stringify(article.content))
-                )
-                setContent(updatedContent)
-            }
-        },
-        [article.content]
-    )
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            void handleOpenChange(false)
+    const handleOpenChange = useCallback((open: boolean) => {
+        setDialogIsOpen(open)
+        if (!open) {
+            setContent({}) // Reset editor content
+            setError(null)
         }
-    }, [formState, handleOpenChange])
+    }, [])
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-
-        if (!content) return
 
         const formData = new FormData(event.currentTarget)
         const { updatedContent, images } = extractAndReplaceImages(content)
@@ -155,13 +90,22 @@ export default function EditArticleButton({ article }: { article: Article }) {
         }
         formData.append("content", JSON.stringify(updatedContent))
 
-        startTransition(() => {
-            formAction(formData)
+        startTransition(async () => {
+            const { data, error: actionError } =
+                await actions.articles.createArticleAction(formData)
+            if (actionError || !data.success) {
+                setError(
+                    data?.error ??
+                        "Une erreur est survenue. Veuillez réessayer."
+                )
+            } else {
+                handleOpenChange(false)
+                await queryClient.invalidateQueries({ queryKey: ["articles"] })
+            }
         })
     }
 
     const handleRichTextEditorChange = (content: JSONContent) => {
-        // console.log(content);
         setContent(content)
     }
 
@@ -169,28 +113,25 @@ export default function EditArticleButton({ article }: { article: Article }) {
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
             {/* Trigger */}
             <DialogTrigger asChild>
-                <Button variant="outline" className="mr-2 px-2 py-2 sm:px-4">
-                    <MdEdit size={20} />
-                    <div className="hidden sm:flex">Modifier</div>
-                </Button>
+                <Button>Rédiger un nouvel Article</Button>
             </DialogTrigger>
 
             {/* Content */}
             <DialogContent className="max-h-[90%] max-w-[90%] md:max-w-[60%]">
                 <DialogHeader>
-                    <DialogTitle>Modifier l'article</DialogTitle>
+                    <DialogTitle>Nouvel Article</DialogTitle>
                     <DialogDescription>
-                        Ceci est un formulaire de modification d'article
+                        Ceci est le formulaire de rédaction des articles de la
+                        Fédération
                     </DialogDescription>
                 </DialogHeader>
 
                 {/* Form */}
                 <form
                     onSubmit={handleSubmit}
-                    id="editArticleForm"
+                    id="createArticleForm"
                     className="space-y-3 [&_label]:mb-2"
                 >
-                    <input type="hidden" name="id" value={article.id} />
                     <div>
                         <Label htmlFor="title">Titre</Label>
                         <Input
@@ -199,25 +140,17 @@ export default function EditArticleButton({ article }: { article: Article }) {
                             name="title"
                             placeholder="Titre de l'article"
                             required
-                            defaultValue={article.title}
                         />
                     </div>
 
                     <div>
-                        {content && (
-                            <RichTextEditor
-                                onChange={handleRichTextEditorChange}
-                                defaultContent={content}
-                            />
-                        )}
+                        <RichTextEditor onChange={handleRichTextEditorChange} />
                     </div>
 
-                    {formState?.error ? (
+                    {error ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
+                            <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     ) : null}
                 </form>
@@ -225,10 +158,10 @@ export default function EditArticleButton({ article }: { article: Article }) {
                 <DialogFooter>
                     <Button
                         type="submit"
-                        form="editArticleForm"
-                        disabled={pending}
+                        form="createArticleForm"
+                        disabled={isPending}
                     >
-                        {pending ? <LoadingRing /> : null} Valider
+                        {isPending ? <LoadingRing /> : null} Valider
                     </Button>
                 </DialogFooter>
             </DialogContent>

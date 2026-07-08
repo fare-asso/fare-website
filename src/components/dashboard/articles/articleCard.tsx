@@ -1,14 +1,11 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-// import EditArticleButton from "./editArticleButton";
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { useTransition } from "react"
 import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
 import { toast } from "sonner"
 
-import deleteArticleAction from "@/actions/articles/deleteArticleAction"
-import switchVisibilityAction from "@/actions/articles/switchVisibilityAction"
 import { Button } from "@/components/ui/button"
 import type { Article } from "@/generated/prisma/client"
 
@@ -28,38 +25,37 @@ export default function ArticleCard({
     canDelete,
     canPublish
 }: ArticleCardProps) {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        number
-    >(deleteArticleAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [isSwitchingVisibility, setIsSwitchingVisibility] =
-        useState<boolean>(false)
+    const queryClient = useQueryClient()
+    const [isDeleting, startDelete] = useTransition()
+    const [isSwitchingVisibility, startVisibility] = useTransition()
 
     const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
         event.stopPropagation()
 
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(article.id)
+        startDelete(async () => {
+            const { data, error } =
+                await actions.articles.deleteArticleAction(article.id)
+            if (error || !data.success) {
+                toast.error(
+                    data?.error ?? "Une erreur est survenue. Veuillez réessayer."
+                )
+            } else {
+                toast.success(`L'article ${article.title} a bien été supprimé`)
+            }
+            await queryClient.invalidateQueries({ queryKey: ["articles"] })
         })
     }
 
-    useEffect(() => {
-        if (formState?.success) {
-            toast.success(`L'article ${article.title} a bien été supprimé`)
-        } else if (formState?.error) {
-            toast.error(formState.error)
-        }
-        setIsLoading(false)
-    }, [formState, article.title])
-
-    async function HandleVisibility() {
-        setIsSwitchingVisibility(true)
-        await switchVisibilityAction(article.id)
-        setIsSwitchingVisibility(false)
+    const handleVisibility = () => {
+        startVisibility(async () => {
+            const { data, error } =
+                await actions.articles.switchVisibilityAction(article.id)
+            if (error || data.error) {
+                toast.error(data?.error ?? "Échec du changement de visibilité")
+            }
+            await queryClient.invalidateQueries({ queryKey: ["articles"] })
+        })
     }
 
     return (
@@ -80,7 +76,7 @@ export default function ArticleCard({
                     <Button
                         variant="default"
                         className="mr-2 hidden px-3 md:block"
-                        onClick={HandleVisibility}
+                        onClick={handleVisibility}
                         disabled={isSwitchingVisibility}
                     >
                         {isSwitchingVisibility ? (
@@ -100,9 +96,9 @@ export default function ArticleCard({
                         variant="destructive"
                         className="px-2 py-2 sm:px-4"
                         onClick={handleDelete}
-                        disabled={isLoading}
+                        disabled={isDeleting}
                     >
-                        {isLoading ? <LoadingRing /> : <MdDelete size={20} />}
+                        {isDeleting ? <LoadingRing /> : <MdDelete size={20} />}
                         <div className="hidden sm:flex">Supprimer</div>
                     </Button>
                 ) : null}
