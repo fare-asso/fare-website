@@ -60,7 +60,7 @@ describe("wrapAction", () => {
 
     it("forwards all arguments to the handler", async () => {
         const impl = vi.fn(async (..._args: unknown[]) => undefined)
-        // oxlint-disable-next-line local/require-action-name-matches -- test double, not a real action
+        // oxlint-disable-next-line local/require-action-name-matches
         const action = wrapAction("argsAction", impl)
         await action("a", 2, { c: true })
         expect(impl).toHaveBeenCalledWith("a", 2, { c: true })
