@@ -1,0 +1,11 @@
+---
+import ContactForm from "@/components/public/contact/contactForm"
+import ContactInfo from "@/components/views/contact"
+import Public from "@/layouts/Public.astro"
+---
+
+<Public title="Contact">
+    <ContactInfo>
+        <ContactForm client:load />
+    </ContactInfo>
+</Public>

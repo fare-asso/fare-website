@@ -1,12 +1,7 @@
 import { ExternalLinkIcon, MailIcon } from "lucide-react"
-import type { Metadata } from "next"
 import { FaFacebook, FaInstagram } from "react-icons/fa6"
 
-import ContactForm from "@/components/public/contact/contactForm"
 
-export const metadata: Metadata = {
-    title: "Contact"
-}
 
 const socialLinks = [
     {
@@ -35,7 +30,11 @@ const socialLinks = [
     }
 ] as const
 
-export default function Contact() {
+export default function ContactInfo({
+    children
+}: {
+    children?: React.ReactNode
+}) {
     return (
         <div className="mb-16 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16">
             <h1 className="py-12 text-center text-4xl font-bold sm:py-24">
@@ -74,7 +73,7 @@ export default function Contact() {
                 ))}
             </div>
 
-            <ContactForm />
+            {children}
         </div>
     )
 }

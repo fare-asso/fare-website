@@ -1,11 +1,8 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
-import { memo, startTransition, useActionState, useCallback } from "react"
+import { actions } from "astro:actions"
+import { memo, useCallback, useState } from "react"
 
-import submitContactFormAction, {
-    type FormState
-} from "@/actions/contact/submitContactFormAction"
+import type { FormState } from "@/actions/contact/submitContactFormAction"
 import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -53,10 +50,10 @@ function CaptchaValidation({
 }
 
 export default function ContactForm() {
-    const [formState, formAction, pending] = useActionState<
-        FormState | undefined,
-        Contact
-    >(submitContactFormAction, undefined)
+    const [formState, setFormState] = useState<FormState | undefined>(
+        undefined
+    )
+    const [pending, setPending] = useState(false)
 
     const form = useForm({
         defaultValues: {
@@ -70,7 +67,7 @@ export default function ContactForm() {
             onChange: ContactSchema,
             onSubmit: ContactSchema
         },
-        onSubmit: ({ value }) => {
+        onSubmit: async ({ value }) => {
             const submitData: Contact = {
                 firstName: value.firstName,
                 lastName: value.lastName,
@@ -79,9 +76,15 @@ export default function ContactForm() {
                 captchaToken: value.captchaToken
             }
 
-            startTransition(() => {
-                formAction(submitData)
-            })
+            setPending(true)
+            const { data, error } =
+                await actions.contact.submitContactFormAction(submitData)
+            setPending(false)
+            setFormState(
+                error
+                    ? { error: "Une erreur est survenue. Veuillez réessayer." }
+                    : data
+            )
         }
     })
 
