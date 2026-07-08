@@ -4,7 +4,6 @@ FROM node:24-alpine AS base
 LABEL maintainer="finxol <contact@finxol.io>"
 LABEL repository="https://github.com/fare-asso/fare-website"
 
-RUN apk update
 RUN apk add --no-cache libc6-compat curl
 
 ENV HUSKY=0
@@ -72,6 +71,9 @@ RUN --mount=type=secret,id=SUPABASE_POSTGRES_PRISMA_URL,env=SUPABASE_POSTGRES_PR
     --mount=type=secret,id=SMTP_PASS,env=SMTP_PASS \
     --mount=type=secret,id=SMTP_FROM_EMAIL,env=SMTP_FROM_EMAIL \
     pnpm exec prisma migrate deploy && pnpm exec prisma db seed && pnpm run build
+
+# Drop devDependencies so only runtime deps are copied to the runner
+RUN pnpm prune --prod
 
 ####################
 ### RUNNER STAGE ###
