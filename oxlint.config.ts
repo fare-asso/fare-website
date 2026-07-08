@@ -57,8 +57,12 @@ export default defineConfig({
         {
             // oxlint's type-aware pass resolves the prisma-generated types as
             // `any` inside ambient .d.ts files; tsgo checks this correctly.
-            files: ["src/env.d.ts"],
-            rules: { "typescript/no-redundant-type-constituents": "off" }
+            files: ["src/globals.d.ts"],
+            rules: {
+                "typescript/no-redundant-type-constituents": "off",
+                // App.Locals augmentation requires the ambient namespace form
+                "typescript/no-namespace": "off"
+            }
         },
         {
             // biome useFilenamingConvention used strictCase:false to allow
