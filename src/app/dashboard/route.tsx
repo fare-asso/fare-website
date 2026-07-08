@@ -42,7 +42,10 @@ function DashboardLayout() {
 
     return (
         <SidebarProvider>
-            <div className="flex h-svh w-screen overflow-hidden">
+            <div
+                data-dashboard-shell
+                className="flex h-svh w-screen overflow-hidden"
+            >
                 {/* Sidebar à gauche */}
                 <SideBarApp
                     permissions={user.permissions}

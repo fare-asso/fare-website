@@ -1,3 +1,5 @@
-html {
+/* Lock page scroll only while the dashboard shell is mounted — this file
+   stays injected after navigating away, so the rule must be scoped. */
+html:has([data-dashboard-shell]) {
     overflow: hidden;
 }
