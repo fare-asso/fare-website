@@ -45,7 +45,7 @@ async function inviteRepresentativeActionImpl(
     // Send Invitation By Email
     const invited = await tryCatch(
         supabase.auth.admin.inviteUserByEmail(email, {
-            redirectTo: `${env.NEXT_PUBLIC_SITE_URL}/espace-asso/create-password`
+            redirectTo: `${env.PUBLIC_SITE_URL}/espace-asso/create-password`
         })
     )
     if (!invited.success) {

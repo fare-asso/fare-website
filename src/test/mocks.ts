@@ -84,7 +84,7 @@ export function emailModule(sendEmail: Fn) {
     return { sendEmail }
 }
 
-/** `@/components/captcha/verify` mock. */
+/** `@/helpers/captcha/verify` mock. */
 export function captchaModule(verifyCaptcha: Fn) {
     return { verifyCaptcha }
 }

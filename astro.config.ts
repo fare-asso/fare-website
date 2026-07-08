@@ -1,0 +1,70 @@
+import { fileURLToPath } from "node:url"
+
+import arkenv from "@arkenv/vite-plugin"
+import node from "@astrojs/node"
+import react from "@astrojs/react"
+import tailwindcss from "@tailwindcss/vite"
+import { defineConfig, fontProviders } from "astro/config"
+
+import { EnvSchema } from "./src/env-schema"
+
+export default defineConfig({
+    output: "server",
+    adapter: node({ mode: "standalone" }),
+    integrations: [
+        react({ babel: { plugins: ["babel-plugin-react-compiler"] } })
+    ],
+    image: {
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "ezatoworfypbxlvjkhud.supabase.co",
+                pathname: "/storage/v1/object/public/**"
+            },
+            {
+                protocol: "https",
+                hostname: "supabase.fare.finxol.io",
+                pathname: "/storage/v1/object/public/**"
+            },
+            {
+                protocol: "https",
+                hostname: "lh3.googleusercontent.com",
+                pathname: "/a/**"
+            }
+        ]
+    },
+    redirects: {
+        "/bouge-ta-prison/[...slug]": {
+            status: 301,
+            destination: "/projets/bouge-ta-prison/[...slug]"
+        },
+        "/bagadAsso/[...slug]": {
+            status: 301,
+            destination: "/projets/bagad-asso/[...slug]"
+        },
+        "/agorae/[...slug]": {
+            status: 301,
+            destination: "/projets/agorae/[...slug]"
+        }
+    },
+    fonts: [
+        {
+            provider: fontProviders.fontsource(),
+            name: "Inter",
+            cssVariable: "--font-inter",
+            weights: [400, 500, 600, 700],
+            styles: ["normal"],
+            subsets: ["latin"]
+        }
+    ],
+    vite: {
+        envPrefix: "PUBLIC_",
+        plugins: [tailwindcss(), arkenv(EnvSchema, { emptyAsUndefined: true })],
+        resolve: {
+            alias: {
+                "@": fileURLToPath(new URL("./src", import.meta.url)),
+                "#public": fileURLToPath(new URL("./public", import.meta.url))
+            }
+        }
+    }
+})

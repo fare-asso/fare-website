@@ -8,7 +8,7 @@ import { isDevelopment } from "std-env"
 import { env } from "./env"
 
 init({
-    dsn: env.NEXT_PUBLIC_SENTRY_DSN,
+    dsn: env.PUBLIC_SENTRY_DSN,
     // Only send events in production
     enabled: !isDevelopment,
     // Adds request headers and IP for users

@@ -25,7 +25,12 @@ export default defineConfig({
     categories: {
         correctness: "error"
     },
-    ignorePatterns: ["**/next-env.d.ts", "**/migrations/**", "**/generated/**"],
+    ignorePatterns: [
+        "**/next-env.d.ts",
+        "**/migrations/**",
+        "**/generated/**",
+        ".astro/**"
+    ],
     overrides: [
         {
             // Test files & mocks: async mock factories must keep the async
@@ -48,6 +53,12 @@ export default defineConfig({
         {
             files: ["src/env.ts", "src/instrumentation.ts"],
             rules: { "node/no-process-env": "off" }
+        },
+        {
+            // oxlint's type-aware pass resolves the prisma-generated types as
+            // `any` inside ambient .d.ts files; tsgo checks this correctly.
+            files: ["src/env.d.ts"],
+            rules: { "typescript/no-redundant-type-constituents": "off" }
         },
         {
             // biome useFilenamingConvention used strictCase:false to allow
@@ -147,6 +158,7 @@ export default defineConfig({
         "typescript/only-throw-error": "error",
 
         "local/no-try-catch": "error",
+        "local/no-non-public-env-in-client": "error",
         "local/require-server-action-wrapper": "error",
 
         // Flags non-discriminated action results (optional `success?`/`error?`).

@@ -39,3 +39,8 @@ yarn-error.log*
 # vitest browser-mode failure screenshots
 __screenshots__/
 .vitest-attachments/
+
+# astro
+/.astro/
+/dist/
+/.pnpm-store/

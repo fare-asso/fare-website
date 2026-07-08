@@ -27,7 +27,7 @@ const from = vi.hoisted(() =>
 )
 
 vi.mock("std-env", () => stdEnvModule(stdenv))
-vi.mock("@/components/captcha/verify", () => captchaModule(h.verifyCaptcha))
+vi.mock("@/helpers/captcha/verify", () => captchaModule(h.verifyCaptcha))
 vi.mock("@/helpers/supabase/server", () =>
     supabaseServerModule({ storage: { from } })
 )

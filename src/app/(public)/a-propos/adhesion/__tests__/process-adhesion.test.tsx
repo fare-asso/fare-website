@@ -33,7 +33,7 @@ vi.mock("@/helpers/supabase/server", () =>
 )
 vi.mock("@/helpers/db", () => dbModule({ adhesion: { create: h.create } }))
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
-vi.mock("@/components/captcha/verify", () => captchaModule(h.verifyCaptcha))
+vi.mock("@/helpers/captcha/verify", () => captchaModule(h.verifyCaptcha))
 vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))

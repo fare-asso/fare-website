@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
-import { verifyCaptcha } from "@/components/captcha/verify"
+import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"

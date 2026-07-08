@@ -4,11 +4,11 @@ import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
-import { verifyCaptcha } from "@/components/captcha/verify"
 import {
     type BagadAssoFormData,
     BagadAssoFormSchema
 } from "@/components/public/bagadAsso/form-schema"
+import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { locationDisplayName } from "@/helpers/location"

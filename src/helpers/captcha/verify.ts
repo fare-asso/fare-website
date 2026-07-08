@@ -49,7 +49,7 @@ export async function verifyCaptcha(captchaValue: string) {
         {
             method: "POST",
             body: JSON.stringify({
-                sitekey: env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY,
+                sitekey: env.PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY,
                 response: captchaValue
             }),
             headers: {

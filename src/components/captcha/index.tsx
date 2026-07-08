@@ -6,8 +6,6 @@ import {
 } from "@friendlycaptcha/sdk"
 import { useEffect, useRef } from "react"
 
-import { env } from "@/env"
-
 interface CaptchaProps {
     onComplete?: (token: string) => void
     onError?: (detail: FRCWidgetErrorEventData) => void
@@ -29,7 +27,7 @@ export function Captcha({ onComplete, onExpire, onError }: CaptchaProps) {
             language: "fr",
             theme: "light",
             element: captchaRef.current,
-            sitekey: env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
+            sitekey: import.meta.env.PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
         })
 
         captchaRef.current.addEventListener("frc:widget.complete", (event) => {

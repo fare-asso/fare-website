@@ -20,6 +20,7 @@ export interface Node extends Ranged {
     property?: Node
     computed?: boolean
     expression?: Node
+    source?: Node | null
     directive?: string
     handler?: Node | null
     finalizer?: Node | null

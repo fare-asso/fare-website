@@ -3,7 +3,7 @@
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
-import { verifyCaptcha } from "@/components/captcha/verify"
+import { verifyCaptcha } from "@/helpers/captcha/verify"
 import { sendEmail } from "@/helpers/email"
 import { withServerAction } from "@/lib/sentry"
 import { type Contact, ContactSchema } from "@/schemas/contact"

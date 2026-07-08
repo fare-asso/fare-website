@@ -29,11 +29,11 @@ const testEnv = {
     SMTP_USER: "test-user",
     SMTP_PASS: "test-pass",
     SMTP_FROM_EMAIL: "noreply@fare-asso.fr",
-    NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321",
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
-    NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
-    NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key",
-    NEXT_PUBLIC_SENTRY_DSN: "https://test@test.ingest.sentry.io/0"
+    PUBLIC_SUPABASE_URL: "http://localhost:54321",
+    PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
+    PUBLIC_SITE_URL: "http://localhost:3000",
+    PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key",
+    PUBLIC_SENTRY_DSN: "https://test@test.ingest.sentry.io/0"
 }
 
 const browserTestGlob = "src/**/__tests__/**/*.browser.test.tsx"
