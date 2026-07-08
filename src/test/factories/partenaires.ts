@@ -1,7 +1,7 @@
 import type {
     TAddPartenaire,
     TEditPartenaire
-} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
+} from "@/schemas/partenaires"
 import type { Partenaire } from "@/generated/prisma/client"
 
 import { imageFile } from "./files"

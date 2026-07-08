@@ -10,7 +10,7 @@ import {
 import {
     AddPartenaireSchema,
     EditPartenaireSchema
-} from "../partenaires-schema"
+} from "../partenaires"
 
 const isErrors = (out: unknown): boolean => out instanceof type.errors
 

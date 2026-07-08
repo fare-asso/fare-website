@@ -6,7 +6,7 @@ import type { ActionAPIContext } from "astro:actions"
 import {
     EditPartenaireSchema,
     type TEditPartenaire
-} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
+} from "@/schemas/partenaires"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"

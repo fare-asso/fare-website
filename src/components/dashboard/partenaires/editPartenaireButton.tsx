@@ -8,7 +8,7 @@ import editPartenaireAction from "@/actions/partenaires/editPartenaireAction"
 import {
     EditPartenaireSchema,
     type TEditPartenaire
-} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
+} from "@/schemas/partenaires"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"

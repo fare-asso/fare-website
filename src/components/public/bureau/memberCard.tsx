@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6"
 import { MdAlternateEmail } from "react-icons/md"
 
@@ -13,7 +12,7 @@ export default function MemberCard({ member }: { member: Member }) {
 
     return (
         <div className="flex flex-col items-center rounded-lg p-4">
-            <Image
+            <img
                 src={pictureUrl}
                 width={400}
                 height={400}

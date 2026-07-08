@@ -7,7 +7,7 @@ import addPartenaireAction from "@/actions/partenaires/addPartenaireAction"
 import {
     AddPartenaireSchema,
     type TAddPartenaire
-} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
+} from "@/schemas/partenaires"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"

@@ -1,57 +1,47 @@
-import * as Sentry from "@sentry/nextjs"
-import { NextResponse } from "next/server"
+import * as Sentry from "@sentry/astro"
+import type { APIRoute } from "astro"
 import { render } from "react-email"
 
 import NewGoogleUserTemplate from "@/../emails/new-google-user"
-import { env } from "@/env"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { createClient } from "@/helpers/supabase/server"
+import { requestOrigin } from "@/helpers/requestOrigin"
+import { createClient } from "@/helpers/supabase/astro"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 const NEW_USER_THRESHOLD_MS = 60_000 // 60 seconds
 
-export async function GET(request: Request) {
-    // Only trust x-forwarded-host (set by the ingress); never the raw Host
-    // header, which is client-controllable. Fall back to the canonical URL.
-    const fallback = new URL(env.DOKPLOY_DEPLOY_URL || env.PUBLIC_SITE_URL)
-    const host = request.headers.get("x-forwarded-host") ?? fallback.host
-    const proto =
-        request.headers.get("x-forwarded-proto") ??
-        fallback.protocol.replace(":", "")
-    const origin = `${proto}://${host}`
+type SupabaseClient = ReturnType<typeof createClient>
 
-    const { searchParams } = new URL(request.url)
-    const code = searchParams.get("code")
-    let next = searchParams.get("next") ?? "/dashboard"
+export const GET: APIRoute = async (context) => {
+    const origin = requestOrigin(context.request)
+
+    const code = context.url.searchParams.get("code")
+    let next = context.url.searchParams.get("next") ?? "/dashboard"
     // Reject absolute URLs and protocol-relative URLs (//attacker.com/...)
     if (!next.startsWith("/") || next.startsWith("//")) {
         next = "/dashboard"
     }
 
     if (code) {
-        const supabase = await createClient()
+        const supabase = createClient(context)
         const { error } = await supabase.auth.exchangeCodeForSession(code)
         if (error) {
             console.error(error)
-            Sentry.captureException(error, { extra: { request } })
+            Sentry.captureException(error)
         } else {
-            console.log("User logged in successfully")
-
             await upsertUserProfile(supabase)
             await handleNewUserNotification(supabase)
 
-            return NextResponse.redirect(`${origin}${next}`)
+            return context.redirect(`${origin}${next}`)
         }
     }
 
-    return NextResponse.redirect(`${origin}/login?error=true`)
+    return context.redirect(`${origin}/login?error=true`)
 }
 
-async function upsertUserProfile(
-    supabase: Awaited<ReturnType<typeof createClient>>
-): Promise<void> {
+async function upsertUserProfile(supabase: SupabaseClient): Promise<void> {
     const userResult = await tryCatch(supabase.auth.getUser())
     if (!userResult.success) {
         captureActionError(userResult.error)
@@ -87,7 +77,7 @@ async function upsertUserProfile(
 }
 
 async function handleNewUserNotification(
-    supabase: Awaited<ReturnType<typeof createClient>>
+    supabase: SupabaseClient
 ): Promise<void> {
     const userResult = await tryCatch(supabase.auth.getUser())
     if (!userResult.success) {
@@ -113,14 +103,12 @@ async function handleNewUserNotification(
             to: "outils-numeriques@fare-asso.fr",
             subject: "Nouvelle connexion Google sur le site FARE",
             html: await render(
-                <NewGoogleUserTemplate
-                    email={user.email}
-                    name={name}
-                    loginDate={loginDate}
-                />
+                NewGoogleUserTemplate({
+                    email: user.email,
+                    name,
+                    loginDate
+                })
             )
         })
-
-        console.log(`New user notification sent for: ${user.email}`)
     }
 }
