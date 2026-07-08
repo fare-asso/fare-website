@@ -13,6 +13,7 @@ import { EnvSchema } from "./src/env-schema"
 export default defineConfig({
     output: "server",
     adapter: node({ mode: "standalone" }),
+    security: { checkOrigin: false },
     integrations: [
         react({ babel: { plugins: ["babel-plugin-react-compiler"] } }),
         sentry({
