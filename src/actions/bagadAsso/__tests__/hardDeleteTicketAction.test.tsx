@@ -28,6 +28,7 @@ describe("hardDeleteBagadAssoTicketAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await hardDeleteBagadAssoTicketAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -36,7 +37,10 @@ describe("hardDeleteBagadAssoTicketAction", () => {
     it("requires the delete:bagad-ticket permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await hardDeleteBagadAssoTicketAction(1)
-        expect(res.error).toMatch(/permission/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
@@ -49,6 +53,7 @@ describe("hardDeleteBagadAssoTicketAction", () => {
     it("captures and returns an error when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
         expect(await hardDeleteBagadAssoTicketAction(7)).toEqual({
+            success: false,
             error: "Echec de la suppression définitive du ticket"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

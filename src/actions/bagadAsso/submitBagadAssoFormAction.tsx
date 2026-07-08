@@ -15,11 +15,13 @@ import { tryCatch } from "@/lib/utils"
 
 import NewBagadAssoTicket from "../../../emails/badagasso-ticket"
 
-export type FormState = {
-    error?: string
-    success?: boolean
-    fieldErrors?: Partial<Record<keyof BagadAssoFormData, string[]>>
-}
+export type FormState =
+    | { success: true }
+    | {
+          success: false
+          error: string
+          fieldErrors?: Partial<Record<keyof BagadAssoFormData, string[]>>
+      }
 
 async function submitBagadAssoFormActionImpl(
     data: BagadAssoFormData
@@ -40,6 +42,7 @@ async function submitBagadAssoFormActionImpl(
         }
 
         return {
+            success: false,
             error: "Un ou plusieurs champs sont invalides.",
             fieldErrors
         }
@@ -50,12 +53,13 @@ async function submitBagadAssoFormActionImpl(
     // Verify CAPTCHA in production
     if (!isDevelopment) {
         if (!validatedData.captchaToken) {
-            return { error: "Veuillez compléter le CAPTCHA." }
+            return { success: false, error: "Veuillez compléter le CAPTCHA." }
         }
 
         const isCaptchaValid = await verifyCaptcha(validatedData.captchaToken)
         if (!isCaptchaValid) {
             return {
+                success: false,
                 error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
             }
         }
@@ -84,6 +88,7 @@ async function submitBagadAssoFormActionImpl(
     if (!ticket.success) {
         captureActionError(ticket.error)
         return {
+            success: false,
             error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
         }
     }

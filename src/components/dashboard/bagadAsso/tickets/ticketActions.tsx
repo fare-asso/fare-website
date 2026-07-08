@@ -43,7 +43,9 @@ export default function TicketActions({
 
         if (error || !data.success) {
             toast.error(
-                data?.error ?? "Une erreur est survenue. Veuillez réessayer."
+                data && !data.success
+                    ? data.error
+                    : "Une erreur est survenue. Veuillez réessayer."
             )
         } else {
             toast.success("Le ticket a été archivé.")
@@ -60,7 +62,9 @@ export default function TicketActions({
 
         if (error || !data.success) {
             toast.error(
-                data?.error ?? "Une erreur est survenue. Veuillez réessayer."
+                data && !data.success
+                    ? data.error
+                    : "Une erreur est survenue. Veuillez réessayer."
             )
         } else {
             toast.success("Le ticket a été désarchivé.")
@@ -77,7 +81,9 @@ export default function TicketActions({
 
         if (error || !data.success) {
             toast.error(
-                data?.error ?? "Une erreur est survenue. Veuillez réessayer."
+                data && !data.success
+                    ? data.error
+                    : "Une erreur est survenue. Veuillez réessayer."
             )
             setIsDeleteLoading(false)
         } else {

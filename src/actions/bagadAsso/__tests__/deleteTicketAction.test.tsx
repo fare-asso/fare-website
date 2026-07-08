@@ -28,6 +28,7 @@ describe("deleteBagadAssoTicketAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await deleteBagadAssoTicketAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -36,7 +37,10 @@ describe("deleteBagadAssoTicketAction", () => {
     it("requires the delete:bagad-ticket permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await deleteBagadAssoTicketAction(1)
-        expect(res.error).toMatch(/permission/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.update).not.toHaveBeenCalled()
     })
 
@@ -52,6 +56,7 @@ describe("deleteBagadAssoTicketAction", () => {
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         expect(await deleteBagadAssoTicketAction(5)).toEqual({
+            success: false,
             error: "Echec de la suppression du ticket"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

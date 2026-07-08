@@ -39,6 +39,7 @@ describe("createArticleAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await createArticleAction(fd())).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.create).not.toHaveBeenCalled()
@@ -47,13 +48,17 @@ describe("createArticleAction", () => {
     it("requires the create:article permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await createArticleAction(fd())
-        expect(res.error).toMatch(/permission/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects a payload missing required fields", async () => {
         const res = await createArticleAction(fd({ title: "" }))
         expect(res).toEqual({
+            success: false,
             error: "Veuillez remplir tous les champs obligatoires."
         })
         expect(h.create).not.toHaveBeenCalled()
@@ -62,6 +67,7 @@ describe("createArticleAction", () => {
     it("captures and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
         expect(await createArticleAction(fd())).toEqual({
+            success: false,
             error: "Echec de la création de l'article"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

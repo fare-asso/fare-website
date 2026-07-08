@@ -23,12 +23,15 @@ beforeEach(() => {
 describe("signOut", () => {
     it("returns the error when supabase sign-out fails", async () => {
         h.signOut.mockResolvedValue({ error: { message: "boom" } })
-        expect(await signOut()).toEqual({ success: false, error: "boom" })
+        expect(await signOut(undefined)).toEqual({
+            success: false,
+            error: "boom"
+        })
     })
 
     it("captures and fails when sign-out throws", async () => {
         h.signOut.mockRejectedValue(new Error("network down"))
-        expect(await signOut()).toEqual({
+        expect(await signOut(undefined)).toEqual({
             success: false,
             error: "Echec de la déconnexion"
         })
@@ -36,7 +39,7 @@ describe("signOut", () => {
     })
 
     it("succeeds on sign-out (the caller handles navigation)", async () => {
-        expect(await signOut()).toEqual({ success: true })
+        expect(await signOut(undefined)).toEqual({ success: true })
         expect(h.signOut).toHaveBeenCalledOnce()
     })
 })

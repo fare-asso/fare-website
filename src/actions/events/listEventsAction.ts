@@ -1,6 +1,7 @@
 import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import { wrapAction } from "@/lib/action"
@@ -61,6 +62,9 @@ async function listEventsActionImpl(
 > {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
+    if (!hasPermission(user, "access:events")) {
+        return { success: false, error: "Vous n'avez pas la permission" }
+    }
 
     const events = await fetchEvents()
     if (!events) {

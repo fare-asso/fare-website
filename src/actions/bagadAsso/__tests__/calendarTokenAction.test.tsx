@@ -28,7 +28,7 @@ beforeEach(() => {
 describe("generateBagadCalendarTokenAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await generateBagadCalendarTokenAction()).toEqual({
+        expect(await generateBagadCalendarTokenAction(undefined)).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -37,14 +37,14 @@ describe("generateBagadCalendarTokenAction", () => {
 
     it("requires the access:bagad-asso permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await generateBagadCalendarTokenAction()
+        const res = await generateBagadCalendarTokenAction(undefined)
         expect(res.success).toBe(false)
         if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("generates a url-safe token and persists it", async () => {
-        const res = await generateBagadCalendarTokenAction()
+        const res = await generateBagadCalendarTokenAction(undefined)
         if (!res.success) throw new Error("expected success")
         expect(res.value).toMatch(/^[A-Za-z0-9_-]+$/)
         expect(h.update).toHaveBeenCalledWith({
@@ -55,7 +55,7 @@ describe("generateBagadCalendarTokenAction", () => {
 
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await generateBagadCalendarTokenAction()).toEqual({
+        expect(await generateBagadCalendarTokenAction(undefined)).toEqual({
             success: false,
             error: "Echec de la génération du lien"
         })
@@ -66,7 +66,7 @@ describe("generateBagadCalendarTokenAction", () => {
 describe("revokeBagadCalendarTokenAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await revokeBagadCalendarTokenAction()).toEqual({
+        expect(await revokeBagadCalendarTokenAction(undefined)).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -74,7 +74,7 @@ describe("revokeBagadCalendarTokenAction", () => {
     })
 
     it("clears the token", async () => {
-        expect(await revokeBagadCalendarTokenAction()).toEqual({
+        expect(await revokeBagadCalendarTokenAction(undefined)).toEqual({
             success: true
         })
         expect(h.update).toHaveBeenCalledWith({
@@ -85,7 +85,7 @@ describe("revokeBagadCalendarTokenAction", () => {
 
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await revokeBagadCalendarTokenAction()).toEqual({
+        expect(await revokeBagadCalendarTokenAction(undefined)).toEqual({
             success: false,
             error: "Echec de la révocation du lien"
         })

@@ -28,6 +28,7 @@ describe("unarchiveBagadAssoTicketAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await unarchiveBagadAssoTicketAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -36,7 +37,10 @@ describe("unarchiveBagadAssoTicketAction", () => {
     it("requires the edit:bagad-ticket permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await unarchiveBagadAssoTicketAction(1)
-        expect(res.error).toMatch(/permission/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.update).not.toHaveBeenCalled()
     })
 
@@ -52,6 +56,7 @@ describe("unarchiveBagadAssoTicketAction", () => {
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         expect(await unarchiveBagadAssoTicketAction(9)).toEqual({
+            success: false,
             error: "Echec de la désarchivation du ticket"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

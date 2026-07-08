@@ -1,23 +1,26 @@
 import * as Sentry from "@sentry/astro"
+import type { ActionAPIContext } from "astro:actions"
 
 import { useLogger, withEvlog } from "@/lib/evlog"
 
-export function wrapAction<A extends unknown[], R>(
+export function wrapAction<I, R>(
     name: string,
-    handler: (...args: A) => Promise<R>
-): (...args: Partial<A>) => Promise<R> {
-    const instrumented = withEvlog(async (...args: A): Promise<R> => {
-        const log = useLogger()
-        log.set({ action: name })
-        const result = await handler(...args)
-        if (result && typeof result === "object" && "success" in result) {
-            log.set({ success: (result as { success: unknown }).success })
+    handler: (input: I, context: ActionAPIContext) => Promise<R>
+): (input: I, context?: ActionAPIContext) => Promise<R> {
+    const instrumented = withEvlog(
+        async (input: I, context: ActionAPIContext): Promise<R> => {
+            const log = useLogger()
+            log.set({ action: name })
+            const result = await handler(input, context)
+            if (result && typeof result === "object" && "success" in result) {
+                log.set({ success: (result as { success: unknown }).success })
+            }
+            return result
         }
-        return result
-    })
+    )
 
-    return ((...args: A) =>
+    return (input: I, context?: ActionAPIContext) =>
         Sentry.startSpan({ name, op: "action" }, () =>
-            instrumented(...args)
-        )) as (...args: Partial<A>) => Promise<R>
+            instrumented(input, context as ActionAPIContext)
+        )
 }

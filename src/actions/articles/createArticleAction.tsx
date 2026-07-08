@@ -11,14 +11,15 @@ import { tryCatch } from "@/lib/utils"
 async function createArticleActionImpl(
     formData: FormData,
     context: ActionAPIContext
-): Promise<{ error?: string; success?: boolean }> {
+): Promise<{ success: true } | { success: false; error: string }> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "create:article")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de créer des articles"
         }
     }
@@ -32,7 +33,10 @@ async function createArticleActionImpl(
 
     // Fields Validation
     if (!title || !content) {
-        return { error: "Veuillez remplir tous les champs obligatoires." }
+        return {
+            success: false,
+            error: "Veuillez remplir tous les champs obligatoires."
+        }
     }
 
     // Images
@@ -51,7 +55,7 @@ async function createArticleActionImpl(
     )
     if (!responsesResult.success) {
         captureActionError(responsesResult.error)
-        return { error: "Echec de la création de l'article" }
+        return { success: false, error: "Echec de la création de l'article" }
     }
     const responses = responsesResult.value
 
@@ -59,6 +63,7 @@ async function createArticleActionImpl(
     for (const response of responses) {
         if (response.error) {
             return {
+                success: false,
                 error: "L'upload des images a échoué. Veuillez réessayer"
             }
         }
@@ -66,7 +71,7 @@ async function createArticleActionImpl(
 
     const parsedContent = tryCatch(() => JSON.parse(content) as JSONContent)
     if (!parsedContent.success) {
-        return { error: "Le contenu de l'article est invalide" }
+        return { success: false, error: "Le contenu de l'article est invalide" }
     }
 
     // insert article to database
@@ -84,7 +89,7 @@ async function createArticleActionImpl(
     )
     if (!created.success) {
         captureActionError(created.error)
-        return { error: "Echec de la création de l'article" }
+        return { success: false, error: "Echec de la création de l'article" }
     }
 
     return { success: true }

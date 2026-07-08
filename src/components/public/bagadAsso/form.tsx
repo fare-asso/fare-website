@@ -122,7 +122,10 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
             setPending(false)
             setFormState(
                 error
-                    ? { error: "Une erreur est survenue. Veuillez réessayer." }
+                    ? {
+                          success: false,
+                          error: "Une erreur est survenue. Veuillez réessayer."
+                      }
                     : data
             )
         }

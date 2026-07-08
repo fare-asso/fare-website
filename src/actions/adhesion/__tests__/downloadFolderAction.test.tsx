@@ -48,6 +48,7 @@ describe("downloadFolderAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await downloadFolderAction("f")).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.findFirst).not.toHaveBeenCalled()
@@ -56,12 +57,16 @@ describe("downloadFolderAction", () => {
     it("requires the access:adhesions permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await downloadFolderAction("f")
-        expect(res.error).toMatch(/permission/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.findFirst).not.toHaveBeenCalled()
     })
 
     it("rejects an empty folder path", async () => {
         expect(await downloadFolderAction("")).toEqual({
+            success: false,
             error: "Le nom du dossier est invalide"
         })
     })
@@ -69,6 +74,7 @@ describe("downloadFolderAction", () => {
     it("captures and errors when fetching the adhesion fails", async () => {
         h.findFirst.mockRejectedValue(new Error("db down"))
         expect(await downloadFolderAction("uuid-fare")).toEqual({
+            success: false,
             error: "Erreur lors de la création du fichier zip"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -81,6 +87,7 @@ describe("downloadFolderAction", () => {
             error: { message: "gone" }
         })
         expect(await downloadFolderAction("uuid-fare")).toEqual({
+            success: false,
             error: "Erreur lors de la création du fichier zip"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -88,6 +95,7 @@ describe("downloadFolderAction", () => {
 
     it("downloads the files referenced in the db and appends the PDF", async () => {
         const res = await downloadFolderAction("uuid-fare")
+        if (!res.success) throw new Error("expected success")
         expect(res.success).toBe(true)
         expect(res.filename).toBe("uuid-fare.zip")
         expect(res.zipData && isZip(res.zipData)).toBe(true)
@@ -100,6 +108,7 @@ describe("downloadFolderAction", () => {
     it("errors when no adhesion matches the folder", async () => {
         h.findFirst.mockResolvedValue(null)
         expect(await downloadFolderAction("uuid-fare")).toEqual({
+            success: false,
             error: "Aucune adhésion ne correspond à ce dossier"
         })
         expect(h.download).not.toHaveBeenCalled()

@@ -10,17 +10,15 @@ import { tryCatch } from "@/lib/utils"
 async function unarchiveAdhesionActionImpl(
     adhesionId: number,
     context: ActionAPIContext
-): Promise<{
-    success?: boolean
-    error?: string
-}> {
+): Promise<{ success: true } | { success: false; error: string }> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "edit:adhesion")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
     }
@@ -37,7 +35,10 @@ async function unarchiveAdhesionActionImpl(
     )
     if (!result.success) {
         captureActionError(result.error)
-        return { error: "Echec de la désarchivation de la demande d'adhésion" }
+        return {
+            success: false,
+            error: "Echec de la désarchivation de la demande d'adhésion"
+        }
     }
 
     return { success: true }

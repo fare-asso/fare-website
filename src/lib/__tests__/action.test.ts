@@ -39,13 +39,16 @@ describe("wrapAction", () => {
             success: false as const,
             error: "nope"
         }))
-        expect(await action()).toEqual({ success: false, error: "nope" })
+        expect(await action(undefined)).toEqual({
+            success: false,
+            error: "nope"
+        })
         expect(h.set).toHaveBeenCalledWith({ success: false })
     })
 
     it("records only the action name for a plain value", async () => {
         const action = wrapAction("plainAction", async () => 42)
-        expect(await action()).toBe(42)
+        expect(await action(undefined)).toBe(42)
         expect(h.set).toHaveBeenCalledWith({ action: "plainAction" })
         expect(h.set).toHaveBeenCalledTimes(1)
     })
@@ -55,20 +58,21 @@ describe("wrapAction", () => {
         const action = wrapAction("throwAction", async () => {
             throw boom
         })
-        await expect(action()).rejects.toBe(boom)
+        await expect(action(undefined)).rejects.toBe(boom)
     })
 
-    it("forwards all arguments to the handler", async () => {
+    it("forwards the input and context to the handler", async () => {
         const impl = vi.fn(async (..._args: unknown[]) => undefined)
         // oxlint-disable-next-line local/require-action-name-matches
         const action = wrapAction("argsAction", impl)
-        await action("a", 2, { c: true })
-        expect(impl).toHaveBeenCalledWith("a", 2, { c: true })
+        const context = { request: {} } as never
+        await action("a", context)
+        expect(impl).toHaveBeenCalledWith("a", context)
     })
 
     it("runs the handler inside a Sentry span", async () => {
         const action = wrapAction("spanAction", async () => "ok")
-        await action()
+        await action(undefined)
         expect(h.startSpan).toHaveBeenCalledWith(
             { name: "spanAction", op: "action" },
             expect.any(Function)

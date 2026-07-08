@@ -70,7 +70,10 @@ export default function ContactForm() {
             setPending(false)
             setFormState(
                 error
-                    ? { error: "Une erreur est survenue. Veuillez réessayer." }
+                    ? {
+                          success: false,
+                          error: "Une erreur est survenue. Veuillez réessayer."
+                      }
                     : data
             )
         }

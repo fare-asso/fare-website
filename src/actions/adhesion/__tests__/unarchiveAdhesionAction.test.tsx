@@ -26,6 +26,7 @@ describe("unarchiveAdhesionAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await unarchiveAdhesionAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -34,7 +35,10 @@ describe("unarchiveAdhesionAction", () => {
     it("requires the edit:adhesion permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await unarchiveAdhesionAction(1)
-        expect(res.error).toMatch(/permission/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.update).not.toHaveBeenCalled()
     })
 
@@ -50,6 +54,7 @@ describe("unarchiveAdhesionAction", () => {
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         expect(await unarchiveAdhesionAction(1)).toEqual({
+            success: false,
             error: "Echec de la désarchivation de la demande d'adhésion"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

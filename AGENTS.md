@@ -234,9 +234,7 @@ import { CreateItemSchema, type TCreateItem } from "@/schemas/items"
 async function createItemActionImpl(
     input: TCreateItem,
     context: ActionAPIContext
-): Promise<
-    { success: true; value: Item } | { success: false; error: string }
-> {
+): Promise<{ success: true; value: Item } | { success: false; error: string }> {
     // 1. Auth + permission guards (early returns — NOT captured by Sentry)
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -247,7 +245,10 @@ async function createItemActionImpl(
     // 2. Validation (early return — NOT captured)
     const data = CreateItemSchema(input)
     if (data instanceof type.errors) {
-        return { success: false, error: "Un ou plusieurs champs sont invalides." }
+        return {
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        }
     }
 
     // 3. Risky IO via tryCatch — capture on failure, return a French error
@@ -260,7 +261,10 @@ async function createItemActionImpl(
     return { success: true, value: item.value }
 }
 
-export const createItemAction = wrapAction("createItemAction", createItemActionImpl)
+export const createItemAction = wrapAction(
+    "createItemAction",
+    createItemActionImpl
+)
 ```
 
 Register it in `src/actions/index.ts`:
@@ -401,13 +405,13 @@ await sendEmail({ to: "…", subject: "…", html: "…" })
 - **MSW** mocks outbound HTTP in the node project (`onUnhandledRequest: "error"` — an unmocked request fails the run).
 - **Playwright** (`@vitest/browser-playwright`) drives headless Chromium; components render via `vitest-browser-react`.
 
-| Change | Required tests |
-| --- | --- |
-| New/changed action | Node test covering the full branch + IO matrix |
+| Change                        | Required tests                                           |
+| ----------------------------- | -------------------------------------------------------- |
+| New/changed action            | Node test covering the full branch + IO matrix           |
 | New/changed schema with rules | Schema test in `src/schemas/__tests__/` (if non-trivial) |
-| New/changed form component | Browser test |
-| New/changed helper with logic | Node unit test in `__tests__/` |
-| Behavioural bug fix | Regression test that fails without the fix |
+| New/changed form component    | Browser test                                             |
+| New/changed helper with logic | Node unit test in `__tests__/`                           |
+| Behavioural bug fix           | Regression test that fails without the fix               |
 
 **Projects:** `node` (`environment: "node"`, msw, schema/action/helper tests — `pnpm run test:node`) and `browser` (islands via `vitest-browser-react` — `pnpm run test:browser`).
 
@@ -468,17 +472,17 @@ Both must be green to merge.
 
 ## Useful Commands Reference
 
-| Command | Purpose |
-| --- | --- |
-| `pnpm run dev` | Astro dev server |
-| `pnpm run build` | Production build |
-| `pnpm run start` | Run built server (`node ./dist/server/entry.mjs`) |
-| `pnpm exec astro sync` | Generate `astro:*` types |
-| `pnpm run check:types` | `tsgo --noEmit && astro check` |
-| `pnpm run lint` | Fix lint issues (oxlint) |
-| `pnpm run format` | Format (oxfmt) |
-| `pnpm run knip` | Find unused code |
-| `pnpm run email:dev` | Preview email templates |
+| Command                | Purpose                                           |
+| ---------------------- | ------------------------------------------------- |
+| `pnpm run dev`         | Astro dev server                                  |
+| `pnpm run build`       | Production build                                  |
+| `pnpm run start`       | Run built server (`node ./dist/server/entry.mjs`) |
+| `pnpm exec astro sync` | Generate `astro:*` types                          |
+| `pnpm run check:types` | `tsgo --noEmit && astro check`                    |
+| `pnpm run lint`        | Fix lint issues (oxlint)                          |
+| `pnpm run format`      | Format (oxfmt)                                    |
+| `pnpm run knip`        | Find unused code                                  |
+| `pnpm run email:dev`   | Preview email templates                           |
 
 ---
 

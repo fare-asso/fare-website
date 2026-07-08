@@ -13,6 +13,9 @@ import { EnvSchema } from "./src/env-schema"
 export default defineConfig({
     output: "server",
     adapter: node({ mode: "standalone" }),
+    // Disabled: behind the TLS-terminating proxy the Node adapter sees http
+    // internally, so its Origin/url.origin comparison rejects valid form POSTs.
+    // Cross-site protection relies on Supabase SSR cookies (SameSite=Lax).
     security: { checkOrigin: false },
     integrations: [
         react({ babel: { plugins: ["babel-plugin-react-compiler"] } }),

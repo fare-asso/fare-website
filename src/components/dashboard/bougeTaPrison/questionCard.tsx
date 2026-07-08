@@ -51,13 +51,13 @@ export default function QuestionCard({
 
         if (error) {
             toast.error("Une erreur est survenue. Veuillez réessayer.")
-        } else if (data.error) {
-            toast.error(data.error)
-        } else {
+        } else if (data.success) {
             toast.success("La question a été archivée.")
             await queryClient.invalidateQueries({
                 queryKey: ["tutorQuestions"]
             })
+        } else {
+            toast.error(data.error)
         }
         setIsLoading(false)
     }
@@ -69,13 +69,13 @@ export default function QuestionCard({
 
         if (error) {
             toast.error("Une erreur est survenue. Veuillez réessayer.")
-        } else if (data.error) {
-            toast.error(data.error)
-        } else {
+        } else if (data.success) {
             toast.success("La question a été désarchivée.")
             await queryClient.invalidateQueries({
                 queryKey: ["tutorQuestions"]
             })
+        } else {
+            toast.error(data.error)
         }
         setIsLoading(false)
     }

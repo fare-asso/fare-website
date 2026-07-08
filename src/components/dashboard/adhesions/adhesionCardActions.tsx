@@ -57,7 +57,7 @@ export default function AdhesionCardActions({
         )
         if (error) {
             toast.error("Erreur lors du téléchargement du dossier.")
-        } else if (data.error) {
+        } else if (!data.success) {
             toast.error(data.error)
         } else if (data.success && data.zipData) {
             downloadBase64(
@@ -76,7 +76,7 @@ export default function AdhesionCardActions({
             await actions.adhesion.downloadAdhesionPdfAction(adhesion.id)
         if (error) {
             toast.error("Erreur lors de la génération du formulaire PDF.")
-        } else if (data.error) {
+        } else if (!data.success) {
             toast.error(data.error)
         } else if (data.success && data.pdfData) {
             downloadBase64(
@@ -97,15 +97,15 @@ export default function AdhesionCardActions({
         const { data, error } = await action(adhesion.id)
         if (error) {
             toast.error("Une erreur est survenue. Veuillez réessayer.")
-        } else if (data.error) {
-            toast.error(data.error)
-        } else {
+        } else if (data.success) {
             toast.success(
                 isArchived
                     ? "La demande d'adhésion a été désarchivée."
                     : "La demande d'adhésion a été archivée."
             )
             await queryClient.invalidateQueries({ queryKey: ["adhesions"] })
+        } else {
+            toast.error(data.error)
         }
         setIsArchiving(false)
     }

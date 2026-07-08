@@ -43,8 +43,10 @@ export default function DeclineAssociationButton({
                 await actions.associations.declineAssociationAction(
                     association.id
                 )
-            if (error || data?.error) {
-                toast.error(data?.error ?? "Échec du refus")
+            if (error || !data.success) {
+                toast.error(
+                    data && !data.success ? data.error : "Échec du refus"
+                )
             } else {
                 setIsOpen(false)
                 toast.success(`L'association ${association.name} est refusée`)

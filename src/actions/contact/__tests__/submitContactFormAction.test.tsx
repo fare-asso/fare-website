@@ -35,6 +35,7 @@ describe("submitContactFormAction", () => {
         const res = await submitContactFormAction(
             validContact({ email: "not-an-email", firstName: "" })
         )
+        if (res.success) throw new Error("expected failure")
         expect(res.error).toBe("Un ou plusieurs champs sont invalides.")
         expect(res.fieldErrors?.email).toBeDefined()
         expect(res.fieldErrors?.firstName).toBeDefined()
@@ -56,6 +57,7 @@ describe("submitContactFormAction", () => {
         h.verifyCaptcha.mockResolvedValue(false)
         const res = await submitContactFormAction(validContact())
         expect(res).toEqual({
+            success: false,
             error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         })
         expect(h.sendEmail).not.toHaveBeenCalled()
@@ -65,6 +67,7 @@ describe("submitContactFormAction", () => {
         h.sendEmail.mockResolvedValue({ success: false })
         const res = await submitContactFormAction(validContact())
         expect(res).toEqual({
+            success: false,
             error: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer."
         })
         expect(h.captureActionError).not.toHaveBeenCalled()

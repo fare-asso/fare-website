@@ -8,11 +8,13 @@ import { type Contact, ContactSchema } from "@/schemas/contact"
 
 import ContactTemplate from "../../../emails/contact"
 
-export type FormState = {
-    error?: string
-    success?: boolean
-    fieldErrors?: Partial<Record<keyof Contact, string[]>>
-}
+export type FormState =
+    | { success: true }
+    | {
+          success: false
+          error: string
+          fieldErrors?: Partial<Record<keyof Contact, string[]>>
+      }
 
 async function submitContactFormActionImpl(data: Contact): Promise<FormState> {
     const parsed = ContactSchema.safeParse(data)
@@ -28,6 +30,7 @@ async function submitContactFormActionImpl(data: Contact): Promise<FormState> {
         }
 
         return {
+            success: false,
             error: "Un ou plusieurs champs sont invalides.",
             fieldErrors
         }
@@ -38,12 +41,13 @@ async function submitContactFormActionImpl(data: Contact): Promise<FormState> {
     // Verify CAPTCHA in production
     if (!isDevelopment) {
         if (!validatedData.captchaToken) {
-            return { error: "Veuillez compléter le CAPTCHA." }
+            return { success: false, error: "Veuillez compléter le CAPTCHA." }
         }
 
         const isCaptchaValid = await verifyCaptcha(validatedData.captchaToken)
         if (!isCaptchaValid) {
             return {
+                success: false,
                 error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
             }
         }
@@ -64,6 +68,7 @@ async function submitContactFormActionImpl(data: Contact): Promise<FormState> {
 
     if (!emailTransporterRes.success) {
         return {
+            success: false,
             error: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer."
         }
     }

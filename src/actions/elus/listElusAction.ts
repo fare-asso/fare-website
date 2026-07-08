@@ -2,6 +2,7 @@ import type { ActionAPIContext } from "astro:actions"
 
 import type { Conseil, Elu, Instance } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
@@ -43,6 +44,9 @@ async function listElusActionImpl(
 > {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
+    if (!hasPermission(user, "access:elus")) {
+        return { success: false, error: "Vous n'avez pas la permission" }
+    }
 
     const instances = await fetchElus()
     if (!instances) {

@@ -39,6 +39,7 @@ describe("declineAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await declineAssociationAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -47,13 +48,17 @@ describe("declineAssociationAction", () => {
     it("requires the approve:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await declineAssociationAction(1)
-        expect(res.error).toMatch(/permission/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("errors when the association does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
         expect(await declineAssociationAction(1)).toEqual({
+            success: false,
             error: "Association introuvable"
         })
     })
@@ -63,6 +68,7 @@ describe("declineAssociationAction", () => {
             validAssociationRecord({ approved: new Date() })
         )
         expect(await declineAssociationAction(1)).toEqual({
+            success: false,
             error: "Impossible de refuser une association déjà approuvée"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -85,6 +91,7 @@ describe("declineAssociationAction", () => {
     it("captures and fails when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
         expect(await declineAssociationAction(1)).toEqual({
+            success: false,
             error: "Échec du refus de l'association"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

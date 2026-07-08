@@ -12,19 +12,18 @@ import { tryCatch } from "@/lib/utils"
 async function downloadAdhesionPdfActionImpl(
     adhesionId: number,
     context: ActionAPIContext
-): Promise<{
-    success?: boolean
-    error?: string
-    pdfData?: string
-    filename?: string
-}> {
+): Promise<
+    | { success: true; pdfData: string; filename: string }
+    | { success: false; error: string }
+> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "access:adhesions")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
     }
@@ -36,18 +35,18 @@ async function downloadAdhesionPdfActionImpl(
     )
     if (!adhesionResult.success) {
         captureActionError(adhesionResult.error)
-        return { error: "Erreur lors de la génération du PDF" }
+        return { success: false, error: "Erreur lors de la génération du PDF" }
     }
     const adhesion = adhesionResult.value
 
     if (!adhesion) {
-        return { error: "Demande d'adhésion introuvable" }
+        return { success: false, error: "Demande d'adhésion introuvable" }
     }
 
     const pdfResult = await tryCatch(generateAdhesionPdfFromRecord(adhesion))
     if (!pdfResult.success) {
         captureActionError(pdfResult.error)
-        return { error: "Erreur lors de la génération du PDF" }
+        return { success: false, error: "Erreur lors de la génération du PDF" }
     }
     const slug = sanitizeString(adhesion.sigle) || `adhesion-${adhesion.id}`
 

@@ -95,8 +95,9 @@ export default function CreateArticleButton() {
                 await actions.articles.createArticleAction(formData)
             if (actionError || !data.success) {
                 setError(
-                    data?.error ??
-                        "Une erreur est survenue. Veuillez réessayer."
+                    data && !data.success
+                        ? data.error
+                        : "Une erreur est survenue. Veuillez réessayer."
                 )
             } else {
                 handleOpenChange(false)

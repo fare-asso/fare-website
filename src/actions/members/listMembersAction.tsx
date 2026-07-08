@@ -2,6 +2,7 @@ import type { ActionAPIContext } from "astro:actions"
 
 import type { Member } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import { wrapAction } from "@/lib/action"
@@ -41,6 +42,9 @@ async function listMembersActionImpl(
 > {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
+    if (!hasPermission(user, "access:members")) {
+        return { success: false, error: "Vous n'avez pas la permission" }
+    }
 
     const members = await fetchMembersWithPictures()
     if (!members) {

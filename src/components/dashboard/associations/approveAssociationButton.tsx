@@ -43,8 +43,12 @@ export default function ApproveAssociationButton({
                 await actions.associations.approveAssociationAction(
                     association.id
                 )
-            if (error || data?.error) {
-                toast.error(data?.error ?? "Échec de l'approbation")
+            if (error || !data.success) {
+                toast.error(
+                    data && !data.success
+                        ? data.error
+                        : "Échec de l'approbation"
+                )
             } else {
                 setIsOpen(false)
                 toast.success(`L'association ${association.name} est approuvée`)

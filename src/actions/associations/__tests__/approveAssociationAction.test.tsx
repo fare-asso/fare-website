@@ -36,6 +36,7 @@ describe("approveAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await approveAssociationAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.updateAsso).not.toHaveBeenCalled()
@@ -44,13 +45,17 @@ describe("approveAssociationAction", () => {
     it("requires the approve:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await approveAssociationAction(1)
-        expect(res.error).toMatch(/permission/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.updateAsso).not.toHaveBeenCalled()
     })
 
     it("errors when the association does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
         expect(await approveAssociationAction(1)).toEqual({
+            success: false,
             error: "Association introuvable"
         })
     })
@@ -60,6 +65,7 @@ describe("approveAssociationAction", () => {
             validAssociationRecord({ approved: new Date() })
         )
         expect(await approveAssociationAction(1)).toEqual({
+            success: false,
             error: "Cette association est déjà approuvée"
         })
         expect(h.updateAsso).not.toHaveBeenCalled()
@@ -90,6 +96,7 @@ describe("approveAssociationAction", () => {
     it("captures and fails when the update throws", async () => {
         h.updateAsso.mockRejectedValue(new Error("db down"))
         expect(await approveAssociationAction(1)).toEqual({
+            success: false,
             error: "Échec de l'approbation de l'association"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

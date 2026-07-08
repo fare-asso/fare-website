@@ -6,6 +6,7 @@ import type {
     UserPermission
 } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
@@ -48,6 +49,9 @@ async function listUsersActionImpl(
 > {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
+    if (!hasPermission(user, "access:users")) {
+        return { success: false, error: "Vous n'avez pas la permission" }
+    }
 
     const users = await fetchUsers(input.showDeleted)
     if (!users) {

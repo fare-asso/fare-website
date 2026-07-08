@@ -10,13 +10,14 @@ import { tryCatch } from "@/lib/utils"
 async function approveAssociationActionImpl(
     id: number,
     context: ActionAPIContext
-): Promise<{ error?: string; success?: boolean }> {
+): Promise<{ success: true } | { success: false; error: string }> {
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "approve:association")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission d'approuver des associations"
         }
     }
@@ -28,16 +29,19 @@ async function approveAssociationActionImpl(
     )
     if (!associationResult.success) {
         captureActionError(associationResult.error)
-        return { error: "Échec de l'approbation de l'association" }
+        return {
+            success: false,
+            error: "Échec de l'approbation de l'association"
+        }
     }
     const association = associationResult.value
 
     if (!association) {
-        return { error: "Association introuvable" }
+        return { success: false, error: "Association introuvable" }
     }
 
     if (association.approved) {
-        return { error: "Cette association est déjà approuvée" }
+        return { success: false, error: "Cette association est déjà approuvée" }
     }
 
     // Approve the association
@@ -49,7 +53,10 @@ async function approveAssociationActionImpl(
     )
     if (!approved.success) {
         captureActionError(approved.error)
-        return { error: "Échec de l'approbation de l'association" }
+        return {
+            success: false,
+            error: "Échec de l'approbation de l'association"
+        }
     }
 
     // Archive the linked adhesion if present
@@ -62,7 +69,10 @@ async function approveAssociationActionImpl(
         )
         if (!archived.success) {
             captureActionError(archived.error)
-            return { error: "Échec de l'approbation de l'association" }
+            return {
+                success: false,
+                error: "Échec de l'approbation de l'association"
+            }
         }
     }
 

@@ -37,11 +37,11 @@ export default function QuestionActions({
 
         if (error) {
             toast.error("Une erreur est survenue. Veuillez réessayer.")
-        } else if (data.error) {
-            toast.error(data.error)
-        } else {
+        } else if (data.success) {
             toast.success("La question a été archivée.")
             window.location.reload()
+        } else {
+            toast.error(data.error)
         }
         setIsArchiveLoading(false)
     }
@@ -54,11 +54,11 @@ export default function QuestionActions({
 
         if (error) {
             toast.error("Une erreur est survenue. Veuillez réessayer.")
-        } else if (data.error) {
-            toast.error(data.error)
-        } else {
+        } else if (data.success) {
             toast.success("La question a été désarchivée.")
             window.location.reload()
+        } else {
+            toast.error(data.error)
         }
         setIsArchiveLoading(false)
     }
@@ -72,12 +72,12 @@ export default function QuestionActions({
         if (error) {
             toast.error("Une erreur est survenue. Veuillez réessayer.")
             setIsDeleteLoading(false)
-        } else if (data.error) {
-            toast.error(data.error)
-            setIsDeleteLoading(false)
-        } else {
+        } else if (data.success) {
             toast.success("La question a été supprimée définitivement.")
             window.location.href = "/dashboard/bouge-ta-prison/questions"
+        } else {
+            toast.error(data.error)
+            setIsDeleteLoading(false)
         }
     }
 

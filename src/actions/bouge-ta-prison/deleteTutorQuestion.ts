@@ -1,12 +1,22 @@
+import type { ActionAPIContext } from "astro:actions"
+
 import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteTutorQuestionImpl(
-    id: number
-): Promise<{ success?: boolean; error?: string }> {
-    // Delete the application
+    id: number,
+    context: ActionAPIContext
+): Promise<{ success: true } | { success: false; error: string }> {
+    const user = await getUserWithPermissions(context)
+    if (!user) return { success: false, error: "Authentification requise" }
+    if (!hasPermission(user, "access:btp")) {
+        return { success: false, error: "Vous n'avez pas la permission" }
+    }
+
     const result = await tryCatch(
         prisma.bTPTutorQuestion.delete({
             where: {
@@ -16,7 +26,10 @@ async function deleteTutorQuestionImpl(
     )
     if (!result.success) {
         captureActionError(result.error)
-        return { error: "Echec de la suppression de la question" }
+        return {
+            success: false,
+            error: "Echec de la suppression de la question"
+        }
     }
 
     return { success: true }

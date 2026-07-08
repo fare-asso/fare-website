@@ -10,13 +10,14 @@ import { tryCatch } from "@/lib/utils"
 async function declineAssociationActionImpl(
     id: number,
     context: ActionAPIContext
-): Promise<{ error?: string; success?: boolean }> {
+): Promise<{ success: true } | { success: false; error: string }> {
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "approve:association")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de refuser des associations"
         }
     }
@@ -28,16 +29,17 @@ async function declineAssociationActionImpl(
     )
     if (!associationResult.success) {
         captureActionError(associationResult.error)
-        return { error: "Échec du refus de l'association" }
+        return { success: false, error: "Échec du refus de l'association" }
     }
     const association = associationResult.value
 
     if (!association) {
-        return { error: "Association introuvable" }
+        return { success: false, error: "Association introuvable" }
     }
 
     if (association.approved) {
         return {
+            success: false,
             error: "Impossible de refuser une association déjà approuvée"
         }
     }
@@ -65,7 +67,7 @@ async function declineAssociationActionImpl(
     )
     if (!deleted.success) {
         captureActionError(deleted.error)
-        return { error: "Échec du refus de l'association" }
+        return { success: false, error: "Échec du refus de l'association" }
     }
 
     return { success: true }

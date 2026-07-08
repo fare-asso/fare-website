@@ -41,6 +41,7 @@ describe("submitBagadAssoFormAction", () => {
         const res = await submitBagadAssoFormAction(
             validBagadAssoForm({ associationEmail: "nope" })
         )
+        if (res.success) throw new Error("expected failure")
         expect(res.error).toBe("Un ou plusieurs champs sont invalides.")
         expect(res.fieldErrors?.associationEmail).toBeDefined()
         expect(h.create).not.toHaveBeenCalled()
@@ -59,6 +60,7 @@ describe("submitBagadAssoFormAction", () => {
         h.verifyCaptcha.mockResolvedValue(false)
         const res = await submitBagadAssoFormAction(validBagadAssoForm())
         expect(res).toEqual({
+            success: false,
             error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         })
         expect(h.create).not.toHaveBeenCalled()
@@ -68,6 +70,7 @@ describe("submitBagadAssoFormAction", () => {
         h.create.mockRejectedValue(new Error("db down"))
         const res = await submitBagadAssoFormAction(validBagadAssoForm())
         expect(res).toEqual({
+            success: false,
             error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
