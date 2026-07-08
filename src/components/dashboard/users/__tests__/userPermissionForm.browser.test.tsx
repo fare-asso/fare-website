@@ -6,7 +6,8 @@ import { renderWithClient as render } from "@/test/browser"
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
 vi.mock("astro:actions", () => ({
-    actions: { users: { updateUserPermissions: h.action } }
+    actions: { users: { updateUserPermissions: h.action } },
+    isInputError: () => false
 }))
 
 import { UserPermissionsForm } from "../userPermissionForm"
@@ -29,7 +30,7 @@ const perms: Permission[] = [
 ]
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<UserPermissionsForm />", () => {

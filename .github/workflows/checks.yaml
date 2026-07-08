@@ -36,6 +36,9 @@ jobs:
             - name: Generate Prisma Client
               run: pnpm exec prisma generate
 
+            - name: Sync Astro types
+              run: pnpm exec astro sync
+
             - name: Check linting
               run: pnpm run check:lint --format=github
 
