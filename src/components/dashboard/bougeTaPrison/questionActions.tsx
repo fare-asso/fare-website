@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
 import { useState } from "react"
@@ -29,7 +28,6 @@ export default function QuestionActions({
 }) {
     const [isArchiveLoading, setIsArchiveLoading] = useState(false)
     const [isDeleteLoading, setIsDeleteLoading] = useState(false)
-    const queryClient = useQueryClient()
 
     const onArchive = async () => {
         setIsArchiveLoading(true)
@@ -43,9 +41,7 @@ export default function QuestionActions({
             toast.error(data.error)
         } else {
             toast.success("La question a été archivée.")
-            await queryClient.invalidateQueries({
-                queryKey: ["tutorQuestions"]
-            })
+            window.location.reload()
         }
         setIsArchiveLoading(false)
     }
@@ -62,9 +58,7 @@ export default function QuestionActions({
             toast.error(data.error)
         } else {
             toast.success("La question a été désarchivée.")
-            await queryClient.invalidateQueries({
-                queryKey: ["tutorQuestions"]
-            })
+            window.location.reload()
         }
         setIsArchiveLoading(false)
     }

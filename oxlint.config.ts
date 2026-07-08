@@ -51,7 +51,7 @@ export default defineConfig({
             }
         },
         {
-            files: ["src/env.ts", "src/instrumentation.ts"],
+            files: ["src/env.ts", "astro.config.ts"],
             rules: { "node/no-process-env": "off" }
         },
         {

@@ -1,5 +1,6 @@
 import { actions } from "astro:actions"
-import { useOptimistic, useTransition } from "react"
+import { useState, useTransition } from "react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import type { Permission } from "@/generated/prisma/client"
@@ -19,19 +20,26 @@ export function UserPermissionsForm({
 }: Props) {
     const [isPending, startTransition] = useTransition()
     const [optimisticPermissions, setOptimisticPermissions] =
-        useOptimistic(userPermissions)
+        useState(userPermissions)
 
     const togglePermission = (permissionId: number) => {
+        const previousPermissions = optimisticPermissions
         const newPermissions = optimisticPermissions.includes(permissionId)
             ? optimisticPermissions.filter((id) => id !== permissionId)
             : [...optimisticPermissions, permissionId]
 
         startTransition(async () => {
             setOptimisticPermissions(newPermissions)
-            await actions.users.updateUserPermissions({
+            const { data, error } = await actions.users.updateUserPermissions({
                 userId,
                 permissions: newPermissions
             })
+            if (error || data.error) {
+                toast.error(
+                    data?.error ?? "Échec de la mise à jour des permissions"
+                )
+                setOptimisticPermissions(previousPermissions)
+            }
         })
     }
 
@@ -46,6 +54,7 @@ export function UserPermissionsForm({
     )
 
     const selectAllInCategory = (categoryPermissions: Permission[]) => {
+        const previousPermissions = optimisticPermissions
         const categoryIds = categoryPermissions.map((p) => p.id)
         const newPermissions = [
             ...new Set([...optimisticPermissions, ...categoryIds])
@@ -53,14 +62,21 @@ export function UserPermissionsForm({
 
         startTransition(async () => {
             setOptimisticPermissions(newPermissions)
-            await actions.users.updateUserPermissions({
+            const { data, error } = await actions.users.updateUserPermissions({
                 userId,
                 permissions: newPermissions
             })
+            if (error || data.error) {
+                toast.error(
+                    data?.error ?? "Échec de la mise à jour des permissions"
+                )
+                setOptimisticPermissions(previousPermissions)
+            }
         })
     }
 
     const deselectAllInCategory = (categoryPermissions: Permission[]) => {
+        const previousPermissions = optimisticPermissions
         const categoryIds = new Set(categoryPermissions.map((p) => p.id))
         const newPermissions = optimisticPermissions.filter(
             (id) => !categoryIds.has(id)
@@ -68,10 +84,16 @@ export function UserPermissionsForm({
 
         startTransition(async () => {
             setOptimisticPermissions(newPermissions)
-            await actions.users.updateUserPermissions({
+            const { data, error } = await actions.users.updateUserPermissions({
                 userId,
                 permissions: newPermissions
             })
+            if (error || data.error) {
+                toast.error(
+                    data?.error ?? "Échec de la mise à jour des permissions"
+                )
+                setOptimisticPermissions(previousPermissions)
+            }
         })
     }
 

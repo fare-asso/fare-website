@@ -13,7 +13,6 @@ async function updateUserInfoImpl(
         data: {
             name: string | null
             email: string
-            role: "MEMBER" | "ADMIN" | "ASSO_OWNER"
         }
     },
     context: ActionAPIContext
@@ -37,8 +36,7 @@ async function updateUserInfoImpl(
             where: { id: userId },
             data: {
                 name: data.name,
-                email: data.email,
-                role: data.role
+                email: data.email
             }
         })
     )

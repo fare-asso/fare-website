@@ -91,19 +91,11 @@ export const columns: ColumnDef<UserWithPermissionsRow>[] = [
     {
         accessorKey: "role",
         header: "Role",
-        cell: ({ row }) => {
-            const role = row.getValue("role") as string
-            const roleLabels: Record<string, string> = {
-                MEMBER: "Membre",
-                ADMIN: "Admin",
-                ASSO_OWNER: "Asso"
-            }
-            return (
-                <Badge variant="outline" className="text-xs">
-                    {roleLabels[role] || role}
-                </Badge>
-            )
-        }
+        cell: ({ row }) => (
+            <Badge variant="outline" className="text-xs">
+                {row.getValue("role")}
+            </Badge>
+        )
     },
     {
         id: "permissions",

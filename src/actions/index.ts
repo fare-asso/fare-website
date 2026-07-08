@@ -95,7 +95,6 @@ import { editPartenaireAction } from "./partenaires/editPartenaireAction"
 import { listPartenairesAction } from "./partenaires/listPartenairesAction"
 import { bulkDeleteUsers } from "./users/bulkDeleteUsers"
 import { bulkRestoreUsers } from "./users/bulkRestoreUsers"
-import { bulkUpdateRole } from "./users/bulkUpdateRole"
 import { deleteUser } from "./users/deleteUser"
 import { listUsersAction } from "./users/listUsersAction"
 import { restoreUser } from "./users/restoreUser"
@@ -209,7 +208,6 @@ export const server = {
         listUsersAction: jsonAction(listUsersAction),
         updateUserInfo: jsonAction(updateUserInfo),
         updateUserPermissions: jsonAction(updateUserPermissions),
-        bulkUpdateRole: jsonAction(bulkUpdateRole),
         deleteUser: jsonAction(deleteUser),
         bulkDeleteUsers: jsonAction(bulkDeleteUsers),
         restoreUser: jsonAction(restoreUser),

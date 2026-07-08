@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 import { ArchiveIcon, ArchiveRestoreIcon, Trash2Icon } from "lucide-react"
 import { useState } from "react"
@@ -35,7 +34,6 @@ export default function TicketActions({
 }: TicketActionsProps) {
     const [isArchiveLoading, setIsArchiveLoading] = useState(false)
     const [isDeleteLoading, setIsDeleteLoading] = useState(false)
-    const queryClient = useQueryClient()
 
     const onArchive = async () => {
         setIsArchiveLoading(true)
@@ -49,9 +47,7 @@ export default function TicketActions({
             )
         } else {
             toast.success("Le ticket a été archivé.")
-            await queryClient.invalidateQueries({
-                queryKey: ["bagadTickets"]
-            })
+            window.location.reload()
         }
         setIsArchiveLoading(false)
     }
@@ -68,9 +64,7 @@ export default function TicketActions({
             )
         } else {
             toast.success("Le ticket a été désarchivé.")
-            await queryClient.invalidateQueries({
-                queryKey: ["bagadTickets"]
-            })
+            window.location.reload()
         }
         setIsArchiveLoading(false)
     }

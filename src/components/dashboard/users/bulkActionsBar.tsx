@@ -1,12 +1,11 @@
 import type { Table } from "@tanstack/react-table"
-import { RotateCcw, Trash2, UserCog, X } from "lucide-react"
+import { RotateCcw, Trash2, X } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 
 import { BulkDeleteDialog } from "./bulkDeleteDialog"
 import { BulkRestoreDialog } from "./bulkRestoreDialog"
-import { BulkRoleDialog } from "./bulkRoleDialog"
 
 type UserRow = {
     id: string
@@ -31,7 +30,6 @@ export function BulkActionsBar<TData extends UserRow>({
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [restoreDialogOpen, setRestoreDialogOpen] = useState(false)
-    const [roleDialogOpen, setRoleDialogOpen] = useState(false)
 
     if (selectedCount === 0) return null
 
@@ -70,19 +68,6 @@ export function BulkActionsBar<TData extends UserRow>({
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/* Role change - only for active users */}
-                    {canEdit && hasActiveUsers && (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setRoleDialogOpen(true)}
-                            className="gap-2"
-                        >
-                            <UserCog className="h-4 w-4" />
-                            Modifier le role
-                        </Button>
-                    )}
-
                     {/* Restore - only for deleted users */}
                     {canEdit && showDeleted && hasDeletedUsers && (
                         <Button
@@ -128,16 +113,6 @@ export function BulkActionsBar<TData extends UserRow>({
                 })}
                 open={restoreDialogOpen}
                 onOpenChange={setRestoreDialogOpen}
-                onSuccess={handleSuccess}
-            />
-
-            <BulkRoleDialog
-                userIds={selectedUserIds.filter((id) => {
-                    const row = selectedRows.find((r) => r.original.id === id)
-                    return row && row.original.deletedAt === null
-                })}
-                open={roleDialogOpen}
-                onOpenChange={setRoleDialogOpen}
                 onSuccess={handleSuccess}
             />
         </>

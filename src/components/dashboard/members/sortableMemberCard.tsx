@@ -3,7 +3,6 @@
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import clsx from "clsx"
-import Image from "next/image"
 import type { MouseEvent } from "react"
 import { MdDelete, MdDragIndicator } from "react-icons/md"
 
@@ -101,11 +100,11 @@ export default function SortableMemberCard({
             <div className="flex flex-1 flex-col p-3">
                 {/* Profile picture */}
                 <div className="relative mb-3">
-                    <Image
+                    <img
                         src={pictureUrl}
                         width={500}
                         height={500}
-                        alt={`Photo de ${member.firstName} ${member.lastName}`}
+                        alt={`${member.firstName} ${member.lastName}`}
                         className="aspect-square w-full rounded-lg object-cover shadow-sm"
                     />
                 </div>

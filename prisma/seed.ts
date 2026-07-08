@@ -167,12 +167,6 @@ async function main() {
             description: "Supprimer des associations"
         },
         {
-            name: "invite:representative",
-            title: "Inviter Représentant",
-            category: "Associations",
-            description: "Inviter des représentants d'associations"
-        },
-        {
             name: "approve:association",
             title: "Approuver Association",
             category: "Associations",
@@ -337,20 +331,6 @@ async function main() {
             title: "Gérer Permissions",
             category: "Utilisateurs",
             description: "Gérer les permissions utilisateur"
-        },
-
-        // Espace Asso
-        {
-            name: "access:espace-asso",
-            title: "Accès Espace Asso",
-            category: "Espace Asso",
-            description: "Accéder au portail des associations"
-        },
-        {
-            name: "create:representative-password",
-            title: "Créer Mot de Passe",
-            category: "Espace Asso",
-            description: "Créer un mot de passe pour les représentants"
         },
 
         // Liens

@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url"
 import arkenv from "@arkenv/vite-plugin"
 import node from "@astrojs/node"
 import react from "@astrojs/react"
+import sentry from "@sentry/astro"
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig, fontProviders } from "astro/config"
 
@@ -12,7 +13,13 @@ export default defineConfig({
     output: "server",
     adapter: node({ mode: "standalone" }),
     integrations: [
-        react({ babel: { plugins: ["babel-plugin-react-compiler"] } })
+        react({ babel: { plugins: ["babel-plugin-react-compiler"] } }),
+        sentry({
+            sourceMapsUploadOptions: {
+                project: "fare-website",
+                authToken: process.env.SENTRY_AUTH_TOKEN
+            }
+        })
     ],
     image: {
         remotePatterns: [

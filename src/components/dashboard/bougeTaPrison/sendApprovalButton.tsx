@@ -1,6 +1,7 @@
 import { actions } from "astro:actions"
 import { SendIcon } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Button } from "@/components/ui/button"
@@ -15,7 +16,13 @@ export default function SendApprovalButton({
 
     const handleSendApproval = async () => {
         setIsLoading(true)
-        await actions.bougeTaPrison.sendApprovalEmail(application)
+        const { data, error } =
+            await actions.bougeTaPrison.sendApprovalEmail(application)
+        if (error || data.error) {
+            toast.error("Une erreur est survenue. Veuillez réessayer.")
+            setIsLoading(false)
+            return
+        }
         window.location.href = "/dashboard/bouge-ta-prison?tab=approved"
     }
 
