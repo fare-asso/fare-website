@@ -6,7 +6,11 @@ import react from "@astrojs/react"
 // oxlint-disable-next-line import/default
 import sentry from "@sentry/astro"
 import tailwindcss from "@tailwindcss/vite"
-import { defineConfig, fontProviders } from "astro/config"
+import {
+    defineConfig,
+    fontProviders,
+    passthroughImageService
+} from "astro/config"
 
 import { EnvSchema } from "./src/env-schema"
 
@@ -23,6 +27,7 @@ export default defineConfig({
         })
     ],
     image: {
+        service: passthroughImageService(),
         remotePatterns: [
             {
                 protocol: "https",
