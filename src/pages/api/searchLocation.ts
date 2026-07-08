@@ -1,9 +1,12 @@
 import { type } from "arktype"
+import type { APIRoute } from "astro"
 
+import type {
+    LocationSuggestion,
+    SearchLocationResponse
+} from "@/helpers/searchLocation"
 import { createError, useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
-
-import type { LocationSuggestion, SearchLocationResponse } from "./types"
 
 // Géoplateforme geocoding API : https://data.geopf.fr/geocodage/openapi
 const GEOCODING_URL = "https://data.geopf.fr/geocodage/search"
@@ -21,10 +24,7 @@ const GeocodeResponseSchema = type({
     }).array()
 })
 
-/**
- * An API request which gives autocompletion for an address query.
- */
-export const GET = withEvlog(async (request: Request) => {
+const handler = withEvlog(async (request: Request) => {
     const log = useLogger()
     const { searchParams } = new URL(request.url)
     const query = searchParams.get("query")?.trim()
@@ -115,3 +115,5 @@ export const GET = withEvlog(async (request: Request) => {
         }
     })
 })
+
+export const GET: APIRoute = (context) => handler(context.request)

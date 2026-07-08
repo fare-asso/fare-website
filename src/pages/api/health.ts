@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server"
+import type { APIRoute } from "astro"
 
 import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import { createAdminClient } from "@/helpers/supabase/astro"
 import { useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
@@ -16,7 +16,7 @@ type HealthStatus = {
     errors?: string[]
 }
 
-export const GET = withEvlog(async () => {
+const handler = withEvlog(async () => {
     const log = useLogger()
     const errors: string[] = []
     let dbHealthy = false
@@ -35,12 +35,7 @@ export const GET = withEvlog(async () => {
     }
 
     // Check Supabase connection
-    const supabaseResult = await tryCatch(
-        (async () => {
-            const supabase = await createClient()
-            return supabase.auth.getSession()
-        })()
-    )
+    const supabaseResult = await tryCatch(createAdminClient().auth.getSession())
     if (supabaseResult.success) {
         supabaseHealthy = true
     } else {
@@ -70,7 +65,9 @@ export const GET = withEvlog(async () => {
 
     log.set({ db: dbHealthy, supabase: supabaseHealthy, healthy: allHealthy })
 
-    return NextResponse.json(response, {
+    return Response.json(response, {
         status: allHealthy ? 200 : 503
     })
 })
+
+export const GET: APIRoute = () => handler()

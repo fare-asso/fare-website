@@ -1,3 +1,5 @@
+import type { APIRoute } from "astro"
+
 import prisma from "@/helpers/db"
 import { useLogger, withEvlog } from "@/lib/evlog"
 
@@ -6,7 +8,7 @@ interface Category {
     name: string
 }
 
-export const GET = withEvlog(async () => {
+const handler = withEvlog(async () => {
     const log = useLogger()
 
     const categories: Category[] = await prisma.category.findMany({
@@ -20,3 +22,5 @@ export const GET = withEvlog(async () => {
 
     return Response.json({ categories })
 })
+
+export const GET: APIRoute = () => handler()

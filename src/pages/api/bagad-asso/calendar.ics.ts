@@ -1,10 +1,12 @@
+import type { APIRoute } from "astro"
+
 import { buildBagadAssoCalendar } from "@/helpers/bagadAssoCalendar"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createError, useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
-export const GET = withEvlog(async (request: Request) => {
+const handler = withEvlog(async (request: Request) => {
     const log = useLogger()
     const token = new URL(request.url).searchParams.get("token")?.trim()
 
@@ -77,3 +79,5 @@ export const GET = withEvlog(async (request: Request) => {
         }
     })
 })
+
+export const GET: APIRoute = (context) => handler(context.request)

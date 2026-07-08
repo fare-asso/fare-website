@@ -1,10 +1,11 @@
+import type { APIRoute } from "astro"
+
 import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import { useLogger, withEvlog } from "@/lib/evlog"
 
-export const GET = withEvlog(async (request: Request) => {
+const handler = withEvlog(async (request: Request) => {
     const log = useLogger()
-    const supabase = await createClient()
 
     const { searchParams } = new URL(request.url)
     const id = searchParams.get("id")
@@ -32,14 +33,16 @@ export const GET = withEvlog(async (request: Request) => {
         })
     }
 
-    const { data } = supabase.storage
+    const imageUrl = new StorageUtils()
         .from("EventPictures")
         .getPublicUrl(imagePath)
 
     log.set({ found: true, hasImage: true })
 
     return Response.json({
-        imageUrl: data.publicUrl,
-        imagePath: imagePath
+        imageUrl,
+        imagePath
     })
 })
+
+export const GET: APIRoute = (context) => handler(context.request)
