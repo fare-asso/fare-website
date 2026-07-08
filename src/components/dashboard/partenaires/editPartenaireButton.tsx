@@ -5,10 +5,6 @@ import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
 import editPartenaireAction from "@/actions/partenaires/editPartenaireAction"
-import {
-    EditPartenaireSchema,
-    type TEditPartenaire
-} from "@/schemas/partenaires"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -26,6 +22,10 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { Partenaire } from "@/generated/prisma/client"
+import {
+    EditPartenaireSchema,
+    type TEditPartenaire
+} from "@/schemas/partenaires"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 

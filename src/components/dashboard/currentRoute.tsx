@@ -1,6 +1,3 @@
-"use client"
-
-import { usePathname } from "next/navigation"
 import React from "react"
 
 import {
@@ -12,9 +9,7 @@ import {
     BreadcrumbSeparator
 } from "../ui/breadcrumb"
 
-export default function CurrentRoute() {
-    const path = usePathname()
-
+export default function CurrentRoute({ path }: { path: string }) {
     const pathArray = path.split("/").filter((p) => p !== "")
 
     return (

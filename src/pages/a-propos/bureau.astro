@@ -1,0 +1,16 @@
+---
+import MemberList from "@/components/public/bureau/memberList"
+import prisma from "@/helpers/db"
+import Public from "@/layouts/Public.astro"
+
+const bureau = await prisma.member.findMany({
+    orderBy: [{ order: "asc" }, { id: "asc" }]
+})
+---
+
+<Public title="Le Bureau" description="Page des membres du bureau de la FARE">
+    <div class="flex w-full flex-col items-center justify-start">
+        <h1 class="py-[10vw] text-[3rem] font-semibold">Le Bureau</h1>
+        <MemberList members={bureau} />
+    </div>
+</Public>

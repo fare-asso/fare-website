@@ -1,34 +1,29 @@
-import Image from "next/image"
-
 import NumberInput from "@/components/ui/input/numberInput"
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
-import { createClient } from "@/helpers/supabase/client"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 type EquipmentCardProps = {
     equipment: BagadAssoEquipment
     onQuantityChange: (id: number, quantity: number) => void
 }
 
+const storage = new StorageUtils()
+
 export default function EquipmentCard({
     equipment,
     onQuantityChange
 }: EquipmentCardProps) {
-    const supabase = createClient()
-
     return (
         <div className="border-grey-300 flex h-full flex-col rounded-lg border p-4">
             <div className="mb-4 w-full">
                 {equipment.imagePath ? (
-                    <Image
+                    <img
                         width={300}
                         height={300}
-                        src={
-                            supabase.storage
-                                .from("equipment-pictures")
-                                .getPublicUrl(equipment.imagePath).data
-                                .publicUrl
-                        }
-                        alt={`${equipment.name} picture`}
+                        src={storage
+                            .from("equipment-pictures")
+                            .getPublicUrl(equipment.imagePath)}
+                        alt={equipment.name}
                         className="aspect-square"
                     />
                 ) : (

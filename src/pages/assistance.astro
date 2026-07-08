@@ -1,0 +1,39 @@
+---
+import { AssistanceForm } from "@/components/public/assistance/assistanceForm"
+import { getAssistanceConfig } from "@/helpers/assistanceConfig"
+import Public from "@/layouts/Public.astro"
+import { tryCatch } from "@/lib/utils"
+
+const config = await tryCatch(getAssistanceConfig())
+const delay = config.success ? config.value.delay : "48h"
+---
+
+<Public
+    title="Défense des droits étudiants"
+    description="Besoin d'aide pour défendre vos droits étudiants ? Prenez contact avec vos éluEs étudiantEs !"
+>
+    <div class="flex w-full flex-col items-center justify-start">
+        <h1 class="py-12 text-center text-[3rem] font-semibold sm:py-20">
+            Défense des droits étudiants
+        </h1>
+        <div class="mb-8 w-full max-w-3xl text-left">
+            <p class="mb-4">
+                La FARE ouvre un guichet de défense des droits étudiants en
+                Haute-Bretagne. Que votre difficulté concerne votre université
+                ou se situe en dehors, des éluEs étudiantEs sont là pour vous
+                écouter, vous informer et vous accompagner.
+            </p>
+            <p class="mb-4">
+                Décrivez votre situation aussi clairement que possible : cela
+                nous aide à vous orienter rapidement. Toutes les informations
+                transmises restent <strong>confidentielles</strong> et ne servent
+                qu'au traitement de votre demande.
+            </p>
+            <p>
+                Délai de réponse moyen : <strong>environ {delay}</strong>.
+            </p>
+        </div>
+
+        <AssistanceForm client:load />
+    </div>
+</Public>

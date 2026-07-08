@@ -1,24 +1,8 @@
-import prisma from "@/helpers/db"
+import type { Article } from "@/generated/prisma/client"
 
 import ArticleCard from "./articleCard"
 
-export default async function MoreArticles({
-    currentArticleId
-}: {
-    currentArticleId: number
-}) {
-    const articles = await prisma.article.findMany({
-        where: {
-            NOT: {
-                id: currentArticleId
-            }
-        },
-        orderBy: {
-            writtenOn: "desc"
-        },
-        take: 2
-    })
-
+export default function MoreArticles({ articles }: { articles: Article[] }) {
     if (articles.length === 0) {
         return null
     }

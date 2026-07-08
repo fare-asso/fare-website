@@ -4,10 +4,6 @@ import { useForm } from "@tanstack/react-form"
 import { useState, useTransition } from "react"
 
 import addPartenaireAction from "@/actions/partenaires/addPartenaireAction"
-import {
-    AddPartenaireSchema,
-    type TAddPartenaire
-} from "@/schemas/partenaires"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -19,6 +15,7 @@ import {
 } from "@/components/ui/field"
 import { FilePondInput } from "@/components/ui/filepond"
 import { TextField } from "@/components/ui/text-field"
+import { AddPartenaireSchema, type TAddPartenaire } from "@/schemas/partenaires"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 

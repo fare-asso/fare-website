@@ -1,0 +1,45 @@
+---
+import AssociationList from "@/components/public/associations/associationList"
+import AssociationMap from "@/components/public/associations/map/associationsMap"
+import prisma from "@/helpers/db"
+import Public from "@/layouts/Public.astro"
+
+const assos = await prisma.association.findMany({
+    where: {
+        approved: { not: null }
+    },
+    orderBy: {
+        name: "asc"
+    }
+})
+---
+
+<Public title="Réseau" description="Page des associations du réseau FARE">
+    <div class="flex w-full flex-col items-center justify-start pb-20">
+        <h1 class="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
+            Le Réseau Associatif
+        </h1>
+        <AssociationMap client:only="react" associations={assos} />
+        <AssociationList associations={assos} />
+
+        {/* Nous rejoindre card */}
+        <div class="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-1/2">
+            <h2 class="mb-2 text-lg font-semibold">
+                Votre association souhaite intégrer notre réseau ?{" "}
+            </h2>
+            <p class="text-justify">
+                La FARE accueille de nouveaux membres partageant nos objectifs
+                pour la vie étudiante. En nous rejoignant, vous aurez accès à
+                notre réseau, nos ressources et notre soutien.
+                <br />
+                Pour plus d'informations sur l'adhésion, cliquez ci-dessous.
+            </p>
+            <a
+                href="/a-propos/adhesion"
+                class="mt-4 ml-auto w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
+            >
+                Nous rejoindre
+            </a>
+        </div>
+    </div>
+</Public>

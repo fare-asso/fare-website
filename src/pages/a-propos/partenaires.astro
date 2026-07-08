@@ -1,0 +1,80 @@
+---
+import prisma from "@/helpers/db"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
+import Public from "@/layouts/Public.astro"
+import { tryCatch } from "@/lib/utils"
+
+const storage = new StorageUtils()
+const partenaires = await tryCatch(
+    prisma.partenaire.findMany({
+        orderBy: { name: "asc" }
+    })
+)
+
+const partners = partenaires.success
+    ? partenaires.value.map((p) => ({
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          logoUrl: storage.from("partner-pictures").getPublicUrl(p.logoPath)
+      }))
+    : undefined
+---
+
+<Public title="Nos partenaires" description="Les partenaires de la FARE">
+    {
+        !partners ? (
+            <div class="flex w-full flex-col items-center justify-center py-32">
+                <p class="text-destructive text-lg font-medium">
+                    Echec du chargement des partenaires
+                </p>
+            </div>
+        ) : (
+            <div class="flex w-full flex-col items-center justify-start pb-20">
+                <h1 class="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
+                    Nos Partenaires
+                </h1>
+                {partners.length === 0 ? (
+                    <p class="px-4 text-center text-lg">
+                        Aucun partenaire pour le moment.
+                    </p>
+                ) : (
+                    <div class="flex w-full max-w-5xl flex-col px-4">
+                        {partners.map((partner, index) => (
+                            <div>
+                                {index !== 0 && (
+                                    <div class="my-16 h-px w-full bg-linear-to-r from-transparent via-gray-300 to-transparent" />
+                                )}
+                                <div
+                                    class={`flex flex-col items-center gap-8 md:flex-row ${
+                                        index % 2 === 0
+                                            ? ""
+                                            : "md:flex-row-reverse"
+                                    }`}
+                                >
+                                    <div class="w-full shrink-0 md:w-1/2">
+                                        <img
+                                            src={partner.logoUrl}
+                                            alt={`Logo de ${partner.name}`}
+                                            width={500}
+                                            height={500}
+                                            class="h-auto max-h-64 w-full object-contain"
+                                        />
+                                    </div>
+                                    <div class="w-full md:w-1/2">
+                                        <h2 class="mb-4 text-3xl">
+                                            {partner.name}
+                                        </h2>
+                                        <p class="text-justify">
+                                            {partner.description}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        )
+    }
+</Public>

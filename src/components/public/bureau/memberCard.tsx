@@ -16,7 +16,7 @@ export default function MemberCard({ member }: { member: Member }) {
                 src={pictureUrl}
                 width={400}
                 height={400}
-                alt={`Photo de ${member.firstName} ${member.lastName}`}
+                alt={`${member.firstName} ${member.lastName}`}
                 className="aspect-square rounded-full object-cover"
             />
             <div className="flex w-full flex-col items-center">

@@ -3,10 +3,6 @@ import { randomUUID } from "node:crypto"
 import { type } from "arktype"
 import type { ActionAPIContext } from "astro:actions"
 
-import {
-    AddPartenaireSchema,
-    type TAddPartenaire
-} from "@/schemas/partenaires"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import {
@@ -16,6 +12,7 @@ import {
 import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
+import { AddPartenaireSchema, type TAddPartenaire } from "@/schemas/partenaires"
 
 async function addPartenaireActionImpl(
     input: TAddPartenaire,

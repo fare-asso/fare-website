@@ -1,0 +1,28 @@
+---
+import Liens from "@/components/views/liens"
+import prisma from "@/helpers/db"
+import Public from "@/layouts/Public.astro"
+import { captureActionError } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
+
+const result = await tryCatch(
+    prisma.linkCategory.findMany({
+        include: {
+            liens: {
+                orderBy: { order: "asc" }
+            }
+        },
+        orderBy: { order: "asc" }
+    })
+)
+if (!result.success) {
+    captureActionError(result.error)
+}
+const categories = result.success
+    ? result.value.filter((category) => category.liens.length > 0)
+    : []
+---
+
+<Public title="Liens" description=" Les liens utiles de la FARE">
+    <Liens categories={categories} />
+</Public>

@@ -3,16 +3,16 @@ import { randomUUID } from "node:crypto"
 import { type } from "arktype"
 import type { ActionAPIContext } from "astro:actions"
 
-import {
-    EditPartenaireSchema,
-    type TEditPartenaire
-} from "@/schemas/partenaires"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
 import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
+import {
+    EditPartenaireSchema,
+    type TEditPartenaire
+} from "@/schemas/partenaires"
 
 type Result = { success: true } | { success: false; error: string }
 

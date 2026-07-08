@@ -1,8 +1,6 @@
 import { ExternalLinkIcon, MailIcon } from "lucide-react"
 import { FaFacebook, FaInstagram } from "react-icons/fa6"
 
-
-
 const socialLinks = [
     {
         name: "Email",

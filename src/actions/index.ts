@@ -74,6 +74,7 @@ import { updateLinkOrderAction } from "./links/updateLinkOrderAction"
 import { addMemberAction } from "./members/addMemberAction"
 import { deleteMemberAction } from "./members/deleteMemberAction"
 import { editMemberAction } from "./members/editMemberAction"
+import { listMembersAction } from "./members/listMembersAction"
 import { updateMemberOrderAction } from "./members/updateMemberOrderAction"
 import { addPartenaireAction } from "./partenaires/addPartenaireAction"
 import { deletePartenaireAction } from "./partenaires/deletePartenaireAction"
@@ -138,6 +139,7 @@ export const server = {
         declineAssociationAction: jsonAction(declineAssociationAction)
     },
     members: {
+        listMembersAction: jsonAction(listMembersAction),
         addMemberAction: filePayloadAction(addMemberAction),
         editMemberAction: filePayloadAction(editMemberAction),
         deleteMemberAction: jsonAction(deleteMemberAction),

@@ -1,0 +1,56 @@
+---
+import { Image } from "astro:assets"
+
+import logoAgoraE from "@/assets/AGORAe/logo_AgoraE.png"
+import logoBTP from "@/assets/BTP/Logo_BTP.png"
+import logoBA from "@/assets/Logo_Bagadasso.png"
+import Public from "@/layouts/Public.astro"
+---
+
+<Public title="Projets">
+    <div
+        class="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16"
+    >
+        <h1 class="py-12 text-center text-4xl font-bold sm:py-24">Projets</h1>
+
+        <div
+            class="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-y-0 md:space-x-20"
+        >
+            <a
+                href="/projets/agorae"
+                class="flex flex-col items-center transition-all hover:scale-105"
+            >
+                <Image
+                    src={logoAgoraE}
+                    alt="Logo de l'AGORAé"
+                    class="aspect-square h-auto w-52 object-contain"
+                />
+                <h2 class="text-center">Projet AGORAé</h2>
+            </a>
+
+            <a
+                href="/projets/bouge-ta-prison"
+                class="flex flex-col items-center transition-all hover:scale-105"
+            >
+                <Image
+                    src={logoBTP}
+                    alt="Logo du projet Bouge Ta Prison"
+                    class="aspect-square h-auto w-52 object-contain"
+                />
+                <h2 class="text-center">Projet Bouge Ta Prison</h2>
+            </a>
+
+            <a
+                href="/projets/bagad-asso"
+                class="flex flex-col items-center p-4 transition-all hover:scale-105"
+            >
+                <Image
+                    src={logoBA}
+                    alt="Logo du projet Bagad'Asso"
+                    class="aspect-square h-auto w-52 object-contain"
+                />
+                <h2 class="text-center">Projet Bagad'Asso</h2>
+            </a>
+        </div>
+    </div>
+</Public>

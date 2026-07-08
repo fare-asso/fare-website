@@ -1,0 +1,42 @@
+---
+import NosElues from "@/components/views/nosElues"
+import prisma from "@/helpers/db"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
+import Public from "@/layouts/Public.astro"
+import { captureActionError } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
+
+const storage = new StorageUtils()
+
+const result = await tryCatch(
+    prisma.instance.findMany({
+        include: {
+            conseils: {
+                orderBy: { order: "asc" },
+                include: {
+                    elus: {
+                        where: { deletedAt: null },
+                        orderBy: { order: "asc" }
+                    }
+                }
+            }
+        },
+        orderBy: { order: "asc" }
+    })
+)
+
+if (!result.success) {
+    captureActionError(result.error)
+}
+
+const instances = (result.success ? result.value : []).map((instance) => ({
+    ...instance,
+    logoUrls: instance.logoPaths.map((path) =>
+        storage.from("instance-pictures").getPublicUrl(path)
+    )
+}))
+---
+
+<Public title="Élus">
+    <NosElues instances={instances} />
+</Public>

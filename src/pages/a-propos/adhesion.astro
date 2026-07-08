@@ -1,0 +1,11 @@
+---
+import { AdhesionForm } from "@/components/public/adhesion/adhesionForm"
+import AdhesionInfo from "@/components/views/adhesion"
+import Public from "@/layouts/Public.astro"
+---
+
+<Public title="Formulaire d'adhésion">
+    <AdhesionInfo>
+        <AdhesionForm client:load />
+    </AdhesionInfo>
+</Public>

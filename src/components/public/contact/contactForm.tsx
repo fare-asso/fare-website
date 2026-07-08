@@ -50,9 +50,7 @@ function CaptchaValidation({
 }
 
 export default function ContactForm() {
-    const [formState, setFormState] = useState<FormState | undefined>(
-        undefined
-    )
+    const [formState, setFormState] = useState<FormState | undefined>(undefined)
     const [pending, setPending] = useState(false)
 
     const form = useForm({

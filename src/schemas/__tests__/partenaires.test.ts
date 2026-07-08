@@ -7,10 +7,7 @@ import {
     validEditPartenaire
 } from "@/test/factories/partenaires"
 
-import {
-    AddPartenaireSchema,
-    EditPartenaireSchema
-} from "../partenaires"
+import { AddPartenaireSchema, EditPartenaireSchema } from "../partenaires"
 
 const isErrors = (out: unknown): boolean => out instanceof type.errors
 

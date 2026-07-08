@@ -1,0 +1,11 @@
+---
+import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
+import Agorae from "@/components/views/agorae"
+import Public from "@/layouts/Public.astro"
+---
+
+<Public title="AGORAé">
+    <Agorae>
+        <CalculateurBeneficiaire client:visible />
+    </Agorae>
+</Public>
