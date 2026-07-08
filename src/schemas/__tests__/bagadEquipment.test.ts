@@ -25,7 +25,7 @@ describe("AddEquipmentSchema", () => {
         expect(out instanceof type.errors).toBe(false)
     })
 
-    it("rejects an SVG image (cannot be rendered by next/image)", () => {
+    it("rejects an SVG image", () => {
         const out = AddEquipmentSchema({
             ...base,
             image: imageFile("a.svg", "image/svg+xml")
