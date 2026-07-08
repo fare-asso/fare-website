@@ -2,20 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { imageFile, validAddInstance } from "@/test/factories/instances"
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    cacheModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     createInstance: vi.fn(),
     upload: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -25,14 +18,15 @@ const from = vi.hoisted(() =>
 vi.mock("@/helpers/db", () =>
     dbModule({ instance: { create: h.createInstance } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import addInstanceAction from "../addInstanceAction"
+import { addInstanceAction } from "../addInstanceAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:instance"]))
@@ -82,9 +76,6 @@ describe("addInstanceAction", () => {
                 logoPaths: []
             }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/dashboard/elus/instances"
-        )
     })
 
     it("uploads logos and stores their paths", async () => {

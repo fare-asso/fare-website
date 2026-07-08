@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validBagadAssoForm } from "@/test/factories/bagadAsso"
 import {
-    cacheModule,
     captchaModule,
     dbModule,
     emailModule,
@@ -16,7 +15,6 @@ const h = vi.hoisted(() => ({
     create: vi.fn(),
     sendEmail: vi.fn(),
     verifyCaptcha: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -27,10 +25,9 @@ vi.mock("@/helpers/db", () =>
 )
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import submitBagadAssoFormAction from "../submitBagadAssoFormAction"
+import { submitBagadAssoFormAction } from "../submitBagadAssoFormAction"
 
 beforeEach(() => {
     stdenv.isDevelopment = false
@@ -42,7 +39,6 @@ beforeEach(() => {
 describe("submitBagadAssoFormAction", () => {
     it("rejects an invalid payload before any side effect", async () => {
         const res = await submitBagadAssoFormAction(
-            undefined,
             validBagadAssoForm({ associationEmail: "nope" })
         )
         expect(res.error).toBe("Un ou plusieurs champs sont invalides.")
@@ -53,7 +49,6 @@ describe("submitBagadAssoFormAction", () => {
     it("skips captcha verification in development", async () => {
         stdenv.isDevelopment = true
         const res = await submitBagadAssoFormAction(
-            undefined,
             validBagadAssoForm({ captchaToken: "" })
         )
         expect(h.verifyCaptcha).not.toHaveBeenCalled()
@@ -62,10 +57,7 @@ describe("submitBagadAssoFormAction", () => {
 
     it("fails when the captcha is invalid", async () => {
         h.verifyCaptcha.mockResolvedValue(false)
-        const res = await submitBagadAssoFormAction(
-            undefined,
-            validBagadAssoForm()
-        )
+        const res = await submitBagadAssoFormAction(validBagadAssoForm())
         expect(res).toEqual({
             error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         })
@@ -74,10 +66,7 @@ describe("submitBagadAssoFormAction", () => {
 
     it("captures and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await submitBagadAssoFormAction(
-            undefined,
-            validBagadAssoForm()
-        )
+        const res = await submitBagadAssoFormAction(validBagadAssoForm())
         expect(res).toEqual({
             error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
         })
@@ -86,20 +75,14 @@ describe("submitBagadAssoFormAction", () => {
 
     it("still succeeds when the notification email fails (handled inside sendEmail)", async () => {
         h.sendEmail.mockResolvedValue({ success: false })
-        const res = await submitBagadAssoFormAction(
-            undefined,
-            validBagadAssoForm()
-        )
+        const res = await submitBagadAssoFormAction(validBagadAssoForm())
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledOnce()
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
-    it("persists, emails and revalidates on the happy path", async () => {
-        const res = await submitBagadAssoFormAction(
-            undefined,
-            validBagadAssoForm()
-        )
+    it("persists and emails on the happy path", async () => {
+        const res = await submitBagadAssoFormAction(validBagadAssoForm())
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({
@@ -111,6 +94,5 @@ describe("submitBagadAssoFormAction", () => {
             })
         })
         expect(h.sendEmail).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
     })
 })

@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     transaction: vi.fn(),
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -18,11 +17,12 @@ vi.mock("@/helpers/db", () => {
     Reflect.set(client, "$transaction", h.transaction)
     return dbModule(client)
 })
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import updateMemberOrderAction from "../updateMemberOrderAction"
+import { updateMemberOrderAction } from "../updateMemberOrderAction"
 
 const order = [
     { id: 1, order: 2 },
@@ -59,12 +59,10 @@ describe("updateMemberOrderAction", () => {
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("updates the order in a transaction and revalidates", async () => {
+    it("updates the order in a transaction", async () => {
         const res = await updateMemberOrderAction(order)
         expect(res).toEqual({ success: true })
         expect(h.transaction).toHaveBeenCalledOnce()
         expect(h.update).toHaveBeenCalledTimes(2)
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/membres")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/bureau")
     })
 })

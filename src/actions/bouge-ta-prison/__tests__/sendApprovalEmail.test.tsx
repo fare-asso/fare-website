@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validTutorApplicationRecord } from "@/test/factories/bougeTaPrison"
 import {
-    cacheModule,
     dbModule,
     emailModule,
     reactEmailRenderModule,
@@ -12,7 +11,6 @@ import {
 const h = vi.hoisted(() => ({
     update: vi.fn(),
     sendEmail: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -21,10 +19,9 @@ vi.mock("@/helpers/db", () =>
 )
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import sendApprovalEmail from "../sendApprovalEmail"
+import { sendApprovalEmail } from "../sendApprovalEmail"
 
 beforeEach(() => {
     h.sendEmail.mockResolvedValue({ success: true })
@@ -65,8 +62,5 @@ describe("sendApprovalEmail", () => {
             where: { id: 5 },
             data: { approved: true }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/dashboard/bouge-ta-prison"
-        )
     })
 })

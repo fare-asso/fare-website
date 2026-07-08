@@ -12,9 +12,9 @@ import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-export type CategoryWithLinks = LinkCategory & { liens: LinkItem[] }
+type CategoryWithLinks = LinkCategory & { liens: LinkItem[] }
 
-export type LinkFile = { url: string; name: string; type: PresseType }
+type LinkFile = { url: string; name: string; type: PresseType }
 
 export type LinksData = {
     categories: CategoryWithLinks[]

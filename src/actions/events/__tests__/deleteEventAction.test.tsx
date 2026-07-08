@@ -1,20 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    cacheModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     findUnique: vi.fn(),
     deleteFn: vi.fn(),
     getUser: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
@@ -22,14 +15,15 @@ const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
 vi.mock("@/helpers/db", () =>
     dbModule({ event: { findUnique: h.findUnique, delete: h.deleteFn } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import deleteEventAction from "../deleteEventAction"
+import { deleteEventAction } from "../deleteEventAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:event"]))
@@ -53,11 +47,10 @@ describe("deleteEventAction", () => {
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
-    it("deletes the event and revalidates on the happy path", async () => {
+    it("deletes the event on the happy path", async () => {
         const res = await deleteEventAction({ eventId: 4 })
         expect(res).toBeUndefined()
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/events")
     })
 
     it("captures when the delete throws", async () => {
@@ -65,6 +58,5 @@ describe("deleteEventAction", () => {
         const res = await deleteEventAction({ eventId: 4 })
         expect(res).toBeUndefined()
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 })

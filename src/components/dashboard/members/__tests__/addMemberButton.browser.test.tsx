@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
+
+import { decodeFormPayload } from "@/lib/formPayload"
+import { renderWithClient as render } from "@/test/browser"
 
 const h = vi.hoisted(() => ({
     action: vi.fn(),
@@ -8,7 +10,10 @@ const h = vi.hoisted(() => ({
     })
 }))
 
-vi.mock("@/actions/members/addMemberAction", () => ({ default: h.action }))
+vi.mock("astro:actions", () => ({
+    actions: { members: { addMemberAction: h.action } },
+    isInputError: () => false
+}))
 vi.mock("@/components/ui/filepond", () => ({
     FilePondInput: ({ onChange }: { onChange?: (file: File) => void }) => (
         <button type="button" onClick={() => onChange?.(h.pickedFile)}>
@@ -39,7 +44,7 @@ async function fillValid(screen: Awaited<ReturnType<typeof render>>) {
 }
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<AddMemberButton />", () => {
@@ -72,7 +77,9 @@ describe("<AddMemberButton />", () => {
         await screen.getByRole("button", { name: /^\s*Ajouter\s*$/ }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
+        const submitted = decodeFormPayload<Record<string, unknown>>(
+            h.action.mock.calls[0][0] as FormData
+        )
         expect(submitted).toMatchObject({
             firstName: "Lea",
             lastName: "Martin",
@@ -84,8 +91,11 @@ describe("<AddMemberButton />", () => {
 
     it("renders the server error when the action fails", async () => {
         h.action.mockResolvedValue({
-            success: false,
-            error: "Échec de l'upload de la photo."
+            data: {
+                success: false,
+                error: "Échec de l'upload de la photo."
+            },
+            error: undefined
         })
         const screen = await openDialog()
         await fillValid(screen)

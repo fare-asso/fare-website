@@ -3,20 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { validEquipmentInput } from "@/test/factories/bagadAsso"
 import { imageFile } from "@/test/factories/files"
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    cacheModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     create: vi.fn(),
     getUser: vi.fn(),
     upload: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -26,14 +19,15 @@ const from = vi.hoisted(() =>
 vi.mock("@/helpers/db", () =>
     dbModule({ bagadAssoEquipment: { create: h.create } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import addEquipmentAction from "../addEquipmentAction"
+import { addEquipmentAction } from "../addEquipmentAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:bagad-equipment"]))
@@ -118,8 +112,6 @@ describe("addEquipmentAction", () => {
         expect(h.create).toHaveBeenCalledWith({
             data: { name: "Barnum", deposit: 50, quantity: 2, imagePath: null }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/projets/bagad-asso")
     })
 
     it("uploads the image and stores its path on the happy path", async () => {

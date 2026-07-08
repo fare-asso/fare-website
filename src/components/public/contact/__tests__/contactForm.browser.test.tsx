@@ -3,8 +3,9 @@ import { render } from "vitest-browser-react"
 
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
-vi.mock("@/actions/contact/submitContactFormAction", () => ({
-    default: h.action
+vi.mock("astro:actions", () => ({
+    actions: { contact: { submitContactFormAction: h.action } },
+    isInputError: () => false
 }))
 vi.mock("@/components/captcha", () => ({
     Captcha: ({ onComplete }: { onComplete: (t: string) => void }) => (
@@ -17,7 +18,7 @@ vi.mock("@/components/captcha", () => ({
 import ContactForm from "../contactForm"
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<ContactForm />", () => {
@@ -50,7 +51,7 @@ describe("<ContactForm />", () => {
         await screen.getByRole("button", { name: "Envoyer" }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][1]
+        const submitted = h.action.mock.calls[0][0]
         expect(submitted).toEqual({
             firstName: "Jean",
             lastName: "Dupont",
@@ -73,7 +74,10 @@ describe("<ContactForm />", () => {
     })
 
     it("renders the error alert when the action fails", async () => {
-        h.action.mockResolvedValue({ error: "Échec de l'envoi" })
+        h.action.mockResolvedValue({
+            data: { error: "Échec de l'envoi" },
+            error: undefined
+        })
         const screen = await render(<ContactForm />)
         await screen.getByLabelText("Prénom").fill("Jean")
         await screen.getByLabelText("Nom", { exact: true }).fill("Dupont")

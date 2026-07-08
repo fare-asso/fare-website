@@ -3,20 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { imageFile, pdfFile } from "@/test/factories/files"
 import { validAddMember } from "@/test/factories/members"
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    cacheModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     create: vi.fn(),
     getUser: vi.fn(),
     upload: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -24,14 +17,15 @@ const from = vi.hoisted(() =>
 )
 
 vi.mock("@/helpers/db", () => dbModule({ member: { create: h.create } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import addMemberAction from "../addMemberAction"
+import { addMemberAction } from "../addMemberAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:member"]))
@@ -107,10 +101,9 @@ describe("addMemberAction", () => {
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.remove).toHaveBeenCalledWith(["uuid-lea.png"])
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
-    it("creates the member and revalidates on the happy path", async () => {
+    it("creates the member on the happy path", async () => {
         const input = validAddMember({ picture: imageFile("lea.png") })
         const res = await addMemberAction(input)
         expect(res).toEqual({ success: true })
@@ -135,8 +128,6 @@ describe("addMemberAction", () => {
                 twitterUrl: null
             })
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/membres")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/bureau")
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 })

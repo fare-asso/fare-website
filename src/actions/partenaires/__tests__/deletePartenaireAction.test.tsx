@@ -19,7 +19,10 @@ vi.mock("@/helpers/db", () =>
     })
 )
 vi.mock("@/helpers/supabase/astro", () =>
-    supabaseAstroModule({ storage: { from }, getUserWithPermissions: h.getUser })
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 

@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
+
+import { decodeFormPayload } from "@/lib/formPayload"
+import { renderWithClient as render } from "@/test/browser"
 
 const h = vi.hoisted(() => ({
     action: vi.fn(),
@@ -8,7 +10,10 @@ const h = vi.hoisted(() => ({
     })
 }))
 
-vi.mock("@/actions/bagadAsso/addEquipmentAction", () => ({ default: h.action }))
+vi.mock("astro:actions", () => ({
+    actions: { bagadAsso: { addEquipmentAction: h.action } },
+    isInputError: () => false
+}))
 vi.mock("@/components/ui/filepond", () => ({
     FilePondInput: ({ onChange }: { onChange?: (file: File) => void }) => (
         <button type="button" onClick={() => onChange?.(h.pickedImage)}>
@@ -29,7 +34,7 @@ async function openDialog(): Promise<Awaited<ReturnType<typeof render>>> {
 }
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<AddEquipmentButton />", () => {
@@ -64,7 +69,9 @@ describe("<AddEquipmentButton />", () => {
         await screen.getByRole("button", { name: /^\s*Ajouter\s*$/ }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
+        const submitted = decodeFormPayload<Record<string, unknown>>(
+            h.action.mock.calls[0][0] as FormData
+        )
         expect(submitted).toMatchObject({
             name: "Barnum 3×6m",
             quantity: 1,
@@ -75,8 +82,11 @@ describe("<AddEquipmentButton />", () => {
 
     it("renders the server error when the action fails", async () => {
         h.action.mockResolvedValue({
-            success: false,
-            error: "Echec de l'ajout de l'équipement. Veuillez réessayer."
+            data: {
+                success: false,
+                error: "Echec de l'ajout de l'équipement. Veuillez réessayer."
+            },
+            error: undefined
         })
         const screen = await openDialog()
         await screen.getByLabelText("Nom").fill("Barnum")

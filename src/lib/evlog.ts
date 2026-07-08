@@ -15,7 +15,3 @@ export const { withEvlog, useLogger, createError } = createEvlog({
     service: "fare-website",
     drain
 })
-
-export async function flushEvlog(): Promise<void> {
-    await drain?.flush()
-}

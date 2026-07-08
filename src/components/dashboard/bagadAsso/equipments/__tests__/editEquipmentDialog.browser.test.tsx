@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
 
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
+import { decodeFormPayload } from "@/lib/formPayload"
+import { renderWithClient as render } from "@/test/browser"
 
 const h = vi.hoisted(() => ({
     action: vi.fn(),
@@ -10,8 +11,9 @@ const h = vi.hoisted(() => ({
     })
 }))
 
-vi.mock("@/actions/bagadAsso/editEquipmentAction", () => ({
-    default: h.action
+vi.mock("astro:actions", () => ({
+    actions: { bagadAsso: { editEquipmentAction: h.action } },
+    isInputError: () => false
 }))
 vi.mock("@/components/ui/filepond", () => ({
     FilePondInput: ({
@@ -64,7 +66,7 @@ async function openDialog(
 }
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<EditEquipmentDialog />", () => {
@@ -83,7 +85,11 @@ describe("<EditEquipmentDialog />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        expect(h.action.mock.calls[0][0]).toMatchObject({
+        expect(
+            decodeFormPayload<Record<string, unknown>>(
+                h.action.mock.calls[0][0] as FormData
+            )
+        ).toMatchObject({
             id: 7,
             name: "Barnum modifié",
             quantity: 3,
@@ -100,7 +106,11 @@ describe("<EditEquipmentDialog />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        expect(h.action.mock.calls[0][0]).toMatchObject({ removeImage: true })
+        expect(
+            decodeFormPayload<Record<string, unknown>>(
+                h.action.mock.calls[0][0] as FormData
+            )
+        ).toMatchObject({ removeImage: true })
     })
 
     it("passes the chosen file on the payload", async () => {
@@ -111,13 +121,20 @@ describe("<EditEquipmentDialog />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        expect(h.action.mock.calls[0][0].image).toBeInstanceOf(File)
+        expect(
+            decodeFormPayload<Record<string, unknown>>(
+                h.action.mock.calls[0][0] as FormData
+            ).image
+        ).toBeInstanceOf(File)
     })
 
     it("renders the server error when the action fails", async () => {
         h.action.mockResolvedValue({
-            success: false,
-            error: "Echec de la modification de l'équipement. Veuillez réessayer."
+            data: {
+                success: false,
+                error: "Echec de la modification de l'équipement. Veuillez réessayer."
+            },
+            error: undefined
         })
         const screen = await openDialog()
         await screen

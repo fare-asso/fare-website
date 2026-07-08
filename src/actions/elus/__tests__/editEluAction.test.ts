@@ -2,13 +2,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validEditElu } from "@/test/factories/elus"
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     findConseil: vi.fn(),
     updateElu: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -18,11 +17,12 @@ vi.mock("@/helpers/db", () =>
         elu: { update: h.updateElu }
     })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import editEluAction from "../editEluAction"
+import { editEluAction } from "../editEluAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:elu"]))
@@ -83,8 +83,5 @@ describe("editEluAction", () => {
                 conseilId: 1
             }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/representation/nos-elues"
-        )
     })
 })

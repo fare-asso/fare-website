@@ -3,14 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { validAdhesionForm } from "@/test/factories/adhesion"
 import { pdfFile } from "@/test/factories/files"
 import {
-    cacheModule,
     captchaModule,
     dbModule,
     emailModule,
     reactEmailRenderModule,
     sentryModule,
     stdEnvModule,
-    supabaseServerModule
+    supabaseAstroModule
 } from "@/test/mocks"
 
 const stdenv = vi.hoisted(() => ({ isDevelopment: false }))
@@ -20,7 +19,6 @@ const h = vi.hoisted(() => ({
     create: vi.fn(),
     sendEmail: vi.fn(),
     verifyCaptcha: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -28,17 +26,18 @@ const from = vi.hoisted(() =>
 )
 
 vi.mock("std-env", () => stdEnvModule(stdenv))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from }
+    })
 )
 vi.mock("@/helpers/db", () => dbModule({ adhesion: { create: h.create } }))
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
 vi.mock("@/helpers/captcha/verify", () => captchaModule(h.verifyCaptcha))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import { processAdhesion } from "../process-adhesion"
+import { processAdhesion } from "../processAdhesionAction"
 
 const uuid = "11111111-1111-1111-1111-111111111111"
 
@@ -166,6 +165,5 @@ describe("processAdhesion", () => {
         expect(subjects).toContain("Demande d'adhésion reçue")
         expect(recipients).toContain("secretariat@fare-asso.fr")
         expect(recipients).toContain("contact@asso.fr")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/adhesions")
     })
 })

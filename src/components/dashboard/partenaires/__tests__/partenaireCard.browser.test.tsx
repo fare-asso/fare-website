@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
 
 import type { Partenaire } from "@/generated/prisma/client"
+import { renderWithClient as render } from "@/test/browser"
 
 vi.mock("../editPartenaireButton", () => ({
     __esModule: true,

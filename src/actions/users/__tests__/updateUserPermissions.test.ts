@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     deleteMany: vi.fn(),
     createMany: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 type Tx = {
@@ -35,14 +34,15 @@ vi.mock("@/helpers/db", () => {
     Reflect.set(client, "$transaction", transaction)
     return dbModule(client)
 })
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import updateUserPermissions from "../updateUserPermissions"
+import { updateUserPermissions } from "../updateUserPermissions"
 
 beforeEach(() => {
-    h.getUser.mockResolvedValue(mockUser(["edit:user-permissions"], "ADMIN"))
+    h.getUser.mockResolvedValue(mockUser(["edit:user-permissions"]))
     h.deleteMany.mockResolvedValue({ count: 0 })
     h.createMany.mockResolvedValue({ count: 2 })
 })
@@ -50,38 +50,34 @@ beforeEach(() => {
 describe("updateUserPermissions", () => {
     it("throws when not authenticated", async () => {
         h.getUser.mockResolvedValue(null)
-        await expect(updateUserPermissions("u2", [1])).rejects.toThrow(
-            /Unauthorized/
-        )
-    })
-
-    it("throws when not an ADMIN", async () => {
-        h.getUser.mockResolvedValue(
-            mockUser(["edit:user-permissions"], "MEMBER")
-        )
-        await expect(updateUserPermissions("u2", [1])).rejects.toThrow(
-            /Admin only/
-        )
+        await expect(
+            updateUserPermissions({ userId: "u2", permissions: [1] })
+        ).rejects.toThrow(/Unauthorized/)
     })
 
     it("throws when lacking the edit:user-permissions permission", async () => {
-        h.getUser.mockResolvedValue(mockUser([], "ADMIN"))
-        await expect(updateUserPermissions("u2", [1])).rejects.toThrow(
-            /Insufficient permissions/
-        )
+        h.getUser.mockResolvedValue(mockUser([]))
+        await expect(
+            updateUserPermissions({ userId: "u2", permissions: [1] })
+        ).rejects.toThrow(/Insufficient permissions/)
     })
 
     it("captures and fails when the transaction throws", async () => {
         transaction.mockRejectedValueOnce(new Error("db down"))
-        expect(await updateUserPermissions("u2", [1])).toEqual({
+        expect(
+            await updateUserPermissions({ userId: "u2", permissions: [1] })
+        ).toEqual({
             success: false,
             error: "An error occurred while updating permissions."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("replaces the permissions and revalidates on the happy path", async () => {
-        const res = await updateUserPermissions("u2", [1, 2])
+    it("replaces the permissions on the happy path", async () => {
+        const res = await updateUserPermissions({
+            userId: "u2",
+            permissions: [1, 2]
+        })
         expect(res).toEqual({ success: true })
         expect(h.deleteMany).toHaveBeenCalledWith({
             where: { userId: "u2" }
@@ -93,6 +89,5 @@ describe("updateUserPermissions", () => {
             ],
             skipDuplicates: true
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/users/u2")
     })
 })

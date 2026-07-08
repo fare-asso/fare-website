@@ -1,24 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     findUnique: vi.fn(),
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () =>
     dbModule({ article: { findUnique: h.findUnique, update: h.update } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import switchVisibilityAction from "../switchVisibilityAction"
+import { switchVisibilityAction } from "../switchVisibilityAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["publish:article"]))
@@ -57,13 +57,12 @@ describe("switchVisibilityAction", () => {
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("toggles the visibility and revalidates on the happy path", async () => {
+    it("toggles the visibility on the happy path", async () => {
         const res = await switchVisibilityAction(9)
         expect(res).toEqual({})
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 9 },
             data: { published: true }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/articles")
     })
 })

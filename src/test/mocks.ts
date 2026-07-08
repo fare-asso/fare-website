@@ -31,10 +31,8 @@ function isNextControlFlow(error: unknown): boolean {
 }
 
 /**
- * `@/lib/sentry` mock: `withServerAction` becomes a transparent passthrough so
- * tests exercise the real action body; `captureActionError` is a spy that still
- * rethrows Next `redirect()` / `notFound()` control-flow errors like the real
- * implementation does via `unstable_rethrow`.
+ * `@/lib/sentry` mock: `captureActionError` is a spy that still rethrows
+ * control-flow errors like the real implementation does.
  */
 export function sentryModule(captureActionError?: Fn) {
     const spy =
@@ -42,41 +40,12 @@ export function sentryModule(captureActionError?: Fn) {
         vi.fn((error: unknown) => {
             if (isNextControlFlow(error)) throw error
         })
-    return {
-        withServerAction:
-            <A extends unknown[], R>(
-                _name: string,
-                handler: (...args: A) => Promise<R>
-            ) =>
-            (...args: A): Promise<R> =>
-                handler(...args),
-        captureActionError: spy
-    }
+    return { captureActionError: spy }
 }
 
 /** `@/helpers/db` mock — pass the Prisma delegate subtree the action touches. */
 export function dbModule(client: Record<string, unknown>) {
     return { default: client }
-}
-
-/**
- * `@/helpers/supabase/server` mock. `storage` is the object returned by
- * `supabase.storage`; `auth`/`from` cover the non-storage clients.
- */
-export function supabaseServerModule(client: {
-    storage?: unknown
-    auth?: unknown
-    from?: unknown
-}) {
-    return {
-        createClient: vi.fn(async () => client),
-        createAdminClient: vi.fn(() => client)
-    }
-}
-
-/** `@/helpers/supabase/auth` mock. */
-export function authModule(getCurrentUserWithPermissions: Fn) {
-    return { getCurrentUserWithPermissions }
 }
 
 /**

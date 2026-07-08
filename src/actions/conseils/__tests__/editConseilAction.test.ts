@@ -2,13 +2,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validEditConseil } from "@/test/factories/conseils"
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     findInstance: vi.fn(),
     updateConseil: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -18,11 +17,12 @@ vi.mock("@/helpers/db", () =>
         conseil: { update: h.updateConseil }
     })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import editConseilAction from "../editConseilAction"
+import { editConseilAction } from "../editConseilAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:instance"]))
@@ -71,15 +71,12 @@ describe("editConseilAction", () => {
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("updates the conseil and revalidates on the happy path", async () => {
+    it("updates the conseil on the happy path", async () => {
         const res = await editConseilAction(validEditConseil())
         expect(res).toEqual({ success: true })
         expect(h.updateConseil).toHaveBeenCalledWith({
             where: { id: 1 },
             data: { name: "Bureau", description: null, instanceId: 1 }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/representation/nos-elues"
-        )
     })
 })

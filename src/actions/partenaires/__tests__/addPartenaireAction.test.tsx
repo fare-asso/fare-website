@@ -3,20 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { imageFile } from "@/test/factories/files"
 import { validAddPartenaire } from "@/test/factories/partenaires"
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    cacheModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     create: vi.fn(),
     getUser: vi.fn(),
     upload: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -24,14 +17,15 @@ const from = vi.hoisted(() =>
 )
 
 vi.mock("@/helpers/db", () => dbModule({ partenaire: { create: h.create } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import addPartenaireAction from "../addPartenaireAction"
+import { addPartenaireAction } from "../addPartenaireAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:partner"]))
@@ -132,10 +126,9 @@ describe("addPartenaireAction", () => {
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.remove).toHaveBeenCalledWith(["uuid-logo.png"])
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
-    it("creates the partenaire and revalidates on the happy path", async () => {
+    it("creates the partenaire on the happy path", async () => {
         const input = validAddPartenaire({
             name: "ACME",
             description: "Description du partenaire.",
@@ -160,8 +153,6 @@ describe("addPartenaireAction", () => {
                 logoPath: "uuid-logo.png"
             }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/partenaires")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/a-propos/partenaires")
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 })

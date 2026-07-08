@@ -2,32 +2,26 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validMemberRecord } from "@/test/factories/members"
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    cacheModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     deleteFn: vi.fn(),
     getUser: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
 
 vi.mock("@/helpers/db", () => dbModule({ member: { delete: h.deleteFn } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import deleteMemberAction from "../deleteMemberAction"
+import { deleteMemberAction } from "../deleteMemberAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:member"]))
@@ -64,14 +58,12 @@ describe("deleteMemberAction", () => {
         expect(await deleteMemberAction({ id: 1 })).toEqual({
             error: "storage boom"
         })
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
-    it("deletes the member, removes the picture and revalidates", async () => {
+    it("deletes the member and removes the picture", async () => {
         const res = await deleteMemberAction({ id: 9 })
         expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 9 } })
         expect(h.remove).toHaveBeenCalledWith(["members/lea.png"])
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/membres")
     })
 })

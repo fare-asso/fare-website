@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
 
+import { renderWithClient as render } from "@/test/browser"
 import { validMemberRecord } from "@/test/factories/members"
 
 const h = vi.hoisted(() => ({
@@ -8,18 +8,20 @@ const h = vi.hoisted(() => ({
     orderAction: vi.fn()
 }))
 
-vi.mock("@/actions/members/deleteMemberAction", () => ({
-    default: h.deleteAction
-}))
-vi.mock("@/actions/members/updateMemberOrderAction", () => ({
-    default: h.orderAction
+vi.mock("astro:actions", () => ({
+    actions: {
+        members: {
+            deleteMemberAction: h.deleteAction,
+            updateMemberOrderAction: h.orderAction
+        }
+    },
+    isInputError: () => false
 }))
 // Stub the edit button to avoid pulling its server action (and prisma) into
-// the browser bundle, and the image to keep rendering deterministic.
+// the browser bundle, keeping rendering deterministic.
 vi.mock("@/components/dashboard/members/editMemberButton", () => ({
     default: () => null
 }))
-vi.mock("next/image", () => ({ default: () => null }))
 
 import SortableMemberList from "../sortableMemberList"
 
@@ -62,7 +64,10 @@ function names(screen: Awaited<ReturnType<typeof render>>): string[] {
 
 beforeEach(() => {
     h.deleteAction.mockReset()
-    h.deleteAction.mockResolvedValue({ success: true })
+    h.deleteAction.mockResolvedValue({
+        data: { success: true },
+        error: undefined
+    })
 })
 
 describe("<SortableMemberList />", () => {
@@ -84,13 +89,16 @@ describe("<SortableMemberList />", () => {
 
         await vi.waitFor(() => expect(names(screen)).toEqual(["Lou Durand"]))
         expect(h.deleteAction).toHaveBeenCalledWith({ id: 1 })
-        resolveAction({ success: true })
+        resolveAction({ data: { success: true }, error: undefined })
     })
 
     it("restores the member when the delete fails", async () => {
         h.deleteAction.mockResolvedValue({
-            success: false,
-            error: "Echec de la suppression du membre"
+            data: {
+                success: false,
+                error: "Echec de la suppression du membre"
+            },
+            error: undefined
         })
         const screen = await renderList()
 

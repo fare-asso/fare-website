@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validAdhesionRecord } from "@/test/factories/adhesion"
 import { mockUser } from "@/test/factories/user"
-import { authModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     findUnique: vi.fn(),
@@ -14,13 +14,15 @@ const h = vi.hoisted(() => ({
 vi.mock("@/helpers/db", () =>
     dbModule({ adhesion: { findUnique: h.findUnique } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/helpers/adhesion/generatePdf", () => ({
     generateAdhesionPdfFromRecord: h.genPdf
 }))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import downloadAdhesionPdfAction from "../downloadAdhesionPdfAction"
+import { downloadAdhesionPdfAction } from "../downloadAdhesionPdfAction"
 
 const bytes = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d])
 

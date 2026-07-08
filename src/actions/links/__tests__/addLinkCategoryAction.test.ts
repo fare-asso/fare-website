@@ -3,23 +3,23 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { validAddLinkCategory } from "@/test/factories/links"
 import { mockUser } from "@/test/factories/user"
 import { itIsGatedBy } from "@/test/gates"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     createCategory: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () =>
     dbModule({ linkCategory: { create: h.createCategory } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import addLinkCategoryAction from "../addLinkCategoryAction"
+import { addLinkCategoryAction } from "../addLinkCategoryAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:lien"]))
@@ -53,7 +53,6 @@ describe("addLinkCategoryAction", () => {
             error: "Échec de la création de la catégorie."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("creates the category and revalidates on the happy path", async () => {
@@ -64,7 +63,5 @@ describe("addLinkCategoryAction", () => {
         expect(h.createCategory).toHaveBeenCalledWith({
             data: { name: "Projets" }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/liens")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/liens")
     })
 })

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
 
 import type { BTPTutorApplication } from "@/generated/prisma/client"
+import { renderWithClient as render } from "@/test/browser"
 import { validTutorApplicationRecord } from "@/test/factories/bougeTaPrison"
 
 const h = vi.hoisted(() => ({

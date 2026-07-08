@@ -1,24 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     updateMany: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () => dbModule({ user: { updateMany: h.updateMany } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import bulkRestoreUsers from "../bulkRestoreUsers"
+import { bulkRestoreUsers } from "../bulkRestoreUsers"
 
 beforeEach(() => {
-    h.getUser.mockResolvedValue(mockUser(["delete:user"], "ADMIN"))
+    h.getUser.mockResolvedValue(mockUser(["delete:user"]))
     h.updateMany.mockResolvedValue({ count: 2 })
 })
 
@@ -31,16 +31,8 @@ describe("bulkRestoreUsers", () => {
         })
     })
 
-    it("requires the ADMIN role", async () => {
-        h.getUser.mockResolvedValue(mockUser(["delete:user"], "MEMBER"))
-        expect(await bulkRestoreUsers(["u2"])).toEqual({
-            success: false,
-            error: "Accès réservé aux administrateurs"
-        })
-    })
-
     it("requires the delete:user permission", async () => {
-        h.getUser.mockResolvedValue(mockUser([], "ADMIN"))
+        h.getUser.mockResolvedValue(mockUser([]))
         expect(await bulkRestoreUsers(["u2"])).toEqual({
             success: false,
             error: "Permission insuffisante"
@@ -64,13 +56,12 @@ describe("bulkRestoreUsers", () => {
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("restores the users and revalidates", async () => {
+    it("restores the users", async () => {
         const res = await bulkRestoreUsers(["u2", "u3"])
         expect(res).toEqual({ success: true, restoredCount: 2 })
         expect(h.updateMany).toHaveBeenCalledWith({
             where: { id: { in: ["u2", "u3"] } },
             data: { deletedAt: null }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/users")
     })
 })

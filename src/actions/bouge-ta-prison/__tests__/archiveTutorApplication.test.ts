@@ -1,23 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () =>
     dbModule({ bTPTutorApplication: { update: h.update } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import archiveTutorApplication from "../archiveTutorApplication"
+import { archiveTutorApplication } from "../archiveTutorApplication"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["access:btp"]))
@@ -49,9 +49,6 @@ describe("archiveTutorApplication", () => {
             where: { id: 3 },
             data: { archived: expect.any(Date) }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/dashboard/bouge-ta-prison"
-        )
     })
 
     it("captures and returns an error when the update throws", async () => {
@@ -61,6 +58,5 @@ describe("archiveTutorApplication", () => {
             error: "Echec de l'archivage de la candidature"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 })

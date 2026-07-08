@@ -1,14 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
+
+import { renderWithClient as render } from "@/test/browser"
 
 const h = vi.hoisted(() => ({
     generate: vi.fn(),
     revoke: vi.fn()
 }))
 
-vi.mock("@/actions/bagadAsso/calendarTokenAction", () => ({
-    generateBagadCalendarTokenAction: h.generate,
-    revokeBagadCalendarTokenAction: h.revoke
+vi.mock("astro:actions", () => ({
+    actions: {
+        bagadAsso: {
+            generateBagadCalendarTokenAction: h.generate,
+            revokeBagadCalendarTokenAction: h.revoke
+        }
+    },
+    isInputError: () => false
 }))
 vi.mock("sonner", () => ({
     toast: { success: vi.fn(), error: vi.fn() }
@@ -25,8 +31,11 @@ async function open(
 }
 
 beforeEach(() => {
-    h.generate.mockResolvedValue({ success: true, value: "new-token-123" })
-    h.revoke.mockResolvedValue({ success: true })
+    h.generate.mockResolvedValue({
+        data: { success: true, value: "new-token-123" },
+        error: undefined
+    })
+    h.revoke.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<CalendarFeed />", () => {

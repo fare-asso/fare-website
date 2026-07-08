@@ -27,7 +27,7 @@ vi.mock("@/helpers/captcha/verify", () => captchaModule(h.verifyCaptcha))
 vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import { processAssistance } from "../process-assistance"
+import { processAssistance } from "../processAssistanceAction"
 
 beforeEach(() => {
     stdenv.isDevelopment = false

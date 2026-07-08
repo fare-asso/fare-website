@@ -13,8 +13,3 @@ export function sanitizeString(input: string): string {
 
     return sanitizedString
 }
-
-export function validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email) && email.length > 3
-}

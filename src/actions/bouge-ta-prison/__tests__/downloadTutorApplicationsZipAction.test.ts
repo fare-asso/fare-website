@@ -3,12 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validTutorApplicationRecord } from "@/test/factories/bougeTaPrison"
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     findMany: vi.fn(),
@@ -21,13 +16,15 @@ const from = vi.hoisted(() => vi.fn(() => ({ download: h.download })))
 vi.mock("@/helpers/db", () =>
     dbModule({ bTPTutorApplication: { findMany: h.findMany } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import downloadTutorApplicationsZipAction from "../downloadTutorApplicationsZipAction"
+import { downloadTutorApplicationsZipAction } from "../downloadTutorApplicationsZipAction"
 
 const blob = (): Blob => new Blob([new Uint8Array([1, 2, 3])])
 

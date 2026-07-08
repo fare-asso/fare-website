@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
 
+import { renderWithClient as render } from "@/test/browser"
 import { validPartenaireRecord } from "@/test/factories/partenaires"
 
 const h = vi.hoisted(() => ({ cardSpy: vi.fn() }))

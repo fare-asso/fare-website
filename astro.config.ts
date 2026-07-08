@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url"
 import arkenv from "@arkenv/vite-plugin"
 import node from "@astrojs/node"
 import react from "@astrojs/react"
+// oxlint-disable-next-line import/default -- @sentry/astro's default export isn't resolved statically but exists at runtime
 import sentry from "@sentry/astro"
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig, fontProviders } from "astro/config"

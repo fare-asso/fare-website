@@ -1,24 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () => dbModule({ user: { update: h.update } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import deleteUser from "../deleteUser"
+import { deleteUser } from "../deleteUser"
 
 beforeEach(() => {
-    h.getUser.mockResolvedValue(mockUser(["delete:user"], "ADMIN"))
+    h.getUser.mockResolvedValue(mockUser(["delete:user"]))
     h.update.mockResolvedValue({ id: "u2" })
 })
 
@@ -31,16 +31,8 @@ describe("deleteUser", () => {
         })
     })
 
-    it("requires the ADMIN role", async () => {
-        h.getUser.mockResolvedValue(mockUser(["delete:user"], "MEMBER"))
-        expect(await deleteUser("u2")).toEqual({
-            success: false,
-            error: "Accès réservé aux administrateurs"
-        })
-    })
-
     it("requires the delete:user permission", async () => {
-        h.getUser.mockResolvedValue(mockUser([], "ADMIN"))
+        h.getUser.mockResolvedValue(mockUser([]))
         expect(await deleteUser("u2")).toEqual({
             success: false,
             error: "Permission insuffisante"
@@ -62,13 +54,12 @@ describe("deleteUser", () => {
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("soft-deletes the user and revalidates", async () => {
+    it("soft-deletes the user", async () => {
         const res = await deleteUser("u2")
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: "u2" },
             data: { deletedAt: expect.any(Date) }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/users")
     })
 })

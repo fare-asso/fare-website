@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
+
+import { renderWithClient as render } from "@/test/browser"
 
 const h = vi.hoisted(() => ({
     updateCategoryOrder: vi.fn(),

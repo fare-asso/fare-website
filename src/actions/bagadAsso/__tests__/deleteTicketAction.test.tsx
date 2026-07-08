@@ -1,23 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () =>
     dbModule({ bagadAssoTicket: { update: h.update } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import deleteBagadAssoTicketAction from "../deleteTicketAction"
+import { deleteBagadAssoTicketAction } from "../deleteTicketAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:bagad-ticket"]))
@@ -40,14 +40,13 @@ describe("deleteBagadAssoTicketAction", () => {
         expect(h.update).not.toHaveBeenCalled()
     })
 
-    it("soft-deletes the ticket and revalidates", async () => {
+    it("soft-deletes the ticket", async () => {
         const res = await deleteBagadAssoTicketAction(5)
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 5 },
             data: { deleted: expect.any(Date) }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
     })
 
     it("captures and returns an error when the update throws", async () => {
