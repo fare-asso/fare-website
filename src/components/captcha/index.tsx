@@ -4,7 +4,7 @@ import {
     type FRCWidgetExpireEventData,
     FriendlyCaptchaSDK
 } from "@friendlycaptcha/sdk"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useMemo } from "react"
 
 interface CaptchaProps {
     onComplete?: (token: string) => void
@@ -21,12 +21,12 @@ export function Captcha({ onComplete, onExpire, onError }: CaptchaProps) {
         if (!captchaRef.current) return
 
         // Re-use this SDK if you are creating multiple widgets.
-        const sdk = new FriendlyCaptchaSDK()
+        const sdk = useMemo(() => new FriendlyCaptchaSDK(), [])
 
-        const _widget = sdk.createWidget({
+        sdk.createWidget({
             language: "fr",
             theme: "light",
-            element: captchaRef.current,
+            element: captchaRef.current!,
             sitekey: import.meta.env.PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
         })
 

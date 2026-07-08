@@ -1,9 +1,7 @@
+import type { AssistanceConfig } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 
-export interface AssistanceConfigValues {
-    recipientEmail: string
-    delay: string
-}
+export type AssistanceConfigValues = Omit<AssistanceConfig, "id">
 
 /**
  * Returns the singleton assistance config, creating it with schema defaults

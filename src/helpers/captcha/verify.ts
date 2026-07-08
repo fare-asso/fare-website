@@ -1,8 +1,3 @@
-// Internal sub-routine called by actions, not an entry-point action, so it is
-// intentionally not wrapped with withServerAction.
-// oxlint-disable local/require-server-action-wrapper
-"use server"
-
 import { env } from "@/env"
 
 type FCApiResponse =
