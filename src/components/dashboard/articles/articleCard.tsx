@@ -34,11 +34,13 @@ export default function ArticleCard({
         event.stopPropagation()
 
         startDelete(async () => {
-            const { data, error } =
-                await actions.articles.deleteArticleAction(article.id)
+            const { data, error } = await actions.articles.deleteArticleAction(
+                article.id
+            )
             if (error || !data.success) {
                 toast.error(
-                    data?.error ?? "Une erreur est survenue. Veuillez réessayer."
+                    data?.error ??
+                        "Une erreur est survenue. Veuillez réessayer."
                 )
             } else {
                 toast.success(`L'article ${article.title} a bien été supprimé`)

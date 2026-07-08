@@ -1,14 +1,7 @@
-"use client"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
+import { useCallback, useState, useTransition } from "react"
 
-import {
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
-
-import createCDPAction from "@/actions/CDP/createCDPAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -31,94 +24,53 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
-import { uploadFile } from "@/helpers/supabase/upload"
 
 import LoadingRing from "../loadingRing"
 
 export default function AddNewCDPButton() {
     const [error, setError] = useState<string | undefined>(undefined)
-
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(createCDPAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-
-    const maxUploadSizeInMb = 25
+    const [isPending, submit] = useTransition()
+    const queryClient = useQueryClient()
 
     const handleOpenChange = useCallback((open: boolean) => {
         setDialogIsOpen(open)
         if (!open) {
-            // Réinitialiser le formulaire lorsque le dialogue est fermé
             setError(undefined)
-            setIsLoading(false)
         }
     }, [])
 
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-            setError(undefined)
-        } else if (formState?.error) {
-            setError(formState?.error)
-        }
-
-        setIsLoading(false)
-    }, [formState, handleOpenChange])
-
-    // Gestion de la validation du formulaire avec l'activation de l'indicateur de chargement
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-
-        setIsLoading(true)
+        setError(undefined)
 
         const formData = new FormData(event.currentTarget)
+        const file = formData.get("CDPfile")
 
-        const file = formData.get("CDPfile") as File
-
-        if (file.type !== "application/pdf") {
+        if (!(file instanceof File) || file.type !== "application/pdf") {
             setError("Le fichier doit être en format PDF")
             return
         }
 
-        const uploadResponse = await uploadFile(
-            "communique-de-presse",
-            undefined,
-            file,
-            formData.get("name") as string,
-            maxUploadSizeInMb,
-            ["pdf"]
-        )
-
-        if (uploadResponse.error) {
-            setIsLoading(false)
-            setError(uploadResponse.error)
-            return
-        }
-
-        formData.delete("CDPfile") // Delete the file from the form data so it doesn't get sent to the API
-        if (!uploadResponse.path) {
-            setIsLoading(false)
-            setError("Chemin du fichier manquant après l'upload")
-            return
-        }
-        formData.set("CDPfilePath", uploadResponse.path)
-
-        startTransition(() => {
-            formAction(formData)
+        submit(async () => {
+            const { data, error } = await actions.cdp.createCDPAction(formData)
+            if (error) {
+                setError("Une erreur est survenue. Veuillez réessayer.")
+            } else if (data.success) {
+                handleOpenChange(false)
+                await queryClient.invalidateQueries({ queryKey: ["cdp"] })
+            } else {
+                setError(data.error)
+            }
         })
     }
 
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
-            {/* Trigger */}
             <DialogTrigger asChild>
                 <Button>Ajouter un document</Button>
             </DialogTrigger>
 
-            {/* Content */}
             <DialogContent className="sm:w-[90%] sm:max-w-[60%] md:max-w-[50%] lg:max-w-[30%]">
                 <DialogHeader>
                     <DialogTitle>Nouveau document</DialogTitle>
@@ -127,7 +79,6 @@ export default function AddNewCDPButton() {
                     </DialogDescription>
                 </DialogHeader>
 
-                {/* Form */}
                 <form
                     onSubmit={handleSubmit}
                     id="createCDPForm"
@@ -188,9 +139,9 @@ export default function AddNewCDPButton() {
                     <Button
                         type="submit"
                         form="createCDPForm"
-                        disabled={isLoading}
+                        disabled={isPending}
                     >
-                        {isLoading ? <LoadingRing /> : null}
+                        {isPending ? <LoadingRing /> : null}
                         Ajouter
                     </Button>
                 </DialogFooter>

@@ -27,7 +27,7 @@ export default function EventCard({
                 src={imageUrl}
                 width={600}
                 height={400}
-                alt={`Photo de l'évènement ${event.name}`}
+                alt={`Évènement ${event.name}`}
                 className="h-full w-1/3 rounded-md object-cover lg:w-1/4"
             />
 

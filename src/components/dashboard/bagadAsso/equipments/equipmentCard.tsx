@@ -1,7 +1,6 @@
 import { format, formatDistanceToNow, isToday, isTomorrow } from "date-fns"
 import { fr } from "date-fns/locale"
 import { BoxIcon, CalendarClockIcon, CoinsIcon } from "lucide-react"
-import Image from "next/image"
 import { MdOutlineHideImage } from "react-icons/md"
 
 import { Badge } from "@/components/ui/badge"
@@ -32,11 +31,9 @@ export default function EquipmentCard({
             {/* Image */}
             <div className="bg-muted relative aspect-square size-20 shrink-0 self-center overflow-hidden rounded-md @md:size-24">
                 {imageUrl ? (
-                    <Image
-                        fill
-                        sizes="96px"
-                        alt={`Photo de ${equipment.name}`}
-                        className="object-cover"
+                    <img
+                        alt={equipment.name}
+                        className="h-full w-full object-cover"
                         src={imageUrl}
                     />
                 ) : (

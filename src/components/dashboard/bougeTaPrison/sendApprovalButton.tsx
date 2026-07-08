@@ -1,0 +1,32 @@
+import { actions } from "astro:actions"
+import { SendIcon } from "lucide-react"
+import { useState } from "react"
+
+import LoadingRing from "@/components/dashboard/loadingRing"
+import { Button } from "@/components/ui/button"
+import type { BTPTutorApplication } from "@/generated/prisma/client"
+
+export default function SendApprovalButton({
+    application
+}: {
+    application: BTPTutorApplication
+}) {
+    const [isLoading, setIsLoading] = useState(false)
+
+    const handleSendApproval = async () => {
+        setIsLoading(true)
+        await actions.bougeTaPrison.sendApprovalEmail(application)
+        window.location.href = "/dashboard/bouge-ta-prison?tab=approved"
+    }
+
+    return (
+        <Button
+            onClick={handleSendApproval}
+            disabled={isLoading}
+            className="text-wrap"
+        >
+            {isLoading ? <LoadingRing /> : <SendIcon size={20} />}
+            Envoyer un email de bonne réception
+        </Button>
+    )
+}

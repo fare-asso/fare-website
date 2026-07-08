@@ -5,8 +5,8 @@ import type { Partenaire } from "@/generated/prisma/client"
 
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
-vi.mock("@/actions/partenaires/deletePartenaireAction", () => ({
-    default: h.action
+vi.mock("astro:actions", () => ({
+    actions: { partenaires: { deletePartenaireAction: h.action } }
 }))
 
 import DeletePartenaireButton from "../deletePartenaireButton"
@@ -19,7 +19,7 @@ const partenaire: Partenaire = {
 }
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<DeletePartenaireButton />", () => {
@@ -58,6 +58,6 @@ describe("<DeletePartenaireButton />", () => {
         await screen.getByRole("button", { name: /Supprimer/ }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        expect(h.action.mock.calls[0][1]).toBe(42)
+        expect(h.action.mock.calls[0][0]).toBe(42)
     })
 })

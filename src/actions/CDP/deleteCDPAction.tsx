@@ -10,14 +10,15 @@ import { tryCatch } from "@/lib/utils"
 async function deleteCDPActionImpl(
     { id }: { id: number },
     context: ActionAPIContext
-) {
+): Promise<{ success: true } | { success: false; error: string }> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "delete:cdp")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de supprimer des communiqués de presse"
         }
     }
@@ -36,6 +37,7 @@ async function deleteCDPActionImpl(
     if (!deleted.success) {
         captureActionError(deleted.error)
         return {
+            success: false,
             error: "Echec de la suppression du communiqué de presse"
         }
     }
@@ -43,6 +45,7 @@ async function deleteCDPActionImpl(
 
     if (deletedCdpRecord == null) {
         return {
+            success: false,
             error: "Echec de la suppression du communiqué de presse"
         }
     }
@@ -55,14 +58,12 @@ async function deleteCDPActionImpl(
     if (err) {
         console.error(err.message)
         return {
+            success: false,
             error: "Echec de la suppression du communiqué de presse dans le stockage"
         }
-    } else {
-        // success
-        return {
-            success: true
-        }
     }
+
+    return { success: true }
 }
 
 export const deleteCDPAction = wrapAction(

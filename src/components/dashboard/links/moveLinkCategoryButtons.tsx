@@ -1,5 +1,3 @@
-"use client"
-
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"

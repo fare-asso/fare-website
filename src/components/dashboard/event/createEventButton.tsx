@@ -1,8 +1,7 @@
-"use client"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
+import { useCallback, useState, useTransition } from "react"
 
-import { useActionState, useCallback, useEffect, useState } from "react"
-
-import createEventAction from "@/actions/events/createEventAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,40 +25,40 @@ import LocationPicker from "../../ui/location/locationPicker"
 import LoadingRing from "../loadingRing"
 
 export default function CreateEventButton() {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(createEventAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-    const [_startDate, setStartDate] = useState<Date>()
-    const [_endDate, setEndDate] = useState<Date>()
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isPending, startTransition] = useTransition()
+    const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const handleOpenChange = useCallback((open: boolean) => {
         setDialogIsOpen(open)
         if (!open) {
-            // Réinitialiser le formulaire lorsque le dialogue est fermé
-            setStartDate(undefined)
-            setEndDate(undefined)
+            setSubmitError(null)
         }
     }, [])
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-        }
-        setIsLoading(false)
-    }, [formState, handleOpenChange])
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)
 
-        setIsLoading(true)
+        setSubmitError(null)
 
-        formAction(formData)
+        startTransition(async () => {
+            const { data, error } =
+                await actions.events.createEventAction(formData)
+            if (error) {
+                setSubmitError("Une erreur est survenue. Veuillez réessayer.")
+            } else if (data?.success) {
+                handleOpenChange(false)
+                await queryClient.invalidateQueries({ queryKey: ["events"] })
+            } else {
+                setSubmitError(
+                    data?.error ??
+                        "Une erreur est survenue. Veuillez réessayer."
+                )
+            }
+        })
     }
 
     return (
@@ -174,12 +173,10 @@ export default function CreateEventButton() {
                         </div>
                     </div>
 
-                    {formState?.error ? (
+                    {submitError ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
+                            <AlertDescription>{submitError}</AlertDescription>
                         </Alert>
                     ) : null}
                 </form>
@@ -188,9 +185,9 @@ export default function CreateEventButton() {
                     <Button
                         type="submit"
                         form="createEventForm"
-                        disabled={isLoading}
+                        disabled={isPending}
                     >
-                        {isLoading ? <LoadingRing /> : null} Créer
+                        {isPending ? <LoadingRing /> : null} Créer
                     </Button>
                 </DialogFooter>
             </DialogContent>

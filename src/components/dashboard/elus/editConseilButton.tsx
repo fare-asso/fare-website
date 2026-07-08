@@ -1,10 +1,9 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editConseilAction from "@/actions/conseils/editConseilAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -41,6 +40,7 @@ export default function EditConseilButton({
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const form = useForm({
         defaultValues: {
@@ -57,11 +57,19 @@ export default function EditConseilButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editConseilAction(value)
-                if (res.success) {
+                const { data, error } =
+                    await actions.conseils.editConseilAction(value)
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
+                    await queryClient.invalidateQueries({
+                        queryKey: ["elus"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

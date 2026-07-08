@@ -1,5 +1,5 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import {
     ArchiveIcon,
     ArchiveRestoreIcon,
@@ -9,10 +9,6 @@ import {
 import { useState } from "react"
 import { toast } from "sonner"
 
-import archiveAdhesionAction from "@/actions/adhesion/archiveAdhesionAction"
-import downloadAdhesionPdfAction from "@/actions/adhesion/downloadAdhesionPdfAction"
-import { downloadFolderAction } from "@/actions/adhesion/downloadFolderAction"
-import unarchiveAdhesionAction from "@/actions/adhesion/unarchiveAdhesionAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -32,7 +28,6 @@ import {
 } from "@/components/ui/tooltip"
 import type { Adhesion } from "@/generated/prisma/client"
 import { downloadBase64 } from "@/lib/download"
-import { tryCatch } from "@/lib/utils"
 
 import LoadingRing from "../loadingRing"
 
@@ -50,28 +45,24 @@ export default function AdhesionCardActions({
     const [isDownloading, setIsDownloading] = useState(false)
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
+    const queryClient = useQueryClient()
 
     const isArchived = adhesion.archived !== null
     const displayName = adhesion.nomComplet || adhesion.association
 
     const handleDownload = async () => {
         setIsDownloading(true)
-        const call = await tryCatch(
-            downloadFolderAction(undefined, adhesion.folderPath)
+        const { data, error } = await actions.adhesion.downloadFolderAction(
+            adhesion.folderPath
         )
-        if (!call.success) {
-            console.error("Erreur lors du téléchargement:", call.error)
+        if (error) {
             toast.error("Erreur lors du téléchargement du dossier.")
-            setIsDownloading(false)
-            return
-        }
-        const result = call.value
-        if (result.error) {
-            toast.error(result.error)
-        } else if (result.success && result.zipData) {
+        } else if (data.error) {
+            toast.error(data.error)
+        } else if (data.success && data.zipData) {
             downloadBase64(
-                result.zipData,
-                result.filename || "download.zip",
+                data.zipData,
+                data.filename || "download.zip",
                 "application/zip"
             )
             toast.success(`Le dossier de ${displayName} a été téléchargé.`)
@@ -81,20 +72,16 @@ export default function AdhesionCardActions({
 
     const handleGeneratePdf = async () => {
         setIsGeneratingPdf(true)
-        const call = await tryCatch(downloadAdhesionPdfAction(adhesion.id))
-        if (!call.success) {
-            console.error("Erreur lors de la génération du PDF:", call.error)
+        const { data, error } =
+            await actions.adhesion.downloadAdhesionPdfAction(adhesion.id)
+        if (error) {
             toast.error("Erreur lors de la génération du formulaire PDF.")
-            setIsGeneratingPdf(false)
-            return
-        }
-        const result = call.value
-        if (result.error) {
-            toast.error(result.error)
-        } else if (result.success && result.pdfData) {
+        } else if (data.error) {
+            toast.error(data.error)
+        } else if (data.success && data.pdfData) {
             downloadBase64(
-                result.pdfData,
-                result.filename || "formulaire-adhesion.pdf",
+                data.pdfData,
+                data.filename || "formulaire-adhesion.pdf",
                 "application/pdf"
             )
             toast.success(`Le formulaire de ${displayName} a été généré.`)
@@ -105,17 +92,20 @@ export default function AdhesionCardActions({
     const handleArchiveToggle = async () => {
         setIsArchiving(true)
         const action = isArchived
-            ? unarchiveAdhesionAction
-            : archiveAdhesionAction
-        const response = await action(adhesion.id)
-        if (response.error) {
-            toast.error(response.error)
+            ? actions.adhesion.unarchiveAdhesionAction
+            : actions.adhesion.archiveAdhesionAction
+        const { data, error } = await action(adhesion.id)
+        if (error) {
+            toast.error("Une erreur est survenue. Veuillez réessayer.")
+        } else if (data.error) {
+            toast.error(data.error)
         } else {
             toast.success(
                 isArchived
                     ? "La demande d'adhésion a été désarchivée."
                     : "La demande d'adhésion a été archivée."
             )
+            await queryClient.invalidateQueries({ queryKey: ["adhesions"] })
         }
         setIsArchiving(false)
     }

@@ -1,9 +1,9 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { CheckCircleIcon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { useState, useTransition } from "react"
+import { toast } from "sonner"
 
-import approveAssociationAction from "@/actions/associations/approveAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -30,29 +30,28 @@ export default function ApproveAssociationButton({
 }: {
     association: Association
 }): React.JSX.Element {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        number
-    >(approveAssociationAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isPending, startTransition] = useTransition()
     const [isOpen, setIsOpen] = useState<boolean>(false)
-
-    useEffect(() => {
-        if (formState?.success) {
-            setIsLoading(false)
-            setIsOpen(false)
-        }
-
-        setIsLoading(false)
-    }, [formState])
+    const queryClient = useQueryClient()
 
     const handleApprove = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ): void => {
         event.preventDefault()
-        setIsLoading(true)
-        startTransition(() => {
-            formAction(association.id)
+        startTransition(async () => {
+            const { data, error } =
+                await actions.associations.approveAssociationAction(
+                    association.id
+                )
+            if (error || data?.error) {
+                toast.error(data?.error ?? "Échec de l'approbation")
+            } else {
+                setIsOpen(false)
+                toast.success(`L'association ${association.name} est approuvée`)
+            }
+            await queryClient.invalidateQueries({
+                queryKey: ["associations"]
+            })
         })
     }
 
@@ -86,7 +85,7 @@ export default function ApproveAssociationButton({
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
                     <AlertDialogAction onClick={handleApprove}>
-                        {isLoading ? <LoadingRing /> : null} Approuver
+                        {isPending ? <LoadingRing /> : null} Approuver
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

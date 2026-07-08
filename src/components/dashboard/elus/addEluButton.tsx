@@ -1,10 +1,9 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import addEluAction from "@/actions/elus/addEluAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -39,6 +38,7 @@ export default function AddEluButton({
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const hasConseils = instances.some((i) => i.conseils.length > 0)
 
@@ -59,12 +59,19 @@ export default function AddEluButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addEluAction(value)
-                if (res.success) {
+                const { data, error } = await actions.elus.addEluAction(value)
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
                     form.reset()
+                    await queryClient.invalidateQueries({
+                        queryKey: ["elus"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

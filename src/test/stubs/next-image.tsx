@@ -11,7 +11,6 @@ export default function NextImageStub(props: {
     className?: string
 }): React.JSX.Element {
     return (
-        // oxlint-disable-next-line next/no-img-element -- test stub
         <img
             src={props.src}
             alt={props.alt}

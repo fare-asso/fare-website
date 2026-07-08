@@ -1,11 +1,10 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { Loader2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editInstanceAction from "@/actions/instances/editInstanceAction"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -32,6 +31,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { Instance } from "@/generated/prisma/client"
+import { encodeFormPayload } from "@/lib/formPayload"
 import { EditInstanceSchema, type TEditInstance } from "@/schemas/instance"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -44,6 +44,7 @@ export default function EditInstanceButton({
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const form = useForm({
         defaultValues: {
@@ -61,11 +62,21 @@ export default function EditInstanceButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editInstanceAction(value)
-                if (res.success) {
+                const { data, error } =
+                    await actions.instances.editInstanceAction(
+                        encodeFormPayload(value)
+                    )
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
+                    await queryClient.invalidateQueries({
+                        queryKey: ["instances"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

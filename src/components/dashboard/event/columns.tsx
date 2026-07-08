@@ -1,10 +1,12 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
 import type { ColumnDef } from "@tanstack/react-table"
+import { actions } from "astro:actions"
 import type { ReactElement } from "react"
+import { useTransition } from "react"
 import { MdVisibility, MdVisibilityOff } from "react-icons/md"
+import { toast } from "sonner"
 
-import deleteEventAction from "@/actions/events/deleteEventAction"
+import type { EventWithImage } from "@/actions/events/listEventsAction"
 import EditEventButtonClient from "@/components/dashboard/event/editEventButton"
 import {
     AlertDialog,
@@ -28,22 +30,52 @@ import {
 import { dateToString } from "@/helpers/date"
 import { locationDisplayName } from "@/helpers/location"
 
-export type Event = {
-    id: number
-    name: string
-    desc: string
-    startTime: Date
-    endTime: Date
-    location: string
-    category: {
-        id: number
-        name: string
+export type Event = EventWithImage
+
+function DeleteEventButton({ event }: { event: Event }) {
+    const [isPending, startTransition] = useTransition()
+    const queryClient = useQueryClient()
+
+    const handleDelete = () => {
+        startTransition(async () => {
+            const { error } = await actions.events.deleteEventAction({
+                eventId: event.id
+            })
+            if (error) {
+                toast.error("Une erreur est survenue. Veuillez réessayer.")
+            } else {
+                toast.success(`L'évènement ${event.name} a bien été supprimé`)
+            }
+            await queryClient.invalidateQueries({ queryKey: ["events"] })
+        })
     }
-    createdBy: {
-        id: string
-        name: string | null
-    }
-    visibility: boolean
+
+    return (
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={isPending}>
+                    Supprimer
+                </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
+                        Voulez-vous vraiment supprimer cet évènement ?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Cette action est permanente et les données de cet
+                        évènement ne peuvent être récupérées.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                        Supprimer
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    )
 }
 
 export function getColumns(
@@ -182,56 +214,11 @@ export function getColumns(
                 return (
                     <div className="flex flex-row space-x-3">
                         {canEdit ? (
-                            <EditEventButtonClient
-                                eventInfo={{
-                                    id: row.getValue("id"),
-                                    name: row.getValue("name"),
-                                    desc: row.getValue("desc"),
-                                    image: "",
-                                    startTime: row.getValue("startTime"),
-                                    endTime: row.getValue("endTime"),
-                                    location: row.getValue("location"),
-                                    visibility: row.getValue("visibility"),
-                                    category: row.getValue("category")
-                                }}
-                            />
+                            <EditEventButtonClient eventInfo={row.original} />
                         ) : null}
 
                         {canDelete ? (
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="destructive">
-                                        Supprimer
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            Voulez-vous vraiment supprimer cet
-                                            évènement ?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Cette action est permanente et les
-                                            données de cet évènement ne peuvent
-                                            être récupérées.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                            Annuler
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={() =>
-                                                deleteEventAction({
-                                                    eventId: row.getValue("id")
-                                                })
-                                            }
-                                        >
-                                            Supprimer
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                            <DeleteEventButton event={row.original} />
                         ) : null}
                     </div>
                 )

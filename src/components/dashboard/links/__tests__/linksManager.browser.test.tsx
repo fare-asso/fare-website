@@ -6,20 +6,18 @@ const h = vi.hoisted(() => ({
     noop: vi.fn()
 }))
 
-vi.mock("@/actions/links/updateLinkCategoryOrderAction", () => ({
-    default: h.updateCategoryOrder
-}))
-vi.mock("@/actions/links/updateLinkOrderAction", () => ({
-    default: h.noop
-}))
-vi.mock("@/actions/links/addLinkAction", () => ({ default: h.noop }))
-vi.mock("@/actions/links/editLinkAction", () => ({ default: h.noop }))
-vi.mock("@/actions/links/deleteLinkAction", () => ({ default: h.noop }))
-vi.mock("@/actions/links/editLinkCategoryAction", () => ({
-    default: h.noop
-}))
-vi.mock("@/actions/links/deleteLinkCategoryAction", () => ({
-    default: h.noop
+vi.mock("astro:actions", () => ({
+    actions: {
+        links: {
+            updateLinkCategoryOrderAction: h.updateCategoryOrder,
+            updateLinkOrderAction: h.noop,
+            addLinkAction: h.noop,
+            editLinkAction: h.noop,
+            deleteLinkAction: h.noop,
+            editLinkCategoryAction: h.noop,
+            deleteLinkCategoryAction: h.noop
+        }
+    }
 }))
 
 import LinksManager from "../linksManager"
@@ -51,7 +49,10 @@ function headings(screen: Awaited<ReturnType<typeof render>>): string[] {
 
 beforeEach(() => {
     h.updateCategoryOrder.mockReset()
-    h.updateCategoryOrder.mockResolvedValue({ success: true })
+    h.updateCategoryOrder.mockResolvedValue({
+        data: { success: true },
+        error: undefined
+    })
 })
 
 describe("<LinksManager />", () => {
@@ -84,13 +85,16 @@ describe("<LinksManager />", () => {
             { id: 2, order: 0 },
             { id: 1, order: 1 }
         ])
-        resolveAction({ success: true })
+        resolveAction({ data: { success: true }, error: undefined })
     })
 
     it("reverts to the server order when the action fails", async () => {
         h.updateCategoryOrder.mockResolvedValue({
-            success: false,
-            error: "Échec de la mise à jour de l'ordre."
+            data: {
+                success: false,
+                error: "Échec de la mise à jour de l'ordre."
+            },
+            error: undefined
         })
         const screen = await renderManager()
 

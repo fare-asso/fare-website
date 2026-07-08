@@ -1,48 +1,24 @@
 import { UsersIcon } from "lucide-react"
 
-import prisma from "@/helpers/db"
-import { createClient } from "@/helpers/supabase/server"
-import { tryCatch } from "@/lib/utils"
+import type { InstanceWithLogo } from "@/actions/instances/listInstancesAction"
 
 import AddInstanceButton from "./addInstanceButton"
-import SortableInstanceList, {
-    type InstanceWithLogo
-} from "./sortableInstanceList"
+import SortableInstanceList from "./sortableInstanceList"
 
 interface InstanceListProps {
+    instances: InstanceWithLogo[]
     canCreate: boolean
     canEdit: boolean
     canDelete: boolean
 }
 
-export default async function InstanceList({
+export default function InstanceList({
+    instances,
     canCreate,
     canEdit,
     canDelete
-}: InstanceListProps): Promise<React.JSX.Element> {
-    const supabase = await createClient()
-
-    const instances = await tryCatch(
-        prisma.instance.findMany({
-            include: { _count: { select: { conseils: true } } },
-            orderBy: { order: "asc" }
-        })
-    )
-
-    if (!instances.success) {
-        return (
-            <div className="flex h-full flex-col items-center justify-center gap-3 py-12">
-                <div className="bg-destructive/10 rounded-full p-3">
-                    <UsersIcon size={24} className="text-destructive" />
-                </div>
-                <p className="text-destructive text-sm font-medium">
-                    Echec du chargement des instances
-                </p>
-            </div>
-        )
-    }
-
-    if (instances.value.length === 0) {
+}: InstanceListProps): React.JSX.Element {
+    if (instances.length === 0) {
         return (
             <div className="bg-card text-card-foreground h-full w-full rounded-lg border p-4 shadow-xs md:p-6">
                 {canCreate ? (
@@ -64,26 +40,13 @@ export default async function InstanceList({
         )
     }
 
-    const instancesWithLogo: InstanceWithLogo[] = instances.value.map(
-        (instance) => ({
-            instance,
-            logoUrls: instance.logoPaths.map(
-                (path) =>
-                    supabase.storage
-                        .from("instance-pictures")
-                        .getPublicUrl(path).data.publicUrl
-            )
-        })
-    )
-
     return (
         <div className="bg-card text-card-foreground h-full w-full overflow-y-auto rounded-lg border p-4 shadow-xs md:p-6">
             <p className="text-muted-foreground mb-4 text-sm">
-                {instances.value.length} instance
-                {instances.value.length > 1 ? "s" : ""}
+                {instances.length} instance{instances.length > 1 ? "s" : ""}
             </p>
             <SortableInstanceList
-                initialInstances={instancesWithLogo}
+                initialInstances={instances}
                 canCreate={canCreate}
                 canEdit={canEdit}
                 canDelete={canDelete}

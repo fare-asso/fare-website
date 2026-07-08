@@ -1,10 +1,9 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import deletePartenaireAction from "@/actions/partenaires/deletePartenaireAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -31,33 +30,28 @@ export default function DeletePartenaireButton({
 }: {
     partenaire: Partenaire
 }) {
-    const [formState, formAction] = useActionState<
-        { success: true } | { success: false; error: string } | undefined,
-        number
-    >(deletePartenaireAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [isOpen, setIsOpen] = useState<boolean>(false)
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState === undefined) return
-        setIsLoading(false)
-        if (formState.success) {
-            setIsOpen(false)
-        } else {
-            toast.error(formState.error)
-        }
-    }, [formState])
+    const [isOpen, setIsOpen] = useState(false)
+    const [isPending, startTransition] = useTransition()
+    const queryClient = useQueryClient()
 
     const handleDelete = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         event.preventDefault()
 
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(partenaire.id)
+        startTransition(async () => {
+            const { data, error } =
+                await actions.partenaires.deletePartenaireAction(partenaire.id)
+            if (error) {
+                toast.error("Une erreur est survenue. Veuillez réessayer.")
+            } else if (data.success) {
+                setIsOpen(false)
+                await queryClient.invalidateQueries({
+                    queryKey: ["partenaires"]
+                })
+            } else {
+                toast.error(data.error)
+            }
         })
     }
 
@@ -91,7 +85,7 @@ export default function DeletePartenaireButton({
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete}>
-                        {isLoading ? <LoadingRing /> : null} Supprimer
+                        {isPending ? <LoadingRing /> : null} Supprimer
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

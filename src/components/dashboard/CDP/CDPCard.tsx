@@ -1,5 +1,5 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useState } from "react"
@@ -8,7 +8,6 @@ import { FaRegFolderOpen } from "react-icons/fa6"
 import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
 import { toast } from "sonner"
 
-import deleteCDPAction from "@/actions/CDP/deleteCDPAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -48,16 +47,25 @@ interface CdpCardProps {
 
 export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
     const [isDeleting, setIsDeleting] = useState(false)
+    const queryClient = useQueryClient()
 
     const handleDelete = async () => {
         setIsDeleting(true)
-        const res = await deleteCDPAction({ id: cdp.id })
-        if (res.error) {
-            toast.error(res.error)
+        const { data, error } = await actions.cdp.deleteCDPAction({
+            id: cdp.id
+        })
+        if (error) {
+            toast.error("Une erreur est survenue. Veuillez réessayer.")
             setIsDeleting(false)
-        } else {
-            toast.success(`Le communique ${cdp.name} a bien ete supprime`)
+            return
         }
+        if (data.success) {
+            toast.success(`Le communique ${cdp.name} a bien ete supprime`)
+            await queryClient.invalidateQueries({ queryKey: ["cdp"] })
+            return
+        }
+        toast.error(data.error)
+        setIsDeleting(false)
     }
 
     const formattedSize =

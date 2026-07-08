@@ -1,12 +1,9 @@
-"use client"
-
 import {
     ClockIcon,
     GraduationCapIcon,
     MailIcon,
     MapPinIcon
 } from "lucide-react"
-import Image from "next/image"
 
 import { Badge } from "@/components/ui/badge"
 import type { Association } from "@/generated/prisma/client"
@@ -15,9 +12,7 @@ import { parseLocation } from "@/helpers/location"
 import ApproveAssociationButton from "./approveAssociationButton"
 import DeclineAssociationButton from "./declineAssociationButton"
 import DeleteAssociationButton from "./deleteAssociationButton"
-import DeleteRepresentativeButton from "./deleteRepresentativeButton"
 import EditAssociationButton from "./editAssociationButton"
-import SendInvitationLinkButton from "./sendInvitationLinkButton"
 
 function formatLocation(raw: string): { short: string; full: string } {
     const parsed = parseLocation(raw)
@@ -36,10 +31,8 @@ function formatLocation(raw: string): { short: string; full: string } {
 interface AssociationCardProps {
     association: Association
     logoUrl: string
-    hasRepresentative: boolean
     canEdit: boolean
     canDelete: boolean
-    canInvite: boolean
     canApprove: boolean
 }
 
@@ -48,7 +41,6 @@ export default function AssociationCard({
     logoUrl,
     canEdit,
     canDelete,
-    canInvite,
     canApprove
 }: AssociationCardProps): React.JSX.Element {
     const location = association.location
@@ -62,7 +54,7 @@ export default function AssociationCard({
         >
             {/* Logo area */}
             <div className="bg-muted/50 group-hover:bg-muted relative flex items-center justify-center rounded-t-lg transition-colors">
-                <Image
+                <img
                     src={logoUrl}
                     width={220}
                     height={220}
@@ -146,10 +138,7 @@ export default function AssociationCard({
                 </div>
 
                 {/* Actions footer */}
-                {canDelete ||
-                canEdit ||
-                canInvite ||
-                (isPending && canApprove) ? (
+                {canDelete || canEdit || (isPending && canApprove) ? (
                     <div className="mt-auto flex items-center gap-1 border-t pt-2">
                         {isPending && canApprove ? (
                             <>
@@ -163,17 +152,6 @@ export default function AssociationCard({
                         ) : null}
                         {!isPending && canEdit ? (
                             <EditAssociationButton association={association} />
-                        ) : null}
-                        {!isPending && canInvite ? (
-                            association.representativeId ? (
-                                <DeleteRepresentativeButton
-                                    association={association}
-                                />
-                            ) : (
-                                <SendInvitationLinkButton
-                                    association={association}
-                                />
-                            )
                         ) : null}
                         {canDelete ? (
                             <div className="ml-auto">

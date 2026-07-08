@@ -1,10 +1,9 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editLinkCategoryAction from "@/actions/links/editLinkCategoryAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -25,6 +24,7 @@ export default function EditLinkCategoryButton({
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const form = useForm({
         defaultValues: {
@@ -39,11 +39,19 @@ export default function EditLinkCategoryButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editLinkCategoryAction(value)
-                if (res.success) {
+                const { data, error } =
+                    await actions.links.editLinkCategoryAction(value)
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
+                    await queryClient.invalidateQueries({
+                        queryKey: ["links"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

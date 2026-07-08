@@ -8,8 +8,8 @@ const h = vi.hoisted(() => ({
     })
 }))
 
-vi.mock("@/actions/partenaires/addPartenaireAction", () => ({
-    default: h.action
+vi.mock("astro:actions", () => ({
+    actions: { partenaires: { addPartenaireAction: h.action } }
 }))
 vi.mock("@/components/ui/filepond", () => ({
     FilePondInput: ({ onChange }: { onChange?: (file: File) => void }) => (
@@ -33,7 +33,7 @@ async function openDialog(): Promise<Awaited<ReturnType<typeof render>>> {
 }
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<AddPartenaireButton />", () => {
@@ -75,18 +75,19 @@ describe("<AddPartenaireButton />", () => {
         await screen.getByRole("button", { name: /^\s*Ajouter\s*$/ }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
-        expect(submitted).toMatchObject({
+        const submitted = h.action.mock.calls[0][0] as FormData
+        const payload = JSON.parse(submitted.get("payload") as string)
+        expect(payload).toMatchObject({
             name: "ACME",
             description: "Un partenaire de la Federation."
         })
-        expect(submitted.logo).toBeInstanceOf(File)
+        expect(submitted.get("logo")).toBeInstanceOf(File)
     })
 
     it("renders the server error when the action fails", async () => {
         h.action.mockResolvedValue({
-            success: false,
-            error: "Échec de l'upload du logo."
+            data: { success: false, error: "Échec de l'upload du logo." },
+            error: undefined
         })
         const screen = await openDialog()
         await screen.getByLabelText("Nom du partenaire").fill("ACME")

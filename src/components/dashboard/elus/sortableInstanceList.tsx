@@ -1,5 +1,3 @@
-"use client"
-
 import {
     closestCenter,
     DndContext,
@@ -15,23 +13,15 @@ import {
     SortableContext,
     sortableKeyboardCoordinates
 } from "@dnd-kit/sortable"
-import { useState, useTransition } from "react"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
+import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
-import updateInstanceOrderAction from "@/actions/instances/updateInstanceOrderAction"
-import type { Instance } from "@/generated/prisma/client"
+import type { InstanceWithLogo } from "@/actions/instances/listInstancesAction"
 
 import AddInstanceButton from "./addInstanceButton"
 import InstanceCard from "./instanceCard"
-
-type InstanceWithCount = Instance & {
-    _count: { conseils: number }
-}
-
-export interface InstanceWithLogo {
-    instance: InstanceWithCount
-    logoUrls: string[]
-}
 
 interface SortableInstanceListProps {
     initialInstances: InstanceWithLogo[]
@@ -46,8 +36,12 @@ export default function SortableInstanceList({
     canEdit,
     canDelete
 }: SortableInstanceListProps) {
-    const [instances, setInstances] = useState(initialInstances)
+    const [instances, setOptimisticInstances] = useOptimistic(
+        initialInstances,
+        (_current, next: InstanceWithLogo[]) => next
+    )
     const [, startTransition] = useTransition()
+    const queryClient = useQueryClient()
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -62,35 +56,29 @@ export default function SortableInstanceList({
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event
+        if (!over || active.id === over.id) return
 
-        if (over && active.id !== over.id) {
-            const oldIndex = instances.findIndex(
-                (i) => i.instance.id === active.id
-            )
-            const newIndex = instances.findIndex(
-                (i) => i.instance.id === over.id
-            )
+        const oldIndex = instances.findIndex((i) => i.instance.id === active.id)
+        const newIndex = instances.findIndex((i) => i.instance.id === over.id)
+        const newInstances = arrayMove(instances, oldIndex, newIndex)
 
-            const previousInstances = instances
-            const newInstances = arrayMove(instances, oldIndex, newIndex)
-            setInstances(newInstances)
+        startTransition(async () => {
+            setOptimisticInstances(newInstances)
 
-            // Persist the new order to the database
-            startTransition(async () => {
-                const instanceOrder = newInstances.map((i, index) => ({
-                    id: i.instance.id,
-                    order: index
-                }))
-
-                const result = await updateInstanceOrderAction(instanceOrder)
-
-                if (!result.success) {
-                    // Revert on error
-                    setInstances(previousInstances)
-                    toast.error(result.error)
-                }
-            })
-        }
+            const { data, error } =
+                await actions.instances.updateInstanceOrderAction(
+                    newInstances.map((i, order) => ({
+                        id: i.instance.id,
+                        order
+                    }))
+                )
+            if (error) {
+                toast.error("Échec de la mise à jour de l'ordre")
+            } else if (!data.success) {
+                toast.error(data.error)
+            }
+            await queryClient.invalidateQueries({ queryKey: ["instances"] })
+        })
     }
 
     return (

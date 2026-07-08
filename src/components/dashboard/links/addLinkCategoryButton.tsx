@@ -1,10 +1,9 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import addLinkCategoryAction from "@/actions/links/addLinkCategoryAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -15,6 +14,7 @@ export default function AddLinkCategoryButton() {
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const emptyForm: TAddLinkCategory = {
         name: ""
@@ -30,12 +30,20 @@ export default function AddLinkCategoryButton() {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addLinkCategoryAction(value)
-                if (res.success) {
+                const { data, error } =
+                    await actions.links.addLinkCategoryAction(value)
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
                     form.reset()
+                    await queryClient.invalidateQueries({
+                        queryKey: ["links"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

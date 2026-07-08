@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query"
-import { actions } from "astro:actions"
 import type { JSONContent } from "@tiptap/react"
+import { actions } from "astro:actions"
 import { useCallback, useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 import { v4 as uuidv4 } from "uuid"

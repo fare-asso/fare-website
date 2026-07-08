@@ -35,8 +35,7 @@ function ArticlesContent({
     const { data: articles } = useQuery({
         queryKey: ["articles"],
         queryFn: async () => {
-            const { data, error } =
-                await actions.articles.listArticlesAction()
+            const { data, error } = await actions.articles.listArticlesAction()
             if (error || !data.success) {
                 throw new Error("Échec du chargement des articles.")
             }

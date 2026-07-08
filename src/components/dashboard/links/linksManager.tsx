@@ -1,10 +1,9 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { LinkIcon } from "lucide-react"
 import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
-import updateLinkCategoryOrderAction from "@/actions/links/updateLinkCategoryOrderAction"
 import DeleteLinkCategoryButton from "@/components/dashboard/links/deleteLinkCategoryButton"
 import EditLinkCategoryButton from "@/components/dashboard/links/editLinkCategoryButton"
 import MoveLinkCategoryButtons from "@/components/dashboard/links/moveLinkCategoryButtons"
@@ -40,6 +39,7 @@ export default function LinksManager({
         (_current, next: CategoryWithLinks[]) => next
     )
     const [, startTransition] = useTransition()
+    const queryClient = useQueryClient()
 
     const moveCategory = (index: number, direction: "up" | "down") => {
         const targetIndex = direction === "up" ? index - 1 : index + 1
@@ -56,10 +56,14 @@ export default function LinksManager({
                 id: c.id,
                 order
             }))
-            const res = await updateLinkCategoryOrderAction(categoryOrder)
-            if (!res.success) {
-                toast.error(res.error)
+            const { data, error } =
+                await actions.links.updateLinkCategoryOrderAction(categoryOrder)
+            if (error) {
+                toast.error("Une erreur est survenue. Veuillez réessayer.")
+            } else if (!data.success) {
+                toast.error(data.error)
             }
+            await queryClient.invalidateQueries({ queryKey: ["links"] })
         })
     }
 

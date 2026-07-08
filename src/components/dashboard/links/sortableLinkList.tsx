@@ -1,5 +1,3 @@
-"use client"
-
 import {
     closestCenter,
     DndContext,
@@ -15,10 +13,11 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy
 } from "@dnd-kit/sortable"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
-import updateLinkOrderAction from "@/actions/links/updateLinkOrderAction"
 import SortableLinkCard from "@/components/dashboard/links/sortableLinkCard"
 import type { LinkItem, PresseType } from "@/generated/prisma/client"
 
@@ -48,6 +47,7 @@ export default function SortableLinkList({
         (_current, next: LinkItem[]) => next
     )
     const [, startTransition] = useTransition()
+    const queryClient = useQueryClient()
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -77,11 +77,15 @@ export default function SortableLinkList({
                     order: index
                 }))
 
-                const result = await updateLinkOrderAction(linkOrder)
+                const { data, error } =
+                    await actions.links.updateLinkOrderAction(linkOrder)
 
-                if (!result.success) {
-                    toast.error(result.error)
+                if (error) {
+                    toast.error("Une erreur est survenue. Veuillez réessayer.")
+                } else if (!data.success) {
+                    toast.error(data.error)
                 }
+                await queryClient.invalidateQueries({ queryKey: ["links"] })
             })
         }
     }

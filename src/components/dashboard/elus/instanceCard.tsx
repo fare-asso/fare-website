@@ -1,10 +1,7 @@
-"use client"
-
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import clsx from "clsx"
 import { Building2Icon, MailIcon, UsersIcon } from "lucide-react"
-import Image from "next/image"
 import { MdDragIndicator } from "react-icons/md"
 
 import DeleteInstanceButton from "@/components/dashboard/elus/deleteInstanceButton"
@@ -58,7 +55,7 @@ export default function InstanceCard({
                 {logoUrls.length > 0 ? (
                     <div className="flex h-full w-full flex-row flex-wrap items-center justify-center gap-2 p-2">
                         {logoUrls.map((url, index) => (
-                            <Image
+                            <img
                                 key={url}
                                 src={url}
                                 width={220}

@@ -1,7 +1,3 @@
-"use client"
-
-import Image from "next/image"
-
 import type { Partenaire } from "@/generated/prisma/client"
 
 import DeletePartenaireButton from "./deletePartenaireButton"
@@ -24,7 +20,7 @@ export default function PartenaireCard({
         <div className="group bg-card flex flex-col rounded-lg border shadow-xs transition-shadow hover:shadow-md">
             {/* Logo area */}
             <div className="bg-muted/50 group-hover:bg-muted relative flex items-center justify-center rounded-t-lg transition-colors">
-                <Image
+                <img
                     src={logoUrl}
                     width={220}
                     height={220}

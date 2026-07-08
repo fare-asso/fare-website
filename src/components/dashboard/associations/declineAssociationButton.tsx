@@ -1,9 +1,9 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { XCircleIcon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { useState, useTransition } from "react"
+import { toast } from "sonner"
 
-import declineAssociationAction from "@/actions/associations/declineAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -30,29 +30,28 @@ export default function DeclineAssociationButton({
 }: {
     association: Association
 }): React.JSX.Element {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        number
-    >(declineAssociationAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isPending, startTransition] = useTransition()
     const [isOpen, setIsOpen] = useState<boolean>(false)
-
-    useEffect(() => {
-        if (formState?.success) {
-            setIsLoading(false)
-            setIsOpen(false)
-        }
-
-        setIsLoading(false)
-    }, [formState])
+    const queryClient = useQueryClient()
 
     const handleDecline = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ): void => {
         event.preventDefault()
-        setIsLoading(true)
-        startTransition(() => {
-            formAction(association.id)
+        startTransition(async () => {
+            const { data, error } =
+                await actions.associations.declineAssociationAction(
+                    association.id
+                )
+            if (error || data?.error) {
+                toast.error(data?.error ?? "Échec du refus")
+            } else {
+                setIsOpen(false)
+                toast.success(`L'association ${association.name} est refusée`)
+            }
+            await queryClient.invalidateQueries({
+                queryKey: ["associations"]
+            })
         })
     }
 
@@ -89,7 +88,7 @@ export default function DeclineAssociationButton({
                         onClick={handleDecline}
                         className="bg-destructive hover:bg-destructive/90 text-white"
                     >
-                        {isLoading ? <LoadingRing /> : null} Refuser
+                        {isPending ? <LoadingRing /> : null} Refuser
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

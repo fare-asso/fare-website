@@ -1,11 +1,9 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { EraserIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import bulkDeleteElusAction from "@/actions/elus/bulkDeleteElusAction"
-import bulkRestoreElusAction from "@/actions/elus/bulkRestoreElusAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -35,33 +33,46 @@ export default function DeleteAllElusButton({
 }) {
     const [isOpen, setIsOpen] = useState(false)
     const [isPending, startTransition] = useTransition()
+    const queryClient = useQueryClient()
 
     const handleDelete = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         event.preventDefault()
         startTransition(async () => {
-            const res = await bulkDeleteElusAction(eluIds)
-            if (res.success) {
-                toast.success(`${res.value.count} éluEs suppriméEs.`, {
-                    duration: 10000,
-                    action: {
-                        label: "Annuler",
-                        onClick: () => {
-                            startTransition(async () => {
-                                const restore =
-                                    await bulkRestoreElusAction(eluIds)
-                                if (!restore.success) {
-                                    toast.error(restore.error)
-                                }
-                            })
-                        }
-                    }
-                })
-                setIsOpen(false)
-            } else {
-                toast.error(res.error)
+            const { data, error } =
+                await actions.elus.bulkDeleteElusAction(eluIds)
+            if (error) {
+                toast.error("Echec de la suppression")
+                return
             }
+            if (!data.success) {
+                toast.error(data.error)
+                return
+            }
+            toast.success(`${data.value.count} éluEs suppriméEs.`, {
+                duration: 10000,
+                action: {
+                    label: "Annuler",
+                    onClick: () => {
+                        startTransition(async () => {
+                            const restore =
+                                await actions.elus.bulkRestoreElusAction(eluIds)
+                            if (restore.error) {
+                                toast.error("Echec de la restauration")
+                            } else if (restore.data.success) {
+                                await queryClient.invalidateQueries({
+                                    queryKey: ["elus"]
+                                })
+                            } else {
+                                toast.error(restore.data.error)
+                            }
+                        })
+                    }
+                }
+            })
+            setIsOpen(false)
+            await queryClient.invalidateQueries({ queryKey: ["elus"] })
         })
     }
 

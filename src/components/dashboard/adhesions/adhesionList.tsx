@@ -1,5 +1,3 @@
-"use client"
-
 import { FileTextIcon } from "lucide-react"
 
 import type { Adhesion } from "@/generated/prisma/client"

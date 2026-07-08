@@ -1,11 +1,10 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { FileTextIcon, Loader2Icon, PlusIcon } from "lucide-react"
 import type { Dispatch, SetStateAction } from "react"
 import { useState, useTransition } from "react"
 
-import addLinkAction from "@/actions/links/addLinkAction"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -98,6 +97,7 @@ function AddLink({
 }) {
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const emptyForm: TAddLink = {
         categoryId,
@@ -115,12 +115,19 @@ function AddLink({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addLinkAction(value)
-                if (res.success) {
+                const { data, error } = await actions.links.addLinkAction(value)
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
                     form.reset()
+                    await queryClient.invalidateQueries({
+                        queryKey: ["links"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }
@@ -193,6 +200,7 @@ function AddFile({
 }) {
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const emptyForm: TAddLink = {
         categoryId,
@@ -210,12 +218,19 @@ function AddFile({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addLinkAction(value)
-                if (res.success) {
+                const { data, error } = await actions.links.addLinkAction(value)
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
                     form.reset()
+                    await queryClient.invalidateQueries({
+                        queryKey: ["links"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }
