@@ -3,7 +3,7 @@ import { actions } from "astro:actions"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
-import { memo, useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 
 import type { FormState } from "@/actions/bagadAsso/submitBagadAssoFormAction"
 import { Captcha } from "@/components/captcha"
@@ -54,18 +54,6 @@ import {
 interface BagadAssoFormProps {
     equipmentList: BagadAssoEquipment[]
 }
-
-interface CaptchaFieldProps {
-    onTokenChange: (token: string) => void
-}
-
-// Memoized wrapper that only renders the Captcha widget
-// The onTokenChange callback must be stable (wrapped in useCallback by parent)
-const CaptchaWidget = memo(function CaptchaWidget({
-    onTokenChange
-}: CaptchaFieldProps) {
-    return <Captcha onComplete={onTokenChange} />
-})
 
 // Separate component for validation errors that can re-render independently
 function CaptchaValidation({
@@ -820,8 +808,8 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                             <div className="pt-4">
                                 <Field>
-                                    <CaptchaWidget
-                                        onTokenChange={handleCaptchaComplete}
+                                    <Captcha
+                                        onComplete={handleCaptchaComplete}
                                     />
                                     <form.Field
                                         name="captchaToken"

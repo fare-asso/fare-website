@@ -3,7 +3,7 @@ import { actions } from "astro:actions"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon, Loader2Icon, Trash2, UserPlus } from "lucide-react"
-import { memo, useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 
 import { Captcha } from "@/components/captcha"
 import { Button } from "@/components/ui/button"
@@ -97,16 +97,6 @@ const emptyForm = {
 }
 
 // --- Captcha widget (memoized to avoid re-renders) ---
-
-interface CaptchaFieldProps {
-    onTokenChange: (token: string) => void
-}
-
-const CaptchaWidget = memo(function CaptchaWidget({
-    onTokenChange
-}: CaptchaFieldProps): React.ReactNode {
-    return <Captcha onComplete={onTokenChange} />
-})
 
 export function AdhesionForm(): React.ReactNode {
     const [isPending, setIsPending] = useState(false)
@@ -1639,9 +1629,7 @@ export function AdhesionForm(): React.ReactNode {
                         {/* ===== Section: Captcha ===== */}
                         <div className="pt-4">
                             <Field>
-                                <CaptchaWidget
-                                    onTokenChange={handleCaptchaComplete}
-                                />
+                                <Captcha onComplete={handleCaptchaComplete} />
                                 <form.Field
                                     name="captchaToken"
                                     children={(field) => {

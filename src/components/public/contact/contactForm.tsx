@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form"
 import { actions } from "astro:actions"
-import { memo, useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 
 import type { FormState } from "@/actions/contact/submitContactFormAction"
 import { Captcha } from "@/components/captcha"
@@ -24,16 +24,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import type { Contact } from "@/schemas/contact"
 import { ContactSchema } from "@/schemas/contact"
-
-interface CaptchaFieldProps {
-    onTokenChange: (token: string) => void
-}
-
-const CaptchaWidget = memo(function CaptchaWidget({
-    onTokenChange
-}: CaptchaFieldProps) {
-    return <Captcha onComplete={onTokenChange} />
-})
 
 function CaptchaValidation({
     isTouched,
@@ -277,9 +267,7 @@ export default function ContactForm() {
 
                         <div className="pt-2">
                             <Field>
-                                <CaptchaWidget
-                                    onTokenChange={handleCaptchaComplete}
-                                />
+                                <Captcha onComplete={handleCaptchaComplete} />
                                 <form.Field
                                     name="captchaToken"
                                     children={(field) => (

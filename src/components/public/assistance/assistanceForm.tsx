@@ -1,7 +1,7 @@
 import { useForm, useStore } from "@tanstack/react-form"
 import { actions } from "astro:actions"
 import { Loader2Icon } from "lucide-react"
-import { memo, useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { Captcha } from "@/components/captcha"
 import {
@@ -83,16 +83,6 @@ function loadDraft(): Partial<DraftValues> {
     })
     return result.success ? result.value : {}
 }
-
-interface CaptchaFieldProps {
-    onTokenChange: (token: string) => void
-}
-
-const CaptchaWidget = memo(function CaptchaWidget({
-    onTokenChange
-}: CaptchaFieldProps): React.ReactNode {
-    return <Captcha onComplete={onTokenChange} />
-})
 
 export function AssistanceForm(): React.ReactNode {
     const [isPending, setIsPending] = useState(false)
@@ -744,9 +734,7 @@ export function AssistanceForm(): React.ReactNode {
                         {/* ===== Captcha ===== */}
                         <div className="pt-2">
                             <Field>
-                                <CaptchaWidget
-                                    onTokenChange={handleCaptchaComplete}
-                                />
+                                <Captcha onComplete={handleCaptchaComplete} />
                                 <form.Field
                                     name="captchaToken"
                                     children={(field) => {
