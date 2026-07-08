@@ -307,3 +307,9 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* The dashboard scrolls its own panels; lock page scroll while its shell is
+   mounted (src/app/dashboard/route.tsx sets the attribute). */
+html:has([data-dashboard-shell]) {
+    overflow: hidden;
+}

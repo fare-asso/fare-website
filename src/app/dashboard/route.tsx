@@ -10,8 +10,6 @@ import { Toaster } from "@/components/ui/sonner"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth.server"
 import { dashboardTitle } from "@/lib/seo"
 
-import "@/styles/dashboard.css"
-
 const getDashboardUser = createServerFn().handler(async () => {
     const user = await getCurrentUserWithPermissions()
     if (!user) throw redirect({ href: "/login" })
