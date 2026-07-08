@@ -79,6 +79,26 @@ export function authModule(getCurrentUserWithPermissions: Fn) {
     return { getCurrentUserWithPermissions }
 }
 
+/**
+ * `@/helpers/supabase/astro` mock. `storage`/`auth`/`from` are the supabase
+ * client surface; `getUserWithPermissions` is the auth-check helper actions
+ * call with the action context. `createClient(context)` and
+ * `createAdminClient()` both return the same client stub.
+ */
+export function supabaseAstroModule(opts: {
+    storage?: unknown
+    auth?: unknown
+    from?: unknown
+    getUserWithPermissions?: Fn
+}) {
+    const client = { storage: opts.storage, auth: opts.auth, from: opts.from }
+    return {
+        createClient: vi.fn(() => client),
+        createAdminClient: vi.fn(() => client),
+        getUserWithPermissions: opts.getUserWithPermissions ?? vi.fn()
+    }
+}
+
 /** `@/helpers/email` mock. */
 export function emailModule(sendEmail: Fn) {
     return { sendEmail }

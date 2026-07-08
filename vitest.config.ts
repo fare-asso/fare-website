@@ -4,19 +4,17 @@ import react from "@vitejs/plugin-react"
 import { playwright } from "@vitest/browser-playwright"
 import { defineConfig } from "vitest/config"
 
+// `astro:actions` is a virtual module the Astro integration provides at build
+// time; alias it to a resolvable stub so tests can `vi.mock("astro:actions")`.
 const srcAlias = {
-    "@": fileURLToPath(new URL("./src", import.meta.url))
+    "@": fileURLToPath(new URL("./src", import.meta.url)),
+    "astro:actions": fileURLToPath(
+        new URL("./src/test/stubs/astro-actions.ts", import.meta.url)
+    )
 }
 
-// `next/image`'s CJS-wrapping (`module.exports = require('./image-external')`)
-// produces a double-default shape under Vite's browser interop, so
-// `import Image from "next/image"` resolves to an object at runtime and
-// React rejects it. Alias to a thin stub in the browser project only.
 const browserAlias = {
-    ...srcAlias,
-    "next/image": fileURLToPath(
-        new URL("./src/test/stubs/next-image.tsx", import.meta.url)
-    )
+    ...srcAlias
 }
 
 const testEnv = {
@@ -66,9 +64,7 @@ export default defineConfig({
                     include: [
                         "@supabase/ssr",
                         "@tanstack/react-table",
-                        "lucide-react",
-                        "next/cache",
-                        "next/link"
+                        "lucide-react"
                     ]
                 },
                 test: {

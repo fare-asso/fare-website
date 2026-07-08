@@ -2,6 +2,19 @@ import { afterAll, afterEach, beforeAll, vi } from "vitest"
 
 import { server } from "./src/test/msw"
 
+// Every server action is `wrapAction("name", impl)`. Make the wrapper a
+// transparent passthrough project-wide so action tests exercise the real impl
+// without evlog/Sentry instrumentation (mirrors the old sentry mock).
+vi.mock("@/lib/action", () => ({
+    wrapAction:
+        <A extends unknown[], R>(
+            _name: string,
+            handler: (...args: A) => Promise<R>
+        ) =>
+        (...args: A): Promise<R> =>
+            handler(...args)
+}))
+
 // `FileList` is a browser global used by client-side Zod schemas
 // (e.g. `@/schemas/members`). It is absent in the node environment, so
 // `z.instanceof(FileList)` would throw at module evaluation. A bare stub is
