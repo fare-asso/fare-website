@@ -10,24 +10,20 @@ import type { UserWithPermissions } from "./auth"
 export type RequestContext = Pick<APIContext, "request" | "cookies">
 
 export function createClient({ request, cookies }: RequestContext) {
-    return createServerClient(
-        env.PUBLIC_SUPABASE_URL,
-        env.PUBLIC_SUPABASE_ANON_KEY,
-        {
-            cookies: {
-                getAll() {
-                    return parseCookieHeader(
-                        request.headers.get("Cookie") ?? ""
-                    ).map(({ name, value }) => ({ name, value: value ?? "" }))
-                },
-                setAll(cookiesToSet) {
-                    for (const { name, value, options } of cookiesToSet) {
-                        cookies.set(name, value, options)
-                    }
+    return createServerClient(env.PUBLIC_SUPABASE_URL, env.SUPABASE_ANON_KEY, {
+        cookies: {
+            getAll() {
+                return parseCookieHeader(
+                    request.headers.get("Cookie") ?? ""
+                ).map(({ name, value }) => ({ name, value: value ?? "" }))
+            },
+            setAll(cookiesToSet) {
+                for (const { name, value, options } of cookiesToSet) {
+                    cookies.set(name, value, options)
                 }
             }
         }
-    )
+    })
 }
 
 export function createAdminClient() {

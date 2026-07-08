@@ -6,6 +6,7 @@ export const EnvSchema = type({
     FRIENDLY_CAPTCHA_API_KEY: "string",
 
     SUPABASE_SERVICE_ROLE_KEY: "string",
+    SUPABASE_ANON_KEY: "string",
 
     SMTP_HOST: "string",
     SMTP_PORT: "number = 465",
@@ -21,7 +22,6 @@ export const EnvSchema = type({
     ),
 
     PUBLIC_SUPABASE_URL: "string.url",
-    PUBLIC_SUPABASE_ANON_KEY: "string",
 
     PUBLIC_SITE_URL: 'string.url = "http://localhost:3000"',
     PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "string > 0",

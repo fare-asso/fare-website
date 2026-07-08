@@ -22,7 +22,7 @@ jobs:
             SMTP_PASS: "ci"
             SMTP_FROM_EMAIL: "ci@example.com"
             PUBLIC_SUPABASE_URL: "http://localhost:54321"
-            PUBLIC_SUPABASE_ANON_KEY: "ci"
+            SUPABASE_ANON_KEY: "ci"
             PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "ci"
             PUBLIC_SENTRY_DSN: "https://ci@ci.ingest.sentry.io/0"
         steps:
