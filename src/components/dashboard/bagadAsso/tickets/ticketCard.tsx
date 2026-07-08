@@ -10,7 +10,6 @@ import {
     UserIcon,
     UsersIcon
 } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -126,12 +125,12 @@ export default function BagadAssoTicketCard({
                             {getStatusBadge()}
                         </div>
                         <CardTitle className="text-lg">
-                            <Link
+                            <a
                                 href={`/dashboard/bagadAsso/tickets/${ticket.id}`}
                                 className="hover:text-primary transition-colors hover:underline"
                             >
                                 {ticket.association}
-                            </Link>
+                            </a>
                         </CardTitle>
                         <CardDescription className="text-base font-medium">
                             {ticket.eventName}

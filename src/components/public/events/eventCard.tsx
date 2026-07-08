@@ -2,7 +2,6 @@
 
 import { format } from "date-fns"
 import Image from "next/image"
-import Link from "next/link"
 import { MdLocationPin } from "react-icons/md"
 
 import type { Event } from "@/generated/prisma/client"
@@ -87,7 +86,7 @@ export default function EventCard({
                 </p>
 
                 <div className="flex h-1/2 w-full flex-col items-center justify-center">
-                    <Link
+                    <a
                         href={`/evenements/${event.id}`}
                         className="text mt-1 rounded-full px-4 py-1 text-center font-semibold outline transition-all hover:outline-2"
                         style={{
@@ -105,7 +104,7 @@ export default function EventCard({
                         }}
                     >
                         En savoir +
-                    </Link>
+                    </a>
                 </div>
             </div>
         </div>

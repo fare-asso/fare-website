@@ -1,7 +1,5 @@
-import { env } from "@/env"
-
 export class StorageUtils {
-    private storageUrl: string = env.PUBLIC_SUPABASE_URL
+    private storageUrl: string = import.meta.env.PUBLIC_SUPABASE_URL
 
     public constructor(storageUrl?: string) {
         if (storageUrl) {

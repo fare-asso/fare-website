@@ -6,7 +6,6 @@ import {
     MailIcon
 } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
 import type { IconType } from "react-icons"
 import {
     FaDiscord,
@@ -101,7 +100,7 @@ export default async function Liens() {
             {/* Social links */}
             <nav className="flex flex-wrap items-center justify-center gap-6">
                 {socialLinks.map((social) => (
-                    <Link
+                    <a
                         key={social.name}
                         href={social.href}
                         title={social.name}
@@ -111,7 +110,7 @@ export default async function Liens() {
                         rel="noopener noreferrer"
                     >
                         <social.icon className="size-6" />
-                    </Link>
+                    </a>
                 ))}
             </nav>
             {categories.length > 0 ? (
@@ -132,7 +131,7 @@ export default async function Liens() {
                                 {category.liens.map((link) => {
                                     const Icon = getLinkIcon(link.url)
                                     return (
-                                        <Link
+                                        <a
                                             key={link.id}
                                             href={link.url}
                                             className="group bg-card hover:border-fare-accent/30 hover:bg-fare-accent/5 relative flex items-center rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
@@ -154,7 +153,7 @@ export default async function Liens() {
                                                     )}
                                                 </span>
                                             </span>
-                                        </Link>
+                                        </a>
                                     )
                                 })}
                             </div>

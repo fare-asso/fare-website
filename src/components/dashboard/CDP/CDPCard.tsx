@@ -2,7 +2,6 @@
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 import { useState } from "react"
 import { FaRegFilePdf } from "react-icons/fa"
 import { FaRegFolderOpen } from "react-icons/fa6"
@@ -69,7 +68,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
     return (
         <div className="group bg-card flex flex-col rounded-lg border shadow-xs transition-shadow hover:shadow-md">
             {/* File icon area */}
-            <Link
+            <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -80,7 +79,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
                 ) : (
                     <FaRegFolderOpen size={48} className="text-amber-600" />
                 )}
-            </Link>
+            </a>
 
             {/* Content area */}
             <div className="flex flex-1 flex-col gap-2 p-3">
@@ -88,14 +87,14 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
                 <div className="flex items-start justify-between gap-2">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Link
+                            <a
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="line-clamp-2 flex-1 text-sm leading-tight font-medium hover:underline"
                             >
                                 {cdp.name}
-                            </Link>
+                            </a>
                         </TooltipTrigger>
                         <TooltipContent>{cdp.name}</TooltipContent>
                     </Tooltip>

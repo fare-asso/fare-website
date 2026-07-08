@@ -3,7 +3,6 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { MoreHorizontal } from "lucide-react"
-import Link from "next/link"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -143,9 +142,9 @@ export const columns: ColumnDef<UserWithPermissionsRow>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/users/${user.id}`}>
+                            <a href={`/dashboard/users/${user.id}`}>
                                 Voir les details
-                            </Link>
+                            </a>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={() =>

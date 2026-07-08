@@ -3,7 +3,6 @@
 import type { ColumnDef, RowData } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -94,14 +93,14 @@ export const columns: ColumnDef<BTPTutorApplication>[] = [
         id: "nom",
         header: "Nom",
         cell: ({ row }) => (
-            <Link
+            <a
                 href={`/dashboard/bouge-ta-prison/candidatures-tutorat/${row.original.id}`}
                 className="font-semibold after:absolute after:inset-0 hover:underline"
             >
                 <span className="block truncate">
                     {row.original.firstName} {row.original.lastName}
                 </span>
-            </Link>
+            </a>
         )
     },
     {

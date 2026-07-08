@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
 
 import assemblee0 from "#public/BTP/assemblee1.jpg"
 import assemblee1 from "#public/BTP/assemblee2.jpg"
@@ -55,14 +54,14 @@ export default function BougeTaPrison() {
 
                     <p className="mb-4 text-justify">
                         La FARE fait également partie du{" "}
-                        <Link
+                        <a
                             href="https://collectifprisonrennes.fr/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="link"
                         >
                             collectif prison Rennes
-                        </Link>{" "}
+                        </a>{" "}
                         depuis début d'année 2024 et participe pour la deuxième
                         fois à l'organisation des{" "}
                         <strong>Journées Nationales des Prisons (JNP)</strong>{" "}
@@ -116,12 +115,12 @@ export default function BougeTaPrison() {
                                 Pour en savoir plus sur le tutorat, les
                                 prérequis et les modalités, cliquez ci-dessous.
                             </p>
-                            <Link
+                            <a
                                 href="/projets/bouge-ta-prison/tutorat"
                                 className="mt-4 ml-auto w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
                             >
                                 En savoir plus
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </section>
@@ -135,24 +134,24 @@ export default function BougeTaPrison() {
                     </p>
                     <ul className="list-inside list-disc space-y-2">
                         <li>
-                            <Link
+                            <a
                                 href="https://france3-regions.francetvinfo.fr/bretagne/ille-et-vilaine/rennes/temoignage-si-je-peux-aider-un-peu-pour-leur-reinsertion-tant-mieux-pourquoi-cette-etudiante-accompagne-les-detenus-qui-reprennent-leurs-etudes-2912339.html"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="link"
                             >
                                 Article France 3 Régions
-                            </Link>
+                            </a>
                         </li>
                         <li>
-                            <Link
+                            <a
                                 href="https://www.campusmatin.com/vie-campus/experience-etudiante/une-supbox-pour-repenser-l-acces-a-l-enseignement-superieur-en-prison.html"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="link"
                             >
                                 Article Campus Matin
-                            </Link>
+                            </a>
                         </li>
                     </ul>
                 </section>

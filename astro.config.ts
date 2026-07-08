@@ -34,18 +34,9 @@ export default defineConfig({
         ]
     },
     redirects: {
-        "/bouge-ta-prison/[...slug]": {
-            status: 301,
-            destination: "/projets/bouge-ta-prison/[...slug]"
-        },
-        "/bagadAsso/[...slug]": {
-            status: 301,
-            destination: "/projets/bagad-asso/[...slug]"
-        },
-        "/agorae/[...slug]": {
-            status: 301,
-            destination: "/projets/agorae/[...slug]"
-        }
+        "/bouge-ta-prison/[...slug]": "/projets/bouge-ta-prison/[...slug]",
+        "/bagadAsso/[...slug]": "/projets/bagad-asso/[...slug]",
+        "/agorae/[...slug]": "/projets/agorae/[...slug]"
     },
     fonts: [
         {

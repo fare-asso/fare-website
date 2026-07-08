@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
 
 import prisma from "@/helpers/db"
 import { createClient } from "@/helpers/supabase/server"
@@ -72,12 +71,12 @@ export default async function Page({
 
     return (
         <div className="flex w-[90%] flex-col items-start pt-14">
-            <Link
+            <a
                 href="/a-propos/reseau"
                 className="text-sm opacity-40 hover:underline"
             >
                 &lt; Retour aux associations
-            </Link>
+            </a>
             <h1 className="mt-2 text-3xl font-bold">
                 {associationRecord.name}
             </h1>

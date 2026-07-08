@@ -1,6 +1,5 @@
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 
 import type { Article } from "@/generated/prisma/client"
 import { extractFirstWords } from "@/helpers/tiptap/jsonToHtml"
@@ -29,12 +28,12 @@ export default function ArticleCard({ article }: { article: Article }) {
                 </p>
 
                 {/* Lire plus */}
-                <Link
+                <a
                     href={`/actualites/articles/${article.id}`}
                     className="mt-2 w-full rounded-full bg-black px-8 py-1 text-center font-semibold text-white outline-1 outline-black transition-all hover:bg-white hover:text-black hover:outline md:w-fit"
                 >
                     En savoir +
-                </Link>
+                </a>
             </div>
         </div>
     )

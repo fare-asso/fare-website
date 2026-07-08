@@ -2,7 +2,6 @@ import { format, formatDistanceToNow, isToday, isTomorrow } from "date-fns"
 import { fr } from "date-fns/locale"
 import { BoxIcon, CalendarClockIcon, CoinsIcon } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { MdOutlineHideImage } from "react-icons/md"
 
 import { Badge } from "@/components/ui/badge"
@@ -105,7 +104,7 @@ function NextBooking({ booking }: { booking: EquipmentNextBooking | null }) {
           : formatDistanceToNow(date, { addSuffix: true, locale: fr })
 
     return (
-        <Link
+        <a
             href={`/dashboard/bagadAsso/tickets/${booking.ticketId}`}
             className="border-primary/15 bg-primary/5 hover:bg-primary/10 block w-full shrink-0 rounded-md border px-3 py-2 transition-colors @md:w-52"
         >
@@ -125,6 +124,6 @@ function NextBooking({ booking }: { booking: EquipmentNextBooking | null }) {
                 {format(date, "d MMM yyyy", { locale: fr })} ·{" "}
                 {booking.association}
             </p>
-        </Link>
+        </a>
     )
 }

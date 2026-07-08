@@ -1,0 +1,26 @@
+---
+import { Image } from "astro:assets"
+
+import fareLoutreSad from "@/assets/fare_loutre_sad.jpeg"
+import Public from "@/layouts/Public.astro"
+
+import "@/styles/not-found.css"
+---
+
+<Public title="Page introuvable">
+    <div
+        class="flex w-[90%] translate-x-[5%] flex-col items-center justify-center gap-12 md:translate-x-0"
+    >
+        <div class="flex w-[70%] max-w-80 flex-col items-start justify-start">
+            <h2 class="title-404 m-0 w-full">Vous vous êtes perdu·e...?</h2>
+            <Image
+                src={fareLoutreSad}
+                width={312}
+                height={312}
+                alt="404"
+                class="sad-otter size-32"
+            />
+        </div>
+        <a href="/" class="mt-24 underline">Retour à l'accueil</a>
+    </div>
+</Public>

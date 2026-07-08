@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 
 import TutorApplicationForm from "./TutorApplicationForm"
 
@@ -92,12 +91,12 @@ export default function Tutorat() {
                                 processus de candidature ? Vous souhaitez en
                                 savoir plus ?
                             </p>
-                            <Link
+                            <a
                                 href="/projets/bouge-ta-prison/tutorat/question"
                                 className="mt-4 ml-auto w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
                             >
                                 J'ai une question
-                            </Link>
+                            </a>
                         </div>
                     </div>
 

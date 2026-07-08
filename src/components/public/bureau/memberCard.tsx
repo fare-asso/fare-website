@@ -1,5 +1,4 @@
 import Image from "next/image"
-import Link from "next/link"
 import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6"
 import { MdAlternateEmail } from "react-icons/md"
 
@@ -24,30 +23,30 @@ export default function MemberCard({ member }: { member: Member }) {
             <div className="flex w-full flex-col items-center">
                 <span className="font-semibold">{`${member.firstName} ${member.lastName}`}</span>
                 <span className="text-center italic">{member.position}</span>
-                <Link
+                <a
                     href={`mailto:${member.email}`}
                     className="flex flex-row items-center justify-center text-sm"
                 >
                     <MdAlternateEmail size={16} />
                     {`: ${member.email}`}
-                </Link>
+                </a>
             </div>
 
             <div className="mt-1 flex flex-row items-center justify-center space-x-2">
                 {member.facebookUrl ? (
-                    <Link href={member.facebookUrl}>
+                    <a href={member.facebookUrl}>
                         <FaFacebook size={20} />
-                    </Link>
+                    </a>
                 ) : null}
                 {member.instagramUrl ? (
-                    <Link href={member.instagramUrl}>
+                    <a href={member.instagramUrl}>
                         <FaInstagram size={20} />
-                    </Link>
+                    </a>
                 ) : null}
                 {member.twitterUrl ? (
-                    <Link href={member.twitterUrl}>
+                    <a href={member.twitterUrl}>
                         <FaXTwitter size={20} />
-                    </Link>
+                    </a>
                 ) : null}
             </div>
         </div>

@@ -8,7 +8,6 @@ import {
     SquareUserRoundIcon
 } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
 import { FaCaretLeft, FaEnvelope } from "react-icons/fa"
 
 import { Badge } from "@/components/ui/badge"
@@ -54,9 +53,9 @@ export default async function TutorApplicationPage({
                             Cette candidature n'existe pas
                         </p>
                         <Button asChild className="mt-4">
-                            <Link href="/dashboard/bouge-ta-prison?tab=candidatures">
+                            <a href="/dashboard/bouge-ta-prison?tab=candidatures">
                                 Retour aux candidatures
-                            </Link>
+                            </a>
                         </Button>
                     </CardContent>
                 </Card>
@@ -80,9 +79,9 @@ export default async function TutorApplicationPage({
                             Cette candidature n'existe pas
                         </p>
                         <Button asChild className="mt-4">
-                            <Link href="/dashboard/bouge-ta-prison?tab=candidatures">
+                            <a href="/dashboard/bouge-ta-prison?tab=candidatures">
                                 Retour aux candidatures
-                            </Link>
+                            </a>
                         </Button>
                     </CardContent>
                 </Card>
@@ -112,10 +111,10 @@ export default async function TutorApplicationPage({
                     size="sm"
                     className="mb-4 -ml-3"
                 >
-                    <Link href="/dashboard/bouge-ta-prison">
+                    <a href="/dashboard/bouge-ta-prison">
                         <FaCaretLeft className="mr-1" />
                         Retour aux candidatures
-                    </Link>
+                    </a>
                 </Button>
 
                 <div className="flex flex-wrap items-center gap-3">

@@ -8,7 +8,6 @@ import {
     UsersIcon
 } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
 import {
     FaCalendarAlt,
     FaCaretLeft,
@@ -71,9 +70,9 @@ export default async function Page({
                             Le ticket n'existe pas
                         </p>
                         <Button asChild className="mt-4">
-                            <Link href="/dashboard/bagadAsso">
+                            <a href="/dashboard/bagadAsso">
                                 Retour aux tickets
-                            </Link>
+                            </a>
                         </Button>
                     </CardContent>
                 </Card>
@@ -97,9 +96,9 @@ export default async function Page({
                             Le ticket n'existe pas
                         </p>
                         <Button asChild className="mt-4">
-                            <Link href="/dashboard/bagadAsso">
+                            <a href="/dashboard/bagadAsso">
                                 Retour aux tickets
-                            </Link>
+                            </a>
                         </Button>
                     </CardContent>
                 </Card>
@@ -135,10 +134,10 @@ export default async function Page({
                     size="sm"
                     className="mb-4 -ml-3"
                 >
-                    <Link href="/dashboard/bagadAsso">
+                    <a href="/dashboard/bagadAsso">
                         <FaCaretLeft className="mr-1" />
                         Retour aux tickets
-                    </Link>
+                    </a>
                 </Button>
 
                 <div className="flex flex-wrap items-center gap-3">

@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
 
 import logoBTC from "#public/elues/logo-Bouge-Ton-Crous.png"
 import logoCrous from "#public/Logo_Crous_vectorisé.png"
@@ -19,7 +18,7 @@ export default function Representation() {
                 Représentations
             </h1>
             <div className="flex w-full max-w-5xl flex-col items-center justify-center gap-12 md:flex-row md:gap-20">
-                <Link
+                <a
                     href="/representation/fage"
                     className="flex h-64 w-full max-w-sm min-w-64 flex-row items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
                 >
@@ -30,9 +29,9 @@ export default function Representation() {
                         className="h-24 w-auto object-contain md:h-32"
                         placeholder="empty"
                     />
-                </Link>
+                </a>
 
-                <Link
+                <a
                     href="/representation/nos-elues"
                     className="flex h-64 w-full max-w-sm min-w-64 flex-col items-center justify-center gap-4 rounded-2xl border-1 border-neutral-800/30 p-6 transition-all hover:bg-black/[0.04] md:h-72"
                 >
@@ -61,7 +60,7 @@ export default function Representation() {
                     <span className="text-3xl font-bold md:text-4xl">
                         Nos éluEs
                     </span>
-                </Link>
+                </a>
             </div>
         </div>
     )

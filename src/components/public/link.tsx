@@ -1,5 +1,3 @@
-import Link from "next/link"
-
 import { Button, type ButtonVariants } from "../ui/button"
 
 export default function LinkButton({
@@ -15,9 +13,9 @@ export default function LinkButton({
 }) {
     return (
         <Button asChild variant={variant} className={className}>
-            <Link href={href} title={title}>
+            <a href={href} title={title}>
                 {title}
-            </Link>
+            </a>
         </Button>
     )
 }

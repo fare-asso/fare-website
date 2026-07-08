@@ -8,7 +8,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
 import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
 
-import "../globals.css"
+import "@/styles/globals.css"
 import "./layout.css"
 
 export const metadata: Metadata = {

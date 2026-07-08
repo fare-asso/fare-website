@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import React from "react"
 
@@ -36,12 +35,9 @@ export default function CurrentRoute() {
                             <React.Fragment key={index}>
                                 <BreadcrumbItem>
                                     <BreadcrumbLink asChild>
-                                        <Link
-                                            href={href}
-                                            className="capitalize"
-                                        >
+                                        <a href={href} className="capitalize">
                                             {p}
-                                        </Link>
+                                        </a>
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />

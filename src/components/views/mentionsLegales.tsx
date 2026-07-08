@@ -1,9 +1,3 @@
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-    title: "Mentions Légales"
-}
-
 export default function MentionsLegales() {
     return (
         <div className="flex w-full flex-col items-center justify-start">

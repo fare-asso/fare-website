@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
 import { FaRegFilePdf } from "react-icons/fa6"
 import { FiDownload, FiExternalLink } from "react-icons/fi"
 
@@ -69,20 +68,20 @@ export default function AGORAe() {
                     </p>
                     <p className="mb-4 text-justify">
                         C'est un projet national créé par la{" "}
-                        <Link
+                        <a
                             href="/representation/fage"
                             className="text-blue-600 hover:underline"
                         >
                             FAGE
-                        </Link>{" "}
+                        </a>{" "}
                         (Fédération des Associations du Réseau Étudiant de
                         Haute-Bretagne) et porté à Saint-Brieuc par la{" "}
-                        <Link
+                        <a
                             href="/a-propos"
                             className="text-blue-600 hover:underline"
                         >
                             FARE
-                        </Link>{" "}
+                        </a>{" "}
                         (Fédération des Associations de Haute-Bretagne). Les
                         AGORAé sont des espaces d'échanges et de solidarité qui
                         se composent d'un lieu de vie ouvert à tous·tes et d'une
@@ -166,7 +165,7 @@ export default function AGORAe() {
                     </p>
 
                     {/* <p>
-                        L'AGORAé est accessible via un dossier de demande d'admission, disponible <Link href="/path-to-pdf" className="text-blue-600 hover:underline">ici</Link> ou à l'adresse mail : <a href="mailto:agorae@fare-asso.fr" className="text-blue-600 hover:underline">agorae@fare-asso.fr</a>.
+                        L'AGORAé est accessible via un dossier de demande d'admission, disponible <a href="/path-to-pdf" className="text-blue-600 hover:underline">ici</a> ou à l'adresse mail : <a href="mailto:agorae@fare-asso.fr" className="text-blue-600 hover:underline">agorae@fare-asso.fr</a>.
                     </p> */}
                 </section>
 
@@ -240,17 +239,17 @@ export default function AGORAe() {
                             <FaRegFilePdf size={28} className="text-red-500" />
                         </div>
                         <div className="flex min-w-0 flex-1 flex-col gap-1 text-center sm:text-left">
-                            <Link
+                            <a
                                 href={rapportActiviteUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-foreground hover:text-fare-accent truncate font-medium transition-colors hover:underline"
                             >
                                 Rapport d'activité AGORAé 2025-2026
-                            </Link>
+                            </a>
                         </div>
                         <div className="flex shrink-0 items-center justify-center gap-2 sm:justify-end">
-                            <Link
+                            <a
                                 href={rapportActiviteUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -260,7 +259,7 @@ export default function AGORAe() {
                                 <span className="hidden md:inline">
                                     Consulter
                                 </span>
-                            </Link>
+                            </a>
                             <a
                                 href={rapportActiviteUrl}
                                 download="Rapport_activite_AGORAe_2025-2026.pdf"
@@ -280,13 +279,13 @@ export default function AGORAe() {
 
                     <ul>
                         <li>
-                            <Link
+                            <a
                                 href="https://soliguide.fr/fr/fiche/agorae-saint-brieuc-37414"
                                 title="Lien vers soliguide"
                                 className="text-blue-600 hover:underline"
                             >
                                 Soliguide - AGORAé Saint-Brieuc
-                            </Link>
+                            </a>
                         </li>
                     </ul>
                 </section>

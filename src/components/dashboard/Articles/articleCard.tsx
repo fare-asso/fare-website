@@ -2,7 +2,6 @@
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 // import EditArticleButton from "./editArticleButton";
 import { startTransition, useActionState, useEffect, useState } from "react"
 import { MdDelete, MdVisibility, MdVisibilityOff } from "react-icons/md"
@@ -65,13 +64,13 @@ export default function ArticleCard({
 
     return (
         <div className="bg-card text-card-foreground flex h-16 w-full flex-row items-center justify-between rounded-lg border px-4 py-4 shadow-xs">
-            <Link
+            <a
                 href={`/actualites/articles/${article.id}`}
                 title={article.title}
                 className="overflow-hidden text-xs text-ellipsis whitespace-nowrap md:text-sm"
             >
                 {article.title}
-            </Link>
+            </a>
             <div className="text-card-foreground/70 hidden text-sm md:block">
                 {format(article.writtenOn, "PPP", { locale: fr })}
             </div>

@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 
 import AssociationList from "@/components/public/associations/associationList"
 import AssociationMapCaller from "@/components/public/associations/map/associationMapCaller"
@@ -40,12 +39,12 @@ export default async function Reseau() {
                     <br />
                     Pour plus d'informations sur l'adhésion, cliquez ci-dessous.
                 </p>
-                <Link
+                <a
                     href="/a-propos/adhesion"
                     className="mt-4 ml-auto w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
                 >
                     Nous rejoindre
-                </Link>
+                </a>
             </div>
         </div>
     )

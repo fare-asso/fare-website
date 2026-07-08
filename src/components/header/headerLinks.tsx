@@ -1,16 +1,11 @@
-"use client"
-
 import { ChevronDownIcon, MenuIcon, XIcon } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import type { CSSProperties } from "react"
 
 import { links } from "./nav.config"
 
 const MOBILE_MENU_ID = "fare-mobile-menu"
 
-export default function HeaderLinks() {
-    const pathname = usePathname()
+export default function HeaderLinks({ pathname }: { pathname: string }) {
     const visible = links.filter((l) => !l.hidden)
 
     return (
@@ -33,7 +28,7 @@ export default function HeaderLinks() {
                             data-active={active ? "true" : "false"}
                             style={{ "--anchor": anchorName } as CSSProperties}
                         >
-                            <Link
+                            <a
                                 href={l.href}
                                 className="v1f-link"
                                 aria-current={active ? "page" : undefined}
@@ -47,11 +42,11 @@ export default function HeaderLinks() {
                                         aria-hidden="true"
                                     />
                                 ) : null}
-                            </Link>
+                            </a>
                             {hasSub ? (
                                 <div className="v1f-pop-fallback" role="menu">
                                     {subLinks.map((s) => (
-                                        <Link
+                                        <a
                                             key={s.href}
                                             href={s.href}
                                             className="v1f-suba"
@@ -68,7 +63,7 @@ export default function HeaderLinks() {
                                                     {s.desc}
                                                 </span>
                                             ) : null}
-                                        </Link>
+                                        </a>
                                     ))}
                                 </div>
                             ) : null}
@@ -91,7 +86,7 @@ export default function HeaderLinks() {
                                 aria-label={l.title}
                             >
                                 {subLinks.map((s) => (
-                                    <Link
+                                    <a
                                         key={s.href}
                                         href={s.href}
                                         className="v1f-suba"
@@ -106,7 +101,7 @@ export default function HeaderLinks() {
                                         {s.desc ? (
                                             <span className="d">{s.desc}</span>
                                         ) : null}
-                                    </Link>
+                                    </a>
                                 ))}
                             </div>
                         )
@@ -157,7 +152,7 @@ export default function HeaderLinks() {
                                     </summary>
                                     <div className="m-sub">
                                         {subLinks.map((s) => (
-                                            <Link
+                                            <a
                                                 key={s.href}
                                                 href={s.href}
                                                 data-active={
@@ -167,14 +162,14 @@ export default function HeaderLinks() {
                                                 }
                                             >
                                                 {s.title}
-                                            </Link>
+                                            </a>
                                         ))}
                                     </div>
                                 </details>
                             )
                         }
                         return (
-                            <Link
+                            <a
                                 key={l.title}
                                 href={l.href}
                                 className="m-link"
@@ -183,7 +178,7 @@ export default function HeaderLinks() {
                                 }
                             >
                                 {l.title}
-                            </Link>
+                            </a>
                         )
                     })}
                 </nav>

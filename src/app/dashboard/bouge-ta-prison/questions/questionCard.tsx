@@ -10,7 +10,6 @@ import {
     MailIcon,
     MessageSquareTextIcon
 } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -108,12 +107,12 @@ export default function QuestionCard({
                     </span>
                 </div>
 
-                <Link
+                <a
                     href={`/dashboard/bouge-ta-prison/questions/${question.id}`}
                     className="hover:text-primary text-base font-semibold transition-colors hover:underline"
                 >
                     {question.firstName} {question.lastName}
-                </Link>
+                </a>
 
                 <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm">
                     <div className="flex items-center gap-1.5">

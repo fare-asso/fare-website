@@ -14,7 +14,6 @@ import {
     BoxIcon
 } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
@@ -220,7 +219,7 @@ export default function SideBarApp({
     return (
         <Sidebar variant="inset" collapsible="offcanvas">
             <SidebarHeader className="flex flex-row items-center justify-start gap-6 py-4">
-                <Link href="/dashboard" className="flex items-center gap-2">
+                <a href="/dashboard" className="flex items-center gap-2">
                     <Image
                         src={LogoFARE}
                         alt="Logo de la FARE"
@@ -228,7 +227,7 @@ export default function SideBarApp({
                         priority={true}
                         placeholder="empty"
                     ></Image>
-                </Link>
+                </a>
                 <b className="text-left">
                     Dashboard <br /> Administrateur
                 </b>

@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets"
+
+import logo from "@/assets/logo_fare.png"
+import Footer from "@/components/footer/footer"
+import HeaderLinks from "@/components/header/headerLinks"
+
+import Base from "./Base.astro"
+
+import "@/components/header/header.css"
+
+interface Props {
+    title?: string
+    description?: string
+}
+
+const { title, description } = Astro.props
+const fullTitle = title ? `${title} | FARE` : "FARE"
+---
+
+<Base title={fullTitle} description={description}>
+    <main class="flex min-h-screen flex-col items-center">
+        <header class="v1f">
+            <a href="/" class="v1f-logo" aria-label="Accueil">
+                <Image src={logo} alt="FARE de Haute-Bretagne" loading="eager" />
+            </a>
+            <HeaderLinks pathname={Astro.url.pathname} />
+        </header>
+        <div class="flex w-full flex-1 flex-col items-center p-4 lg:p-10">
+            <slot />
+        </div>
+        <Footer />
+    </main>
+    <script
+        is:inline
+        defer
+        src="https://a.fare-asso.fr/script.js"
+        data-website-id="7133dde1-d746-40d0-b0b2-9ec15d49c711"></script>
+</Base>

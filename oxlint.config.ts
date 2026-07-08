@@ -26,6 +26,7 @@ export default defineConfig({
         correctness: "error"
     },
     ignorePatterns: [
+        "src/app/**",
         "**/next-env.d.ts",
         "**/migrations/**",
         "**/generated/**",

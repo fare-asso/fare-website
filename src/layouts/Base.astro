@@ -1,0 +1,30 @@
+---
+import { Font } from "astro:assets"
+
+import "@/styles/globals.css"
+
+interface Props {
+    title?: string
+    description?: string
+}
+
+const {
+    title = "FARE",
+    description = "Fédération des Associations du Réseau Étudiant de Haute-Bretagne"
+} = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/icon.png" type="image/png" />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <Font cssVariable="--font-inter" preload />
+    </head>
+    <body>
+        <slot />
+    </body>
+</html>

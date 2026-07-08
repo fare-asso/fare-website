@@ -10,7 +10,6 @@ import {
     UserIcon,
     UsersIcon
 } from "lucide-react"
-import Link from "next/link"
 import { useQueryState, parseAsIsoDate } from "nuqs"
 import { useMemo } from "react"
 
@@ -238,11 +237,11 @@ function Event({ event }: { event: Event }) {
                             </span>
                         </span>
                         <Button asChild variant="link" className="px-0">
-                            <Link
+                            <a
                                 href={`/dashboard/bagadAsso/tickets/${event.id}`}
                             >
                                 Détails du ticket <ChevronRightIcon />
-                            </Link>
+                            </a>
                         </Button>
                     </PopoverDescription>
                 </PopoverHeader>

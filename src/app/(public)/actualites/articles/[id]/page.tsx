@@ -1,7 +1,6 @@
 import type { JSONContent } from "@tiptap/react"
 import { format } from "date-fns"
 import type { Metadata } from "next"
-import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import MoreArticles from "@/components/public/articles/moreArticles"
@@ -72,12 +71,12 @@ export default async function Page({
 
     return (
         <div className="flex w-[90%] flex-col items-start pt-14">
-            <Link
+            <a
                 href="/actualites"
                 className="text-sm opacity-40 hover:underline"
             >
                 &lt; Retour aux actualités
-            </Link>
+            </a>
 
             {/* Title */}
             <h1 className="mt-2 text-3xl font-bold">{articleRecord.title}</h1>

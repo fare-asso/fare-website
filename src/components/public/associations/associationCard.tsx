@@ -1,5 +1,4 @@
 import Image from "next/image"
-import Link from "next/link"
 
 import type { Association } from "@/generated/prisma/client"
 import { createClient } from "@/helpers/supabase/server"
@@ -12,7 +11,7 @@ export default async function AssociationCard({
     const supabase = await createClient()
 
     return (
-        <Link
+        <a
             href={`/a-propos/reseau/associations/${association.id}`}
             className="relative flex flex-col rounded-lg bg-white p-4 outline-1 outline-black transition-all hover:scale-105"
         >
@@ -37,6 +36,6 @@ export default async function AssociationCard({
                     </span>
                 </div>
             </div>
-        </Link>
+        </a>
     )
 }

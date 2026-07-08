@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
 
 import logoAgoraE from "#public/AGORAe/logo_AgoraE.png"
 import logoBTP from "#public/BTP/Logo_BTP.png"
@@ -18,7 +17,7 @@ export default function Projets() {
             </h1>
 
             <div className="flex w-3/4 flex-col items-center justify-center space-y-8 md:flex-row md:space-y-0 md:space-x-20">
-                <Link
+                <a
                     href="/projets/agorae"
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
@@ -28,9 +27,9 @@ export default function Projets() {
                         className="aspect-square h-auto w-52 object-contain"
                     />
                     <h2 className="text-center">Projet AGORAé</h2>
-                </Link>
+                </a>
 
-                <Link
+                <a
                     href="/projets/bouge-ta-prison"
                     className="flex flex-col items-center transition-all hover:scale-105"
                 >
@@ -40,9 +39,9 @@ export default function Projets() {
                         className="aspect-square h-auto w-52 object-contain"
                     />
                     <h2 className="text-center">Projet Bouge Ta Prison</h2>
-                </Link>
+                </a>
 
-                <Link
+                <a
                     href="/projets/bagad-asso"
                     className="flex flex-col items-center p-4 transition-all hover:scale-105"
                 >
@@ -52,7 +51,7 @@ export default function Projets() {
                         className="aspect-square h-auto w-52 object-contain"
                     />
                     <h2 className="text-center">Projet Bagad'Asso</h2>
-                </Link>
+                </a>
             </div>
         </div>
     )

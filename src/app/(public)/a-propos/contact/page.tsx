@@ -1,6 +1,5 @@
 import { ExternalLinkIcon, MailIcon } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
 import { FaFacebook, FaInstagram } from "react-icons/fa6"
 
 import ContactForm from "@/components/public/contact/contactForm"
@@ -46,7 +45,7 @@ export default function Contact() {
             {/* Social links */}
             <div className="mb-12 grid w-full max-w-2xl gap-3 sm:grid-cols-3">
                 {socialLinks.map((link) => (
-                    <Link
+                    <a
                         key={link.name}
                         className={`group bg-card hover:bg-accent flex flex-col items-center gap-2 rounded-xl border-2 p-5 text-center transition-colors ${link.borderColor}`}
                         href={link.href}
@@ -71,7 +70,7 @@ export default function Contact() {
                                 <ExternalLinkIcon className="size-3" />
                             )}
                         </span>
-                    </Link>
+                    </a>
                 ))}
             </div>
 
