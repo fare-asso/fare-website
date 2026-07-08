@@ -1,5 +1,5 @@
-import type { TAssistanceForm } from "@/app/(public)/assistance/form-schema"
 import type { AssistanceConfig } from "@/generated/prisma/client"
+import type { TAssistanceForm } from "@/schemas/assistance"
 
 export function validAssistanceForm(
     overrides: Partial<TAssistanceForm> = {}

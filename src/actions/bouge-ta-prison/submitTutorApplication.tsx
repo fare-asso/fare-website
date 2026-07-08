@@ -1,7 +1,5 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
@@ -9,8 +7,9 @@ import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { BTPTutorApplicationSchema } from "@/schemas/bougeTaPrison"
 import type { ActionResponse } from "@/types/actions"
@@ -18,7 +17,8 @@ import type { ActionResponse } from "@/types/actions"
 import BtpApplication from "../../../emails/btp-application"
 
 async function submitTutorApplicationImpl(
-    formData: FormData
+    formData: FormData,
+    context: ActionAPIContext
 ): Promise<ActionResponse> {
     const data: { [key: string]: FormDataEntryValue } = {}
 
@@ -68,7 +68,7 @@ async function submitTutorApplicationImpl(
     const folderName = `${crypto.randomUUID()}-${sanitizedName}`
 
     // Upload the CV and the motivation letter to the storage
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     const { data: cvUploadData, error: cvUploadError } = await supabase.storage
         .from("btp-tutor-application")
@@ -127,11 +127,10 @@ async function submitTutorApplicationImpl(
         html: await render(<BtpApplication data={parsedData} />)
     })
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
 
-export default withServerAction(
+export const submitTutorApplication = wrapAction(
     "submitTutorApplication",
     submitTutorApplicationImpl
 )

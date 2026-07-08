@@ -1,7 +1,5 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
@@ -11,11 +9,11 @@ import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
-
-import { AdhesionFormSchema, type TAdhesionForm } from "./form-schema"
+import { AdhesionFormSchema, type TAdhesionForm } from "@/schemas/adhesion"
 
 const BUCKET = "adhesion"
 
@@ -28,7 +26,10 @@ const logoExtensionByMime: Record<string, string> = {
 
 type Result = { success: true } | { success: false; message: string }
 
-async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
+async function processAdhesionImpl(
+    formData: TAdhesionForm,
+    context: ActionAPIContext
+): Promise<Result> {
     const data = AdhesionFormSchema(formData)
 
     if (data instanceof type.errors) {
@@ -63,7 +64,7 @@ async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
     }
 
     const folder = `${crypto.randomUUID()}-${sanitizeString(data.sigle)}`
-    const supabase = await createClient()
+    const supabase = createClient(context)
     const uploaded: string[] = []
 
     const cleanup = async (): Promise<void> => {
@@ -216,11 +217,10 @@ async function processAdhesionImpl(formData: TAdhesionForm): Promise<Result> {
         html: await render(<AdhesionAck associationName={data.sigle} />)
     })
 
-    revalidatePath("/dashboard/adhesions")
     return { success: true }
 }
 
-export const processAdhesion = withServerAction(
+export const processAdhesion = wrapAction(
     "processAdhesion",
     processAdhesionImpl
 )

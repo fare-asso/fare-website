@@ -5,6 +5,7 @@ export function isWithServerActionCall(node: Node | null | undefined): boolean {
         !!node &&
         node.type === "CallExpression" &&
         node.callee?.type === "Identifier" &&
-        node.callee.name === "withServerAction"
+        (node.callee.name === "withServerAction" ||
+            node.callee.name === "wrapAction")
     )
 }

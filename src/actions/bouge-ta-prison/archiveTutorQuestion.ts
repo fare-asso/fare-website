@@ -1,9 +1,6 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
-
 import prisma from "@/helpers/db"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function archiveTutorQuestionImpl(
@@ -24,11 +21,10 @@ async function archiveTutorQuestionImpl(
         return { error: "Echec de l'archivage de la question" }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison/questions")
     return { success: true }
 }
 
-export default withServerAction(
+export const archiveTutorQuestion = wrapAction(
     "archiveTutorQuestion",
     archiveTutorQuestionImpl
 )

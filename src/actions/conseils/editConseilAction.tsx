@@ -1,19 +1,21 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditConseilSchema, type TEditConseil } from "@/schemas/conseil"
 
 type Result = { success: true } | { success: false; error: string }
 
-async function editConseilActionImpl(input: TEditConseil): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+async function editConseilActionImpl(
+    input: TEditConseil,
+    context: ActionAPIContext
+): Promise<Result> {
+    const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "edit:instance")) {
         return {
@@ -65,10 +67,10 @@ async function editConseilActionImpl(input: TEditConseil): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
     return { success: true }
 }
 
-export default withServerAction("editConseilAction", editConseilActionImpl)
+export const editConseilAction = wrapAction(
+    "editConseilAction",
+    editConseilActionImpl
+)

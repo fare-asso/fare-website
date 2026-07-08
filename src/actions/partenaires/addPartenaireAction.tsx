@@ -1,9 +1,7 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import {
     AddPartenaireSchema,
@@ -11,15 +9,19 @@ import {
 } from "@/app/(public)/a-propos/partenaires/partenaires-schema"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createAdminClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    createAdminClient,
+    getUserWithPermissions
+} from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function addPartenaireActionImpl(
-    input: TAddPartenaire
+    input: TAddPartenaire,
+    context: ActionAPIContext
 ): Promise<{ success: true } | { success: false; error: string }> {
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "create:partner")) {
         return {
@@ -68,9 +70,10 @@ async function addPartenaireActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/partenaires")
-    revalidatePath("/a-propos/partenaires")
     return { success: true }
 }
 
-export default withServerAction("addPartenaireAction", addPartenaireActionImpl)
+export const addPartenaireAction = wrapAction(
+    "addPartenaireAction",
+    addPartenaireActionImpl
+)

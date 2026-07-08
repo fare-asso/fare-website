@@ -1,18 +1,18 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function switchVisibilityActionImpl(
-    articleId: number
+    articleId: number,
+    context: ActionAPIContext
 ): Promise<{ error?: string }> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -58,13 +58,10 @@ async function switchVisibilityActionImpl(
         return { error: "Echec du changement de visibilité de l'article" }
     }
 
-    revalidatePath("/actualites")
-    revalidatePath("/dashboard/articles")
-
     return {}
 }
 
-export default withServerAction(
+export const switchVisibilityAction = wrapAction(
     "switchVisibilityAction",
     switchVisibilityActionImpl
 )

@@ -1,9 +1,7 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import {
     EditPartenaireSchema,
@@ -11,17 +9,18 @@ import {
 } from "@/app/(public)/a-propos/partenaires/partenaires-schema"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type Result = { success: true } | { success: false; error: string }
 
 async function editPartenaireActionImpl(
-    input: TEditPartenaire
+    input: TEditPartenaire,
+    context: ActionAPIContext
 ): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "edit:partner")) {
         return {
@@ -38,7 +37,7 @@ async function editPartenaireActionImpl(
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     const current = await tryCatch(
         prisma.partenaire.findUnique({
@@ -101,12 +100,10 @@ async function editPartenaireActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/partenaires")
-    revalidatePath("/a-propos/partenaires")
     return { success: true }
 }
 
-export default withServerAction(
+export const editPartenaireAction = wrapAction(
     "editPartenaireAction",
     editPartenaireActionImpl
 )

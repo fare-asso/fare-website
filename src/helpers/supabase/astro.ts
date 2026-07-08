@@ -1,4 +1,5 @@
 import { createServerClient, parseCookieHeader } from "@supabase/ssr"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import type { APIContext } from "astro"
 
 import { env } from "@/env"
@@ -24,6 +25,23 @@ export function createClient({ request, cookies }: RequestContext) {
                         cookies.set(name, value, options)
                     }
                 }
+            }
+        }
+    )
+}
+
+export function createAdminClient() {
+    // Bypass @supabase/ssr: it reads the user session from cookies and sends
+    // the user's JWT as Authorization, overriding the service-role key on
+    // PostgREST requests. The plain client sends the service-role key as
+    // both apikey and Authorization, so queries actually run as service_role.
+    return createSupabaseClient(
+        env.PUBLIC_SUPABASE_URL,
+        env.SUPABASE_SERVICE_ROLE_KEY,
+        {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
             }
         }
     )

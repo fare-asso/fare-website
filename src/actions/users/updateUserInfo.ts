@@ -1,20 +1,25 @@
-"use server"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function updateUserInfoImpl(
-    userId: string,
-    data: {
-        name: string | null
-        email: string
-        role: "MEMBER" | "ADMIN" | "ASSO_OWNER"
-    }
+    input: {
+        userId: string
+        data: {
+            name: string | null
+            email: string
+            role: "MEMBER" | "ADMIN" | "ASSO_OWNER"
+        }
+    },
+    context: ActionAPIContext
 ) {
-    const user = await getCurrentUserWithPermissions()
+    const { userId, data } = input
+    const user = await getUserWithPermissions(context)
     if (!user) {
         throw new Error("Unauthorized: User not found")
     }
@@ -47,4 +52,4 @@ async function updateUserInfoImpl(
     return { success: true }
 }
 
-export default withServerAction("updateUserInfo", updateUserInfoImpl)
+export const updateUserInfo = wrapAction("updateUserInfo", updateUserInfoImpl)

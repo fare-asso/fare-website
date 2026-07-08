@@ -1,19 +1,21 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function hardDeleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
+async function hardDeleteBagadAssoTicketActionImpl(
+    ticketId: number,
+    context: ActionAPIContext
+): Promise<{
     success?: boolean
     error?: string
 }> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -35,12 +37,10 @@ async function hardDeleteBagadAssoTicketActionImpl(ticketId: number): Promise<{
         return { error: "Echec de la suppression définitive du ticket" }
     }
 
-    revalidatePath("/dashboard/bagadAsso")
-
     return { success: true }
 }
 
-export default withServerAction(
+export const hardDeleteBagadAssoTicketAction = wrapAction(
     "hardDeleteBagadAssoTicketAction",
     hardDeleteBagadAssoTicketActionImpl
 )

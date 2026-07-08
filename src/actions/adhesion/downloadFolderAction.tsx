@@ -1,14 +1,13 @@
-"use server"
-
+import type { ActionAPIContext } from "astro:actions"
 import { zip } from "fflate"
 
 import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type ActionState = {
@@ -19,11 +18,11 @@ type ActionState = {
 }
 
 async function downloadFolderActionImpl(
-    _prevState: ActionState | undefined,
-    folderPath: string
+    folderPath: string,
+    context: ActionAPIContext
 ): Promise<ActionState> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -61,7 +60,7 @@ async function downloadFolderActionImpl(
         ...adhesion.value.photosPaths
     ].filter((path): path is string => Boolean(path))
 
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // Téléchargement parallèle des fichiers référencés en base
     const downloads = await tryCatch(
@@ -117,7 +116,7 @@ async function downloadFolderActionImpl(
     }
 }
 
-export const downloadFolderAction = withServerAction(
+export const downloadFolderAction = wrapAction(
     "downloadFolderAction",
     downloadFolderActionImpl
 )

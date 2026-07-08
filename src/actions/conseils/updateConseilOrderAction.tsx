@@ -1,19 +1,19 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { OrderSchema, type TOrder } from "@/schemas/elu"
 
 async function updateConseilOrderActionImpl(
-    conseilOrder: TOrder
+    conseilOrder: TOrder,
+    context: ActionAPIContext
 ): Promise<{ success: true } | { success: false; error: string }> {
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -50,14 +50,10 @@ async function updateConseilOrderActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true }
 }
 
-export default withServerAction(
+export const updateConseilOrderAction = wrapAction(
     "updateConseilOrderAction",
     updateConseilOrderActionImpl
 )

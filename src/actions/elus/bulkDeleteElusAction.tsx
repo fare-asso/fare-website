@@ -1,12 +1,11 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { BulkDeleteElusSchema, type TBulkDeleteElus } from "@/schemas/elu"
 
@@ -14,8 +13,11 @@ type Result =
     | { success: true; value: { count: number } }
     | { success: false; error: string }
 
-async function bulkDeleteElusActionImpl(ids: TBulkDeleteElus): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+async function bulkDeleteElusActionImpl(
+    ids: TBulkDeleteElus,
+    context: ActionAPIContext
+): Promise<Result> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -50,14 +52,10 @@ async function bulkDeleteElusActionImpl(ids: TBulkDeleteElus): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true, value: { count: deleted.value.count } }
 }
 
-export default withServerAction(
+export const bulkDeleteElusAction = wrapAction(
     "bulkDeleteElusAction",
     bulkDeleteElusActionImpl
 )

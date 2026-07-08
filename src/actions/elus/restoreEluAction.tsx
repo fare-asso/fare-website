@@ -1,17 +1,19 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type RestoreEluResult = { success: true } | { success: false; error: string }
 
-async function restoreEluActionImpl(id: number): Promise<RestoreEluResult> {
-    const user = await getCurrentUserWithPermissions()
+async function restoreEluActionImpl(
+    id: number,
+    context: ActionAPIContext
+): Promise<RestoreEluResult> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -36,11 +38,10 @@ async function restoreEluActionImpl(id: number): Promise<RestoreEluResult> {
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true }
 }
 
-export default withServerAction("restoreEluAction", restoreEluActionImpl)
+export const restoreEluAction = wrapAction(
+    "restoreEluAction",
+    restoreEluActionImpl
+)

@@ -5,7 +5,6 @@
         "target": "ES2023",
         "jsx": "react-jsx",
         "jsxImportSource": "react",
-        "incremental": true,
         "rootDir": ".",
         "paths": {
             "@/*": ["./src/*"],

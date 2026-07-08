@@ -1,6 +1,3 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
@@ -12,7 +9,8 @@ import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { locationDisplayName } from "@/helpers/location"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 import NewBagadAssoTicket from "../../../emails/badagasso-ticket"
@@ -24,7 +22,6 @@ export type FormState = {
 }
 
 async function submitBagadAssoFormActionImpl(
-    _prevState: FormState | undefined,
     data: BagadAssoFormData
 ): Promise<FormState> {
     // Validate the data using Zod schema
@@ -106,11 +103,10 @@ async function submitBagadAssoFormActionImpl(
         )
     })
 
-    revalidatePath("/dashboard/bagadAsso")
     return { success: true }
 }
 
-export default withServerAction(
+export const submitBagadAssoFormAction = wrapAction(
     "submitBagadAssoFormAction",
     submitBagadAssoFormActionImpl
 )

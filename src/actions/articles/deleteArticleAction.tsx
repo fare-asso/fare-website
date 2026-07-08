@@ -1,20 +1,15 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteArticleActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    id: number
-) {
+async function deleteArticleActionImpl(id: number, context: ActionAPIContext) {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -25,7 +20,7 @@ async function deleteArticleActionImpl(
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // fetch article to delete
     const articleResult = await tryCatch(
@@ -71,9 +66,10 @@ async function deleteArticleActionImpl(
         captureActionError(deleted.error)
         return { error: "Echec de la suppression de l'article" }
     }
-    revalidatePath("/dashboard/articles")
-    revalidatePath("/actualites")
     return { success: true }
 }
 
-export default withServerAction("deleteArticleAction", deleteArticleActionImpl)
+export const deleteArticleAction = wrapAction(
+    "deleteArticleAction",
+    deleteArticleActionImpl
+)

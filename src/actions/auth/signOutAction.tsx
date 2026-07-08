@@ -1,13 +1,15 @@
-"use server"
+import type { ActionAPIContext } from "astro:actions"
 
-import { redirect } from "next/navigation"
-
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function signOutImpl(): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createClient()
+async function signOutImpl(
+    _input: undefined,
+    context: ActionAPIContext
+): Promise<{ success: boolean; error?: string }> {
+    const supabase = createClient(context)
 
     const result = await tryCatch(supabase.auth.signOut())
     if (!result.success) {
@@ -21,7 +23,7 @@ async function signOutImpl(): Promise<{ success: boolean; error?: string }> {
     }
 
     console.log("Deconnection réussie")
-    redirect("/login")
+    return { success: true }
 }
 
-export const signOut = withServerAction("signOut", signOutImpl)
+export const signOut = wrapAction("signOut", signOutImpl)

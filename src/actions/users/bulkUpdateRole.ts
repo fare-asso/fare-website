@@ -1,16 +1,19 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import type { Role } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
-    const currentUser = await getCurrentUserWithPermissions()
+async function bulkUpdateRoleImpl(
+    input: { userIds: string[]; newRole: Role },
+    context: ActionAPIContext
+) {
+    const { userIds, newRole } = input
+    const currentUser = await getUserWithPermissions(context)
     if (!currentUser) {
         return { success: false, error: "Non authentifié" }
     }
@@ -47,7 +50,6 @@ async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
         }
     }
 
-    revalidatePath("/dashboard/users")
     return {
         success: true,
         updatedCount: filteredIds.length,
@@ -55,4 +57,4 @@ async function bulkUpdateRoleImpl(userIds: string[], newRole: Role) {
     }
 }
 
-export default withServerAction("bulkUpdateRole", bulkUpdateRoleImpl)
+export const bulkUpdateRole = wrapAction("bulkUpdateRole", bulkUpdateRoleImpl)

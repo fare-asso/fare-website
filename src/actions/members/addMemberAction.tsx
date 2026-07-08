@@ -1,21 +1,23 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { uniqueFileName } from "@/helpers/storage"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createAdminClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    createAdminClient,
+    getUserWithPermissions
+} from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddMemberSchema, type TAddMember } from "@/schemas/members"
 
 async function addMemberActionImpl(
-    input: TAddMember
+    input: TAddMember,
+    context: ActionAPIContext
 ): Promise<{ success: true } | { success: false; error: string }> {
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "create:member")) {
         return {
@@ -67,9 +69,10 @@ async function addMemberActionImpl(
         return { success: false, error: "Échec de la création du membre." }
     }
 
-    revalidatePath("/dashboard/membres")
-    revalidatePath("/a-propos/bureau")
     return { success: true }
 }
 
-export default withServerAction("addMemberAction", addMemberActionImpl)
+export const addMemberAction = wrapAction(
+    "addMemberAction",
+    addMemberActionImpl
+)

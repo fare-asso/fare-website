@@ -1,20 +1,19 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type DeleteConseilResult = { success: true } | { success: false; error: string }
 
 async function deleteConseilActionImpl(
-    _prevState: DeleteConseilResult | undefined,
-    id: number
+    id: number,
+    context: ActionAPIContext
 ): Promise<DeleteConseilResult> {
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -63,11 +62,10 @@ async function deleteConseilActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true }
 }
 
-export default withServerAction("deleteConseilAction", deleteConseilActionImpl)
+export const deleteConseilAction = wrapAction(
+    "deleteConseilAction",
+    deleteConseilActionImpl
+)

@@ -1,20 +1,18 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteEquipmentActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    equipmentId: number
+    equipmentId: number,
+    context: ActionAPIContext
 ) {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -25,7 +23,7 @@ async function deleteEquipmentActionImpl(
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // fetch association to delete
     const equipment = await prisma.bagadAssoEquipment.findUnique({
@@ -64,12 +62,10 @@ async function deleteEquipmentActionImpl(
         captureActionError(deleted.error)
         return { error: "Echec de la suppression de l'équipement" }
     }
-    revalidatePath("/dashboard/bagadAsso")
-    revalidatePath("/projets/bagad-asso")
     return { success: true }
 }
 
-export default withServerAction(
+export const deleteEquipmentAction = wrapAction(
     "deleteEquipmentAction",
     deleteEquipmentActionImpl
 )

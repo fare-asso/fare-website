@@ -1,13 +1,11 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import type { PresseType } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 function isPresseType(value: string): value is PresseType {
@@ -25,11 +23,11 @@ function getPresseType(formData: FormData): PresseType | undefined {
 }
 
 async function createCDPActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
+    formData: FormData,
+    context: ActionAPIContext
 ) {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -40,7 +38,7 @@ async function createCDPActionImpl(
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // retrieve form data fields
     const name = formData.get("name")?.toString()
@@ -123,21 +121,12 @@ async function createCDPActionImpl(
         }
     }
 
-    // successfully created the record
-    // revalidate cdp page
-    revalidatePath("/dashboard/communiques-de-presse")
-    revalidatePath("/presse")
-    revalidatePath(
-        type === "CDP"
-            ? "/presse/communiques-de-presse"
-            : "/presse/dossiers-de-presse"
-    )
-
     return {
         success: true
     }
 }
 
-export default withServerAction("createCDPAction", createCDPActionImpl, {
-    attachFormData: true
-})
+export const createCDPAction = wrapAction(
+    "createCDPAction",
+    createCDPActionImpl
+)

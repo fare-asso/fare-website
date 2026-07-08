@@ -4,6 +4,7 @@ import { Loader2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
+import { updateAssistanceConfig } from "@/actions/defense-des-droits/updateAssistanceConfigAction"
 import { Button } from "@/components/ui/button"
 import {
     Field,
@@ -12,8 +13,6 @@ import {
     FieldLabel
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-
-import { updateAssistanceConfig } from "./actions"
 
 export default function ConfigForm({
     recipientEmail,

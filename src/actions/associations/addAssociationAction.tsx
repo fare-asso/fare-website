@@ -1,22 +1,20 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function addAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
+    formData: FormData,
+    context: ActionAPIContext
 ) {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -27,7 +25,7 @@ async function addAssociationActionImpl(
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // retrieve form data fields
     const name = formData.get("name")?.toString()
@@ -123,9 +121,6 @@ async function addAssociationActionImpl(
     }
 
     if (created.value) {
-        revalidatePath("/dashboard/associations")
-        revalidatePath("/reseau")
-        revalidatePath("/")
         return { success: true }
     } else {
         return {
@@ -134,8 +129,7 @@ async function addAssociationActionImpl(
     }
 }
 
-export default withServerAction(
+export const addAssociationAction = wrapAction(
     "addAssociationAction",
-    addAssociationActionImpl,
-    { attachFormData: true }
+    addAssociationActionImpl
 )

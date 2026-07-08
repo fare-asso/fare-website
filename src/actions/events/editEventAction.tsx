@@ -1,15 +1,12 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import getCurrentUserId from "@/helpers/user/id"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 interface Event {
@@ -26,11 +23,11 @@ interface Event {
 }
 
 async function editEventActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
+    formData: FormData,
+    context: ActionAPIContext
 ) {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -41,7 +38,7 @@ async function editEventActionImpl(
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // retrieve formdata fields
     const id = formData.get("id")
@@ -277,15 +274,6 @@ async function editEventActionImpl(
         data.visibility = false
     }
 
-    // current user id
-    const res = await getCurrentUserId()
-
-    if (res.error) {
-        return {
-            error: "Echec de la récupération de l'utilisateur"
-        }
-    }
-
     // create event record in the DB
     if (!data.name || !data.desc || !data.categoryId || !data.location) {
         return {
@@ -306,7 +294,7 @@ async function editEventActionImpl(
                 startTime: data.startTime,
                 endTime: data.endTime,
                 location: data.location,
-                creatorId: res.userId,
+                creatorId: user.id,
                 visibility: data.visibility
             }
         })
@@ -318,11 +306,10 @@ async function editEventActionImpl(
         }
     }
 
-    revalidatePath("/agenda")
-    revalidatePath("/dashboard/events")
     return { success: true }
 }
 
-export default withServerAction("editEventAction", editEventActionImpl, {
-    attachFormData: true
-})
+export const editEventAction = wrapAction(
+    "editEventAction",
+    editEventActionImpl
+)

@@ -1,17 +1,18 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteEventActionImpl({ eventId }: { eventId: number }) {
+async function deleteEventActionImpl(
+    { eventId }: { eventId: number },
+    context: ActionAPIContext
+) {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -22,7 +23,7 @@ async function deleteEventActionImpl({ eventId }: { eventId: number }) {
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // fetch event Image url
     const imageUrl = await prisma.event.findUnique({
@@ -63,7 +64,9 @@ async function deleteEventActionImpl({ eventId }: { eventId: number }) {
         captureActionError(deleted.error)
         return
     }
-    revalidatePath("/dashboard/events")
 }
 
-export default withServerAction("deleteEventAction", deleteEventActionImpl)
+export const deleteEventAction = wrapAction(
+    "deleteEventAction",
+    deleteEventActionImpl
+)

@@ -1,19 +1,21 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditLinkSchema, type TEditLink } from "@/schemas/link"
 
 type Result = { success: true } | { success: false; error: string }
 
-async function editLinkActionImpl(input: TEditLink): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+async function editLinkActionImpl(
+    input: TEditLink,
+    context: ActionAPIContext
+): Promise<Result> {
+    const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "edit:lien")) {
         return {
@@ -59,9 +61,7 @@ async function editLinkActionImpl(input: TEditLink): Promise<Result> {
         return { success: false, error: "Échec de la modification du lien." }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction("editLinkAction", editLinkActionImpl)
+export const editLinkAction = wrapAction("editLinkAction", editLinkActionImpl)

@@ -1,7 +1,4 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
@@ -9,7 +6,8 @@ import { BtpContact } from "@/../emails/btp-contact"
 import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
     type BTPTutorQuestion,
@@ -92,8 +90,10 @@ async function submitTutorQuestionImpl(
         })
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
 
-export default withServerAction("submitTutorQuestion", submitTutorQuestionImpl)
+export const submitTutorQuestion = wrapAction(
+    "submitTutorQuestion",
+    submitTutorQuestionImpl
+)

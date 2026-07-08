@@ -1,15 +1,14 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function restoreUserImpl(userId: string) {
-    const currentUser = await getCurrentUserWithPermissions()
+async function restoreUserImpl(userId: string, context: ActionAPIContext) {
+    const currentUser = await getUserWithPermissions(context)
     if (!currentUser) {
         return { success: false, error: "Non authentifié" }
     }
@@ -37,8 +36,7 @@ async function restoreUserImpl(userId: string) {
         }
     }
 
-    revalidatePath("/dashboard/users")
     return { success: true }
 }
 
-export default withServerAction("restoreUser", restoreUserImpl)
+export const restoreUser = wrapAction("restoreUser", restoreUserImpl)

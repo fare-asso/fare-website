@@ -1,20 +1,18 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function editAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
+    formData: FormData,
+    context: ActionAPIContext
 ) {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -25,7 +23,7 @@ async function editAssociationActionImpl(
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // retrieve form data fields
     const id = Number(formData.get("id")?.toString() ?? Number.NaN)
@@ -141,8 +139,6 @@ async function editAssociationActionImpl(
     }
 
     if (edited.value) {
-        revalidatePath("/dashboard/associations")
-        revalidatePath("/reseau")
         return { success: true }
     } else {
         return {
@@ -151,8 +147,7 @@ async function editAssociationActionImpl(
     }
 }
 
-export default withServerAction(
+export const editAssociationAction = wrapAction(
     "editAssociationAction",
-    editAssociationActionImpl,
-    { attachFormData: true }
+    editAssociationActionImpl
 )

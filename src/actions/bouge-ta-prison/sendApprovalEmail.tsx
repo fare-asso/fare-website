@@ -1,12 +1,10 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 
 import type { BTPTutorApplication } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 import BtpApplicationAck from "../../../emails/btp-application-aknowledgement"
@@ -56,12 +54,13 @@ async function sendApprovalEmailImpl(
         }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison/candidatures-tutorat/18")
-    revalidatePath("/dashboard/bouge-ta-prison")
     return {
         success: true,
         error: null
     }
 }
 
-export default withServerAction("sendApprovalEmail", sendApprovalEmailImpl)
+export const sendApprovalEmail = wrapAction(
+    "sendApprovalEmail",
+    sendApprovalEmailImpl
+)

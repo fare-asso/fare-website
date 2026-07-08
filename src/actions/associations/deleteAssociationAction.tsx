@@ -1,20 +1,22 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createAdminClient, createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    createAdminClient,
+    createClient,
+    getUserWithPermissions
+} from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    id: number
+    id: number,
+    context: ActionAPIContext
 ) {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -25,7 +27,7 @@ async function deleteAssociationActionImpl(
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // create supabase admin client (only on server)
     const supabaseAdmin = createAdminClient()
@@ -80,13 +82,10 @@ async function deleteAssociationActionImpl(
         captureActionError(deleted.error)
         return { error: "Echec de la suppression de l'association" }
     }
-    revalidatePath("/dashboard/associations")
-    revalidatePath("/reseau")
-    revalidatePath("/")
     return { success: true }
 }
 
-export default withServerAction(
+export const deleteAssociationAction = wrapAction(
     "deleteAssociationAction",
     deleteAssociationActionImpl
 )

@@ -1,21 +1,19 @@
-"use server"
-
 import type { JSONContent } from "@tiptap/react"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function createArticleActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
+    formData: FormData,
+    context: ActionAPIContext
 ): Promise<{ error?: string; success?: boolean }> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -26,7 +24,7 @@ async function createArticleActionImpl(
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // retrieve form data fields
     const title = formData.get("title")?.toString()
@@ -89,14 +87,10 @@ async function createArticleActionImpl(
         return { error: "Echec de la création de l'article" }
     }
 
-    revalidatePath("/actualites")
-    revalidatePath("/dashboard/articles")
-
     return { success: true }
 }
 
-export default withServerAction(
+export const createArticleAction = wrapAction(
     "createArticleAction",
-    createArticleActionImpl,
-    { attachFormData: true }
+    createArticleActionImpl
 )

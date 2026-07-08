@@ -1,21 +1,22 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { uniqueFileName } from "@/helpers/storage"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditMemberSchema, type TEditMember } from "@/schemas/members"
 
 type Result = { success: true } | { success: false; error: string }
 
-async function editMemberActionImpl(input: TEditMember): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+async function editMemberActionImpl(
+    input: TEditMember,
+    context: ActionAPIContext
+): Promise<Result> {
+    const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "edit:member")) {
         return {
@@ -32,7 +33,7 @@ async function editMemberActionImpl(input: TEditMember): Promise<Result> {
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     const current = await tryCatch(
         prisma.member.findUnique({
@@ -94,9 +95,10 @@ async function editMemberActionImpl(input: TEditMember): Promise<Result> {
         return { success: false, error: "Échec de la modification du membre." }
     }
 
-    revalidatePath("/dashboard/membres")
-    revalidatePath("/a-propos/bureau")
     return { success: true }
 }
 
-export default withServerAction("editMemberAction", editMemberActionImpl)
+export const editMemberAction = wrapAction(
+    "editMemberAction",
+    editMemberActionImpl
+)

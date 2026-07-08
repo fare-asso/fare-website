@@ -1,17 +1,19 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type Result = { success: true } | { success: false; error: string }
 
-async function unarchiveTutorApplicationImpl(id: number): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+async function unarchiveTutorApplicationImpl(
+    id: number,
+    context: ActionAPIContext
+): Promise<Result> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -36,11 +38,10 @@ async function unarchiveTutorApplicationImpl(id: number): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
 
-export default withServerAction(
+export const unarchiveTutorApplication = wrapAction(
     "unarchiveTutorApplication",
     unarchiveTutorApplicationImpl
 )

@@ -1,9 +1,6 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
-
 import prisma from "@/helpers/db"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteTutorQuestionImpl(
@@ -22,8 +19,10 @@ async function deleteTutorQuestionImpl(
         return { error: "Echec de la suppression de la question" }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
 
-export default withServerAction("deleteTutorQuestion", deleteTutorQuestionImpl)
+export const deleteTutorQuestion = wrapAction(
+    "deleteTutorQuestion",
+    deleteTutorQuestionImpl
+)

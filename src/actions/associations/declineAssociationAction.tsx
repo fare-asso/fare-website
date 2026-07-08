@@ -1,19 +1,17 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function declineAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    id: number
+    id: number,
+    context: ActionAPIContext
 ): Promise<{ error?: string; success?: boolean }> {
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { error: "Authentification requise" }
     }
@@ -46,7 +44,7 @@ async function declineAssociationActionImpl(
 
     // Remove logo from association-pictures storage
     if (association.logoPath.length > 0) {
-        const supabase = await createClient()
+        const supabase = createClient(context)
         const { error: storageError } = await supabase.storage
             .from("association-pictures")
             .remove([association.logoPath])
@@ -70,14 +68,10 @@ async function declineAssociationActionImpl(
         return { error: "Échec du refus de l'association" }
     }
 
-    revalidatePath("/dashboard/associations")
-    revalidatePath("/reseau")
-    revalidatePath("/")
-
     return { success: true }
 }
 
-export default withServerAction(
+export const declineAssociationAction = wrapAction(
     "declineAssociationAction",
     declineAssociationActionImpl
 )

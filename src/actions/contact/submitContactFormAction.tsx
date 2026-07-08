@@ -1,11 +1,9 @@
-"use server"
-
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
 import { verifyCaptcha } from "@/helpers/captcha/verify"
 import { sendEmail } from "@/helpers/email"
-import { withServerAction } from "@/lib/sentry"
+import { wrapAction } from "@/lib/action"
 import { type Contact, ContactSchema } from "@/schemas/contact"
 
 import ContactTemplate from "../../../emails/contact"
@@ -16,10 +14,7 @@ export type FormState = {
     fieldErrors?: Partial<Record<keyof Contact, string[]>>
 }
 
-async function submitContactFormActionImpl(
-    _prevState: FormState | undefined,
-    data: Contact
-): Promise<FormState> {
+async function submitContactFormActionImpl(data: Contact): Promise<FormState> {
     const parsed = ContactSchema.safeParse(data)
 
     if (!parsed.success) {
@@ -76,7 +71,7 @@ async function submitContactFormActionImpl(
     return { success: true }
 }
 
-export default withServerAction(
+export const submitContactFormAction = wrapAction(
     "submitContactFormAction",
     submitContactFormActionImpl
 )

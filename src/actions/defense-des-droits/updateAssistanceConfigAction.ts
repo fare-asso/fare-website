@@ -1,12 +1,11 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 const ConfigInput = type({
@@ -16,11 +15,14 @@ const ConfigInput = type({
 
 type Result = { success: true } | { success: false; error: string }
 
-async function updateAssistanceConfigImpl(input: {
-    recipientEmail: string
-    delay: string
-}): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+async function updateAssistanceConfigImpl(
+    input: {
+        recipientEmail: string
+        delay: string
+    },
+    context: ActionAPIContext
+): Promise<Result> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -72,11 +74,10 @@ async function updateAssistanceConfigImpl(input: {
         }
     }
 
-    revalidatePath("/dashboard/defense-des-droits")
     return { success: true }
 }
 
-export const updateAssistanceConfig = withServerAction(
+export const updateAssistanceConfig = wrapAction(
     "updateAssistanceConfig",
     updateAssistanceConfigImpl
 )

@@ -1,22 +1,23 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditInstanceSchema, type TEditInstance } from "@/schemas/instance"
 
 type Result = { success: true } | { success: false; error: string }
 
-async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+async function editInstanceActionImpl(
+    input: TEditInstance,
+    context: ActionAPIContext
+): Promise<Result> {
+    const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "edit:instance")) {
         return {
@@ -33,7 +34,7 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     const current = await tryCatch(
         prisma.instance.findUnique({
@@ -144,10 +145,10 @@ async function editInstanceActionImpl(input: TEditInstance): Promise<Result> {
             )
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
     return { success: true }
 }
 
-export default withServerAction("editInstanceAction", editInstanceActionImpl)
+export const editInstanceAction = wrapAction(
+    "editInstanceAction",
+    editInstanceActionImpl
+)
