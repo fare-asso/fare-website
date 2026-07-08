@@ -21,6 +21,7 @@ const testEnv = {
     SUPABASE_POSTGRES_PRISMA_URL: "postgresql://test:test@localhost:5432/test",
     FRIENDLY_CAPTCHA_API_KEY: "test-fc-api-key",
     SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    SUPABASE_ANON_KEY: "test-anon-key",
     SMTP_HOST: "smtp.test.local",
     SMTP_PORT: "465",
     SMTP_SECURE: "true",
@@ -28,7 +29,6 @@ const testEnv = {
     SMTP_PASS: "test-pass",
     SMTP_FROM_EMAIL: "noreply@fare-asso.fr",
     PUBLIC_SUPABASE_URL: "http://localhost:54321",
-    PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
     PUBLIC_SITE_URL: "http://localhost:3000",
     PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key",
     PUBLIC_SENTRY_DSN: "https://test@test.ingest.sentry.io/0"
