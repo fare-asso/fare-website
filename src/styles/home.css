@@ -25,7 +25,7 @@ section.hero {
         }
     }
 
-    & > div.key-numbers {
+    & div.key-numbers {
         grid-area: numbers;
     }
 

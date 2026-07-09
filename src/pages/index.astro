@@ -45,10 +45,7 @@ const associations = associationsResult.success
                 width={1200}
             />
 
-            <KeyNumbers
-                client:visible
-                associationCount={associations?.length}
-            />
+            <KeyNumbers client:load associationCount={associations?.length} />
 
             <div
                 class="intro flex w-full flex-col items-start justify-between rounded-xl bg-black p-8 text-lg text-white"
