@@ -19,7 +19,6 @@ const equipmentList = equipment.success ? equipment.value : []
             class="mb-12 w-72"
         />
 
-        {/* Présentation du projet */}
         <div
             class="mb-12 max-w-4xl rounded-xl bg-black p-8 text-justify text-white"
         >
@@ -52,8 +51,8 @@ const equipmentList = equipment.success ? equipment.value : []
                 souhaitez organiser votre WEC, gala, soirée ou quelconque
                 évènement, vous nous dites "On aurait besoin d'une enceinte, un
                 jeu de lumière et un tapis rouge, c'est possible ?", on vérifie
-                que personne ne les a déjà réservé, si c'est tout bon on ne
-                vous demande qu'une caution et hop c'est à vous pour l'évent !
+                que personne ne les a déjà réservé, si c'est tout bon on ne vous
+                demande qu'une caution et hop c'est à vous pour l'évent !
             </p>
             <p class="text-justify">
                 Nous avons construit cette malle en 2 volets, inséparables pour
@@ -95,7 +94,6 @@ const equipmentList = equipment.success ? equipment.value : []
             </div>
         </section>
 
-        {/* Formulaire de demande de matériel */}
         <BagadAssoForm client:load equipmentList={equipmentList} />
     </div>
 </Public>

@@ -42,8 +42,7 @@ const socialLinks = [
         </h1>
 
         <div class="mb-12 grid w-full max-w-2xl gap-3 sm:grid-cols-3">
-            {
-                socialLinks.map((link) => {
+            {socialLinks.map((link) => {
                     const Icon = link.icon
                     return (
                         <a
@@ -72,8 +71,7 @@ const socialLinks = [
                             </span>
                         </a>
                     )
-                })
-            }
+                })}
         </div>
 
         <ContactForm client:load />

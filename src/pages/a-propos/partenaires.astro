@@ -22,8 +22,7 @@ const partners = partenaires.success
 ---
 
 <Public title="Nos partenaires" description="Les partenaires de la FARE">
-    {
-        !partners ? (
+    {!partners ? (
             <div class="flex w-full flex-col items-center justify-center py-32">
                 <p class="text-destructive text-lg font-medium">
                     Echec du chargement des partenaires
@@ -75,6 +74,5 @@ const partners = partenaires.success
                     </div>
                 )}
             </div>
-        )
-    }
+        )}
 </Public>

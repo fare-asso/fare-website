@@ -1,18 +1,18 @@
 ---
-import MemberCard from "@/components/public/bureau/memberCard.astro";
+import MemberCard from "@/components/public/bureau/memberCard.astro"
 
-import prisma from "@/helpers/db";
-import Public from "@/layouts/Public.astro";
+import prisma from "@/helpers/db"
+import Public from "@/layouts/Public.astro"
 
 const bureau = await prisma.member.findMany({
-    orderBy: [{ order: "asc" }, { id: "asc" }],
-});
+    orderBy: [{ order: "asc" }, { id: "asc" }]
+})
 
 // the accademic year is from mid-june to mid-june
 const currentAcademicYear =
     new Date().getMonth() >= 5
         ? new Date().getFullYear()
-        : new Date().getFullYear() - 1;
+        : new Date().getFullYear() - 1
 ---
 
 <Public title="Le Bureau" description="Page des membres du bureau de la FARE">

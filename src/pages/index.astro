@@ -77,16 +77,14 @@ const associations = associationsResult.success
         <div class="my-10 flex w-full flex-col">
             <h2 class="mb-2 text-2xl font-semibold">Notre réseau</h2>
             <div class="flex flex-col items-center">
-                {
-                    associations ? (
+                {associations ? (
                         <AssociationMap
                             client:only="react"
                             associations={associations}
                         />
                     ) : (
                         <span>Echec de la récupération des associations</span>
-                    )
-                }
+                    )}
             </div>
         </div>
 
@@ -125,14 +123,14 @@ const associations = associationsResult.success
                             title="Vidéo de présentation du Discord de la FARE"
                             style="width: 100%; height: 100%; border-radius: 0.5rem; border: 0;"
                             allowfullscreen
-                            loading="lazy"></iframe>
+                            loading="lazy"
+                        ></iframe>
                     </div>
                 </div>
             </div>
         </div>
 
-        {
-            partners.length > 0 && (
+        {partners.length > 0 && (
                 <div class="my-10 flex w-full flex-col items-center">
                     <h2 class="mb-8 text-3xl font-semibold">Nos partenaires</h2>
                     <div class="flex flex-row flex-wrap items-center justify-center gap-8">
@@ -152,7 +150,6 @@ const associations = associationsResult.success
                         ))}
                     </div>
                 </div>
-            )
-        }
+            )}
     </div>
 </Public>

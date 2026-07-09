@@ -22,7 +22,11 @@ const fullTitle = title ? `${title} | FARE` : "FARE"
     <main class="flex min-h-screen flex-col items-center">
         <header class="v1f">
             <a href="/" class="v1f-logo" aria-label="Accueil">
-                <Image src={logo} alt="FARE de Haute-Bretagne" loading="eager" />
+                <Image
+                    src={logo}
+                    alt="FARE de Haute-Bretagne"
+                    loading="eager"
+                />
             </a>
             <HeaderLinks />
         </header>
@@ -35,5 +39,6 @@ const fullTitle = title ? `${title} | FARE` : "FARE"
         is:inline
         defer
         src="https://a.fare-asso.fr/script.js"
-        data-website-id="7133dde1-d746-40d0-b0b2-9ec15d49c711"></script>
+        data-website-id="7133dde1-d746-40d0-b0b2-9ec15d49c711"
+    ></script>
 </Base>

@@ -1,7 +1,10 @@
 ---
 import TicketDetailPage from "@/components/dashboard/bagadAsso/ticketDetailPage"
 import { toShellUser } from "@/components/dashboard/shell"
-import { computeTotalDeposit, joinTicketAndEquipment } from "@/helpers/bagadAsso"
+import {
+    computeTotalDeposit,
+    joinTicketAndEquipment
+} from "@/helpers/bagadAsso"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"

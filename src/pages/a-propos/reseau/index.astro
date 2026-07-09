@@ -22,8 +22,9 @@ const assos = await prisma.association.findMany({
         <AssociationMap client:only="react" associations={assos} />
         <AssociationList associations={assos} />
 
-        {/* Nous rejoindre card */}
-        <div class="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-1/2">
+        <div
+            class="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-1/2"
+        >
             <h2 class="mb-2 text-lg font-semibold">
                 Votre association souhaite intégrer notre réseau ?{" "}
             </h2>
@@ -31,7 +32,7 @@ const assos = await prisma.association.findMany({
                 La FARE accueille de nouveaux membres partageant nos objectifs
                 pour la vie étudiante. En nous rejoignant, vous aurez accès à
                 notre réseau, nos ressources et notre soutien.
-                <br />
+                <br>
                 Pour plus d'informations sur l'adhésion, cliquez ci-dessous.
             </p>
             <a

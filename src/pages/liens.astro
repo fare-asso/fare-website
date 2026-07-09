@@ -4,81 +4,81 @@ import {
     FileTextIcon,
     LinkIcon,
     type LucideIcon,
-    MailIcon,
-} from "lucide-react";
-import type { IconType } from "react-icons";
+    MailIcon
+} from "lucide-react"
+import type { IconType } from "react-icons"
 import {
     FaDiscord,
     FaEnvelope,
     FaFacebook,
     FaInstagram,
-    FaLinkedin,
-} from "react-icons/fa6";
+    FaLinkedin
+} from "react-icons/fa6"
 
-import prisma from "@/helpers/db";
-import Public from "@/layouts/Public.astro";
-import { captureActionError } from "@/lib/sentry";
-import { tryCatch } from "@/lib/utils";
+import prisma from "@/helpers/db"
+import Public from "@/layouts/Public.astro"
+import { captureActionError } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
 
 const socialLinks: { name: string; href: string; icon: IconType }[] = [
     {
         name: "Instagram",
         href: "https://www.instagram.com/fare_hautebretagne",
-        icon: FaInstagram,
+        icon: FaInstagram
     },
     {
         name: "Email",
         href: "mailto:contact@fare-asso.fr",
-        icon: FaEnvelope,
+        icon: FaEnvelope
     },
     {
         name: "Facebook",
         href: "https://www.facebook.com/fare.hautebretagne",
-        icon: FaFacebook,
+        icon: FaFacebook
     },
     {
         name: "Linkedin",
         href: "https://www.linkedin.com/company/fare-haute-bretagne",
-        icon: FaLinkedin,
+        icon: FaLinkedin
     },
     {
         name: "Discord",
         href: "https://discord.gg/4DaBP3Vw59",
-        icon: FaDiscord,
-    },
-];
+        icon: FaDiscord
+    }
+]
 
 function isExternal(url: string): boolean {
-    return !url.startsWith("https://fare-asso.fr/");
+    return !url.startsWith("https://fare-asso.fr/")
 }
 
 function isPdf(url: string): boolean {
-    return /\.pdf(\?|#|$)/i.test(url);
+    return /\.pdf(\?|#|$)/i.test(url)
 }
 
 function getLinkIcon(url: string): LucideIcon {
-    if (url.startsWith("mailto:")) return MailIcon;
-    if (isPdf(url)) return FileTextIcon;
-    if (isExternal(url)) return ExternalLinkIcon;
-    return LinkIcon;
+    if (url.startsWith("mailto:")) return MailIcon
+    if (isPdf(url)) return FileTextIcon
+    if (isExternal(url)) return ExternalLinkIcon
+    return LinkIcon
 }
 
 const result = await tryCatch(
     prisma.linkCategory.findMany({
         include: {
             liens: {
-                orderBy: { order: "asc" },
-            },
+                orderBy: { order: "asc" }
+            }
         },
-        orderBy: { order: "asc" },
-    }),
-);
+        orderBy: { order: "asc" }
+    })
+)
 if (!result.success) {
-    captureActionError(result.error);
+    captureActionError(result.error)
 }
 const categories = result.success
     ? result.value.filter((category) => category.liens.length > 0)
-    : [];
+    : []
 ---
 
 <Public title="Liens" description=" Les liens utiles de la FARE">
@@ -94,8 +94,7 @@ const categories = result.success
         </header>
 
         <nav class="flex flex-wrap items-center justify-center gap-6">
-            {
-                socialLinks.map((social) => {
+            {socialLinks.map((social) => {
                     const Icon = social.icon;
                     return (
                         <a
@@ -109,11 +108,9 @@ const categories = result.success
                             <Icon className="size-6" />
                         </a>
                     );
-                })
-            }
+                })}
         </nav>
-        {
-            categories.length > 0 && (
+        {categories.length > 0 && (
                 <div class="flex w-full flex-col gap-8">
                     {categories.map((category) => (
                         <section class="flex flex-col gap-3">
@@ -162,7 +159,6 @@ const categories = result.success
                         </section>
                     ))}
                 </div>
-            )
-        }
+            )}
     </div>
 </Public>

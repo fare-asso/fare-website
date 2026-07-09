@@ -23,8 +23,7 @@ const filteredArticles = articles.filter((article) => article.published)
             <div
                 class="flex w-full flex-col items-center space-y-4 md:w-3/4 lg:w-1/2"
             >
-                {
-                    filteredArticles.length === 0 ? (
+                {filteredArticles.length === 0 ? (
                         <span class="text-xl text-gray-700">
                             Aucun article n'est disponible pour le moment...
                         </span>
@@ -32,8 +31,7 @@ const filteredArticles = articles.filter((article) => article.published)
                         filteredArticles.map((article) => (
                             <ArticleCard article={article} />
                         ))
-                    )
-                }
+                    )}
             </div>
         </div>
     </div>

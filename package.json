@@ -14,12 +14,12 @@
         "test:node": "vitest run --project node",
         "test:browser": "vitest run --project browser",
         "test:watch": "vitest",
-        "lint": "oxlint --fix",
+        "lint": "oxlint --fix && biome lint --write .",
         "check": "pnpm run check:types && pnpm run check:lint && pnpm run check:format && pnpm run test",
-        "check:lint": "oxlint --deny-warnings",
+        "check:lint": "biome lint . && oxlint --deny-warnings",
         "check:types": "tsgo --noEmit && astro check",
-        "check:format": "oxfmt --check",
-        "format": "oxfmt"
+        "check:format": "oxfmt --check && biome format .",
+        "format": "oxfmt && biome format --write ."
     },
     "dependencies": {
         "@arkenv/vite-plugin": "^0.1.4",
@@ -86,6 +86,7 @@
     },
     "devDependencies": {
         "@astrojs/check": "^0.9.9",
+        "@biomejs/biome": "^2.5.3",
         "@react-email/ui": "^6.6.6",
         "@types/leaflet": "^1.9.21",
         "@types/node": "^24.13.2",

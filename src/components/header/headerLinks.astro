@@ -9,8 +9,7 @@ const visible = links.filter((l) => !l.hidden)
 ---
 
 <nav class="v1f-nav" aria-label="Principale">
-    {
-        visible.map((l) => {
+    {visible.map((l) => {
             const active = pathname.startsWith(l.href)
             const subLinks = (l.subLinks ?? []).filter((s) => !s.hidden)
             const hasSub = subLinks.length > 0
@@ -51,8 +50,7 @@ const visible = links.filter((l) => !l.hidden)
                     )}
                 </div>
             )
-        })
-    }
+        })}
     <div class="v1f-rail" aria-hidden="true"></div>
 </nav>
 
@@ -78,8 +76,7 @@ const visible = links.filter((l) => !l.hidden)
         </button>
     </div>
     <nav class="m1-nav" aria-label="Mobile">
-        {
-            visible.map((l) => {
+        {visible.map((l) => {
                 const subLinks = (l.subLinks ?? []).filter((s) => !s.hidden)
                 if (subLinks.length > 0) {
                     return (
@@ -120,7 +117,6 @@ const visible = links.filter((l) => !l.hidden)
                         {l.title}
                     </a>
                 )
-            })
-        }
+            })}
     </nav>
 </div>

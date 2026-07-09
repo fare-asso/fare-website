@@ -62,7 +62,8 @@ Always use `pnpm`, never `npm`.
 
 ### Formatting & Linting
 
-- **oxlint** (lint) + **oxfmt** (format) are the source of truth. Config: `oxlint.config.ts`, `oxfmt.config.ts`. Linters are scoped to `.ts/.tsx`; `.astro` is covered by `astro check`.
+- **oxlint** (lint) + **oxfmt** (format) own `.ts/.tsx/.js/.json/.css` (config: `oxlint.config.ts`, `oxfmt.config.ts`); neither supports `.astro`.
+- **Biome owns `.astro`** (`biome.jsonc`): formatting + a small a11y lint set, scoped to `**/*.astro` via `files.includes` so it never touches the files oxlint/oxfmt own. Astro support is experimental (needs `html.experimentalFullSupportEnabled`); `.astro` type-checking stays with `astro check`. Scripts chain them: `format`/`check:format` run oxfmt then `biome format`; `lint`/`check:lint` run oxlint then `biome lint`. Biome can't parse `{/* */}` template comments — don't use them in `.astro`.
 - **80** col width, **4-space** indent, **no semicolons**, **double quotes** (incl. JSX).
 - **Naming:** camelCase vars/functions, PascalCase components/types, CONSTANT_CASE constants.
 - oxlint checks accessibility (a11y). Tailwind classes auto-sorted by oxfmt (`cn`, `twMerge`, `cva`).

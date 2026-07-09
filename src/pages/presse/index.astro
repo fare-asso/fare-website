@@ -20,8 +20,7 @@ const communiques = await prisma.communiqueDePresse.findMany({
         </h1>
 
         <div class="flex w-3/4 flex-col items-center space-y-2">
-            {
-                communiques.length > 0 ? (
+            {communiques.length > 0 ? (
                     communiques.map((cdp) =>
                         cdp.type === "CDP" ? (
                             <CommuniquesCard communique={cdp} />
@@ -33,8 +32,7 @@ const communiques = await prisma.communiqueDePresse.findMany({
                     <span class="text-xl">
                         Nous n'avons pas encore de documents de presse.🥲
                     </span>
-                )
-            }
+                )}
         </div>
     </div>
 </Public>

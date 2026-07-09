@@ -30,10 +30,7 @@ const logoUrl = new StorageUtils()
     description={associationRecord.desc ?? undefined}
 >
     <div class="flex w-[90%] flex-col items-start pt-14">
-        <a
-            href="/a-propos/reseau"
-            class="text-sm opacity-40 hover:underline"
-        >
+        <a href="/a-propos/reseau" class="text-sm opacity-40 hover:underline">
             &lt; Retour aux associations
         </a>
         <h1 class="mt-2 text-3xl font-bold">
@@ -47,7 +44,7 @@ const logoUrl = new StorageUtils()
                 height={400}
                 alt={`${associationRecord.name} logo`}
                 class="aspect-square h-60 w-60 rounded-lg border border-black object-cover"
-            />
+            >
         </div>
     </div>
 </Public>

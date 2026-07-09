@@ -1,19 +1,19 @@
 ---
-import { MailIcon } from "lucide-react";
-import { Image } from "astro:assets";
-import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6";
+import { MailIcon } from "lucide-react"
+import { Image } from "astro:assets"
+import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6"
 
-import type { Member } from "@/generated/prisma/client";
-import { StorageUtils } from "@/helpers/supabase/storageUtils";
+import type { Member } from "@/generated/prisma/client"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 interface Props {
-    member: Member;
+    member: Member
 }
 
-const { member } = Astro.props;
+const { member } = Astro.props
 
-const su = new StorageUtils();
-const pictureUrl = su.from("member-pictures").getPublicUrl(member.picturePath);
+const su = new StorageUtils()
+const pictureUrl = su.from("member-pictures").getPublicUrl(member.picturePath)
 ---
 
 <div class="flex flex-col w-64 items-center *:text-center">
