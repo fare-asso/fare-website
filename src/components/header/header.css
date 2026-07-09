@@ -576,7 +576,7 @@
     }
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 768px) {
     .v1f-nav {
         display: flex;
     }
