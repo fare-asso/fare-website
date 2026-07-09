@@ -1,0 +1,126 @@
+---
+import { ChevronDownIcon, MenuIcon, XIcon } from "lucide-react"
+
+import { links } from "./nav.config"
+
+const MOBILE_MENU_ID = "fare-mobile-menu"
+const pathname = Astro.url.pathname
+const visible = links.filter((l) => !l.hidden)
+---
+
+<nav class="v1f-nav" aria-label="Principale">
+    {
+        visible.map((l) => {
+            const active = pathname.startsWith(l.href)
+            const subLinks = (l.subLinks ?? []).filter((s) => !s.hidden)
+            const hasSub = subLinks.length > 0
+
+            return (
+                <div class="v1f-item" data-active={active ? "true" : undefined}>
+                    <a
+                        href={l.href}
+                        class="v1f-link"
+                        aria-current={active ? "page" : undefined}
+                        aria-haspopup={hasSub ? "true" : undefined}
+                    >
+                        {l.title}
+                        {hasSub && (
+                            <ChevronDownIcon
+                                className="v1f-caret"
+                                size={14}
+                                aria-hidden="true"
+                            />
+                        )}
+                    </a>
+                    {hasSub && (
+                        <div class="v1f-pop" role="menu">
+                            {subLinks.map((s) => (
+                                <a
+                                    href={s.href}
+                                    class="v1f-suba"
+                                    role="menuitem"
+                                    data-active={
+                                        pathname === s.href ? "true" : undefined
+                                    }
+                                >
+                                    <span class="t">{s.title}</span>
+                                    {s.desc && <span class="d">{s.desc}</span>}
+                                </a>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )
+        })
+    }
+    <div class="v1f-rail" aria-hidden="true"></div>
+</nav>
+
+<button
+    class="m-burger"
+    type="button"
+    popovertarget={MOBILE_MENU_ID}
+    aria-label="Ouvrir le menu"
+>
+    <MenuIcon aria-hidden="true" />
+</button>
+
+<div id={MOBILE_MENU_ID} class="m1-drawer" popover="auto">
+    <div class="m1-head">
+        <button
+            class="m1-close"
+            type="button"
+            popovertarget={MOBILE_MENU_ID}
+            popovertargetaction="hide"
+            aria-label="Fermer le menu"
+        >
+            <XIcon aria-hidden="true" />
+        </button>
+    </div>
+    <nav class="m1-nav" aria-label="Mobile">
+        {
+            visible.map((l) => {
+                const subLinks = (l.subLinks ?? []).filter((s) => !s.hidden)
+                if (subLinks.length > 0) {
+                    return (
+                        <details
+                            class="m-acc"
+                            open={pathname.startsWith(l.href)}
+                        >
+                            <summary>
+                                <span>{l.title}</span>
+                                <ChevronDownIcon
+                                    className="chev"
+                                    aria-hidden="true"
+                                />
+                            </summary>
+                            <div class="m-sub">
+                                {subLinks.map((s) => (
+                                    <a
+                                        href={s.href}
+                                        data-active={
+                                            pathname === s.href
+                                                ? "true"
+                                                : "false"
+                                        }
+                                    >
+                                        {s.title}
+                                    </a>
+                                ))}
+                            </div>
+                        </details>
+                    )
+                }
+                return (
+                    <a
+                        href={l.href}
+                        class="m-link"
+                        data-active={pathname === l.href ? "true" : "false"}
+                    >
+                        {l.title}
+                    </a>
+                )
+            })
+        }
+    </nav>
+</div>

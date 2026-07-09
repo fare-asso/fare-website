@@ -3,7 +3,7 @@ import { Image } from "astro:assets"
 
 import logo from "@/assets/logo_fare.png"
 import Footer from "@/components/footer/footer"
-import HeaderLinks from "@/components/header/headerLinks"
+import HeaderLinks from "@/components/header/headerLinks.astro"
 
 import Base from "./Base.astro"
 
@@ -24,7 +24,7 @@ const fullTitle = title ? `${title} | FARE` : "FARE"
             <a href="/" class="v1f-logo" aria-label="Accueil">
                 <Image src={logo} alt="FARE de Haute-Bretagne" loading="eager" />
             </a>
-            <HeaderLinks pathname={Astro.url.pathname} />
+            <HeaderLinks />
         </header>
         <div class="flex w-full flex-1 flex-col items-center p-4 lg:p-10">
             <slot />
