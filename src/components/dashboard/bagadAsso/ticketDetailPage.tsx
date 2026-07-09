@@ -7,6 +7,7 @@ import {
     SquareUserRoundIcon,
     UsersIcon
 } from "lucide-react"
+import { useCallback } from "react"
 import {
     FaCalendarAlt,
     FaCaretLeft,
@@ -63,6 +64,10 @@ function TicketDetailContent({
         ? `https://www.google.com/maps/search/?api=1&query=${parsedEventAddr.value.coordinates.lat},${parsedEventAddr.value.coordinates.lon}`
         : `https://www.google.fr/maps/search/${encodeURIComponent(ticket.eventAddr)}`
 
+    const backButtonCallback = useCallback(() => {
+        window.history.back()
+    }, [])
+
     return (
         <div className="h-full w-full px-2 md:px-4">
             {/* Header */}
@@ -73,10 +78,10 @@ function TicketDetailContent({
                     size="sm"
                     className="mb-4 -ml-3"
                 >
-                    <a href="/dashboard/bagadAsso">
+                    <Button onClick={backButtonCallback} variant="ghost">
                         <FaCaretLeft className="mr-1" />
                         Retour aux tickets
-                    </a>
+                    </Button>
                 </Button>
 
                 <div className="flex flex-wrap items-center gap-3">
