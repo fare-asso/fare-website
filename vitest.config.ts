@@ -29,7 +29,7 @@ const testEnv = {
     SMTP_PASS: "test-pass",
     SMTP_FROM_EMAIL: "noreply@fare-asso.fr",
     PUBLIC_SUPABASE_URL: "http://localhost:54321",
-    PUBLIC_SITE_URL: "http://localhost:3000",
+    PUBLIC_SITE_URL: "http://localhost:4321",
     PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key",
     PUBLIC_SENTRY_DSN: "https://test@test.ingest.sentry.io/0"
 }

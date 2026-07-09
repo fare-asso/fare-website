@@ -23,7 +23,7 @@ export const EnvSchema = type({
 
     PUBLIC_SUPABASE_URL: "string.url",
 
-    PUBLIC_SITE_URL: 'string.url = "http://localhost:3000"',
+    PUBLIC_SITE_URL: 'string.url = "http://localhost:4321"',
     PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "string > 0",
     "PUBLIC_SENTRY_DSN?": "string"
 })

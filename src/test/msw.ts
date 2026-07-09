@@ -10,7 +10,7 @@ const onePngPixel = new Uint8Array(
 
 export const captchaUrl = "https://global.frcapi.com/api/v2/captcha/siteverify"
 
-const cornerPngUrl = "http://localhost:3000/corner-pdf-FAHB.png"
+const cornerPngUrl = "http://localhost:4321/corner-pdf-FAHB.png"
 
 const defaultHandlers = [
     http.post(captchaUrl, () => HttpResponse.json({ success: true })),
