@@ -1,4 +1,11 @@
-import { useCallback, useSyncExternalStore } from "react"
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useSyncExternalStore
+} from "react"
+
+export const ServerSearchContext = createContext("")
 
 function subscribe(callback: () => void): () => void {
     window.addEventListener("popstate", callback)
@@ -13,12 +20,13 @@ export function useSearchParam(
     key: string,
     defaultValue: string
 ): [string, (value: string) => void] {
+    const serverSearch = useContext(ServerSearchContext)
     const value = useSyncExternalStore(
         subscribe,
         () =>
             new URLSearchParams(window.location.search).get(key) ??
             defaultValue,
-        () => defaultValue
+        () => new URLSearchParams(serverSearch).get(key) ?? defaultValue
     )
 
     const setValue = useCallback(

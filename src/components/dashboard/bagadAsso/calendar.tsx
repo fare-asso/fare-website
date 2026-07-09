@@ -59,7 +59,9 @@ type Event = Pick<
 >
 
 export default function Calendar({ events }: { events?: Event[] }) {
-    const [defaultParam] = useState(() => toParam(new Date()))
+    const today = new Date()
+    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 15)
+    const [defaultParam] = useState(() => toParam(thisMonth))
     const [monthParam, setMonthParam] = useSearchParam("month", defaultParam)
     const month = useMemo(() => new Date(monthParam), [monthParam])
 
@@ -71,7 +73,7 @@ export default function Calendar({ events }: { events?: Event[] }) {
                 new Date(
                     month.getFullYear(),
                     month.getMonth() + (dir === "prev" ? -1 : 1),
-                    1
+                    15
                 )
             )
         )
@@ -97,7 +99,7 @@ export default function Calendar({ events }: { events?: Event[] }) {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setMonthParam(toParam(new Date()))}
+                        onClick={() => setMonthParam(toParam(thisMonth))}
                     >
                         Aujourd'hui
                     </Button>

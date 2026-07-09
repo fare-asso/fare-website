@@ -4,6 +4,7 @@ import { actions } from "astro:actions"
 import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
 import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { ServerSearchContext } from "@/hooks/useSearchParam"
 
 import Calendar from "./calendar"
 
@@ -11,6 +12,7 @@ interface CalendarPageProps {
     user: ShellUser
     pathname: string
     initialTickets: BagadAssoTicket[]
+    initialSearch: string
 }
 
 function CalendarContent({
@@ -77,11 +79,14 @@ function CalendarContent({
 export default function CalendarPage({
     user,
     pathname,
-    initialTickets
+    initialTickets,
+    initialSearch
 }: CalendarPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
-            <CalendarContent initialTickets={initialTickets} />
-        </DashboardShell>
+        <ServerSearchContext.Provider value={initialSearch}>
+            <DashboardShell user={user} pathname={pathname}>
+                <CalendarContent initialTickets={initialTickets} />
+            </DashboardShell>
+        </ServerSearchContext.Provider>
     )
 }
