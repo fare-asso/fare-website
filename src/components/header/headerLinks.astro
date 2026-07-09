@@ -6,16 +6,21 @@ import { links } from "./nav.config"
 const MOBILE_MENU_ID = "fare-mobile-menu"
 const pathname = Astro.url.pathname
 const visible = links.filter((l) => !l.hidden)
+const subLinksOf = (l: (typeof visible)[number]) =>
+    (l.subLinks ?? []).filter((s) => !s.hidden)
 ---
 
 <nav class="v1f-nav" aria-label="Principale">
     {visible.map((l) => {
             const active = pathname.startsWith(l.href)
-            const subLinks = (l.subLinks ?? []).filter((s) => !s.hidden)
+            const subLinks = subLinksOf(l)
             const hasSub = subLinks.length > 0
 
             return (
-                <div class="v1f-item" data-active={active ? "true" : undefined}>
+                <div
+                    class:list={["v1f-item", { "has-sub": hasSub }]}
+                    data-active={active ? "true" : undefined}
+                >
                     <a
                         href={l.href}
                         class="v1f-link"
@@ -52,6 +57,34 @@ const visible = links.filter((l) => !l.hidden)
             )
         })}
     <div class="v1f-rail" aria-hidden="true"></div>
+    <div class="v1f-pop-shared" role="presentation">
+        {visible.map((l, i) => {
+                const subLinks = subLinksOf(l)
+                if (subLinks.length === 0) return null
+                return (
+                    <div
+                        class="v1f-pane"
+                        data-i={i}
+                        role="menu"
+                        aria-label={l.title}
+                    >
+                        {subLinks.map((s) => (
+                            <a
+                                href={s.href}
+                                class="v1f-suba"
+                                role="menuitem"
+                                data-active={
+                                    pathname === s.href ? "true" : undefined
+                                }
+                            >
+                                <span class="t">{s.title}</span>
+                                {s.desc && <span class="d">{s.desc}</span>}
+                            </a>
+                        ))}
+                    </div>
+                )
+            })}
+    </div>
 </nav>
 
 <button
@@ -77,7 +110,7 @@ const visible = links.filter((l) => !l.hidden)
     </div>
     <nav class="m1-nav" aria-label="Mobile">
         {visible.map((l) => {
-                const subLinks = (l.subLinks ?? []).filter((s) => !s.hidden)
+                const subLinks = subLinksOf(l)
                 if (subLinks.length > 0) {
                     return (
                         <details
