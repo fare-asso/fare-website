@@ -54,6 +54,36 @@ describe("deleteEventAction", () => {
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
     })
 
+    it("removes the stored image before deleting", async () => {
+        h.findUnique.mockResolvedValue({ image: "events/pic.png" })
+        h.remove.mockResolvedValue({ error: null })
+        const res = await deleteEventAction({ eventId: 4 })
+        expect(res).toEqual({ success: true })
+        expect(h.remove).toHaveBeenCalledWith(["events/pic.png"])
+        expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
+    })
+
+    it("fails when the image removal errors", async () => {
+        h.findUnique.mockResolvedValue({ image: "events/pic.png" })
+        h.remove.mockResolvedValue({ error: { message: "boom" } })
+        const res = await deleteEventAction({ eventId: 4 })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de la suppression de l'image de l'évènement"
+        })
+        expect(h.deleteFn).not.toHaveBeenCalled()
+    })
+
+    it("captures when the image fetch throws", async () => {
+        h.findUnique.mockRejectedValue(new Error("db down"))
+        const res = await deleteEventAction({ eventId: 4 })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de la suppression de l'évènement"
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
+    })
+
     it("captures when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
         const res = await deleteEventAction({ eventId: 4 })

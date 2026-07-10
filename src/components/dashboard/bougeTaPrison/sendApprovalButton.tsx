@@ -16,9 +16,10 @@ export default function SendApprovalButton({
 
     const handleSendApproval = async () => {
         setIsLoading(true)
-        const { data, error } =
-            await actions.bougeTaPrison.sendApprovalEmail(application)
-        if (error || data.error) {
+        const { data, error } = await actions.bougeTaPrison.sendApprovalEmail(
+            application.id
+        )
+        if (error || !data.success) {
             toast.error("Une erreur est survenue. Veuillez réessayer.")
             setIsLoading(false)
             return

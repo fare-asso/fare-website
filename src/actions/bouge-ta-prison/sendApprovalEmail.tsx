@@ -1,30 +1,50 @@
+import type { ActionAPIContext } from "astro:actions"
 import { render } from "react-email"
 
-import type { BTPTutorApplication } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { wrapAction } from "@/lib/action"
+import { hasPermission } from "@/helpers/permissions"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 import BtpApplicationAck from "../../../emails/btp-application-aknowledgement"
 
 async function sendApprovalEmailImpl(
-    application: BTPTutorApplication
-): Promise<{
-    success: boolean
-    error: string | null
-}> {
-    console.log("Sending approval email to", application.email)
+    id: number,
+    context: ActionAPIContext
+): Promise<ActionResult> {
+    const user = await getUserWithPermissions(context)
+    if (!user) {
+        return { success: false, error: "Authentification requise" }
+    }
+    if (!hasPermission(user, "access:btp")) {
+        return {
+            success: false,
+            error: "Vous n'avez pas la permission d'effectuer cette opération"
+        }
+    }
+
+    const application = await tryCatch(
+        prisma.bTPTutorApplication.findUnique({ where: { id } })
+    )
+    if (!application.success) {
+        captureActionError(application.error)
+        return { success: false, error: "Candidature introuvable" }
+    }
+    if (!application.value) {
+        return { success: false, error: "Candidature introuvable" }
+    }
 
     const email = await sendEmail({
-        to: application.email,
+        to: application.value.email,
         subject: "Bouge Ta Prison - Informations sur votre candidature",
         html: await render(
             <BtpApplicationAck
-                firstName={application.firstName}
-                lastName={application.lastName}
-                email={application.email}
+                firstName={application.value.firstName}
+                lastName={application.value.lastName}
+                email={application.value.email}
             />
         )
     })
@@ -38,12 +58,8 @@ async function sendApprovalEmailImpl(
 
     const updated = await tryCatch(
         prisma.bTPTutorApplication.update({
-            where: {
-                id: application.id
-            },
-            data: {
-                approved: true
-            }
+            where: { id },
+            data: { approved: true }
         })
     )
     if (!updated.success) {
@@ -54,10 +70,7 @@ async function sendApprovalEmailImpl(
         }
     }
 
-    return {
-        success: true,
-        error: null
-    }
+    return { success: true }
 }
 
 export const sendApprovalEmail = wrapAction(

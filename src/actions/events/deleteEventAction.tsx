@@ -26,33 +26,33 @@ async function deleteEventActionImpl(
     // create supabase client
     const supabase = createClient(context)
 
-    // fetch event Image url
-    const imageUrl = await prisma.event.findUnique({
-        where: {
-            id: eventId
-        },
-        select: {
-            image: true
+    // fetch the event's stored image path
+    const event = await tryCatch(
+        prisma.event.findUnique({
+            where: { id: eventId },
+            select: { image: true }
+        })
+    )
+    if (!event.success) {
+        captureActionError(event.error)
+        return {
+            success: false,
+            error: "Echec de la suppression de l'évènement"
         }
-    })
+    }
 
-    // check imageUrl validity and remove it from the storage
-    if (imageUrl != null && typeof imageUrl === "string") {
-        if (imageUrl === "") {
-            // no url
-            console.log("No image to remove")
-        } else {
-            // remove image from the storage
-            const res = await supabase.storage
-                .from("EventPictures")
-                .remove(imageUrl)
+    // remove the image from the storage if there is one
+    const imagePath = event.value?.image
+    if (imagePath) {
+        const res = await supabase.storage
+            .from("EventPictures")
+            .remove([imagePath])
 
-            if (res.error) {
-                console.error("Failed to delete Url")
-                return {
-                    success: false,
-                    error: "Echec de la suppression de l'image de l'évènement"
-                }
+        if (res.error) {
+            captureActionError(res.error)
+            return {
+                success: false,
+                error: "Echec de la suppression de l'image de l'évènement"
             }
         }
     }
