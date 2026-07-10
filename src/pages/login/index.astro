@@ -10,7 +10,7 @@ const error = Astro.url.searchParams.get("error")
 
 <Base
     title="Connexion"
-    description="Page de connexion pour les administrateur·ice·s"
+    description="Page de connexion pour le bureau de la FARE"
 >
     <main class="grid min-h-screen place-items-center items-center p-2">
         <div
@@ -23,19 +23,24 @@ const error = Astro.url.searchParams.get("error")
                         alt="Logo de la FARE"
                         class="mx-auto w-16 text-center"
                     />
-                    <div
-                        class="flex flex-col items-start gap-1 leading-none font-semibold"
-                    >
-                        <span>Connexion Admin</span>
+                    <div class="flex flex-col items-start gap-1 leading-none">
+                        <span class="font-semibold">Connexion Admin</span>
                         <p class="text-muted-foreground text-sm">
-                            Accès réservé au bureau de la fédération
+                            Accès réservé au bureau de la FARE
                         </p>
                     </div>
                 </div>
                 {error && (
-                        <div class="mt-4 rounded border border-red-500 bg-red-50 p-2 text-red-600">
-                            Une erreur s'est produite lors de la connexion.
-                            Merci de réessayer plus tard.
+                        <div class="mt-4 rounded border border-red-700 bg-red-50 px-4 w-full mx-auto py-2 text-red-800">
+                            {error === "account_deleted" ?
+                                <>
+                                    Votre compte a été supprimé. <br/> Merci de contacter le bureau de la FARE.
+                                </> :
+                                <>
+                                    Une erreur s'est produite lors de la connexion.<br/> Merci de réessayer plus tard.
+                                </>
+                            }
+
                         </div>
                     )}
             </div>
