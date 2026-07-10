@@ -57,8 +57,10 @@ describe("submitTutorApplication", () => {
         const res = await submitTutorApplication(
             validTutorApplicationFormData({ studyYear: "X" })
         )
-        expect(res.error).toBe("Un ou plusieurs champs sont invalides.")
-        expect(res.fieldErrors?.studyYear).toBeDefined()
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.create).not.toHaveBeenCalled()
     })
@@ -69,6 +71,7 @@ describe("submitTutorApplication", () => {
             validTutorApplicationFormData()
         )
         expect(res).toEqual({
+            success: false,
             error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         })
         expect(h.upload).not.toHaveBeenCalled()
@@ -82,7 +85,10 @@ describe("submitTutorApplication", () => {
         const res = await submitTutorApplication(
             validTutorApplicationFormData()
         )
-        expect(res).toEqual({ error: "Echec de l'upload du CV" })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de l'upload du CV"
+        })
         expect(h.create).not.toHaveBeenCalled()
     })
 
@@ -100,6 +106,7 @@ describe("submitTutorApplication", () => {
             validTutorApplicationFormData()
         )
         expect(res).toEqual({
+            success: false,
             error: "Echec de l'upload de la lettre de motivation"
         })
         expect(h.remove).toHaveBeenCalledOnce()
@@ -112,6 +119,7 @@ describe("submitTutorApplication", () => {
             validTutorApplicationFormData()
         )
         expect(res).toEqual({
+            success: false,
             error: "Echec de la création de la candidature. Veuillez réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalled()

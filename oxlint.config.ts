@@ -24,11 +24,7 @@ export default defineConfig({
     categories: {
         correctness: "error"
     },
-    ignorePatterns: [
-        "**/migrations/**",
-        "**/generated/**",
-        ".astro/**"
-    ],
+    ignorePatterns: ["**/migrations/**", "**/generated/**", ".astro/**"],
     overrides: [
         {
             // Test files & mocks: async mock factories must keep the async
@@ -160,10 +156,8 @@ export default defineConfig({
         "local/no-dashboard-prerender": "error",
         "local/require-server-action-wrapper": "error",
 
-        // Flags non-discriminated action results (optional `success?`/`error?`).
-        // Kept "off" until the actions are migrated to discriminated unions
-        // (TODO.md #3); the follow-up PR flips this to "error" to enforce it.
-        "local/no-optional-result": "off",
+        // All actions now return a discriminated `ActionResult`, so enforce it.
+        "local/no-optional-result": "error",
 
         // Further CLAUDE.md conventions kept "off" until opted in.
         "local/no-console-in-actions": "off",

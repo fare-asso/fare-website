@@ -68,7 +68,7 @@ export default function QuestionForm(): React.ReactNode {
                 setIsSubmitted(true)
             } else {
                 setSubmitError(
-                    data?.error ??
+                    (data && !data.success ? data.error : null) ??
                         "Une erreur est survenue lors de l'envoi de votre question. Veuillez réessayer."
                 )
             }

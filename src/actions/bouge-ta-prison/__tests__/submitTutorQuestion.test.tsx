@@ -41,8 +41,10 @@ describe("submitTutorQuestion", () => {
         const res = await submitTutorQuestion(
             validTutorQuestion({ email: "nope" })
         )
-        expect(res.error).toBe("Un ou plusieurs champs sont invalides.")
-        expect(res.fieldErrors?.email).toBeDefined()
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
         expect(h.create).not.toHaveBeenCalled()
     })
 
@@ -50,6 +52,7 @@ describe("submitTutorQuestion", () => {
         h.verifyCaptcha.mockResolvedValue(false)
         const res = await submitTutorQuestion(validTutorQuestion())
         expect(res).toEqual({
+            success: false,
             error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         })
         expect(h.create).not.toHaveBeenCalled()
@@ -59,6 +62,7 @@ describe("submitTutorQuestion", () => {
         h.create.mockRejectedValue(new Error("db down"))
         const res = await submitTutorQuestion(validTutorQuestion())
         expect(res).toEqual({
+            success: false,
             error: "Echec de l'enregistrement de la question. Veuillez réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

@@ -26,7 +26,7 @@ export interface Node extends Ranged {
     finalizer?: Node | null
 }
 
-export interface Context {
+interface Context {
     id: string
     filename: string
     report(diagnostic: {

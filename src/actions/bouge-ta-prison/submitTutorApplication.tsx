@@ -8,18 +8,17 @@ import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { BTPTutorApplicationSchema } from "@/schemas/bougeTaPrison"
-import type { ActionResponse } from "@/types/actions"
 
 import BtpApplication from "../../../emails/btp-application"
 
 async function submitTutorApplicationImpl(
     formData: FormData,
     context: ActionAPIContext
-): Promise<ActionResponse> {
+): Promise<ActionResult> {
     const data: { [key: string]: FormDataEntryValue } = {}
 
     for (const [key, value] of formData) {
@@ -29,17 +28,9 @@ async function submitTutorApplicationImpl(
     const parsedData = BTPTutorApplicationSchema(data)
 
     if (parsedData instanceof type.errors) {
-        const fieldErrors: Record<string, string[]> = {}
-        for (const issue of parsedData.issues) {
-            const field = String(issue.path[0])
-            if (!fieldErrors[field]) {
-                fieldErrors[field] = []
-            }
-            fieldErrors[field].push(issue.message)
-        }
         return {
-            error: "Un ou plusieurs champs sont invalides.",
-            fieldErrors
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
         }
     }
 
@@ -47,6 +38,7 @@ async function submitTutorApplicationImpl(
     if (!isDevelopment) {
         if (!parsedData.captchaToken) {
             return {
+                success: false,
                 error: "Veuillez compléter le CAPTCHA."
             }
         }
@@ -54,6 +46,7 @@ async function submitTutorApplicationImpl(
         const isCaptchaValid = await verifyCaptcha(parsedData.captchaToken)
         if (!isCaptchaValid) {
             return {
+                success: false,
                 error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
             }
         }
@@ -75,6 +68,7 @@ async function submitTutorApplicationImpl(
         .upload(`${folderName}/cv-${sanitizedName}.pdf`, parsedData.cv)
     if (cvUploadError) {
         return {
+            success: false,
             error: "Echec de l'upload du CV"
         }
     }
@@ -91,6 +85,7 @@ async function submitTutorApplicationImpl(
             .from("btp-tutor-application")
             .remove([cvUploadData.path])
         return {
+            success: false,
             error: "Echec de l'upload de la lettre de motivation"
         }
     }
@@ -116,6 +111,7 @@ async function submitTutorApplicationImpl(
             .from("btp-tutor-application")
             .remove([cvUploadData.path, lmUploadData.path])
         return {
+            success: false,
             error: "Echec de la création de la candidature. Veuillez réessayer."
         }
     }

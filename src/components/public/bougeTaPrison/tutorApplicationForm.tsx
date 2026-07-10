@@ -80,7 +80,7 @@ export default function TutorApplicationForm(): React.ReactNode {
                 setIsSubmitted(true)
             } else {
                 setSubmitError(
-                    data?.error ??
+                    (data && !data.success ? data.error : null) ??
                         "Une erreur est survenue lors de l'envoi de votre candidature. Veuillez réessayer."
                 )
             }

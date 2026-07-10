@@ -1,40 +1,19 @@
 import { isWithServerActionCall } from "../ast.ts"
-import type { Context, Node, Rule } from "../types.ts"
+import type { Node, Rule } from "../types.ts"
 
-const TYPE_EXPORTS = new Set([
-    "TSTypeAliasDeclaration",
-    "TSInterfaceDeclaration",
-    "TSEnumDeclaration",
-    "TSModuleDeclaration"
-])
+const ACTIONS_DIR = "/src/actions/"
 
-function checkDeclaration(
-    declaration: Node,
-    context: Context,
-    reportNode: Node
-): void {
-    if (TYPE_EXPORTS.has(declaration.type)) return
-
-    if (declaration.type === "FunctionDeclaration") {
-        context.report({ node: reportNode, messageId: "requireWrapper" })
-        return
-    }
-
-    if (declaration.type === "VariableDeclaration") {
-        for (const declarator of declaration.declarations ?? []) {
-            const init = declarator.init
-            if (!init || isWithServerActionCall(init)) continue
-            if (
-                init.type === "ArrowFunctionExpression" ||
-                init.type === "FunctionExpression"
-            ) {
-                context.report({
-                    node: declarator,
-                    messageId: "requireWrapper"
-                })
-            }
-        }
-    }
+// An exported const initialiser that should have been wrapped but wasn't:
+// an inline function, a call that isn't `wrapAction()`, or a bare `…Impl`
+// identifier exported directly. Plain data consts and `wrapAction()` calls
+// are fine; `fetch…` SSR helpers are function declarations, not consts.
+function isUnwrappedAction(init: Node): boolean {
+    return (
+        init.type === "ArrowFunctionExpression" ||
+        init.type === "FunctionExpression" ||
+        (init.type === "CallExpression" && !isWithServerActionCall(init)) ||
+        (init.type === "Identifier" && !!init.name?.endsWith("Impl"))
+    )
 }
 
 const rule: Rule = {
@@ -42,45 +21,39 @@ const rule: Rule = {
         type: "problem",
         docs: {
             description:
-                'Every export of a `"use server"` file must be wrapped with `withServerAction()`.'
+                "Every action exported from `src/actions/**` must be wrapped with `wrapAction()`."
         },
         messages: {
             requireWrapper:
-                'Server actions must be wrapped with `withServerAction("name", impl)` ' +
-                "from `@/lib/sentry` and exported as the wrapped value (default or named). " +
+                'Server actions must be wrapped with `wrapAction("name", impl)` ' +
+                "from `@/lib/action` and exported as the wrapped value. " +
                 "See CLAUDE.md > Architecture Patterns > Server Actions."
         }
     },
     create(context) {
+        const filename = context.filename
+        if (
+            !filename.includes(ACTIONS_DIR) ||
+            filename.includes("/__tests__/")
+        ) {
+            return {}
+        }
         return {
             Program(node) {
-                const body = node.body ?? []
-                const isServerActionFile = body.some(
-                    (statement) =>
-                        statement.type === "ExpressionStatement" &&
-                        statement.directive === "use server"
-                )
-                if (!isServerActionFile) return
-
-                for (const statement of body) {
-                    if (statement.type === "ExportDefaultDeclaration") {
-                        if (!isWithServerActionCall(statement.declaration)) {
+                for (const statement of node.body ?? []) {
+                    if (statement.type !== "ExportNamedDeclaration") continue
+                    const declaration = statement.declaration
+                    if (declaration?.type !== "VariableDeclaration") continue
+                    for (const declarator of declaration.declarations ?? []) {
+                        if (
+                            declarator.init &&
+                            isUnwrappedAction(declarator.init)
+                        ) {
                             context.report({
-                                node: statement,
+                                node: declarator,
                                 messageId: "requireWrapper"
                             })
                         }
-                        continue
-                    }
-                    if (
-                        statement.type === "ExportNamedDeclaration" &&
-                        statement.declaration
-                    ) {
-                        checkDeclaration(
-                            statement.declaration,
-                            context,
-                            statement
-                        )
                     }
                 }
             }
