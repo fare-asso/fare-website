@@ -160,7 +160,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
     }
 
     return (
-        <Card className="mx-auto w-full max-w-4xl">
+        <Card className="w-full max-w-4xl" variant="ghost">
             <CardHeader>
                 <CardTitle>Demande de prêt de matériel</CardTitle>
                 <CardDescription>
