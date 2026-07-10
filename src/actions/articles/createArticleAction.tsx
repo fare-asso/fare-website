@@ -4,14 +4,14 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function createArticleActionImpl(
     formData: FormData,
     context: ActionAPIContext
-): Promise<{ success: true } | { success: false; error: string }> {
+): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {

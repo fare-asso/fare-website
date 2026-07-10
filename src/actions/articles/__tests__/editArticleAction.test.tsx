@@ -48,6 +48,7 @@ describe("editArticleAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await editArticleAction(fd())).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -56,18 +57,22 @@ describe("editArticleAction", () => {
     it("requires the edit:article permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await editArticleAction(fd())
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("rejects a non-numeric id", async () => {
         const res = await editArticleAction(fd({ id: "abc" }))
-        expect(res).toEqual({ error: "L'id de l'article est eronné" })
+        expect(res).toEqual({
+            success: false,
+            error: "L'id de l'article est eronné"
+        })
     })
 
     it("rejects a payload missing required fields", async () => {
         const res = await editArticleAction(fd({ title: "" }))
         expect(res).toEqual({
+            success: false,
             error: "Veuillez remplir tous les champs obligatoires."
         })
     })
@@ -75,6 +80,7 @@ describe("editArticleAction", () => {
     it("errors when the article does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
         expect(await editArticleAction(fd())).toEqual({
+            success: false,
             error: "Article not found"
         })
     })
@@ -82,6 +88,7 @@ describe("editArticleAction", () => {
     it("captures and fails when the db update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         expect(await editArticleAction(fd())).toEqual({
+            success: false,
             error: "Echec de la modification de l'article"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

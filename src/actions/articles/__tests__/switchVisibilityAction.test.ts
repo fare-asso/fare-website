@@ -30,6 +30,7 @@ describe("switchVisibilityAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await switchVisibilityAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -38,13 +39,14 @@ describe("switchVisibilityAction", () => {
     it("requires the publish:article permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await switchVisibilityAction(1)
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("errors when the article does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
         expect(await switchVisibilityAction(1)).toEqual({
+            success: false,
             error: "Article non trouvé"
         })
     })
@@ -52,6 +54,7 @@ describe("switchVisibilityAction", () => {
     it("captures and fails when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         expect(await switchVisibilityAction(1)).toEqual({
+            success: false,
             error: "Echec du changement de visibilité de l'article"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -59,7 +62,7 @@ describe("switchVisibilityAction", () => {
 
     it("toggles the visibility on the happy path", async () => {
         const res = await switchVisibilityAction(9)
-        expect(res).toEqual({})
+        expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 9 },
             data: { published: true }

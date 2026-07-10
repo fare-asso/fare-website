@@ -41,7 +41,7 @@ function DeleteEventButton({ event }: { event: Event }) {
             const { data, error } = await actions.events.deleteEventAction({
                 eventId: event.id
             })
-            if (error || data?.error) {
+            if (error || !data.success) {
                 toast.error("Une erreur est survenue. Veuillez réessayer.")
             } else {
                 toast.success(`L'évènement ${event.name} a bien été supprimé`)

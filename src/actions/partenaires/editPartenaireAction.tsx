@@ -6,7 +6,7 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
@@ -14,12 +14,10 @@ import {
     type TEditPartenaire
 } from "@/schemas/partenaires"
 
-type Result = { success: true } | { success: false; error: string }
-
 async function editPartenaireActionImpl(
     input: TEditPartenaire,
     context: ActionAPIContext
-): Promise<Result> {
+): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "edit:partner")) {

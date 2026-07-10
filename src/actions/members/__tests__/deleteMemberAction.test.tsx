@@ -33,6 +33,7 @@ describe("deleteMemberAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await deleteMemberAction({ id: 1 })).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -41,13 +42,14 @@ describe("deleteMemberAction", () => {
     it("requires the delete:member permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await deleteMemberAction({ id: 1 })
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
         expect(await deleteMemberAction({ id: 1 })).toEqual({
+            success: false,
             error: "Echec de la suppression du membre"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -56,6 +58,7 @@ describe("deleteMemberAction", () => {
     it("returns an error when the storage removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "storage boom" } })
         expect(await deleteMemberAction({ id: 1 })).toEqual({
+            success: false,
             error: "storage boom"
         })
     })

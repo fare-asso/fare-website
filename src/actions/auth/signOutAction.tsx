@@ -1,14 +1,14 @@
 import type { ActionAPIContext } from "astro:actions"
 
 import { createClient } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function signOutImpl(
     _input: undefined,
     context: ActionAPIContext
-): Promise<{ success: boolean; error?: string }> {
+): Promise<ActionResult> {
     const supabase = createClient(context)
 
     const result = await tryCatch(supabase.auth.signOut())

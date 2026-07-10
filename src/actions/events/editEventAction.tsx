@@ -5,7 +5,7 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -25,14 +25,15 @@ interface Event {
 async function editEventActionImpl(
     formData: FormData,
     context: ActionAPIContext
-) {
+): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "edit:event")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
     }
@@ -73,6 +74,7 @@ async function editEventActionImpl(
         const idNumber = Number(idStr)
         if (Number.isNaN(idNumber)) {
             return {
+                success: false,
                 error: "L'identifiant n'est pas un nombre..."
             }
         } else {
@@ -80,6 +82,7 @@ async function editEventActionImpl(
         }
     } else {
         return {
+            success: false,
             error: "L'identifiant de l'évènement n'est pas correct"
         }
     }
@@ -89,11 +92,13 @@ async function editEventActionImpl(
         const nameStr: string = name.toString()
         if (nameStr.length < 3) {
             return {
+                success: false,
                 error: "La longueur du nom doit être supérieure à 3 caractères"
             }
         } else data.name = nameStr
     } else {
         return {
+            success: false,
             error: "Le nom n'est pas valide ou n'est pas du bon format"
         }
     }
@@ -102,11 +107,13 @@ async function editEventActionImpl(
         const descriptionStr: string = description.toString()
         if (descriptionStr.length < 10) {
             return {
+                success: false,
                 error: "La longueur de la description doit être supérieure à 10 caractères"
             }
         } else data.desc = descriptionStr
     } else {
         return {
+            success: false,
             error: "La description n'est pas valide ou n'est pas du bon format"
         }
     }
@@ -134,6 +141,7 @@ async function editEventActionImpl(
                 // Upload Failed
                 console.log(response.error)
                 return {
+                    success: false,
                     error: "L'upload de l'image à échoué, veuillez réessayer"
                 }
             } else {
@@ -145,6 +153,7 @@ async function editEventActionImpl(
             data.image = previousPath.toString()
         } else {
             return {
+                success: false,
                 error: "L'image n'est pas valide ou la taille de l'image excède 10 mo"
             }
         }
@@ -152,6 +161,7 @@ async function editEventActionImpl(
         data.image = previousPath.toString()
     } else {
         return {
+            success: false,
             error: "L'image n'est pas valide ou n'est pas du bon format"
         }
     }
@@ -161,12 +171,11 @@ async function editEventActionImpl(
             // non null string
             data.location = location.toString()
         } else {
-            return {
-                error: "Lieu non-valide"
-            }
+            return { success: false, error: "Lieu non-valide" }
         }
     } else {
         return {
+            success: false,
             error: "Le lieu n'est pas valide ou n'est pas du bon format"
         }
     }
@@ -185,17 +194,20 @@ async function editEventActionImpl(
         if (!found.success) {
             if ("code" in found.error && found.error.code === "P2025") {
                 return {
+                    success: false,
                     error: `La catégorie ${categoryStr} n'existe pas`
                 }
             }
             captureActionError(found.error)
             return {
+                success: false,
                 error: "Une erreur à eu lieu lors de la récupération de la catégorie"
             }
         }
         data.categoryId = found.value.id
     } else {
         return {
+            success: false,
             error: "La catégorie n'est pas valide ou n'est pas du bon format"
         }
     }
@@ -215,6 +227,7 @@ async function editEventActionImpl(
             Number.isNaN(Number(startMinuteStr))
         ) {
             return {
+                success: false,
                 error: "L'heure ou les minutes de départ ne sont pas sous le bon format"
             }
         }
@@ -224,6 +237,7 @@ async function editEventActionImpl(
         data.startTime = parsedDate
     } else {
         return {
+            success: false,
             error: "La date ou l'heure de départ ne sont correctes"
         }
     }
@@ -243,6 +257,7 @@ async function editEventActionImpl(
             Number.isNaN(Number(endMinuteStr))
         ) {
             return {
+                success: false,
                 error: "L'heure ou les minutes de fin ne sont pas sous le bon format"
             }
         }
@@ -252,6 +267,7 @@ async function editEventActionImpl(
         data.endTime = parsedDate
     } else {
         return {
+            success: false,
             error: "La date ou l'heure de fin ne sont pas correctes"
         }
     }
@@ -266,9 +282,7 @@ async function editEventActionImpl(
                 data.visibility = false
                 break
             default:
-                return {
-                    error: "Wrong type of visibility"
-                }
+                return { success: false, error: "Wrong type of visibility" }
         }
     } else {
         data.visibility = false
@@ -277,6 +291,7 @@ async function editEventActionImpl(
     // create event record in the DB
     if (!data.name || !data.desc || !data.categoryId || !data.location) {
         return {
+            success: false,
             error: "Des champs obligatoires sont manquants"
         }
     }
@@ -302,6 +317,7 @@ async function editEventActionImpl(
     if (!updated.success) {
         captureActionError(updated.error)
         return {
+            success: false,
             error: "La modification de l'évènement à échoué, veuillez réessayer"
         }
     }

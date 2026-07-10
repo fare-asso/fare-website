@@ -4,7 +4,7 @@ import type { Conseil, Elu, Instance } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -39,9 +39,7 @@ export async function fetchElus(): Promise<InstanceTree[] | null> {
 async function listElusActionImpl(
     _input: undefined,
     context: ActionAPIContext
-): Promise<
-    { success: true; value: InstanceTree[] } | { success: false; error: string }
-> {
+): Promise<ActionResult<InstanceTree[]>> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "access:elus")) {

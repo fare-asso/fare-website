@@ -4,7 +4,7 @@ import type { Article } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -22,9 +22,7 @@ export async function fetchArticles(): Promise<Article[] | null> {
 async function listArticlesActionImpl(
     _input: undefined,
     context: ActionAPIContext
-): Promise<
-    { success: true; value: Article[] } | { success: false; error: string }
-> {
+): Promise<ActionResult<Article[]>> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "access:articles")) {

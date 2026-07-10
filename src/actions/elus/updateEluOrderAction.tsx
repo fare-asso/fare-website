@@ -4,7 +4,7 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { OrderSchema, type TOrder } from "@/schemas/elu"
@@ -12,7 +12,7 @@ import { OrderSchema, type TOrder } from "@/schemas/elu"
 async function updateEluOrderActionImpl(
     eluOrder: TOrder,
     context: ActionAPIContext
-): Promise<{ success: true } | { success: false; error: string }> {
+): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {

@@ -146,8 +146,9 @@ export default function EditArticleButton({ article }: { article: Article }) {
                 await actions.articles.editArticleAction(formData)
             if (actionError || !data.success) {
                 setError(
-                    data?.error ??
-                        "Une erreur est survenue. Veuillez réessayer."
+                    data && !data.success
+                        ? data.error
+                        : "Une erreur est survenue. Veuillez réessayer."
                 )
             } else {
                 await handleOpenChange(false)

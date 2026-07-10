@@ -8,7 +8,7 @@ import type {
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -43,10 +43,7 @@ export async function fetchUsers(
 async function listUsersActionImpl(
     input: { showDeleted: boolean },
     context: ActionAPIContext
-): Promise<
-    | { success: true; value: UserWithPermissionsRow[] }
-    | { success: false; error: string }
-> {
+): Promise<ActionResult<UserWithPermissionsRow[]>> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "access:users")) {

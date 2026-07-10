@@ -39,8 +39,9 @@ export default function ArticleCard({
             )
             if (error || !data.success) {
                 toast.error(
-                    data?.error ??
-                        "Une erreur est survenue. Veuillez réessayer."
+                    data && !data.success
+                        ? data.error
+                        : "Une erreur est survenue. Veuillez réessayer."
                 )
             } else {
                 toast.success(`L'article ${article.title} a bien été supprimé`)
@@ -53,8 +54,12 @@ export default function ArticleCard({
         startVisibility(async () => {
             const { data, error } =
                 await actions.articles.switchVisibilityAction(article.id)
-            if (error || data.error) {
-                toast.error(data?.error ?? "Échec du changement de visibilité")
+            if (error || !data.success) {
+                toast.error(
+                    data && !data.success
+                        ? data.error
+                        : "Échec du changement de visibilité"
+                )
             }
             await queryClient.invalidateQueries({ queryKey: ["articles"] })
         })

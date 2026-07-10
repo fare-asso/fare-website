@@ -38,8 +38,9 @@ export default function DeleteEquipmentButton({
                 await actions.bagadAsso.deleteEquipmentAction(equipmentId)
             if (error || !data.success) {
                 toast.error(
-                    data?.error ??
-                        "Une erreur est survenue. Veuillez réessayer."
+                    data && !data.success
+                        ? data.error
+                        : "Une erreur est survenue. Veuillez réessayer."
                 )
                 return
             }

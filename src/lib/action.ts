@@ -3,6 +3,10 @@ import type { ActionAPIContext } from "astro:actions"
 
 import { useLogger, withEvlog } from "@/lib/evlog"
 
+export type ActionResult<T = void> = [T] extends [void]
+    ? { success: true } | { success: false; error: string }
+    : { success: true; value: T } | { success: false; error: string }
+
 export function wrapAction<I, R>(
     name: string,
     handler: (input: I, context: ActionAPIContext) => Promise<R>

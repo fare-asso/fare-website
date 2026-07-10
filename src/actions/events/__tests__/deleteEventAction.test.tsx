@@ -35,6 +35,7 @@ describe("deleteEventAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await deleteEventAction({ eventId: 1 })).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -43,20 +44,23 @@ describe("deleteEventAction", () => {
     it("requires the delete:event permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await deleteEventAction({ eventId: 1 })
-        expect(res?.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("deletes the event on the happy path", async () => {
         const res = await deleteEventAction({ eventId: 4 })
-        expect(res).toBeUndefined()
+        expect(res).toEqual({ success: true })
         expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
     })
 
     it("captures when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
         const res = await deleteEventAction({ eventId: 4 })
-        expect(res).toBeUndefined()
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de la suppression de l'évènement"
+        })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 })

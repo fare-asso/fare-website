@@ -44,8 +44,12 @@ export default function DeleteAssociationButton({
                 await actions.associations.deleteAssociationAction(
                     association.id
                 )
-            if (error || data?.error) {
-                toast.error(data?.error ?? "Échec de la suppression")
+            if (error || !data.success) {
+                toast.error(
+                    data && !data.success
+                        ? data.error
+                        : "Échec de la suppression"
+                )
             } else {
                 setIsOpen(false)
                 toast.success(

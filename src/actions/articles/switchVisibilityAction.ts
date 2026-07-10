@@ -3,21 +3,22 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function switchVisibilityActionImpl(
     articleId: number,
     context: ActionAPIContext
-): Promise<{ error?: string }> {
+): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "publish:article")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de publier des articles"
         }
     }
@@ -35,12 +36,15 @@ async function switchVisibilityActionImpl(
     )
     if (!articleResult.success) {
         captureActionError(articleResult.error)
-        return { error: "Echec du changement de visibilité de l'article" }
+        return {
+            success: false,
+            error: "Echec du changement de visibilité de l'article"
+        }
     }
     const article = articleResult.value
 
     if (!article) {
-        return { error: "Article non trouvé" }
+        return { success: false, error: "Article non trouvé" }
     }
 
     const updated = await tryCatch(
@@ -55,10 +59,13 @@ async function switchVisibilityActionImpl(
     )
     if (!updated.success) {
         captureActionError(updated.error)
-        return { error: "Echec du changement de visibilité de l'article" }
+        return {
+            success: false,
+            error: "Echec du changement de visibilité de l'article"
+        }
     }
 
-    return {}
+    return { success: true }
 }
 
 export const switchVisibilityAction = wrapAction(

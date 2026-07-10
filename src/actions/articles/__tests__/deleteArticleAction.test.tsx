@@ -36,6 +36,7 @@ describe("deleteArticleAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await deleteArticleAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -44,13 +45,14 @@ describe("deleteArticleAction", () => {
     it("requires the delete:article permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await deleteArticleAction(1)
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("errors when the article does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
         expect(await deleteArticleAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression de l'article"
         })
     })
@@ -58,6 +60,7 @@ describe("deleteArticleAction", () => {
     it("errors when the image removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "boom" } })
         expect(await deleteArticleAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression des images dans la base de données"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -66,6 +69,7 @@ describe("deleteArticleAction", () => {
     it("captures and fails when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
         expect(await deleteArticleAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression de l'article"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

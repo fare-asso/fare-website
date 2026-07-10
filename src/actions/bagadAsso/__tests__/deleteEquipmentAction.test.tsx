@@ -38,6 +38,7 @@ describe("deleteEquipmentAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await deleteEquipmentAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -46,13 +47,14 @@ describe("deleteEquipmentAction", () => {
     it("requires the delete:bagad-equipment permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await deleteEquipmentAction(1)
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("errors when the equipment does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
         expect(await deleteEquipmentAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression de l'équipement"
         })
     })
@@ -60,6 +62,7 @@ describe("deleteEquipmentAction", () => {
     it("errors when the image removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "boom" } })
         expect(await deleteEquipmentAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression des images dans la base de données"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -68,6 +71,7 @@ describe("deleteEquipmentAction", () => {
     it("captures and fails when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
         expect(await deleteEquipmentAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression de l'équipement"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

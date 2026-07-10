@@ -4,7 +4,7 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
@@ -12,14 +12,10 @@ import {
     type BulkArchiveTutorApplications
 } from "@/schemas/bougeTaPrison"
 
-type Result =
-    | { success: true; value: { count: number } }
-    | { success: false; error: string }
-
 async function bulkArchiveTutorApplicationsActionImpl(
     input: BulkArchiveTutorApplications,
     context: ActionAPIContext
-): Promise<Result> {
+): Promise<ActionResult<{ count: number }>> {
     const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }

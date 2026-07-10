@@ -39,6 +39,7 @@ describe("updateMemberOrderAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await updateMemberOrderAction(order)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.transaction).not.toHaveBeenCalled()
@@ -47,13 +48,14 @@ describe("updateMemberOrderAction", () => {
     it("requires the edit:member permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await updateMemberOrderAction(order)
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.transaction).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the transaction throws", async () => {
         h.transaction.mockRejectedValue(new Error("db down"))
         expect(await updateMemberOrderAction(order)).toEqual({
+            success: false,
             error: "La mise à jour de l'ordre des membres a échoué. Veuillez réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

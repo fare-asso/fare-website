@@ -9,7 +9,7 @@ import {
     createAdminClient,
     getUserWithPermissions
 } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddPartenaireSchema, type TAddPartenaire } from "@/schemas/partenaires"
@@ -17,7 +17,7 @@ import { AddPartenaireSchema, type TAddPartenaire } from "@/schemas/partenaires"
 async function addPartenaireActionImpl(
     input: TAddPartenaire,
     context: ActionAPIContext
-): Promise<{ success: true } | { success: false; error: string }> {
+): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "create:partner")) {

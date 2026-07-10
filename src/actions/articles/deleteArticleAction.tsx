@@ -3,18 +3,22 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteArticleActionImpl(id: number, context: ActionAPIContext) {
+async function deleteArticleActionImpl(
+    id: number,
+    context: ActionAPIContext
+): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "delete:article")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de supprimer des articles"
         }
     }
@@ -32,12 +36,12 @@ async function deleteArticleActionImpl(id: number, context: ActionAPIContext) {
     )
     if (!articleResult.success) {
         captureActionError(articleResult.error)
-        return { error: "Echec de la suppression de l'article" }
+        return { success: false, error: "Echec de la suppression de l'article" }
     }
     const article = articleResult.value
 
     if (article == null) {
-        return { error: "Echec de la suppression de l'article" }
+        return { success: false, error: "Echec de la suppression de l'article" }
     }
 
     /* Remove pictures from storage if there is some */
@@ -49,6 +53,7 @@ async function deleteArticleActionImpl(id: number, context: ActionAPIContext) {
         if (error) {
             console.error(error.message)
             return {
+                success: false,
                 error: "Echec de la suppression des images dans la base de données"
             }
         } // else success
@@ -64,7 +69,7 @@ async function deleteArticleActionImpl(id: number, context: ActionAPIContext) {
     )
     if (!deleted.success) {
         captureActionError(deleted.error)
-        return { error: "Echec de la suppression de l'article" }
+        return { success: false, error: "Echec de la suppression de l'article" }
     }
     return { success: true }
 }

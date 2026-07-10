@@ -5,18 +5,14 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
-
-type GenerateResult =
-    | { success: true; value: string }
-    | { success: false; error: string }
 
 async function generateBagadCalendarTokenActionImpl(
     _input: undefined,
     context: ActionAPIContext
-): Promise<GenerateResult> {
+): Promise<ActionResult<string>> {
     const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
@@ -44,12 +40,10 @@ async function generateBagadCalendarTokenActionImpl(
     return { success: true, value: token }
 }
 
-type RevokeResult = { success: true } | { success: false; error: string }
-
 async function revokeBagadCalendarTokenActionImpl(
     _input: undefined,
     context: ActionAPIContext
-): Promise<RevokeResult> {
+): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }

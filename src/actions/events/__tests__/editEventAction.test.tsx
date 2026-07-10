@@ -53,6 +53,7 @@ describe("editEventAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await editEventAction(fd())).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -61,30 +62,37 @@ describe("editEventAction", () => {
     it("requires the edit:event permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await editEventAction(fd())
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("rejects a non-numeric id", async () => {
         const res = await editEventAction(fd({ id: "abc" }))
-        expect(res.error).toMatch(/identifiant/i)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/identifiant/i)
+        })
     })
 
     it("rejects a too-short name", async () => {
         const res = await editEventAction(fd({ name: "ab" }))
-        expect(res.error).toMatch(/nom/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/nom/)
+        })
     })
 
     it("rejects an unknown category", async () => {
         h.findCategory.mockRejectedValue(p2025())
         const res = await editEventAction(fd())
-        expect(res.error).toMatch(/catégorie/)
+        if (!res.success) expect(res.error).toMatch(/catégorie/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         expect(await editEventAction(fd())).toEqual({
+            success: false,
             error: "La modification de l'évènement à échoué, veuillez réessayer"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

@@ -4,21 +4,22 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function editArticleActionImpl(
     formData: FormData,
     context: ActionAPIContext
-) {
+): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "edit:article")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de modifier des articles"
         }
     }
@@ -33,12 +34,15 @@ async function editArticleActionImpl(
 
     // Ensure articleId is a number
     if (Number.isNaN(articleId)) {
-        return { error: "L'id de l'article est eronné" }
+        return { success: false, error: "L'id de l'article est eronné" }
     }
 
     // Fields Validation
     if (!title || !content) {
-        return { error: "Veuillez remplir tous les champs obligatoires." }
+        return {
+            success: false,
+            error: "Veuillez remplir tous les champs obligatoires."
+        }
     }
 
     // Fetch current article
@@ -55,12 +59,15 @@ async function editArticleActionImpl(
     )
     if (!articleResult.success) {
         captureActionError(articleResult.error)
-        return { error: "Echec de la modification de l'article" }
+        return {
+            success: false,
+            error: "Echec de la modification de l'article"
+        }
     }
     const article = articleResult.value
 
     if (!article) {
-        return { error: "Article not found" }
+        return { success: false, error: "Article not found" }
     }
 
     // Delete previous images from storage
@@ -69,7 +76,10 @@ async function editArticleActionImpl(
     )
     if (!removed.success) {
         captureActionError(removed.error)
-        return { error: "Echec de la modification de l'article" }
+        return {
+            success: false,
+            error: "Echec de la modification de l'article"
+        }
     }
 
     // Images
@@ -88,7 +98,10 @@ async function editArticleActionImpl(
     )
     if (!responsesResult.success) {
         captureActionError(responsesResult.error)
-        return { error: "Echec de la modification de l'article" }
+        return {
+            success: false,
+            error: "Echec de la modification de l'article"
+        }
     }
     const responses = responsesResult.value
 
@@ -96,6 +109,7 @@ async function editArticleActionImpl(
     for (const response of responses) {
         if (response.error) {
             return {
+                success: false,
                 error: "L'upload des images a échoué. Veuillez réessayer"
             }
         }
@@ -103,7 +117,7 @@ async function editArticleActionImpl(
 
     const parsedContent = tryCatch(() => JSON.parse(content) as JSONContent)
     if (!parsedContent.success) {
-        return { error: "Le contenu de l'article est invalide" }
+        return { success: false, error: "Le contenu de l'article est invalide" }
     }
 
     // insert article to database
@@ -123,7 +137,10 @@ async function editArticleActionImpl(
     )
     if (!updated.success) {
         captureActionError(updated.error)
-        return { error: "Echec de la modification de l'article" }
+        return {
+            success: false,
+            error: "Echec de la modification de l'article"
+        }
     }
 
     return { success: true }

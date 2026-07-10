@@ -67,8 +67,12 @@ export default function SortableMemberList({
                 await actions.members.updateMemberOrderAction(
                     newMembers.map((m, order) => ({ id: m.member.id, order }))
                 )
-            if (error || data.error) {
-                toast.error(data?.error ?? "Échec de la mise à jour de l'ordre")
+            if (error || !data.success) {
+                toast.error(
+                    data && !data.success
+                        ? data.error
+                        : "Échec de la mise à jour de l'ordre"
+                )
             }
             await queryClient.invalidateQueries({ queryKey: ["members"] })
         })
@@ -83,8 +87,12 @@ export default function SortableMemberList({
             const { data, error } = await actions.members.deleteMemberAction({
                 id: member.id
             })
-            if (error || data.error) {
-                toast.error(data?.error ?? "Échec de la suppression")
+            if (error || !data.success) {
+                toast.error(
+                    data && !data.success
+                        ? data.error
+                        : "Échec de la suppression"
+                )
             } else {
                 toast.success(
                     `Le membre ${member.firstName} ${member.lastName} a bien été supprimé`

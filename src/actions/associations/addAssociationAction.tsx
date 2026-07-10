@@ -5,21 +5,22 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function addAssociationActionImpl(
     formData: FormData,
     context: ActionAPIContext
-) {
+): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "create:association")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de créer des associations"
         }
     }
@@ -51,19 +52,24 @@ async function addAssociationActionImpl(
         !email ||
         !logoPicture
     ) {
-        return { error: "Veuillez remplir tous les champs obligatoires." }
+        return {
+            success: false,
+            error: "Veuillez remplir tous les champs obligatoires."
+        }
     }
 
     const maxFileSize = 15 // max file size in mb
 
     // Logo Picture
-    if (!(logoPicture instanceof File)) return { error: "Logo non-valide." }
+    if (!(logoPicture instanceof File))
+        return { success: false, error: "Logo non-valide." }
 
     const file: File = logoPicture
 
     // size validation
     if (file.size === 0 || file.size / (1024 * 1024) > maxFileSize) {
         return {
+            success: false,
             error: `La taille de chaque photo doit être inférieure à ${maxFileSize} Mo.`
         }
     }
@@ -79,6 +85,7 @@ async function addAssociationActionImpl(
         ].includes(file.type)
     ) {
         return {
+            success: false,
             error: "Le format de l'image doit être : PNG, JPEG, JPG, WebP ou GIF"
         }
     }
@@ -87,7 +94,7 @@ async function addAssociationActionImpl(
     const { data, error: err } = await supabase.storage
         .from("association-pictures")
         .upload(randomUUID(), file)
-    if (err) return { error: err.message }
+    if (err) return { success: false, error: err.message }
 
     const logoPath: string = data.path
 
@@ -117,13 +124,14 @@ async function addAssociationActionImpl(
             created.error instanceof Error
                 ? created.error.message
                 : "Unknown error"
-        return { error: errorMessage }
+        return { success: false, error: errorMessage }
     }
 
     if (created.value) {
         return { success: true }
     } else {
         return {
+            success: false,
             error: "La création de l'association dans la base de données a échoué... Veuillez contacter un administrateur."
         }
     }

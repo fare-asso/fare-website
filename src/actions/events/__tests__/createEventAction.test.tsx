@@ -50,6 +50,7 @@ describe("createEventAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await createEventAction(validEventFormData())).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.create).not.toHaveBeenCalled()
@@ -58,20 +59,20 @@ describe("createEventAction", () => {
     it("requires the create:event permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await createEventAction(validEventFormData())
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects a too-short name", async () => {
         const res = await createEventAction(validEventFormData({ name: "ab" }))
-        expect(res.error).toMatch(/nom/)
+        if (!res.success) expect(res.error).toMatch(/nom/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects an unknown category", async () => {
         h.findCategory.mockRejectedValue(p2025())
         const res = await createEventAction(validEventFormData())
-        expect(res.error).toMatch(/catégorie/)
+        if (!res.success) expect(res.error).toMatch(/catégorie/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
@@ -79,6 +80,7 @@ describe("createEventAction", () => {
         h.upload.mockResolvedValue({ data: null, error: { message: "boom" } })
         const res = await createEventAction(validEventFormData())
         expect(res).toEqual({
+            success: false,
             error: "L'upload de l'image à échoué, veuillez réessayer"
         })
         expect(h.create).not.toHaveBeenCalled()
@@ -88,6 +90,7 @@ describe("createEventAction", () => {
         h.create.mockRejectedValue(new Error("db down"))
         const res = await createEventAction(validEventFormData())
         expect(res).toEqual({
+            success: false,
             error: "La création de l'évènement à échoué, veuillez réessayer"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

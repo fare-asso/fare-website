@@ -38,6 +38,7 @@ describe("addAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await addAssociationAction(validAssociationFormData())).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.create).not.toHaveBeenCalled()
@@ -46,7 +47,7 @@ describe("addAssociationAction", () => {
     it("requires the create:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await addAssociationAction(validAssociationFormData())
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
@@ -55,6 +56,7 @@ describe("addAssociationAction", () => {
             validAssociationFormData({ name: "" })
         )
         expect(res).toEqual({
+            success: false,
             error: "Veuillez remplir tous les champs obligatoires."
         })
         expect(h.upload).not.toHaveBeenCalled()
@@ -64,14 +66,17 @@ describe("addAssociationAction", () => {
         const res = await addAssociationAction(
             validAssociationFormData({ "logo-picture": "not-a-file" })
         )
-        expect(res).toEqual({ error: "Logo non-valide." })
+        expect(res).toEqual({ success: false, error: "Logo non-valide." })
     })
 
     it("rejects an oversized logo", async () => {
         const res = await addAssociationAction(
             validAssociationFormData({ "logo-picture": bigImage() })
         )
-        expect(res.error).toMatch(/taille/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/taille/)
+        })
     })
 
     it("rejects an unsupported image type", async () => {
@@ -82,7 +87,10 @@ describe("addAssociationAction", () => {
                 })
             })
         )
-        expect(res.error).toMatch(/format de l'image/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/format de l'image/)
+        })
     })
 
     it("returns the storage error when the upload fails", async () => {
@@ -91,14 +99,14 @@ describe("addAssociationAction", () => {
             error: { message: "upload boom" }
         })
         const res = await addAssociationAction(validAssociationFormData())
-        expect(res).toEqual({ error: "upload boom" })
+        expect(res).toEqual({ success: false, error: "upload boom" })
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
         const res = await addAssociationAction(validAssociationFormData())
-        expect(res).toEqual({ error: "db down" })
+        expect(res).toEqual({ success: false, error: "db down" })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 

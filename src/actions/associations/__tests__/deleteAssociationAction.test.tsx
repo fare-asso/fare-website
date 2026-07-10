@@ -42,6 +42,7 @@ describe("deleteAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await deleteAssociationAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -50,13 +51,14 @@ describe("deleteAssociationAction", () => {
     it("requires the delete:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await deleteAssociationAction(1)
-        expect(res.error).toMatch(/permission/)
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
     it("errors when the association does not exist", async () => {
         h.findUnique.mockResolvedValue(null)
         expect(await deleteAssociationAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression de l'association"
         })
     })
@@ -67,6 +69,7 @@ describe("deleteAssociationAction", () => {
         )
         h.deleteUser.mockRejectedValue(new Error("auth down"))
         expect(await deleteAssociationAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression du compte représentant"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
@@ -75,6 +78,7 @@ describe("deleteAssociationAction", () => {
     it("errors when the logo removal fails", async () => {
         h.remove.mockResolvedValue({ error: { message: "storage boom" } })
         expect(await deleteAssociationAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression des images dans la base de données"
         })
         expect(h.deleteFn).not.toHaveBeenCalled()
@@ -83,6 +87,7 @@ describe("deleteAssociationAction", () => {
     it("captures and fails when the delete throws", async () => {
         h.deleteFn.mockRejectedValue(new Error("db down"))
         expect(await deleteAssociationAction(1)).toEqual({
+            success: false,
             error: "Echec de la suppression de l'association"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

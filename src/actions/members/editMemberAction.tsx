@@ -5,17 +5,15 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { uniqueFileName } from "@/helpers/storage"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditMemberSchema, type TEditMember } from "@/schemas/members"
 
-type Result = { success: true } | { success: false; error: string }
-
 async function editMemberActionImpl(
     input: TEditMember,
     context: ActionAPIContext
-): Promise<Result> {
+): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "edit:member")) {
