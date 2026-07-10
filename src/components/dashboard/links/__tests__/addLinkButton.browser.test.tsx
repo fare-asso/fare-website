@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
+
+import { renderWithClient as render } from "@/test/browser"
 
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
-vi.mock("@/actions/links/addLinkAction", () => ({ default: h.action }))
+vi.mock("astro:actions", () => ({
+    actions: { links: { addLinkAction: h.action } }
+}))
 
 import AddLinkButton from "../addLinkButton"
 
@@ -28,7 +31,8 @@ async function fillValidForm(
 }
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockReset()
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<AddLinkButton />", () => {
@@ -95,8 +99,11 @@ describe("<AddLinkButton />", () => {
 
     it("renders the server error when the action fails", async () => {
         h.action.mockResolvedValue({
-            success: false,
-            error: "Échec de la création du lien."
+            data: {
+                success: false,
+                error: "Échec de la création du lien."
+            },
+            error: undefined
         })
         const screen = await openDialog()
         await fillValidForm(screen)

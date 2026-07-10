@@ -7,7 +7,7 @@
         "emails/**/*.test.tsx",
         "src/components/header/defenseDroitsButton.tsx"
     ],
-    "ignoreDependencies": ["postcss-load-config", "@prisma/client"],
+    "ignoreDependencies": ["@prisma/client"],
     "ignoreIssues": {
         "src/components/ui/**": [
             "exports",

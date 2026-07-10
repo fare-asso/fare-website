@@ -1,13 +1,8 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { useState, useTransition } from "react"
 
-import addPartenaireAction from "@/actions/partenaires/addPartenaireAction"
-import {
-    AddPartenaireSchema,
-    type TAddPartenaire
-} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -19,6 +14,8 @@ import {
 } from "@/components/ui/field"
 import { FilePondInput } from "@/components/ui/filepond"
 import { TextField } from "@/components/ui/text-field"
+import { encodeFormPayload } from "@/lib/formPayload"
+import { AddPartenaireSchema, type TAddPartenaire } from "@/schemas/partenaires"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 
@@ -32,6 +29,7 @@ export default function AddPartenaireButton() {
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const form = useForm({
         defaultValues: emptyForm,
@@ -43,12 +41,22 @@ export default function AddPartenaireButton() {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addPartenaireAction(value)
-                if (res.success) {
+                const { data, error } =
+                    await actions.partenaires.addPartenaireAction(
+                        encodeFormPayload(value)
+                    )
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
                     form.reset()
+                    await queryClient.invalidateQueries({
+                        queryKey: ["partenaires"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

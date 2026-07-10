@@ -1,0 +1,140 @@
+---
+import { Card, CardContent } from "@/components/ui/card"
+import prisma from "@/helpers/db"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
+import Public from "@/layouts/Public.astro"
+import { captureActionError } from "@/lib/sentry"
+import { tryCatch } from "@/lib/utils"
+
+const storage = new StorageUtils()
+
+const result = await tryCatch(
+    prisma.instance.findMany({
+        include: {
+            conseils: {
+                orderBy: { order: "asc" },
+                include: {
+                    elus: {
+                        where: { deletedAt: null },
+                        orderBy: { order: "asc" }
+                    }
+                }
+            }
+        },
+        orderBy: { order: "asc" }
+    })
+)
+
+if (!result.success) {
+    captureActionError(result.error)
+}
+
+const instances = (result.success ? result.value : []).map((instance) => ({
+    ...instance,
+    logoUrls: instance.logoPaths.map((path) =>
+        storage.from("instance-pictures").getPublicUrl(path)
+    )
+}))
+---
+
+<Public title="Élus">
+    <div
+        class="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16"
+    >
+        <h1 class="py-12 text-center text-4xl font-bold sm:py-24">
+            Nos élu·e·s étudiant·e·s de la FARE
+        </h1>
+
+        <div class="mb-20 w-full max-w-4xl space-y-12">
+            <div
+                class="prose mb-20 max-w-none rounded-lg bg-black p-6 text-white"
+            >
+                <p class="text-justify">
+                    La FARE a parmi ses missions principales de représenter
+                    l'ensemble des étudiant.e.s de Haute-Bretagne. Pour ce
+                    faire, notre fédération se mobilise au quotidien par des
+                    élu.e.s, étudiant.e.s engagé.e.s au sein de la FARE, qui ont
+                    pour rôle de siéger dans différents conseils.
+                </p>
+            </div>
+
+            {instances.length === 0 ? (
+                    <p class="text-muted-foreground text-center">
+                        Aucun·e élu·e à afficher pour le moment.
+                    </p>
+                ) : (
+                    instances.map((instance) => (
+                        <section class="space-y-6">
+                            <div class="flex flex-col items-center space-y-6">
+                                {instance.logoUrls.length > 0 ? (
+                                    <div class="mt-20 flex w-full flex-row flex-wrap items-center justify-center gap-6">
+                                        {instance.logoUrls.map((url, index) => (
+                                            <img
+                                                src={url}
+                                                width={220}
+                                                height={220}
+                                                alt={`Logo ${index + 1} de ${instance.name}`}
+                                                class="h-auto w-32 object-contain md:h-44 md:w-auto"
+                                            />
+                                        ))}
+                                    </div>
+                                ) : null}
+
+                                <h2 class="mb-4 text-2xl font-semibold">
+                                    {instance.name}
+                                </h2>
+                                <p class="py-3 text-sm font-medium">
+                                    Contact : {instance.contactEmail}
+                                </p>
+                            </div>
+
+                            {instance.description ? (
+                                <div class="prose mb-4 max-w-none">
+                                    <p class="text-justify">
+                                        {instance.description}
+                                    </p>
+                                </div>
+                            ) : null}
+
+                            {instance.conseils.map((conseil) => (
+                                <div class="space-y-4">
+                                    <div class="prose mb-4 max-w-none">
+                                        <h3 class="mb-4 text-xl font-semibold">
+                                            {conseil.name}
+                                        </h3>
+                                        {conseil.description ? (
+                                            <p class="text-justify">
+                                                {conseil.description}
+                                            </p>
+                                        ) : null}
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                        {conseil.elus.map((elu) => (
+                                            <Card className="w-full">
+                                                <CardContent className="space-y-4 p-4">
+                                                    <div class="space-y-2">
+                                                        <h3 class="font-semibold">
+                                                            {elu.name}
+                                                        </h3>
+                                                        <p class="text-sm text-gray-600">
+                                                            {elu.position}
+                                                        </p>
+                                                        {elu.description ? (
+                                                            <p class="text-sm text-gray-500">
+                                                                {elu.description}
+                                                            </p>
+                                                        ) : null}
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </section>
+                    ))
+                )}
+        </div>
+    </div>
+</Public>

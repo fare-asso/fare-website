@@ -13,7 +13,7 @@
 }
 
 /* =========================================================
-   DESKTOP — V1 Final
+   DESKTOP
    ========================================================= */
 
 .v1f {
@@ -101,7 +101,7 @@
     transform: rotate(180deg);
 }
 
-/* ---- Fallback (works everywhere, no slide) ---- */
+/* ---- Underline (fallback): a per-item bar that grows on hover ---- */
 .v1f-link::after {
     content: "";
     position: absolute;
@@ -109,23 +109,68 @@
     right: 16px;
     bottom: 2px;
     height: 2px;
-    background: currentColor;
+    background: var(--ink);
     transform: scaleX(0);
     transform-origin: left center;
     transition: transform 0.25s var(--easing);
 }
-.v1f-item[data-active="true"] .v1f-link::after {
-    transform: scaleX(1);
-}
+.v1f-item[data-active="true"] .v1f-link::after,
 .v1f-item:hover .v1f-link::after,
 .v1f-item:focus-within .v1f-link::after {
     transform: scaleX(1);
 }
+/* rail exists only in the anchor-positioning path */
+.v1f-rail {
+    display: none;
+}
 
-.v1f-pop-fallback {
+/* ---- Underline (enhanced): one rail that slides between items ----
+   Index-free: at most one link owns the `--tab` anchor at a time, so
+   the rail's anchor query always has a single, unambiguous target. It
+   rests under the active link and follows whatever is hovered/focused. */
+@supports (anchor-name: --x) {
+    .v1f-link::after {
+        display: none;
+    }
+
+    .v1f-item[data-active="true"] .v1f-link,
+    .v1f-item:is(:hover, :focus-within) .v1f-link {
+        anchor-name: --tab;
+    }
+    /* while something is hovered/focused, release the active link so the
+       hovered one stays the sole anchor */
+    .v1f-nav:has(.v1f-item:is(:hover, :focus-within))
+        .v1f-item[data-active="true"]:not(:hover, :focus-within)
+        .v1f-link {
+        anchor-name: none;
+    }
+
+    .v1f-rail {
+        display: block;
+        position: absolute;
+        bottom: 4px;
+        height: 2px;
+        left: anchor(--tab left);
+        width: anchor-size(--tab width);
+        background: var(--ink);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+            left 0.3s var(--easing),
+            width 0.3s var(--easing),
+            opacity 0.15s;
+    }
+    .v1f-nav:has(.v1f-item[data-active="true"]) .v1f-rail,
+    .v1f-nav:has(.v1f-item:is(:hover, :focus-within)) .v1f-rail {
+        opacity: 1;
+    }
+}
+
+/* ---- Dropdown (hover/focus, no JS; right-aligned to stay on-screen) */
+.v1f-pop {
     position: absolute;
     top: 100%;
-    left: 0;
+    right: 0;
     margin: 0;
     padding: 8px;
     min-width: 280px;
@@ -143,8 +188,8 @@
     display: grid;
     gap: 2px;
 }
-.v1f-item:hover .v1f-pop-fallback,
-.v1f-item:focus-within .v1f-pop-fallback {
+.v1f-item:hover .v1f-pop,
+.v1f-item:focus-within .v1f-pop {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
@@ -170,118 +215,39 @@
     margin-top: 2px;
 }
 
-/* Modern-only elements hidden in fallback */
-.v1f-rail,
+/* ---- Enhanced: one dropdown box that travels between items ----
+   A single anchor-positioned box that slides to the open tab and
+   cross-fades its panes. The per-item `.v1f-pop` above is the fallback
+   when anchor positioning is unavailable. The per-tab rules below map
+   the Nth tab to the Nth pane; add a pair if the nav grows past 4. */
 .v1f-pop-shared {
     display: none;
 }
-
-/* ---- Modern: anchor positioning ---- */
 @supports (anchor-name: --x) {
-    .v1f-link::after {
+    .v1f-pop {
         display: none;
     }
-    .v1f-pop-fallback {
-        display: none;
+    /* one anchor per tab so the single box can travel to each */
+    .v1f-item:nth-child(1) {
+        anchor-name: --n0;
     }
-    .v1f-rail,
+    .v1f-item:nth-child(2) {
+        anchor-name: --n1;
+    }
+    .v1f-item:nth-child(3) {
+        anchor-name: --n2;
+    }
+    .v1f-item:nth-child(4) {
+        anchor-name: --n3;
+    }
+
     .v1f-pop-shared {
-        display: block;
-    }
-
-    .v1f-link {
-        anchor-name: var(--anchor);
-    }
-
-    /* hover-bridge (link side) — keeps the dropdown open across the gap */
-    .v1f-item::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        height: 22px;
-    }
-
-    /* sliding rail */
-    .v1f-rail {
-        position: absolute;
-        height: 2px;
-        background: var(--ink);
-        pointer-events: none;
-        opacity: 0;
-        bottom: 4px;
-        transition:
-            left 0.32s var(--easing),
-            width 0.32s var(--easing),
-            opacity 0.15s;
-    }
-
-    /* default rest position: under active link */
-    .v1f-nav:has(.v1f-item[data-active="true"]) .v1f-rail {
-        left: anchor(--n-active left);
-        width: anchor-size(--n-active width);
-        opacity: 1;
-    }
-
-    /* persistent underline on the active page link — mirrors the
-       hover rail so the current section stays marked even while
-       another item is hovered (the rail has slid away) */
-    .v1f-item[data-active="true"] .v1f-link::after {
-        content: "";
-        display: block;
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 4px;
-        height: 2px;
-        background: var(--ink);
-        transform: none;
-        opacity: 1;
-    }
-
-    /* hovered/focused overrides — and stay-open while pane is hovered */
-    .v1f-nav:has(.v1f-item:nth-child(1):is(:hover, :focus-within)) .v1f-rail,
-    .v1f-nav:has(.v1f-pane[data-i="0"]:hover) .v1f-rail {
-        left: anchor(--n0 left);
-        width: anchor-size(--n0 width);
-        opacity: 1;
-    }
-    .v1f-nav:has(.v1f-item:nth-child(2):is(:hover, :focus-within)) .v1f-rail {
-        left: anchor(--n1 left);
-        width: anchor-size(--n1 width);
-        opacity: 1;
-    }
-    .v1f-nav:has(.v1f-item:nth-child(3):is(:hover, :focus-within)) .v1f-rail,
-    .v1f-nav:has(.v1f-pane[data-i="2"]:hover) .v1f-rail {
-        left: anchor(--n2 left);
-        width: anchor-size(--n2 width);
-        opacity: 1;
-    }
-    .v1f-nav:has(.v1f-item:nth-child(4):is(:hover, :focus-within)) .v1f-rail,
-    .v1f-nav:has(.v1f-pane[data-i="3"]:hover) .v1f-rail {
-        left: anchor(--n3 left);
-        width: anchor-size(--n3 width);
-        opacity: 1;
-    }
-    .v1f-nav:has(.v1f-item:nth-child(5):is(:hover, :focus-within)) .v1f-rail,
-    .v1f-nav:has(.v1f-pane[data-i="4"]:hover) .v1f-rail {
-        left: anchor(--n4 left);
-        width: anchor-size(--n4 width);
-        opacity: 1;
-    }
-    .v1f-nav:has(.v1f-item:nth-child(6):is(:hover, :focus-within)) .v1f-rail {
-        left: anchor(--n5 left);
-        width: anchor-size(--n5 width);
-        opacity: 1;
-    }
-
-    /* sliding dropdown */
-    .v1f-pop-shared {
+        display: grid;
+        grid-template-columns: 1fr;
         position: absolute;
         top: calc(100% + 6px);
-        margin: 0;
-        padding: 8px;
+        right: 0;
+        left: auto;
         width: max-content;
         min-width: 220px;
         max-width: 360px;
@@ -293,95 +259,75 @@
         transform: translateY(-4px);
         pointer-events: none;
         z-index: 60;
-        display: grid;
-        grid-template-columns: 1fr;
-        /* Closed: don't slide back — snap left/width only AFTER the
-           fade-out has finished, so the box fades out in place. */
+        /* closed: snap position only after the fade-out, so it fades
+           out in place instead of sliding back */
         transition:
-            left 0s linear 0.2s,
-            width 0s linear 0.2s,
+            right 0s linear 0.2s,
             opacity 0.18s,
             transform 0.18s;
     }
 
+    /* travel to the open tab — while hovering the tab, or its pane */
     .v1f-nav:has(.v1f-item:nth-child(1):is(:hover, :focus-within))
         .v1f-pop-shared,
     .v1f-nav:has(.v1f-pane[data-i="0"]:hover) .v1f-pop-shared {
-        left: anchor(--n0 left);
-        transition:
-            left 0.32s var(--easing),
-            width 0.2s var(--easing),
-            opacity 0.18s,
-            transform 0.18s;
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
+        right: anchor(--n0 right);
+    }
+    .v1f-nav:has(.v1f-item:nth-child(2):is(:hover, :focus-within))
+        .v1f-pop-shared,
+    .v1f-nav:has(.v1f-pane[data-i="1"]:hover) .v1f-pop-shared {
+        right: anchor(--n1 right);
     }
     .v1f-nav:has(.v1f-item:nth-child(3):is(:hover, :focus-within))
         .v1f-pop-shared,
     .v1f-nav:has(.v1f-pane[data-i="2"]:hover) .v1f-pop-shared {
-        left: anchor(--n2 left);
-        transition:
-            left 0.32s var(--easing),
-            width 0.2s var(--easing),
-            opacity 0.18s,
-            transform 0.18s;
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
+        right: anchor(--n2 right);
     }
     .v1f-nav:has(.v1f-item:nth-child(4):is(:hover, :focus-within))
         .v1f-pop-shared,
     .v1f-nav:has(.v1f-pane[data-i="3"]:hover) .v1f-pop-shared {
         right: anchor(--n3 right);
+    }
+
+    /* open + slide timing while a menu is engaged */
+    .v1f-nav:has(.v1f-item.has-sub:is(:hover, :focus-within)) .v1f-pop-shared,
+    .v1f-nav:has(.v1f-pop-shared:hover) .v1f-pop-shared {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
         transition:
-            left 0.32s var(--easing),
-            width 0.2s var(--easing),
+            right 0.3s var(--easing),
             opacity 0.18s,
             transform 0.18s;
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
     }
-    .v1f-nav:has(.v1f-item:nth-child(5):is(:hover, :focus-within))
-        .v1f-pop-shared,
-    .v1f-nav:has(.v1f-pane[data-i="4"]:hover) .v1f-pop-shared {
-        right: anchor(--n4 right);
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
+
+    /* reveal the matching pane; `:hover` keeps it up while in the box */
+    .v1f-nav:has(.v1f-item:nth-child(1):is(:hover, :focus-within))
+        .v1f-pane[data-i="0"],
+    .v1f-nav:has(.v1f-item:nth-child(2):is(:hover, :focus-within))
+        .v1f-pane[data-i="1"],
+    .v1f-nav:has(.v1f-item:nth-child(3):is(:hover, :focus-within))
+        .v1f-pane[data-i="2"],
+    .v1f-nav:has(.v1f-item:nth-child(4):is(:hover, :focus-within))
+        .v1f-pane[data-i="3"],
+    .v1f-pane:hover {
+        display: grid;
     }
 
     .v1f-pane {
         grid-area: 1 / 1;
-        position: relative;
         display: none;
         gap: 2px;
+        padding: 8px;
     }
-    /* hover-bridge (box side) — spans the full dropdown width so the
-       cursor never crosses a dead zone between the link and the box */
-    .v1f-pane::before {
+    /* keep hover alive across the gap between the tab and the box */
+    .v1f-item.has-sub::after {
         content: "";
         position: absolute;
-        left: -8px;
-        right: -8px;
-        bottom: 100%;
-        height: 14px;
-    }
-
-    .v1f-nav:has(.v1f-item:nth-child(1):is(:hover, :focus-within))
-        .v1f-pane[data-i="0"],
-    .v1f-nav:has(.v1f-pane[data-i="0"]:hover) .v1f-pane[data-i="0"],
-    .v1f-nav:has(.v1f-item:nth-child(3):is(:hover, :focus-within))
-        .v1f-pane[data-i="2"],
-    .v1f-nav:has(.v1f-pane[data-i="2"]:hover) .v1f-pane[data-i="2"],
-    .v1f-nav:has(.v1f-item:nth-child(4):is(:hover, :focus-within))
-        .v1f-pane[data-i="3"],
-    .v1f-nav:has(.v1f-pane[data-i="3"]:hover) .v1f-pane[data-i="3"],
-    .v1f-nav:has(.v1f-item:nth-child(5):is(:hover, :focus-within))
-        .v1f-pane[data-i="4"],
-    .v1f-nav:has(.v1f-pane[data-i="4"]:hover) .v1f-pane[data-i="4"] {
-        display: grid;
+        top: 100%;
+        left: 0;
+        right: 0;
+        height: 8px;
     }
 }
 
@@ -524,11 +470,6 @@
     padding: 14px 18px;
     border-bottom: 1px solid rgba(10, 10, 10, 0.08);
 }
-.m1-head img {
-    height: 36px;
-    width: auto;
-    display: block;
-}
 .m1-close {
     width: 36px;
     height: 36px;
@@ -552,7 +493,7 @@
 }
 
 /* =========================================================
-   Responsive — desktop nav vs. mobile burger (lg = 1024px).
+   Responsive — desktop nav vs. mobile burger.
    header.css owns this so it never fights Tailwind specificity.
    ========================================================= */
 
@@ -576,7 +517,7 @@
     }
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 768px) {
     .v1f-nav {
         display: flex;
     }

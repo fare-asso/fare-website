@@ -1,28 +1,30 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteMemberActionImpl({ id }: { id: number }) {
+async function deleteMemberActionImpl(
+    { id }: { id: number },
+    context: ActionAPIContext
+): Promise<ActionResult> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "delete:member")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de supprimer des membres"
         }
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     const deleted = await tryCatch(
         prisma.member.delete({
@@ -31,11 +33,11 @@ async function deleteMemberActionImpl({ id }: { id: number }) {
     )
     if (!deleted.success) {
         captureActionError(deleted.error)
-        return { error: "Echec de la suppression du membre" }
+        return { success: false, error: "Echec de la suppression du membre" }
     }
     const res = deleted.value
 
-    if (res == null) return { error: "Failed to delete record" }
+    if (res == null) return { success: false, error: "Failed to delete record" }
 
     // successfully deleted
     const { error } = await supabase.storage
@@ -43,12 +45,13 @@ async function deleteMemberActionImpl({ id }: { id: number }) {
         .remove([res.picturePath])
 
     if (error) {
-        return { error: error.message }
+        return { success: false, error: error.message }
     }
 
-    revalidatePath("/dashboard/membres")
-    revalidatePath("/a-propos/bureau")
     return { success: true }
 }
 
-export default withServerAction("deleteMemberAction", deleteMemberActionImpl)
+export const deleteMemberAction = wrapAction(
+    "deleteMemberAction",
+    deleteMemberActionImpl
+)

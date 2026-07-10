@@ -1,24 +1,24 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function unarchiveAdhesionActionImpl(adhesionId: number): Promise<{
-    success?: boolean
-    error?: string
-}> {
+async function unarchiveAdhesionActionImpl(
+    adhesionId: number,
+    context: ActionAPIContext
+): Promise<ActionResult> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "edit:adhesion")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
     }
@@ -35,15 +35,16 @@ async function unarchiveAdhesionActionImpl(adhesionId: number): Promise<{
     )
     if (!result.success) {
         captureActionError(result.error)
-        return { error: "Echec de la désarchivation de la demande d'adhésion" }
+        return {
+            success: false,
+            error: "Echec de la désarchivation de la demande d'adhésion"
+        }
     }
-
-    revalidatePath("/dashboard/adhesions")
 
     return { success: true }
 }
 
-export default withServerAction(
+export const unarchiveAdhesionAction = wrapAction(
     "unarchiveAdhesionAction",
     unarchiveAdhesionActionImpl
 )

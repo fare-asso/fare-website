@@ -2,22 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validEventFormData } from "@/test/factories/events"
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    cacheModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     findCategory: vi.fn(),
     update: vi.fn(),
     getUser: vi.fn(),
-    getUserId: vi.fn(),
     upload: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -30,15 +22,15 @@ vi.mock("@/helpers/db", () =>
         event: { update: h.update }
     })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
-vi.mock("@/helpers/user/id", () => ({ default: h.getUserId }))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import editEventAction from "../editEventAction"
+import { editEventAction } from "../editEventAction"
 
 const fd = (o: Record<string, string | File> = {}): FormData =>
     validEventFormData({ id: "1", previousPath: "old-path", ...o })
@@ -52,7 +44,6 @@ const p2025 = (): Error => {
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:event"]))
     h.findCategory.mockResolvedValue({ id: 1, name: "Soiree" })
-    h.getUserId.mockResolvedValue({ userId: "user-1" })
     h.upload.mockResolvedValue({ data: { path: "event-path" }, error: null })
     h.remove.mockResolvedValue({ error: null })
     h.update.mockResolvedValue({ id: 1 })
@@ -61,7 +52,8 @@ beforeEach(() => {
 describe("editEventAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await editEventAction(undefined, fd())).toEqual({
+        expect(await editEventAction(fd())).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -69,38 +61,45 @@ describe("editEventAction", () => {
 
     it("requires the edit:event permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await editEventAction(undefined, fd())
-        expect(res.error).toMatch(/permission/)
+        const res = await editEventAction(fd())
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("rejects a non-numeric id", async () => {
-        const res = await editEventAction(undefined, fd({ id: "abc" }))
-        expect(res.error).toMatch(/identifiant/i)
+        const res = await editEventAction(fd({ id: "abc" }))
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/identifiant/i)
+        })
     })
 
     it("rejects a too-short name", async () => {
-        const res = await editEventAction(undefined, fd({ name: "ab" }))
-        expect(res.error).toMatch(/nom/)
+        const res = await editEventAction(fd({ name: "ab" }))
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/nom/)
+        })
     })
 
     it("rejects an unknown category", async () => {
         h.findCategory.mockRejectedValue(p2025())
-        const res = await editEventAction(undefined, fd())
-        expect(res.error).toMatch(/catégorie/)
+        const res = await editEventAction(fd())
+        if (!res.success) expect(res.error).toMatch(/catégorie/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await editEventAction(undefined, fd())).toEqual({
+        expect(await editEventAction(fd())).toEqual({
+            success: false,
             error: "La modification de l'évènement à échoué, veuillez réessayer"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("updates the event and revalidates on the happy path", async () => {
-        const res = await editEventAction(undefined, fd())
+    it("updates the event on the happy path", async () => {
+        const res = await editEventAction(fd())
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 1 },
@@ -109,6 +108,5 @@ describe("editEventAction", () => {
                 categoryId: 1
             })
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/events")
     })
 })

@@ -1,53 +1,58 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteEventActionImpl({ eventId }: { eventId: number }) {
+async function deleteEventActionImpl(
+    { eventId }: { eventId: number },
+    context: ActionAPIContext
+): Promise<ActionResult> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "delete:event")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
-    // fetch event Image url
-    const imageUrl = await prisma.event.findUnique({
-        where: {
-            id: eventId
-        },
-        select: {
-            image: true
+    // fetch the event's stored image path
+    const event = await tryCatch(
+        prisma.event.findUnique({
+            where: { id: eventId },
+            select: { image: true }
+        })
+    )
+    if (!event.success) {
+        captureActionError(event.error)
+        return {
+            success: false,
+            error: "Echec de la suppression de l'évènement"
         }
-    })
+    }
 
-    // check imageUrl validity and remove it from the storage
-    if (imageUrl != null && typeof imageUrl === "string") {
-        if (imageUrl === "") {
-            // no url
-            console.log("No image to remove")
-        } else {
-            // remove image from the storage
-            const res = await supabase.storage
-                .from("EventPictures")
-                .remove(imageUrl)
+    // remove the image from the storage if there is one
+    const imagePath = event.value?.image
+    if (imagePath) {
+        const res = await supabase.storage
+            .from("EventPictures")
+            .remove([imagePath])
 
-            if (res.error) {
-                console.error("Failed to delete Url")
-                return
+        if (res.error) {
+            captureActionError(res.error)
+            return {
+                success: false,
+                error: "Echec de la suppression de l'image de l'évènement"
             }
         }
     }
@@ -61,9 +66,16 @@ async function deleteEventActionImpl({ eventId }: { eventId: number }) {
     )
     if (!deleted.success) {
         captureActionError(deleted.error)
-        return
+        return {
+            success: false,
+            error: "Echec de la suppression de l'évènement"
+        }
     }
-    revalidatePath("/dashboard/events")
+
+    return { success: true }
 }
 
-export default withServerAction("deleteEventAction", deleteEventActionImpl)
+export const deleteEventAction = wrapAction(
+    "deleteEventAction",
+    deleteEventActionImpl
+)

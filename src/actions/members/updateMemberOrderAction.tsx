@@ -1,11 +1,10 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 interface MemberOrder {
@@ -13,14 +12,18 @@ interface MemberOrder {
     order: number
 }
 
-async function updateMemberOrderActionImpl(memberOrder: MemberOrder[]) {
+async function updateMemberOrderActionImpl(
+    memberOrder: MemberOrder[],
+    context: ActionAPIContext
+): Promise<ActionResult> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "edit:member")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de modifier des membres"
         }
     }
@@ -39,18 +42,15 @@ async function updateMemberOrderActionImpl(memberOrder: MemberOrder[]) {
     if (!result.success) {
         captureActionError(result.error)
         return {
+            success: false,
             error: "La mise à jour de l'ordre des membres a échoué. Veuillez réessayer."
         }
     }
 
-    // Revalidate paths
-    revalidatePath("/dashboard/membres")
-    revalidatePath("/a-propos/bureau")
-
     return { success: true }
 }
 
-export default withServerAction(
+export const updateMemberOrderAction = wrapAction(
     "updateMemberOrderAction",
     updateMemberOrderActionImpl
 )

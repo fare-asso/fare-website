@@ -31,10 +31,8 @@ function isNextControlFlow(error: unknown): boolean {
 }
 
 /**
- * `@/lib/sentry` mock: `withServerAction` becomes a transparent passthrough so
- * tests exercise the real action body; `captureActionError` is a spy that still
- * rethrows Next `redirect()` / `notFound()` control-flow errors like the real
- * implementation does via `unstable_rethrow`.
+ * `@/lib/sentry` mock: `captureActionError` is a spy that still rethrows
+ * control-flow errors like the real implementation does.
  */
 export function sentryModule(captureActionError?: Fn) {
     const spy =
@@ -42,16 +40,7 @@ export function sentryModule(captureActionError?: Fn) {
         vi.fn((error: unknown) => {
             if (isNextControlFlow(error)) throw error
         })
-    return {
-        withServerAction:
-            <A extends unknown[], R>(
-                _name: string,
-                handler: (...args: A) => Promise<R>
-            ) =>
-            (...args: A): Promise<R> =>
-                handler(...args),
-        captureActionError: spy
-    }
+    return { captureActionError: spy }
 }
 
 /** `@/helpers/db` mock — pass the Prisma delegate subtree the action touches. */
@@ -60,23 +49,23 @@ export function dbModule(client: Record<string, unknown>) {
 }
 
 /**
- * `@/helpers/supabase/server` mock. `storage` is the object returned by
- * `supabase.storage`; `auth`/`from` cover the non-storage clients.
+ * `@/helpers/supabase/astro` mock. `storage`/`auth`/`from` are the supabase
+ * client surface; `getUserWithPermissions` is the auth-check helper actions
+ * call with the action context. `createClient(context)` and
+ * `createAdminClient()` both return the same client stub.
  */
-export function supabaseServerModule(client: {
+export function supabaseAstroModule(opts: {
     storage?: unknown
     auth?: unknown
     from?: unknown
+    getUserWithPermissions?: Fn
 }) {
+    const client = { storage: opts.storage, auth: opts.auth, from: opts.from }
     return {
-        createClient: vi.fn(async () => client),
-        createAdminClient: vi.fn(() => client)
+        createClient: vi.fn(() => client),
+        createAdminClient: vi.fn(() => client),
+        getUserWithPermissions: opts.getUserWithPermissions ?? vi.fn()
     }
-}
-
-/** `@/helpers/supabase/auth` mock. */
-export function authModule(getCurrentUserWithPermissions: Fn) {
-    return { getCurrentUserWithPermissions }
 }
 
 /** `@/helpers/email` mock. */
@@ -84,7 +73,7 @@ export function emailModule(sendEmail: Fn) {
     return { sendEmail }
 }
 
-/** `@/components/captcha/verify` mock. */
+/** `@/helpers/captcha/verify` mock. */
 export function captchaModule(verifyCaptcha: Fn) {
     return { verifyCaptcha }
 }

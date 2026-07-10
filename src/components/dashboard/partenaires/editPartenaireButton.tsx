@@ -1,14 +1,9 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { useState, useTransition } from "react"
 import { MdEdit } from "react-icons/md"
 
-import editPartenaireAction from "@/actions/partenaires/editPartenaireAction"
-import {
-    EditPartenaireSchema,
-    type TEditPartenaire
-} from "@/app/(public)/a-propos/partenaires/partenaires-schema"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -26,6 +21,11 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { Partenaire } from "@/generated/prisma/client"
+import { encodeFormPayload } from "@/lib/formPayload"
+import {
+    EditPartenaireSchema,
+    type TEditPartenaire
+} from "@/schemas/partenaires"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 
@@ -37,6 +37,7 @@ export default function EditPartenaireButton({
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const form = useForm({
         defaultValues: {
@@ -53,11 +54,21 @@ export default function EditPartenaireButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await editPartenaireAction(value)
-                if (res.success) {
+                const { data, error } =
+                    await actions.partenaires.editPartenaireAction(
+                        encodeFormPayload(value)
+                    )
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
+                    await queryClient.invalidateQueries({
+                        queryKey: ["partenaires"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

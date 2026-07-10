@@ -1,21 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     updateMany: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () => dbModule({ elu: { updateMany: h.updateMany } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import bulkDeleteElusAction from "../bulkDeleteElusAction"
+import { bulkDeleteElusAction } from "../bulkDeleteElusAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:elu"]))
@@ -63,6 +63,5 @@ describe("bulkDeleteElusAction", () => {
             where: { id: { in: [1, 2] } },
             data: { deletedAt: expect.any(Date) }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/elus")
     })
 })

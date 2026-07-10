@@ -1,10 +1,9 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import deleteConseilAction from "@/actions/conseils/deleteConseilAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -27,43 +26,34 @@ import type { Conseil } from "@/generated/prisma/client"
 import LoadingRing from "../loadingRing"
 
 export default function DeleteConseilButton({ conseil }: { conseil: Conseil }) {
-    const [formState, formAction] = useActionState<
-        { success: true } | { success: false; error: string } | undefined,
-        number
-    >(deleteConseilAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isPending, startTransition] = useTransition()
     const [isOpen, setIsOpen] = useState<boolean>(false)
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState === undefined) return
-        setIsLoading(false)
-        if (formState.success) {
-            setIsOpen(false)
-        } else {
-            toast.error(formState.error)
-        }
-    }, [formState])
-
-    const handleOpenChange = (open: boolean) => {
-        if (!open) setIsLoading(false)
-        setIsOpen(open)
-    }
+    const queryClient = useQueryClient()
 
     const handleDelete = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         event.preventDefault()
 
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(conseil.id)
+        startTransition(async () => {
+            const { data, error } = await actions.conseils.deleteConseilAction(
+                conseil.id
+            )
+            if (error) {
+                toast.error("Echec de la suppression du conseil")
+                return
+            }
+            if (!data.success) {
+                toast.error(data.error)
+                return
+            }
+            setIsOpen(false)
+            await queryClient.invalidateQueries({ queryKey: ["elus"] })
         })
     }
 
     return (
-        <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
+        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <Tooltip>
                 <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
@@ -91,9 +81,14 @@ export default function DeleteConseilButton({ conseil }: { conseil: Conseil }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                        {isLoading ? <LoadingRing /> : null} Supprimer
+                    <AlertDialogCancel disabled={isPending}>
+                        Annuler
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                        onClick={handleDelete}
+                        disabled={isPending}
+                    >
+                        {isPending ? <LoadingRing /> : null} Supprimer
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

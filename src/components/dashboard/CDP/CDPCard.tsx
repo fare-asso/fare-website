@@ -1,15 +1,13 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 import { useState } from "react"
 import { FaRegFilePdf } from "react-icons/fa"
 import { FaRegFolderOpen } from "react-icons/fa6"
 import { MdDelete, MdOutlineFileDownload } from "react-icons/md"
 import { toast } from "sonner"
 
-import deleteCDPAction from "@/actions/CDP/deleteCDPAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -49,16 +47,25 @@ interface CdpCardProps {
 
 export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
     const [isDeleting, setIsDeleting] = useState(false)
+    const queryClient = useQueryClient()
 
     const handleDelete = async () => {
         setIsDeleting(true)
-        const res = await deleteCDPAction({ id: cdp.id })
-        if (res.error) {
-            toast.error(res.error)
+        const { data, error } = await actions.cdp.deleteCDPAction({
+            id: cdp.id
+        })
+        if (error) {
+            toast.error("Une erreur est survenue. Veuillez réessayer.")
             setIsDeleting(false)
-        } else {
-            toast.success(`Le communique ${cdp.name} a bien ete supprime`)
+            return
         }
+        if (data.success) {
+            toast.success(`Le communique ${cdp.name} a bien ete supprime`)
+            await queryClient.invalidateQueries({ queryKey: ["cdp"] })
+            return
+        }
+        toast.error(data.error)
+        setIsDeleting(false)
     }
 
     const formattedSize =
@@ -69,7 +76,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
     return (
         <div className="group bg-card flex flex-col rounded-lg border shadow-xs transition-shadow hover:shadow-md">
             {/* File icon area */}
-            <Link
+            <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -80,7 +87,7 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
                 ) : (
                     <FaRegFolderOpen size={48} className="text-amber-600" />
                 )}
-            </Link>
+            </a>
 
             {/* Content area */}
             <div className="flex flex-1 flex-col gap-2 p-3">
@@ -88,14 +95,14 @@ export default function CdpCard({ cdp, url, dlUrl, canDelete }: CdpCardProps) {
                 <div className="flex items-start justify-between gap-2">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Link
+                            <a
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="line-clamp-2 flex-1 text-sm leading-tight font-medium hover:underline"
                             >
                                 {cdp.name}
-                            </Link>
+                            </a>
                         </TooltipTrigger>
                         <TooltipContent>{cdp.name}</TooltipContent>
                     </Tooltip>

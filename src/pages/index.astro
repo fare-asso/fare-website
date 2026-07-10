@@ -1,0 +1,122 @@
+---
+import { Image } from "astro:assets"
+import { FaDiscord } from "react-icons/fa6"
+
+import heroImage from "@/assets/hero-image.jpg"
+import NetworkIsland from "@/components/public/associations/map/networkIsland.astro"
+import KeyNumbers from "@/components/public/keyNumbers"
+import KeyNumbersIsland from "@/components/public/keyNumbersIsland.astro"
+import LinkButton from "@/components/public/link"
+import PartnersIsland from "@/components/public/partnersIsland.astro"
+import { Button } from "@/components/ui/button"
+import Public from "@/layouts/Public.astro"
+
+import "@/styles/home.css"
+
+export const prerender = true
+---
+
+<Public title="Accueil">
+    <div class="flex w-full flex-col items-center md:w-[90%]">
+        <section class="hero gap-4 md:gap-6">
+            <Image
+                src={heroImage}
+                alt="Image des membres du bureau"
+                class="w-full rounded-xl"
+                loading="eager"
+                width={1200}
+            />
+
+            <KeyNumbersIsland server:defer>
+                <KeyNumbers slot="fallback" />
+            </KeyNumbersIsland>
+
+            <div
+                class="intro flex w-full flex-col items-start justify-between rounded-xl bg-black p-8 text-lg text-white"
+            >
+                <h2 class="mb-2 text-2xl font-semibold">Qui sommes-nous ?</h2>
+                <p class="text-justify">
+                    La Fédération des Associations du Réseau Étudiant de
+                    Haute-Bretagne (FARE) est une organisation humaniste et
+                    militante qui représente les étudiant.e.s d'Ille-et-Vilaine
+                    et des Côtes-d'Armor. Indépendante de tout parti politique,
+                    elle œuvre chaque jour pour améliorer la vie des 88 000
+                    étudiant.e.s du territoire grâce à des projets construits
+                    "par et pour les étudiant.e.s".
+                </p>
+                <div class="flex w-full flex-col items-center pt-4">
+                    <LinkButton
+                        href="/a-propos"
+                        title="En savoir +"
+                        className="bg-white text-black"
+                        variant="outline"
+                    />
+                </div>
+            </div>
+        </section>
+
+        <div class="my-10 flex w-full flex-col">
+            <h2 class="mb-2 text-2xl font-semibold">Notre réseau</h2>
+            <div class="flex flex-col items-center">
+                <NetworkIsland server:defer>
+                    <div
+                        slot="fallback"
+                        class="text-muted-foreground flex min-h-96 w-full items-center justify-center"
+                    >
+                        Chargement de la carte…
+                    </div>
+                </NetworkIsland>
+            </div>
+        </div>
+
+        <div class="my-10 flex w-full flex-col">
+            <h2 class="mb-2 text-2xl font-semibold">Discord</h2>
+            <p class="mb-12 text-justify">
+                Intéressé·e par la FARE et son réseau ? Étudiant·e en
+                Ille-et-Vilaine ou Côtes-d'Armor ? La FARE possède un serveur
+                Discord, conçu par les étudiant·e·s à destination des
+                étudiant·e·s. C'est une plateforme d'échange, de partage et de
+                travail sur laquelle sont déjà présent·e·s les
+                administrateur·rice·s, les élu·e·s de la FARE mais aussi les
+                membres d'association étudiante de Haute-Bretagne. Ce serveur
+                est un réel outil pour vous et vous permet de profiter au mieux
+                des services que nous vous proposons. Maintenant que c'est
+                clair, il ne vous reste plus qu'à cliquer sur le lien d'accès,
+                et si quelques zones de flou persistent, voici une vidéo de
+                présentation du Discord de la FARE qui devrait vous aider !
+            </p>
+            <Button className="bg-[#5865f2] w-full max-w-120 mx-auto">
+                <FaDiscord size={48} className="size-8! text-white" />
+                <a href="https://discord.gg/XcKg3abqFE">Rejoindre le serveur</a>
+            </Button>
+            <div
+                class="flex flex-col items-center justify-center space-y-6 md:flex-row md:space-x-12"
+            >
+                <div class="mt-4 flex w-full flex-col items-center md:w-1/2">
+                    <p class="mb-2 text-center text-lg font-semibold">
+                        Vidéo de présentation du
+                        <a
+                            href="https://discord.gg/4CmJ5Pa3"
+                            title="Lien vers Discord"
+                            class="text-blue-600 transition-all hover:text-blue-400"
+                        >
+                            Discord
+                        </a>
+                        de la FARE 👇
+                    </p>
+                    <div class="aspect-video h-full w-full rounded-md">
+                        <iframe
+                            src="https://www.youtube-nocookie.com/embed/_nu4cbdJ8do"
+                            title="Vidéo de présentation du Discord de la FARE"
+                            style="width: 100%; height: 100%; border-radius: 0.5rem; border: 0;"
+                            allowfullscreen
+                            loading="lazy"
+                        ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <PartnersIsland server:defer />
+    </div>
+</Public>

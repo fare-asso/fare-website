@@ -1,0 +1,43 @@
+---
+import { MailIcon } from "lucide-react"
+import { Image } from "astro:assets"
+import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6"
+
+import type { Member } from "@/generated/prisma/client"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
+
+interface Props {
+    member: Member
+}
+
+const { member } = Astro.props
+
+const su = new StorageUtils()
+const pictureUrl = su.from("member-pictures").getPublicUrl(member.picturePath)
+---
+
+<div class="flex flex-col w-64 items-center *:text-center">
+    <Image
+        src={pictureUrl}
+        width={400}
+        height={400}
+        alt={`${member.firstName} ${member.lastName}`}
+        class="aspect-square rounded-full object-cover"
+    />
+
+    <span class="font-semibold text-xl">
+        {`${member.firstName} ${member.lastName}`}
+    </span>
+
+    <span class="">{member.position}</span>
+
+    <a
+        href={`mailto:${member.email}`}
+        class="text-muted-foreground flex flex-row items-center justify-center text-sm mt-auto pt-3"
+    >
+        <MailIcon size={16} className="mr-2 -mb-0.75" />
+        <span>
+            {member.email}
+        </span>
+    </a>
+</div>

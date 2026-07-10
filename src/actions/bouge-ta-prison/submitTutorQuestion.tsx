@@ -1,39 +1,28 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
 import { BtpContact } from "@/../emails/btp-contact"
-import { verifyCaptcha } from "@/components/captcha/verify"
+import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
     type BTPTutorQuestion,
     BTPTutorQuestionSchema
 } from "@/schemas/bougeTaPrison"
-import type { ActionResponse } from "@/types/actions"
 
 async function submitTutorQuestionImpl(
     data: BTPTutorQuestion
-): Promise<ActionResponse> {
+): Promise<ActionResult> {
     const parsedData = BTPTutorQuestionSchema(data)
 
     if (parsedData instanceof type.errors) {
-        const fieldErrors: Record<string, string[]> = {}
-        for (const issue of parsedData.issues) {
-            const field = String(issue.path[0])
-            if (!fieldErrors[field]) {
-                fieldErrors[field] = []
-            }
-            fieldErrors[field].push(issue.message)
-        }
         return {
-            error: "Un ou plusieurs champs sont invalides.",
-            fieldErrors
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
         }
     }
 
@@ -41,6 +30,7 @@ async function submitTutorQuestionImpl(
     if (!isDevelopment) {
         if (!parsedData.captchaToken) {
             return {
+                success: false,
                 error: "Veuillez compléter le CAPTCHA."
             }
         }
@@ -48,6 +38,7 @@ async function submitTutorQuestionImpl(
         const isCaptchaValid = await verifyCaptcha(parsedData.captchaToken)
         if (!isCaptchaValid) {
             return {
+                success: false,
                 error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
             }
         }
@@ -69,6 +60,7 @@ async function submitTutorQuestionImpl(
     if (!created.success) {
         captureActionError(created.error)
         return {
+            success: false,
             error: "Echec de l'enregistrement de la question. Veuillez réessayer."
         }
     }
@@ -92,8 +84,10 @@ async function submitTutorQuestionImpl(
         })
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true }
 }
 
-export default withServerAction("submitTutorQuestion", submitTutorQuestionImpl)
+export const submitTutorQuestion = wrapAction(
+    "submitTutorQuestion",
+    submitTutorQuestionImpl
+)

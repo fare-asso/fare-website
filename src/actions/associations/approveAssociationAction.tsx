@@ -1,23 +1,23 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function approveAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    id: number
-): Promise<{ error?: string; success?: boolean }> {
-    const user = await getCurrentUserWithPermissions()
+    id: number,
+    context: ActionAPIContext
+): Promise<ActionResult> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "approve:association")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission d'approuver des associations"
         }
     }
@@ -29,16 +29,19 @@ async function approveAssociationActionImpl(
     )
     if (!associationResult.success) {
         captureActionError(associationResult.error)
-        return { error: "Échec de l'approbation de l'association" }
+        return {
+            success: false,
+            error: "Échec de l'approbation de l'association"
+        }
     }
     const association = associationResult.value
 
     if (!association) {
-        return { error: "Association introuvable" }
+        return { success: false, error: "Association introuvable" }
     }
 
     if (association.approved) {
-        return { error: "Cette association est déjà approuvée" }
+        return { success: false, error: "Cette association est déjà approuvée" }
     }
 
     // Approve the association
@@ -50,7 +53,10 @@ async function approveAssociationActionImpl(
     )
     if (!approved.success) {
         captureActionError(approved.error)
-        return { error: "Échec de l'approbation de l'association" }
+        return {
+            success: false,
+            error: "Échec de l'approbation de l'association"
+        }
     }
 
     // Archive the linked adhesion if present
@@ -63,19 +69,17 @@ async function approveAssociationActionImpl(
         )
         if (!archived.success) {
             captureActionError(archived.error)
-            return { error: "Échec de l'approbation de l'association" }
+            return {
+                success: false,
+                error: "Échec de l'approbation de l'association"
+            }
         }
-        revalidatePath("/dashboard/adhesions")
     }
-
-    revalidatePath("/dashboard/associations")
-    revalidatePath("/reseau")
-    revalidatePath("/")
 
     return { success: true }
 }
 
-export default withServerAction(
+export const approveAssociationAction = wrapAction(
     "approveAssociationAction",
     approveAssociationActionImpl
 )

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import type { BureauMember } from "@/app/(public)/a-propos/adhesion/form-schema"
+import type { BureauMember } from "@/schemas/adhesion"
 import { validAdhesionRecord } from "@/test/factories/adhesion"
 
 import {

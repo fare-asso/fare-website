@@ -13,7 +13,6 @@ export default defineConfig({
         "oxc",
         "node",
         "import",
-        "nextjs",
         "react",
         "react-perf",
         "jsx-a11y",
@@ -25,7 +24,7 @@ export default defineConfig({
     categories: {
         correctness: "error"
     },
-    ignorePatterns: ["**/next-env.d.ts", "**/migrations/**", "**/generated/**"],
+    ignorePatterns: ["**/migrations/**", "**/generated/**", ".astro/**"],
     overrides: [
         {
             // Test files & mocks: async mock factories must keep the async
@@ -46,8 +45,18 @@ export default defineConfig({
             }
         },
         {
-            files: ["src/env.ts", "src/instrumentation.ts"],
+            files: ["src/env.ts", "astro.config.ts"],
             rules: { "node/no-process-env": "off" }
+        },
+        {
+            // oxlint's type-aware pass resolves the prisma-generated types as
+            // `any` inside ambient .d.ts files; tsgo checks this correctly.
+            files: ["src/globals.d.ts"],
+            rules: {
+                "typescript/no-redundant-type-constituents": "off",
+                // App.Locals augmentation requires the ambient namespace form
+                "typescript/no-namespace": "off"
+            }
         },
         {
             // biome useFilenamingConvention used strictCase:false to allow
@@ -106,9 +115,6 @@ export default defineConfig({
 
         // performance
         "oxc/no-barrel-file": ["error", { threshold: 10 }],
-        "nextjs/no-img-element": "warn",
-        "nextjs/no-unwanted-polyfillio": "warn",
-        "nextjs/google-font-preconnect": "warn",
         "no-await-in-loop": "warn",
 
         // style
@@ -138,7 +144,6 @@ export default defineConfig({
             }
         ],
         "react/jsx-fragments": "error",
-        "nextjs/no-head-element": "warn",
         "unicorn/prefer-node-protocol": "error",
         "unicorn/prefer-number-properties": "error",
         "operator-assignment": "error",
@@ -147,12 +152,12 @@ export default defineConfig({
         "typescript/only-throw-error": "error",
 
         "local/no-try-catch": "error",
+        "local/no-non-public-env-in-client": "error",
+        "local/no-dashboard-prerender": "error",
         "local/require-server-action-wrapper": "error",
 
-        // Flags non-discriminated action results (optional `success?`/`error?`).
-        // Kept "off" until the actions are migrated to discriminated unions
-        // (TODO.md #3); the follow-up PR flips this to "error" to enforce it.
-        "local/no-optional-result": "off",
+        // All actions now return a discriminated `ActionResult`, so enforce it.
+        "local/no-optional-result": "error",
 
         // Further CLAUDE.md conventions kept "off" until opted in.
         "local/no-console-in-actions": "off",
@@ -167,9 +172,6 @@ export default defineConfig({
         "no-var": "error",
         "require-await": "error",
         "guard-for-in": "error",
-        "nextjs/no-document-import-in-page": "error",
-        "nextjs/no-head-import-in-document": "error",
-        "nextjs/google-font-display": "warn",
         "array-callback-return": "error",
         "typescript/ban-ts-comment": "error",
         "unicorn/no-document-cookie": "error"

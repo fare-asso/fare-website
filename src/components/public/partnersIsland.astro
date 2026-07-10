@@ -1,0 +1,40 @@
+---
+import prisma from "@/helpers/db"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
+import { tryCatch } from "@/lib/utils"
+
+const storage = new StorageUtils()
+
+const partenaires = await tryCatch(
+    prisma.partenaire.findMany({ orderBy: { name: "asc" } })
+)
+const partners = partenaires.success
+    ? partenaires.value.map((p) => ({
+          id: p.id,
+          name: p.name,
+          logoUrl: storage.from("partner-pictures").getPublicUrl(p.logoPath)
+      }))
+    : []
+---
+
+{partners.length > 0 && (
+        <div class="my-10 flex w-full flex-col items-center">
+            <h2 class="mb-8 text-3xl font-semibold">Nos partenaires</h2>
+            <div class="flex flex-row flex-wrap items-center justify-center gap-8">
+                {partners.map((partner) => (
+                    <a
+                        href="/a-propos/partenaires"
+                        class="flex h-24 w-60 items-center justify-center"
+                    >
+                        <img
+                            src={partner.logoUrl}
+                            alt={"Logo de " + partner.name}
+                            width={160}
+                            height={80}
+                            class="h-full w-full object-contain"
+                        />
+                    </a>
+                ))}
+            </div>
+        </div>
+    )}

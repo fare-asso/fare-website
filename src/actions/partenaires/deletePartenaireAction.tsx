@@ -1,12 +1,10 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 type DeletePartenaireResult =
@@ -14,10 +12,10 @@ type DeletePartenaireResult =
     | { success: false; error: string }
 
 async function deletePartenaireActionImpl(
-    _prevState: DeletePartenaireResult | undefined,
-    id: number
+    id: number,
+    context: ActionAPIContext
 ): Promise<DeletePartenaireResult> {
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -28,7 +26,7 @@ async function deletePartenaireActionImpl(
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     const partenaire = await tryCatch(
         prisma.partenaire.findUnique({ where: { id } })
@@ -68,13 +66,10 @@ async function deletePartenaireActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/partenaires")
-    revalidatePath("/a-propos/partenaires")
-
     return { success: true }
 }
 
-export default withServerAction(
+export const deletePartenaireAction = wrapAction(
     "deletePartenaireAction",
     deletePartenaireActionImpl
 )

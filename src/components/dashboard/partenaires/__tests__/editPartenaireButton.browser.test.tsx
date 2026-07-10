@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
 
 import type { Partenaire } from "@/generated/prisma/client"
+import { renderWithClient as render } from "@/test/browser"
 
 const h = vi.hoisted(() => ({
     action: vi.fn(),
@@ -10,8 +10,8 @@ const h = vi.hoisted(() => ({
     })
 }))
 
-vi.mock("@/actions/partenaires/editPartenaireAction", () => ({
-    default: h.action
+vi.mock("astro:actions", () => ({
+    actions: { partenaires: { editPartenaireAction: h.action } }
 }))
 vi.mock("@/components/ui/filepond", () => ({
     FilePondInput: ({ onChange }: { onChange?: (file: File) => void }) => (
@@ -42,7 +42,7 @@ async function openDialog(
 }
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<EditPartenaireButton />", () => {
@@ -71,13 +71,14 @@ describe("<EditPartenaireButton />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
-        expect(submitted).toMatchObject({
+        const submitted = h.action.mock.calls[0][0] as FormData
+        const payload = JSON.parse(submitted.get("payload") as string)
+        expect(payload).toMatchObject({
             id: 1,
             name: "ACME 2",
             description: "Description initiale."
         })
-        expect(submitted.logo).toBeUndefined()
+        expect(submitted.get("logo")).toBeNull()
     })
 
     it("submits the payload with a logo when one is picked", async () => {
@@ -88,8 +89,8 @@ describe("<EditPartenaireButton />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
-        expect(submitted.logo).toBeInstanceOf(File)
+        const submitted = h.action.mock.calls[0][0] as FormData
+        expect(submitted.get("logo")).toBeInstanceOf(File)
     })
 
     it("blocks an empty name submit and does not call the action", async () => {
@@ -103,8 +104,11 @@ describe("<EditPartenaireButton />", () => {
 
     it("renders the server error when the action fails", async () => {
         h.action.mockResolvedValue({
-            success: false,
-            error: "Échec de la modification du partenaire."
+            data: {
+                success: false,
+                error: "Échec de la modification du partenaire."
+            },
+            error: undefined
         })
         const screen = await openDialog()
         await screen

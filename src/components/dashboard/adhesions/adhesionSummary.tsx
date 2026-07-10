@@ -1,27 +1,21 @@
 import { ArchiveIcon, FileTextIcon, InboxIcon } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import prisma from "@/helpers/db"
+import type { Adhesion } from "@/generated/prisma/client"
 
-export default async function AdhesionSummary() {
-    const now = new Date()
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+export default function AdhesionSummary({
+    adhesions
+}: {
+    adhesions: Adhesion[]
+}) {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
 
-    const [total, activeCount, archivedCount, recentCount] = await Promise.all([
-        prisma.adhesion.count(),
-        prisma.adhesion.count({
-            where: { archived: null }
-        }),
-        prisma.adhesion.count({
-            where: { archived: { not: null } }
-        }),
-        prisma.adhesion.count({
-            where: {
-                createdAt: { gte: thirtyDaysAgo },
-                archived: null
-            }
-        })
-    ])
+    const total = adhesions.length
+    const activeCount = adhesions.filter((a) => a.archived === null).length
+    const archivedCount = adhesions.filter((a) => a.archived !== null).length
+    const recentCount = adhesions.filter(
+        (a) => a.archived === null && a.createdAt >= thirtyDaysAgo
+    ).length
 
     const stats = [
         {

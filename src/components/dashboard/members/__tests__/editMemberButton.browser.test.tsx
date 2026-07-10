@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render } from "vitest-browser-react"
 
+import { decodeFormPayload } from "@/lib/formPayload"
+import { renderWithClient as render } from "@/test/browser"
 import { validMemberRecord } from "@/test/factories/members"
 
 const h = vi.hoisted(() => ({
@@ -10,7 +11,10 @@ const h = vi.hoisted(() => ({
     })
 }))
 
-vi.mock("@/actions/members/editMemberAction", () => ({ default: h.action }))
+vi.mock("astro:actions", () => ({
+    actions: { members: { editMemberAction: h.action } },
+    isInputError: () => false
+}))
 vi.mock("@/components/ui/filepond", () => ({
     FilePondInput: ({ onChange }: { onChange?: (file: File) => void }) => (
         <button type="button" onClick={() => onChange?.(h.pickedFile)}>
@@ -33,7 +37,7 @@ async function openDialog(): Promise<Awaited<ReturnType<typeof render>>> {
 }
 
 beforeEach(() => {
-    h.action.mockResolvedValue({ success: true })
+    h.action.mockResolvedValue({ data: { success: true }, error: undefined })
 })
 
 describe("<EditMemberButton />", () => {
@@ -53,7 +57,9 @@ describe("<EditMemberButton />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
+        const submitted = decodeFormPayload<Record<string, unknown>>(
+            h.action.mock.calls[0][0] as FormData
+        )
         expect(submitted).toMatchObject({ id: 1, firstName: "Lou" })
         expect(submitted.picture).toBeUndefined()
     })
@@ -66,7 +72,9 @@ describe("<EditMemberButton />", () => {
             .click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
-        const submitted = h.action.mock.calls[0][0]
+        const submitted = decodeFormPayload<Record<string, unknown>>(
+            h.action.mock.calls[0][0] as FormData
+        )
         expect(submitted.picture).toBeInstanceOf(File)
     })
 
@@ -81,8 +89,11 @@ describe("<EditMemberButton />", () => {
 
     it("renders the server error when the action fails", async () => {
         h.action.mockResolvedValue({
-            success: false,
-            error: "Échec de la modification du membre."
+            data: {
+                success: false,
+                error: "Échec de la modification du membre."
+            },
+            error: undefined
         })
         const screen = await openDialog()
         await screen

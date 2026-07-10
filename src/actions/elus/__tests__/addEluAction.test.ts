@@ -2,13 +2,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validAddElu } from "@/test/factories/elus"
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     findConseil: vi.fn(),
     createElu: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -18,11 +17,12 @@ vi.mock("@/helpers/db", () =>
         elu: { create: h.createElu }
     })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import addEluAction from "../addEluAction"
+import { addEluAction } from "../addEluAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:elu"]))
@@ -90,10 +90,6 @@ describe("addEluAction", () => {
                 conseilId: 1
             }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/elus")
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/representation/nos-elues"
-        )
     })
 
     it("defaults description to null when omitted", async () => {

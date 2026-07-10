@@ -1,30 +1,29 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
-import { verifyCaptcha } from "@/components/captcha/verify"
 import {
     type BagadAssoFormData,
     BagadAssoFormSchema
 } from "@/components/public/bagadAsso/form-schema"
+import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { locationDisplayName } from "@/helpers/location"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 import NewBagadAssoTicket from "../../../emails/badagasso-ticket"
 
-export type FormState = {
-    error?: string
-    success?: boolean
-    fieldErrors?: Partial<Record<keyof BagadAssoFormData, string[]>>
-}
+export type FormState =
+    | { success: true }
+    | {
+          success: false
+          error: string
+          fieldErrors?: Partial<Record<keyof BagadAssoFormData, string[]>>
+      }
 
 async function submitBagadAssoFormActionImpl(
-    _prevState: FormState | undefined,
     data: BagadAssoFormData
 ): Promise<FormState> {
     // Validate the data using Zod schema
@@ -43,6 +42,7 @@ async function submitBagadAssoFormActionImpl(
         }
 
         return {
+            success: false,
             error: "Un ou plusieurs champs sont invalides.",
             fieldErrors
         }
@@ -53,12 +53,13 @@ async function submitBagadAssoFormActionImpl(
     // Verify CAPTCHA in production
     if (!isDevelopment) {
         if (!validatedData.captchaToken) {
-            return { error: "Veuillez compléter le CAPTCHA." }
+            return { success: false, error: "Veuillez compléter le CAPTCHA." }
         }
 
         const isCaptchaValid = await verifyCaptcha(validatedData.captchaToken)
         if (!isCaptchaValid) {
             return {
+                success: false,
                 error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
             }
         }
@@ -87,6 +88,7 @@ async function submitBagadAssoFormActionImpl(
     if (!ticket.success) {
         captureActionError(ticket.error)
         return {
+            success: false,
             error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
         }
     }
@@ -106,11 +108,10 @@ async function submitBagadAssoFormActionImpl(
         )
     })
 
-    revalidatePath("/dashboard/bagadAsso")
     return { success: true }
 }
 
-export default withServerAction(
+export const submitBagadAssoFormAction = wrapAction(
     "submitBagadAssoFormAction",
     submitBagadAssoFormActionImpl
 )

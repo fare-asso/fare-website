@@ -1,113 +1,106 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    cacheModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     create: vi.fn(),
     getUser: vi.fn(),
-    info: vi.fn(),
+    upload: vi.fn(),
     remove: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
-const from = vi.hoisted(() => vi.fn(() => ({ info: h.info, remove: h.remove })))
+const from = vi.hoisted(() =>
+    vi.fn(() => ({ upload: h.upload, remove: h.remove }))
+)
 
 vi.mock("@/helpers/db", () =>
     dbModule({ communiqueDePresse: { create: h.create } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import createCDPAction from "../createCDPAction"
+import { createCDPAction } from "../createCDPAction"
 
-const fd = (o: Record<string, string> = {}): FormData => {
+function pdfFile(type = "application/pdf"): File {
+    return new File(["%PDF-1.4 content"], "doc.pdf", { type })
+}
+
+function fd(
+    overrides: { name?: string; type?: string; file?: File | null } = {}
+): FormData {
     const f = new FormData()
-    f.set("name", "Communiqué")
-    f.set("CDPfilePath", "communique-de-presse/file.pdf")
-    f.set("date", "2026-03-01")
-    f.set("CDPType", "CDP")
-    for (const [k, v] of Object.entries(o)) f.set(k, v)
+    if (overrides.name !== "") f.set("name", overrides.name ?? "Communiqué")
+    f.set("CDPType", overrides.type ?? "CDP")
+    f.set("date", "2026-01-01")
+    if (overrides.file !== null) f.set("CDPfile", overrides.file ?? pdfFile())
     return f
 }
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:cdp"]))
-    h.info.mockResolvedValue({
-        data: { size: 1024, contentType: "application/pdf" },
-        error: null
-    })
-    h.remove.mockResolvedValue({ error: null })
+    h.upload.mockResolvedValue({ path: "communique.pdf" })
     h.create.mockResolvedValue({ id: 1 })
+    h.remove.mockResolvedValue({ error: null })
 })
 
 describe("createCDPAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await createCDPAction(undefined, fd())).toEqual({
+        expect(await createCDPAction(fd())).toEqual({
+            success: false,
             error: "Authentification requise"
         })
+        expect(h.upload).not.toHaveBeenCalled()
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("requires the create:cdp permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await createCDPAction(undefined, fd())
-        expect(res.error).toMatch(/permission/)
-        expect(h.create).not.toHaveBeenCalled()
+        const res = await createCDPAction(fd())
+        expect(res.success).toBe(false)
+        expect(res.success === false && res.error).toMatch(/permission/)
+        expect(h.upload).not.toHaveBeenCalled()
     })
 
     it("rejects a payload missing required fields", async () => {
-        const res = await createCDPAction(undefined, fd({ name: "" }))
-        expect(res).toEqual({ error: "Un ou plusieurs champs sont invalides" })
-    })
-
-    it("errors when the file info cannot be fetched", async () => {
-        h.info.mockResolvedValue({ data: null, error: { message: "gone" } })
-        const res = await createCDPAction(undefined, fd())
-        expect(res.error).toMatch(/récupération du fichier/)
+        expect(await createCDPAction(fd({ name: "" }))).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides"
+        })
+        expect(h.upload).not.toHaveBeenCalled()
     })
 
     it("rejects a non-PDF file", async () => {
-        h.info.mockResolvedValue({
-            data: { size: 1024, contentType: "image/png" },
-            error: null
+        expect(
+            await createCDPAction(fd({ file: pdfFile("text/plain") }))
+        ).toEqual({
+            success: false,
+            error: "Le fichier doit être de format PDF"
         })
-        const res = await createCDPAction(undefined, fd())
-        expect(res).toEqual({ error: "Le fichier doit être de format PDF" })
+        expect(h.upload).not.toHaveBeenCalled()
     })
 
     it("captures, removes the file and fails when the insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await createCDPAction(undefined, fd())
-        expect(res).toEqual({
+        expect(await createCDPAction(fd())).toEqual({
+            success: false,
             error: "Echec de l'ajout du CDP dans la base de données"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.remove).toHaveBeenCalledWith(["communique-de-presse/file.pdf"])
+        expect(h.remove).toHaveBeenCalledWith(["communique.pdf"])
     })
 
-    it("creates the CDP and revalidates on the happy path", async () => {
-        const res = await createCDPAction(undefined, fd())
+    it("uploads the file and creates the CDP on the happy path", async () => {
+        const res = await createCDPAction(fd())
         expect(res).toEqual({ success: true })
-        expect(h.create).toHaveBeenCalledWith({
-            data: expect.objectContaining({
-                name: "Communiqué",
-                filePath: "communique-de-presse/file.pdf",
-                size: 1024,
-                type: "CDP"
-            })
-        })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/presse")
+        expect(h.upload).toHaveBeenCalledOnce()
+        expect(h.create).toHaveBeenCalledOnce()
+        expect(h.captureActionError).not.toHaveBeenCalled()
     })
 })

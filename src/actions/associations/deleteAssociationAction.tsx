@@ -1,31 +1,34 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createAdminClient, createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import {
+    createAdminClient,
+    createClient,
+    getUserWithPermissions
+} from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function deleteAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    id: number
-) {
+    id: number,
+    context: ActionAPIContext
+): Promise<ActionResult> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "delete:association")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de supprimer des associations"
         }
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // create supabase admin client (only on server)
     const supabaseAdmin = createAdminClient()
@@ -38,7 +41,10 @@ async function deleteAssociationActionImpl(
     })
 
     if (association == null) {
-        return { error: "Echec de la suppression de l'association" }
+        return {
+            success: false,
+            error: "Echec de la suppression de l'association"
+        }
     }
 
     /* Remove representative */
@@ -49,6 +55,7 @@ async function deleteAssociationActionImpl(
         if (!removed.success) {
             captureActionError(removed.error)
             return {
+                success: false,
                 error: "Echec de la suppression du compte représentant"
             }
         }
@@ -63,6 +70,7 @@ async function deleteAssociationActionImpl(
         if (error) {
             console.log(error.message)
             return {
+                success: false,
                 error: "Echec de la suppression des images dans la base de données"
             }
         }
@@ -78,15 +86,15 @@ async function deleteAssociationActionImpl(
     )
     if (!deleted.success) {
         captureActionError(deleted.error)
-        return { error: "Echec de la suppression de l'association" }
+        return {
+            success: false,
+            error: "Echec de la suppression de l'association"
+        }
     }
-    revalidatePath("/dashboard/associations")
-    revalidatePath("/reseau")
-    revalidatePath("/")
     return { success: true }
 }
 
-export default withServerAction(
+export const deleteAssociationAction = wrapAction(
     "deleteAssociationAction",
     deleteAssociationActionImpl
 )

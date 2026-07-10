@@ -1,0 +1,28 @@
+---
+import { fetchElus } from "@/actions/elus/listElusAction"
+import ElusPage from "@/components/dashboard/elus/elusPage"
+import { toShellUser } from "@/components/dashboard/shell"
+import { hasPermission } from "@/helpers/permissions"
+import Dashboard from "@/layouts/Dashboard.astro"
+
+const user = Astro.locals.user!
+if (!hasPermission(user, "access:elus")) {
+    return Astro.redirect("/dashboard/unauthorized")
+}
+const instances = (await fetchElus()) ?? []
+---
+
+<Dashboard title="Élu·e·s">
+    <ElusPage
+        client:load
+        user={toShellUser(user)}
+        pathname={Astro.url.pathname}
+        initialInstances={instances}
+        canCreateElu={hasPermission(user, "create:elu")}
+        canEditElu={hasPermission(user, "edit:elu")}
+        canDeleteElu={hasPermission(user, "delete:elu")}
+        canCreateConseil={hasPermission(user, "create:instance")}
+        canEditConseil={hasPermission(user, "edit:instance")}
+        canDeleteConseil={hasPermission(user, "delete:instance")}
+    />
+</Dashboard>

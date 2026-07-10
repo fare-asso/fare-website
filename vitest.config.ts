@@ -4,36 +4,34 @@ import react from "@vitejs/plugin-react"
 import { playwright } from "@vitest/browser-playwright"
 import { defineConfig } from "vitest/config"
 
+// `astro:actions` is a virtual module the Astro integration provides at build
+// time; alias it to a resolvable stub so tests can `vi.mock("astro:actions")`.
 const srcAlias = {
-    "@": fileURLToPath(new URL("./src", import.meta.url))
+    "@": fileURLToPath(new URL("./src", import.meta.url)),
+    "astro:actions": fileURLToPath(
+        new URL("./src/test/stubs/astro-actions.ts", import.meta.url)
+    )
 }
 
-// `next/image`'s CJS-wrapping (`module.exports = require('./image-external')`)
-// produces a double-default shape under Vite's browser interop, so
-// `import Image from "next/image"` resolves to an object at runtime and
-// React rejects it. Alias to a thin stub in the browser project only.
 const browserAlias = {
-    ...srcAlias,
-    "next/image": fileURLToPath(
-        new URL("./src/test/stubs/next-image.tsx", import.meta.url)
-    )
+    ...srcAlias
 }
 
 const testEnv = {
     SUPABASE_POSTGRES_PRISMA_URL: "postgresql://test:test@localhost:5432/test",
     FRIENDLY_CAPTCHA_API_KEY: "test-fc-api-key",
     SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    SUPABASE_ANON_KEY: "test-anon-key",
     SMTP_HOST: "smtp.test.local",
     SMTP_PORT: "465",
     SMTP_SECURE: "true",
     SMTP_USER: "test-user",
     SMTP_PASS: "test-pass",
     SMTP_FROM_EMAIL: "noreply@fare-asso.fr",
-    NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321",
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
-    NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
-    NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key",
-    NEXT_PUBLIC_SENTRY_DSN: "https://test@test.ingest.sentry.io/0"
+    PUBLIC_SUPABASE_URL: "http://localhost:54321",
+    PUBLIC_SITE_URL: "http://localhost:4321",
+    PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "test-site-key",
+    PUBLIC_SENTRY_DSN: "https://test@test.ingest.sentry.io/0"
 }
 
 const browserTestGlob = "src/**/__tests__/**/*.browser.test.tsx"
@@ -66,9 +64,7 @@ export default defineConfig({
                     include: [
                         "@supabase/ssr",
                         "@tanstack/react-table",
-                        "lucide-react",
-                        "next/cache",
-                        "next/link"
+                        "lucide-react"
                     ]
                 },
                 test: {

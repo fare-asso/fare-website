@@ -1,20 +1,17 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-type Result = { success: true } | { success: false; error: string }
-
 async function deleteLinkActionImpl(
-    _prevState: Result | undefined,
-    id: number
-): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+    id: number,
+    context: ActionAPIContext
+): Promise<ActionResult> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -31,9 +28,10 @@ async function deleteLinkActionImpl(
         return { success: false, error: "Echec de la suppression du lien" }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction("deleteLinkAction", deleteLinkActionImpl)
+export const deleteLinkAction = wrapAction(
+    "deleteLinkAction",
+    deleteLinkActionImpl
+)

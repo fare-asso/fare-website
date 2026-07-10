@@ -1,18 +1,18 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function updateUserPermissionsImpl(
-    userId: string,
-    permissions: number[]
+    input: { userId: string; permissions: number[] },
+    context: ActionAPIContext
 ) {
-    const user = await getCurrentUserWithPermissions()
+    const { userId, permissions } = input
+    const user = await getUserWithPermissions(context)
     if (!user) {
         throw new Error("Unauthorized: User not found")
     }
@@ -55,12 +55,10 @@ async function updateUserPermissionsImpl(
         }
     }
 
-    revalidatePath(`/dashboard/users/${userId}`)
-
     return { success: true }
 }
 
-export default withServerAction(
+export const updateUserPermissions = wrapAction(
     "updateUserPermissions",
     updateUserPermissionsImpl
 )

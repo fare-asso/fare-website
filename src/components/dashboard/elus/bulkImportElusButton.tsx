@@ -1,12 +1,11 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
 import { type } from "arktype"
+import { actions } from "astro:actions"
 import { Loader2Icon } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import bulkImportEluAction from "@/actions/elus/bulkImportElusAction"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -52,6 +51,7 @@ export default function BulkImportElusButton({
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const hasConseils = instances.some((i) => i.conseils.length > 0)
 
@@ -111,18 +111,24 @@ export default function BulkImportElusButton({
                     elus.push(parsed)
                 }
 
-                const res = await bulkImportEluAction({
-                    conseilId: value.conseilId,
-                    elus
-                })
-                if (res.success) {
+                const { data, error } = await actions.elus.bulkImportElusAction(
+                    { conseilId: value.conseilId, elus }
+                )
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     toast.success(
-                        `${res.value.count} éluEs importéEs avec succès.`
+                        `${data.value.count} éluEs importéEs avec succès.`
                     )
                     setOpen(false)
                     form.reset()
+                    await queryClient.invalidateQueries({
+                        queryKey: ["elus"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

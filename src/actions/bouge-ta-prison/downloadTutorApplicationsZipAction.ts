@@ -1,6 +1,5 @@
-"use server"
-
 import { type } from "arktype"
+import type { ActionAPIContext } from "astro:actions"
 import { format } from "date-fns"
 import { zip } from "fflate"
 
@@ -8,9 +7,9 @@ import type { BTPTutorApplication } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
     DownloadTutorApplicationsSchema,
@@ -41,9 +40,10 @@ function statusLabel(app: {
 }
 
 async function downloadTutorApplicationsZipActionImpl(
-    ids: TDownloadTutorApplications
+    ids: TDownloadTutorApplications,
+    context: ActionAPIContext
 ): Promise<DownloadResult> {
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -82,7 +82,7 @@ async function downloadTutorApplicationsZipActionImpl(
         }
     }
 
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     const downloadApplication = async (app: BTPTutorApplication) => {
         const folder = `${sanitizeString(app.lastName)}-${sanitizeString(
@@ -197,7 +197,7 @@ async function downloadTutorApplicationsZipActionImpl(
     }
 }
 
-export default withServerAction(
+export const downloadTutorApplicationsZipAction = wrapAction(
     "downloadTutorApplicationsZipAction",
     downloadTutorApplicationsZipActionImpl
 )

@@ -1,6 +1,5 @@
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import Link from "next/link"
 import { FaRegFolderOpen } from "react-icons/fa6"
 import { FiDownload, FiExternalLink } from "react-icons/fi"
 
@@ -35,14 +34,14 @@ export default function DossierDePresseCard({
 
             {/* Content */}
             <div className="flex min-w-0 flex-1 flex-col gap-1 text-center sm:text-left">
-                <Link
+                <a
                     href={viewUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-foreground hover:text-fare-accent truncate font-medium transition-colors hover:underline"
                 >
                     {dossier.name}
-                </Link>
+                </a>
                 <div className="text-muted-foreground flex items-center justify-center gap-2 text-sm sm:justify-start">
                     <span>
                         {format(dossier.createdAt, "d MMMM yyyy", {
@@ -56,7 +55,7 @@ export default function DossierDePresseCard({
 
             {/* Actions */}
             <div className="flex shrink-0 items-center justify-center gap-2 sm:justify-end">
-                <Link
+                <a
                     href={viewUrl}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -64,14 +63,14 @@ export default function DossierDePresseCard({
                 >
                     <FiExternalLink size={16} />
                     <span className="hidden md:inline">Consulter</span>
-                </Link>
-                <Link
+                </a>
+                <a
                     href={downloadUrl}
                     className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm shadow-xs transition-colors"
                 >
                     <FiDownload size={16} />
                     <span className="hidden md:inline">Telecharger</span>
-                </Link>
+                </a>
             </div>
         </div>
     )

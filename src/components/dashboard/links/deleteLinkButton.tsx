@@ -1,10 +1,10 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import type { MouseEvent } from "react"
+import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import deleteLinkAction from "@/actions/links/deleteLinkAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -31,42 +31,30 @@ function isPdf(url: string): boolean {
 }
 
 export default function DeleteLinkButton({ link }: { link: LinkItem }) {
-    const [formState, formAction] = useActionState<
-        { success: true } | { success: false; error: string } | undefined,
-        number
-    >(deleteLinkAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [isOpen, setIsOpen] = useState<boolean>(false)
+    const [isPending, startTransition] = useTransition()
+    const [isOpen, setIsOpen] = useState(false)
+    const queryClient = useQueryClient()
 
-    useEffect(() => {
-        if (formState === undefined) return
-        setIsLoading(false)
-        if (formState.success) {
-            setIsOpen(false)
-        } else {
-            toast.error(formState.error)
-        }
-    }, [formState])
-
-    const handleOpenChange = (open: boolean) => {
-        if (!open) setIsLoading(false)
-        setIsOpen(open)
-    }
-
-    const handleDelete = (
-        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
+    const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
 
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(link.id)
+        startTransition(async () => {
+            const { data, error } = await actions.links.deleteLinkAction(
+                link.id
+            )
+            if (error) {
+                toast.error("Une erreur est survenue. Veuillez réessayer.")
+            } else if (data.success) {
+                setIsOpen(false)
+                await queryClient.invalidateQueries({ queryKey: ["links"] })
+            } else {
+                toast.error(data.error)
+            }
         })
     }
 
     return (
-        <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
+        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <Tooltip>
                 <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
@@ -96,7 +84,7 @@ export default function DeleteLinkButton({ link }: { link: LinkItem }) {
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete}>
-                        {isLoading ? <LoadingRing /> : null} Supprimer
+                        {isPending ? <LoadingRing /> : null} Supprimer
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

@@ -1,40 +1,37 @@
-"use server"
-
+import type { ActionAPIContext } from "astro:actions"
 import { zip } from "fflate"
 
 import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-type ActionState = {
-    error?: string
-    success?: boolean
-    zipData?: string
-    filename?: string
-}
+type ActionState =
+    | { success: true; zipData: string; filename: string }
+    | { success: false; error: string }
 
 async function downloadFolderActionImpl(
-    _prevState: ActionState | undefined,
-    folderPath: string
+    folderPath: string,
+    context: ActionAPIContext
 ): Promise<ActionState> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "access:adhesions")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
     }
 
     if (!folderPath) {
-        return { error: "Le nom du dossier est invalide" }
+        return { success: false, error: "Le nom du dossier est invalide" }
     }
 
     const adhesion = await tryCatch(
@@ -43,11 +40,17 @@ async function downloadFolderActionImpl(
 
     if (!adhesion.success) {
         captureActionError(adhesion.error)
-        return { error: "Erreur lors de la création du fichier zip" }
+        return {
+            success: false,
+            error: "Erreur lors de la création du fichier zip"
+        }
     }
 
     if (!adhesion.value) {
-        return { error: "Aucune adhésion ne correspond à ce dossier" }
+        return {
+            success: false,
+            error: "Aucune adhésion ne correspond à ce dossier"
+        }
     }
 
     const filePaths = [
@@ -61,7 +64,7 @@ async function downloadFolderActionImpl(
         ...adhesion.value.photosPaths
     ].filter((path): path is string => Boolean(path))
 
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // Téléchargement parallèle des fichiers référencés en base
     const downloads = await tryCatch(
@@ -78,7 +81,10 @@ async function downloadFolderActionImpl(
     )
     if (!downloads.success) {
         captureActionError(downloads.error)
-        return { error: "Erreur lors de la création du fichier zip" }
+        return {
+            success: false,
+            error: "Erreur lors de la création du fichier zip"
+        }
     }
 
     console.log("Generating adhesion PDF")
@@ -86,7 +92,10 @@ async function downloadFolderActionImpl(
     if (!pdf.success) {
         console.error("Error generating adhesion PDF")
         captureActionError(pdf.error)
-        return { error: "Erreur lors de la création du fichier zip" }
+        return {
+            success: false,
+            error: "Erreur lors de la création du fichier zip"
+        }
     }
 
     const entries: Record<string, Uint8Array> = {}
@@ -107,7 +116,10 @@ async function downloadFolderActionImpl(
     )
     if (!zipBuffer.success) {
         captureActionError(zipBuffer.error)
-        return { error: "Erreur lors de la création du fichier zip" }
+        return {
+            success: false,
+            error: "Erreur lors de la création du fichier zip"
+        }
     }
 
     return {
@@ -117,7 +129,7 @@ async function downloadFolderActionImpl(
     }
 }
 
-export const downloadFolderAction = withServerAction(
+export const downloadFolderAction = wrapAction(
     "downloadFolderAction",
     downloadFolderActionImpl
 )

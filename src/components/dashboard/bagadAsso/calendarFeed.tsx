@@ -1,5 +1,4 @@
-"use client"
-
+import { actions } from "astro:actions"
 import {
     CalendarIcon,
     CalendarPlusIcon,
@@ -10,10 +9,6 @@ import {
 import { useEffect, useState, useTransition } from "react"
 import { toast } from "sonner"
 
-import {
-    generateBagadCalendarTokenAction,
-    revokeBagadCalendarTokenAction
-} from "@/actions/bagadAsso/calendarTokenAction"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -43,25 +38,31 @@ export default function CalendarFeed({ token }: CalendarFeedProps) {
 
     const onGenerate = (): void => {
         startTransition(async () => {
-            const result = await generateBagadCalendarTokenAction()
-            if (!result.success) {
-                toast.error(result.error)
-                return
+            const { data, error } =
+                await actions.bagadAsso.generateBagadCalendarTokenAction()
+            if (error) {
+                toast.error("Une erreur est survenue. Veuillez réessayer.")
+            } else if (data.success) {
+                setCurrentToken(data.value)
+                toast.success("Lien calendrier généré.")
+            } else {
+                toast.error(data.error)
             }
-            setCurrentToken(result.value)
-            toast.success("Lien calendrier généré.")
         })
     }
 
     const onRevoke = (): void => {
         startTransition(async () => {
-            const result = await revokeBagadCalendarTokenAction()
-            if (!result.success) {
-                toast.error(result.error)
-                return
+            const { data, error } =
+                await actions.bagadAsso.revokeBagadCalendarTokenAction()
+            if (error) {
+                toast.error("Une erreur est survenue. Veuillez réessayer.")
+            } else if (data.success) {
+                setCurrentToken(null)
+                toast.success("Lien calendrier révoqué.")
+            } else {
+                toast.error(data.error)
             }
-            setCurrentToken(null)
-            toast.success("Lien calendrier révoqué.")
         })
     }
 

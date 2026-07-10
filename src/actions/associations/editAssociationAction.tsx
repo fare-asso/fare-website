@@ -1,31 +1,30 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function editAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+    formData: FormData,
+    context: ActionAPIContext
+): Promise<ActionResult> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "edit:association")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de modifier des associations"
         }
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // retrieve form data fields
     const id = Number(formData.get("id")?.toString() ?? Number.NaN)
@@ -56,6 +55,7 @@ async function editAssociationActionImpl(
     // validate current association
     if (!currentAssociation)
         return {
+            success: false,
             error: "Echec de la récupération des informations l'association"
         }
 
@@ -70,19 +70,24 @@ async function editAssociationActionImpl(
         !email ||
         !logoPicture
     ) {
-        return { error: "Veuillez remplir tous les champs obligatoires." }
+        return {
+            success: false,
+            error: "Veuillez remplir tous les champs obligatoires."
+        }
     }
 
     const maxFileSize = 15 // max file size in mb
 
     // Logo Picture
-    if (!(logoPicture instanceof File)) return { error: "Logo non-valide." }
+    if (!(logoPicture instanceof File))
+        return { success: false, error: "Logo non-valide." }
 
     const file: File = logoPicture
 
     // size validation
     if (file.size === 0 || file.size / (1024 * 1024) > maxFileSize) {
         return {
+            success: false,
             error: `La taille de chaque photo doit être inférieure à ${maxFileSize} Mo.`
         }
     }
@@ -98,6 +103,7 @@ async function editAssociationActionImpl(
         ].includes(file.type)
     ) {
         return {
+            success: false,
             error: "Le format de l'image doit être : PNG, JPEG, JPG, WebP ou GIF"
         }
     }
@@ -106,7 +112,7 @@ async function editAssociationActionImpl(
     const { data, error: err } = await supabase.storage
         .from("association-pictures")
         .update(currentAssociation.logoPath, file)
-    if (err) return { error: err.message }
+    if (err) return { success: false, error: err.message }
 
     const logoPath: string = data.path
 
@@ -137,22 +143,20 @@ async function editAssociationActionImpl(
             edited.error instanceof Error
                 ? edited.error.message
                 : "Unknown error"
-        return { error: errorMessage }
+        return { success: false, error: errorMessage }
     }
 
     if (edited.value) {
-        revalidatePath("/dashboard/associations")
-        revalidatePath("/reseau")
         return { success: true }
     } else {
         return {
+            success: false,
             error: "La modification de l'association dans la base de données a échoué... Veuillez contacter un administrateur."
         }
     }
 }
 
-export default withServerAction(
+export const editAssociationAction = wrapAction(
     "editAssociationAction",
-    editAssociationActionImpl,
-    { attachFormData: true }
+    editAssociationActionImpl
 )

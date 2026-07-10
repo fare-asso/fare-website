@@ -1,10 +1,9 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { Loader2Icon, PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import addInstanceAction from "@/actions/instances/addInstanceAction"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -25,6 +24,7 @@ import {
 import { FilePondInput } from "@/components/ui/filepond"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { encodeFormPayload } from "@/lib/formPayload"
 import { AddInstanceSchema, type TAddInstance } from "@/schemas/instance"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -44,6 +44,7 @@ export default function AddInstanceButton({
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const form = useForm({
         defaultValues: emptyForm,
@@ -55,12 +56,22 @@ export default function AddInstanceButton({
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addInstanceAction(value)
-                if (res.success) {
+                const { data, error } =
+                    await actions.instances.addInstanceAction(
+                        encodeFormPayload(value)
+                    )
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
                     form.reset()
+                    await queryClient.invalidateQueries({
+                        queryKey: ["instances"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

@@ -3,13 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { validAddLink } from "@/test/factories/links"
 import { mockUser } from "@/test/factories/user"
 import { itIsGatedBy } from "@/test/gates"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     getUser: vi.fn(),
     findCategory: vi.fn(),
     createLink: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -19,11 +18,12 @@ vi.mock("@/helpers/db", () =>
         linkItem: { create: h.createLink }
     })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import addLinkAction from "../addLinkAction"
+import { addLinkAction } from "../addLinkAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["create:lien"]))
@@ -77,7 +77,6 @@ describe("addLinkAction", () => {
             error: "Échec de la création du lien."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
-        expect(h.revalidatePath).not.toHaveBeenCalled()
     })
 
     it("creates the link and revalidates on the happy path", async () => {
@@ -100,7 +99,5 @@ describe("addLinkAction", () => {
                 categoryId: 3
             }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/liens")
-        expect(h.revalidatePath).toHaveBeenCalledWith("/liens")
     })
 })

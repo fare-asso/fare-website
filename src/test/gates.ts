@@ -1,9 +1,8 @@
 import type { Mock } from "vitest"
 import { expect, it } from "vitest"
 
+import type { ActionResult } from "@/lib/action"
 import { mockUser } from "@/test/factories/user"
-
-type ActionResult = { success: true } | { success: false; error: string }
 
 /**
  * Registers the two gate cases shared by every server action: no session →

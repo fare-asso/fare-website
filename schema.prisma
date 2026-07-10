@@ -292,9 +292,7 @@ model LinkItem {
 }
 
 enum Role {
-  MEMBER
   ADMIN
-  ASSO_OWNER
 }
 
 enum PresseType {

@@ -2,14 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validTutorApplicationFormData } from "@/test/factories/bougeTaPrison"
 import {
-    cacheModule,
     captchaModule,
     dbModule,
     emailModule,
     reactEmailRenderModule,
     sentryModule,
     stdEnvModule,
-    supabaseServerModule
+    supabaseAstroModule
 } from "@/test/mocks"
 
 const stdenv = vi.hoisted(() => ({ isDevelopment: false }))
@@ -19,7 +18,6 @@ const h = vi.hoisted(() => ({
     create: vi.fn(),
     sendEmail: vi.fn(),
     verifyCaptcha: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() =>
@@ -27,19 +25,20 @@ const from = vi.hoisted(() =>
 )
 
 vi.mock("std-env", () => stdEnvModule(stdenv))
-vi.mock("@/components/captcha/verify", () => captchaModule(h.verifyCaptcha))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/captcha/verify", () => captchaModule(h.verifyCaptcha))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from }
+    })
 )
 vi.mock("@/helpers/db", () =>
     dbModule({ bTPTutorApplication: { create: h.create } })
 )
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import submitTutorApplication from "../submitTutorApplication"
+import { submitTutorApplication } from "../submitTutorApplication"
 
 beforeEach(() => {
     stdenv.isDevelopment = false
@@ -58,8 +57,10 @@ describe("submitTutorApplication", () => {
         const res = await submitTutorApplication(
             validTutorApplicationFormData({ studyYear: "X" })
         )
-        expect(res.error).toBe("Un ou plusieurs champs sont invalides.")
-        expect(res.fieldErrors?.studyYear).toBeDefined()
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.create).not.toHaveBeenCalled()
     })
@@ -70,6 +71,7 @@ describe("submitTutorApplication", () => {
             validTutorApplicationFormData()
         )
         expect(res).toEqual({
+            success: false,
             error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         })
         expect(h.upload).not.toHaveBeenCalled()
@@ -83,7 +85,10 @@ describe("submitTutorApplication", () => {
         const res = await submitTutorApplication(
             validTutorApplicationFormData()
         )
-        expect(res).toEqual({ error: "Echec de l'upload du CV" })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de l'upload du CV"
+        })
         expect(h.create).not.toHaveBeenCalled()
     })
 
@@ -101,6 +106,7 @@ describe("submitTutorApplication", () => {
             validTutorApplicationFormData()
         )
         expect(res).toEqual({
+            success: false,
             error: "Echec de l'upload de la lettre de motivation"
         })
         expect(h.remove).toHaveBeenCalledOnce()
@@ -113,6 +119,7 @@ describe("submitTutorApplication", () => {
             validTutorApplicationFormData()
         )
         expect(res).toEqual({
+            success: false,
             error: "Echec de la création de la candidature. Veuillez réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalled()
@@ -150,9 +157,6 @@ describe("submitTutorApplication", () => {
                 to: "intervention-carceral@fare-asso.fr",
                 subject: "Nouvelle candidature de tuteur Bouge Ta Prison"
             })
-        )
-        expect(h.revalidatePath).toHaveBeenCalledWith(
-            "/dashboard/bouge-ta-prison"
         )
     })
 })

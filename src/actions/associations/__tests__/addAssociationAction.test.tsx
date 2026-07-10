@@ -2,32 +2,26 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validAssociationFormData } from "@/test/factories/associations"
 import { mockUser } from "@/test/factories/user"
-import {
-    authModule,
-    cacheModule,
-    dbModule,
-    sentryModule,
-    supabaseServerModule
-} from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     create: vi.fn(),
     getUser: vi.fn(),
     upload: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 const from = vi.hoisted(() => vi.fn(() => ({ upload: h.upload })))
 
 vi.mock("@/helpers/db", () => dbModule({ association: { create: h.create } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("@/helpers/supabase/server", () =>
-    supabaseServerModule({ storage: { from } })
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({
+        storage: { from },
+        getUserWithPermissions: h.getUser
+    })
 )
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import addAssociationAction from "../addAssociationAction"
+import { addAssociationAction } from "../addAssociationAction"
 
 const bigImage = (): File =>
     new File([new Uint8Array(16 * 1024 * 1024)], "big.png", {
@@ -43,28 +37,26 @@ beforeEach(() => {
 describe("addAssociationAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(
-            await addAssociationAction(undefined, validAssociationFormData())
-        ).toEqual({ error: "Authentification requise" })
+        expect(await addAssociationAction(validAssociationFormData())).toEqual({
+            success: false,
+            error: "Authentification requise"
+        })
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("requires the create:association permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await addAssociationAction(
-            undefined,
-            validAssociationFormData()
-        )
-        expect(res.error).toMatch(/permission/)
+        const res = await addAssociationAction(validAssociationFormData())
+        if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("rejects a payload missing required fields", async () => {
         const res = await addAssociationAction(
-            undefined,
             validAssociationFormData({ name: "" })
         )
         expect(res).toEqual({
+            success: false,
             error: "Veuillez remplir tous les champs obligatoires."
         })
         expect(h.upload).not.toHaveBeenCalled()
@@ -72,30 +64,33 @@ describe("addAssociationAction", () => {
 
     it("rejects a non-file logo", async () => {
         const res = await addAssociationAction(
-            undefined,
             validAssociationFormData({ "logo-picture": "not-a-file" })
         )
-        expect(res).toEqual({ error: "Logo non-valide." })
+        expect(res).toEqual({ success: false, error: "Logo non-valide." })
     })
 
     it("rejects an oversized logo", async () => {
         const res = await addAssociationAction(
-            undefined,
             validAssociationFormData({ "logo-picture": bigImage() })
         )
-        expect(res.error).toMatch(/taille/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/taille/)
+        })
     })
 
     it("rejects an unsupported image type", async () => {
         const res = await addAssociationAction(
-            undefined,
             validAssociationFormData({
                 "logo-picture": new File([new Uint8Array([1])], "f.txt", {
                     type: "text/plain"
                 })
             })
         )
-        expect(res.error).toMatch(/format de l'image/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/format de l'image/)
+        })
     })
 
     it("returns the storage error when the upload fails", async () => {
@@ -103,29 +98,20 @@ describe("addAssociationAction", () => {
             data: null,
             error: { message: "upload boom" }
         })
-        const res = await addAssociationAction(
-            undefined,
-            validAssociationFormData()
-        )
-        expect(res).toEqual({ error: "upload boom" })
+        const res = await addAssociationAction(validAssociationFormData())
+        expect(res).toEqual({ success: false, error: "upload boom" })
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
-        const res = await addAssociationAction(
-            undefined,
-            validAssociationFormData()
-        )
-        expect(res).toEqual({ error: "db down" })
+        const res = await addAssociationAction(validAssociationFormData())
+        expect(res).toEqual({ success: false, error: "db down" })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
-    it("creates the association and revalidates on the happy path", async () => {
-        const res = await addAssociationAction(
-            undefined,
-            validAssociationFormData()
-        )
+    it("creates the association on the happy path", async () => {
+        const res = await addAssociationAction(validAssociationFormData())
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
             data: expect.objectContaining({
@@ -136,6 +122,5 @@ describe("addAssociationAction", () => {
                 email: "asso@example.com"
             })
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/associations")
     })
 })

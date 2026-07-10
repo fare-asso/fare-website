@@ -1,5 +1,4 @@
 import { UsersIcon } from "lucide-react"
-import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import type { Conseil, Elu, Instance } from "@/generated/prisma/client"
@@ -55,9 +54,7 @@ export default function EluList({
                     et des élu·e·s.
                 </p>
                 <Button asChild variant="outline">
-                    <Link href="/dashboard/elus/instances">
-                        Gérer les instances
-                    </Link>
+                    <a href="/dashboard/elus/instances">Gérer les instances</a>
                 </Button>
             </div>
         )

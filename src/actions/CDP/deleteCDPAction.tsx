@@ -1,28 +1,30 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteCDPActionImpl({ id }: { id: number }) {
+async function deleteCDPActionImpl(
+    { id }: { id: number },
+    context: ActionAPIContext
+): Promise<ActionResult> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "delete:cdp")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de supprimer des communiqués de presse"
         }
     }
 
     // create supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // Delete Record from DB
     const deleted = await tryCatch(
@@ -35,6 +37,7 @@ async function deleteCDPActionImpl({ id }: { id: number }) {
     if (!deleted.success) {
         captureActionError(deleted.error)
         return {
+            success: false,
             error: "Echec de la suppression du communiqué de presse"
         }
     }
@@ -42,6 +45,7 @@ async function deleteCDPActionImpl({ id }: { id: number }) {
 
     if (deletedCdpRecord == null) {
         return {
+            success: false,
             error: "Echec de la suppression du communiqué de presse"
         }
     }
@@ -54,20 +58,15 @@ async function deleteCDPActionImpl({ id }: { id: number }) {
     if (err) {
         console.error(err.message)
         return {
+            success: false,
             error: "Echec de la suppression du communiqué de presse dans le stockage"
         }
-    } else {
-        // success
-
-        // revalidate Path
-        revalidatePath("/dashboard/communiques-de-presse")
-        revalidatePath("/presse")
-        revalidatePath("/presse/communiques-de-presse")
-        revalidatePath("/presse/dossiers-de-presse")
-        return {
-            success: true
-        }
     }
+
+    return { success: true }
 }
 
-export default withServerAction("deleteCDPAction", deleteCDPActionImpl)
+export const deleteCDPAction = wrapAction(
+    "deleteCDPAction",
+    deleteCDPActionImpl
+)

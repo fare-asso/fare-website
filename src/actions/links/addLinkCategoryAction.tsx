@@ -1,21 +1,19 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddLinkCategorySchema, type TAddLinkCategory } from "@/schemas/link"
 
-type Result = { success: true } | { success: false; error: string }
-
 async function addLinkCategoryActionImpl(
-    input: TAddLinkCategory
-): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+    input: TAddLinkCategory,
+    context: ActionAPIContext
+): Promise<ActionResult> {
+    const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "create:lien")) {
         return {
@@ -45,12 +43,10 @@ async function addLinkCategoryActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/liens")
-    revalidatePath("/liens")
     return { success: true }
 }
 
-export default withServerAction(
+export const addLinkCategoryAction = wrapAction(
     "addLinkCategoryAction",
     addLinkCategoryActionImpl
 )

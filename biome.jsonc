@@ -1,0 +1,44 @@
+/* Only formats + lints astro files (scoped via files.includes), since oxfmt/oxlint don't support astro yet */
+{
+    "$schema": "https://biomejs.dev/schemas/2.5.3/schema.json",
+    "files": {
+        "includes": ["**/*.astro", "!!**/node_modules", "!!dist", "!!.astro"]
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 80,
+        "lineEnding": "lf"
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "preset": "none",
+            "a11y": {
+                "useAltText": "error",
+                "useAnchorContent": "error",
+                "useValidAnchor": "error",
+                "useValidAriaProps": "error",
+                "useValidAriaValues": "error",
+                "noRedundantAlt": "error",
+                "useAriaPropsForRole": "error"
+            }
+        }
+    },
+    "assist": { "enabled": false },
+    "html": {
+        "formatter": { "enabled": true },
+        "experimentalFullSupportEnabled": true
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "double",
+            "jsxQuoteStyle": "double",
+            "semicolons": "asNeeded",
+            "trailingCommas": "none",
+            "arrowParentheses": "always",
+            "quoteProperties": "asNeeded"
+        }
+    }
+}

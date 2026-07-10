@@ -1,0 +1,22 @@
+---
+import { fetchPartenaires } from "@/actions/partenaires/listPartenairesAction"
+import PartenairesPage from "@/components/dashboard/partenaires/partenairesPage"
+import { toShellUser } from "@/components/dashboard/shell"
+import { hasPermission } from "@/helpers/permissions"
+import Dashboard from "@/layouts/Dashboard.astro"
+
+const user = Astro.locals.user!
+const partenaires = (await fetchPartenaires()) ?? []
+---
+
+<Dashboard title="Partenaires">
+    <PartenairesPage
+        client:load
+        user={toShellUser(user)}
+        pathname={Astro.url.pathname}
+        initialData={partenaires}
+        canCreate={hasPermission(user, "create:partner")}
+        canEdit={hasPermission(user, "edit:partner")}
+        canDelete={hasPermission(user, "delete:partner")}
+    />
+</Dashboard>

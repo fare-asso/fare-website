@@ -1,9 +1,8 @@
 import { MessageCircleQuestionMarkIcon } from "lucide-react"
-import Link from "next/link"
 
 export default function DefenseDroits() {
     return (
-        <Link href="/assistance" className="v1f-cta">
+        <a href="/assistance" className="v1f-cta">
             <span className="v1f-cta-pill">
                 <MessageCircleQuestionMarkIcon
                     className="v1f-cta-icon"
@@ -11,6 +10,6 @@ export default function DefenseDroits() {
                 />
                 <span>Contactez vos éluEs étudiantEs</span>
             </span>
-        </Link>
+        </a>
     )
 }

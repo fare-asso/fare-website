@@ -26,7 +26,7 @@ export function cn(...inputs: ClassValue[]) {
  * // With Prettify, hovering over 'myPrettyVar' will show '{ a: string; b: number }'
  * declare const myPrettyVar: Prettify<C>;
  */
-type Prettify<T> = {
+export type Prettify<T> = {
     [K in keyof T]: T[K]
 } & {}
 

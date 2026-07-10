@@ -1,0 +1,109 @@
+---
+import EventCard from "@/components/public/events/eventCard"
+import prisma from "@/helpers/db"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
+import Public from "@/layouts/Public.astro"
+
+const storage = new StorageUtils()
+const now = new Date()
+
+const eventInclude = {
+    category: {
+        select: {
+            name: true
+        }
+    }
+} as const
+
+const currentEvents = await prisma.event.findMany({
+    where: {
+        AND: {
+            startTime: {
+                lte: now
+            },
+            endTime: {
+                gte: now
+            }
+        }
+    },
+    include: eventInclude
+})
+
+const soonEvents = await prisma.event.findMany({
+    where: {
+        startTime: {
+            gt: now
+        }
+    },
+    include: eventInclude
+})
+
+const archivedEvents = await prisma.event.findMany({
+    where: {
+        endTime: {
+            lt: now
+        }
+    },
+    include: eventInclude
+})
+
+const imageUrl = (image: string): string =>
+    storage.from("EventPictures").getPublicUrl(image)
+---
+
+<Public
+    title="Agenda"
+    description="Page regroupant les événements lié à la FARE"
+>
+    <div class="flex w-full flex-col items-center justify-start">
+        <h1 class="py-44 text-3xl font-semibold">L'Agenda du réseau</h1>
+        <div class="flex h-full w-full flex-col items-center">
+            {currentEvents.length > 0 && (
+                    <div class="mb-8 flex w-full flex-col">
+                        <span class="mb-4 text-2xl font-semibold">
+                            En ce moment
+                        </span>
+                        <div class="flex h-auto w-full flex-col items-center">
+                            {currentEvents.map((event) => (
+                                <EventCard
+                                    event={event}
+                                    archive={false}
+                                    imageUrl={imageUrl(event.image)}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+            {soonEvents.length > 0 && (
+                    <div class="mb-8 flex w-full flex-col">
+                        <span class="mb-4 text-2xl font-semibold">Bientôt</span>
+                        <div class="flex h-auto w-full flex-col items-center">
+                            {soonEvents.map((event) => (
+                                <EventCard
+                                    event={event}
+                                    archive={false}
+                                    imageUrl={imageUrl(event.image)}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+            {archivedEvents.length > 0 && (
+                    <div class="mb-8 flex w-full flex-col">
+                        <span class="mb-4 text-2xl font-semibold">
+                            Archives
+                        </span>
+                        <div class="flex h-auto w-full flex-col items-center space-y-3">
+                            {archivedEvents.map((event) => (
+                                <EventCard
+                                    event={event}
+                                    archive={true}
+                                    imageUrl={imageUrl(event.image)}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+        </div>
+    </div>
+</Public>

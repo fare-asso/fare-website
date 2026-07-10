@@ -1,7 +1,3 @@
-"use client"
-
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import React from "react"
 
 import {
@@ -13,9 +9,7 @@ import {
     BreadcrumbSeparator
 } from "../ui/breadcrumb"
 
-export default function CurrentRoute() {
-    const path = usePathname()
-
+export default function CurrentRoute({ path }: { path: string }) {
     const pathArray = path.split("/").filter((p) => p !== "")
 
     return (
@@ -36,12 +30,9 @@ export default function CurrentRoute() {
                             <React.Fragment key={index}>
                                 <BreadcrumbItem>
                                     <BreadcrumbLink asChild>
-                                        <Link
-                                            href={href}
-                                            className="capitalize"
-                                        >
+                                        <a href={href} className="capitalize">
                                             {p}
-                                        </Link>
+                                        </a>
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />

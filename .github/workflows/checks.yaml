@@ -13,6 +13,18 @@ jobs:
         runs-on: ubuntu-latest
         permissions:
             contents: read
+        env:
+            SUPABASE_POSTGRES_PRISMA_URL: "postgresql://ci:ci@localhost:5432/ci"
+            FRIENDLY_CAPTCHA_API_KEY: "ci"
+            SUPABASE_SERVICE_ROLE_KEY: "ci"
+            SMTP_HOST: "smtp.example.com"
+            SMTP_USER: "ci"
+            SMTP_PASS: "ci"
+            SMTP_FROM_EMAIL: "ci@example.com"
+            PUBLIC_SUPABASE_URL: "http://localhost:54321"
+            SUPABASE_ANON_KEY: "ci"
+            PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: "ci"
+            PUBLIC_SENTRY_DSN: "https://ci@ci.ingest.sentry.io/0"
         steps:
             - name: Checkout
               uses: actions/checkout@v6
@@ -35,6 +47,9 @@ jobs:
 
             - name: Generate Prisma Client
               run: pnpm exec prisma generate
+
+            - name: Sync Astro
+              run: pnpm exec astro sync
 
             - name: Check linting
               run: pnpm run check:lint --format=github

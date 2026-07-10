@@ -1,8 +1,4 @@
-"use client"
-
 import { format } from "date-fns"
-import Image from "next/image"
-import Link from "next/link"
 import { MdLocationPin } from "react-icons/md"
 
 import type { Event } from "@/generated/prisma/client"
@@ -27,11 +23,11 @@ export default function EventCard({
             className="flex h-32 w-full flex-row rounded-xl p-2 md:w-2/3 lg:h-44 lg:w-1/2"
             style={{ backgroundColor }}
         >
-            <Image
+            <img
                 src={imageUrl}
                 width={600}
                 height={400}
-                alt={`Photo de l'évènement ${event.name}`}
+                alt={`Évènement ${event.name}`}
                 className="h-full w-1/3 rounded-md object-cover lg:w-1/4"
             />
 
@@ -87,25 +83,18 @@ export default function EventCard({
                 </p>
 
                 <div className="flex h-1/2 w-full flex-col items-center justify-center">
-                    <Link
+                    <a
                         href={`/evenements/${event.id}`}
-                        className="text mt-1 rounded-full px-4 py-1 text-center font-semibold outline transition-all hover:outline-2"
-                        style={{
-                            backgroundColor: fontColor,
-                            color: backgroundColor
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor =
-                                backgroundColor
-                            e.currentTarget.style.color = fontColor
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = fontColor
-                            e.currentTarget.style.color = backgroundColor
-                        }}
+                        className="text mt-1 rounded-full bg-(--fc) px-4 py-1 text-center font-semibold text-(--bc) outline transition-all hover:bg-(--bc) hover:text-(--fc) hover:outline-2"
+                        style={
+                            {
+                                "--fc": fontColor,
+                                "--bc": backgroundColor
+                            } as React.CSSProperties
+                        }
                     >
                         En savoir +
-                    </Link>
+                    </a>
                 </div>
             </div>
         </div>

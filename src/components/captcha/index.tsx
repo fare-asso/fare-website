@@ -6,7 +6,7 @@ import {
 } from "@friendlycaptcha/sdk"
 import { useEffect, useRef } from "react"
 
-import { env } from "@/env"
+let sdk: FriendlyCaptchaSDK | null = null
 
 interface CaptchaProps {
     onComplete?: (token: string) => void
@@ -18,40 +18,52 @@ type FCEvent<T> = Event & { detail: T }
 
 export function Captcha({ onComplete, onExpire, onError }: CaptchaProps) {
     const captchaRef = useRef<HTMLDivElement>(null)
+    const handlers = useRef({ onComplete, onExpire, onError })
+    useEffect(() => {
+        handlers.current = { onComplete, onExpire, onError }
+    })
 
     useEffect(() => {
-        if (!captchaRef.current) return
+        const element = captchaRef.current
+        if (!element) return
 
-        // Re-use this SDK if you are creating multiple widgets.
-        const sdk = new FriendlyCaptchaSDK()
-
-        const _widget = sdk.createWidget({
+        sdk ??= new FriendlyCaptchaSDK()
+        const widget = sdk.createWidget({
             language: "fr",
             theme: "light",
-            element: captchaRef.current,
-            sitekey: env.NEXT_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
+            element,
+            sitekey: import.meta.env.PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY
         })
 
-        captchaRef.current.addEventListener("frc:widget.complete", (event) => {
+        const handleComplete = (event: Event) => {
             const detail = (event as FCEvent<FRCWidgetCompleteEventData>).detail
-            if (onComplete) onComplete(detail.response)
-        })
-
-        captchaRef.current.addEventListener("frc:widget.error", (event) => {
+            handlers.current.onComplete?.(detail.response)
+        }
+        const handleError = (event: Event) => {
             const detail = (event as FCEvent<FRCWidgetErrorEventData>).detail
             console.error("Widget ran into an error:", detail.error)
-            if (onError) onError(detail)
-        })
-
-        captchaRef.current.addEventListener("frc:widget.expire", (event) => {
+            handlers.current.onError?.(detail)
+        }
+        const handleExpire = (event: Event) => {
             const detail = (event as FCEvent<FRCWidgetExpireEventData>).detail
             console.warn(
                 "The widget expired because the user waited too long",
                 detail.response
             )
-            if (onExpire) onExpire(detail)
-        })
-    }, [onComplete, onExpire, onError])
+            handlers.current.onExpire?.(detail)
+        }
+
+        element.addEventListener("frc:widget.complete", handleComplete)
+        element.addEventListener("frc:widget.error", handleError)
+        element.addEventListener("frc:widget.expire", handleExpire)
+
+        return () => {
+            element.removeEventListener("frc:widget.complete", handleComplete)
+            element.removeEventListener("frc:widget.error", handleError)
+            element.removeEventListener("frc:widget.expire", handleExpire)
+            widget.destroy()
+        }
+    }, [])
 
     return <div ref={captchaRef}></div>
 }

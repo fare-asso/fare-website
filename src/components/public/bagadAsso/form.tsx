@@ -1,20 +1,11 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { actions } from "astro:actions"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
-import {
-    memo,
-    Suspense,
-    startTransition,
-    useActionState,
-    useCallback
-} from "react"
+import { useCallback, useState } from "react"
 
-import submitBagadAssoFormAction, {
-    type FormState
-} from "@/actions/bagadAsso/submitBagadAssoFormAction"
+import type { FormState } from "@/actions/bagadAsso/submitBagadAssoFormAction"
 import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -61,20 +52,8 @@ import {
 } from "./form-schema"
 
 interface BagadAssoFormProps {
-    equipmentList: Promise<BagadAssoEquipment[]>
+    equipmentList: BagadAssoEquipment[]
 }
-
-interface CaptchaFieldProps {
-    onTokenChange: (token: string) => void
-}
-
-// Memoized wrapper that only renders the Captcha widget
-// The onTokenChange callback must be stable (wrapped in useCallback by parent)
-const CaptchaWidget = memo(function CaptchaWidget({
-    onTokenChange
-}: CaptchaFieldProps) {
-    return <Captcha onComplete={onTokenChange} />
-})
 
 // Separate component for validation errors that can re-render independently
 function CaptchaValidation({
@@ -92,10 +71,8 @@ function CaptchaValidation({
 }
 
 export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
-    const [formState, formAction, pending] = useActionState<
-        FormState | undefined,
-        BagadAssoFormData
-    >(submitBagadAssoFormAction, undefined)
+    const [formState, setFormState] = useState<FormState | undefined>(undefined)
+    const [pending, setPending] = useState(false)
 
     const form = useForm({
         defaultValues: {
@@ -119,7 +96,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
             onChange: BagadAssoClientFormSchema,
             onSubmit: BagadAssoClientFormSchema
         },
-        onSubmit: ({ value }) => {
+        onSubmit: async ({ value }) => {
             // Prepare the data for the server action
             const submitData: BagadAssoFormData = {
                 associationName: value.associationName,
@@ -139,9 +116,18 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                 captchaToken: value.captchaToken
             }
 
-            startTransition(() => {
-                formAction(submitData)
-            })
+            setPending(true)
+            const { data, error } =
+                await actions.bagadAsso.submitBagadAssoFormAction(submitData)
+            setPending(false)
+            setFormState(
+                error
+                    ? {
+                          success: false,
+                          error: "Une erreur est survenue. Veuillez réessayer."
+                      }
+                    : data
+            )
         }
     })
 
@@ -174,7 +160,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
     }
 
     return (
-        <Card className="mx-auto w-full max-w-4xl">
+        <Card className="w-full max-w-4xl" variant="ghost">
             <CardHeader>
                 <CardTitle>Demande de prêt de matériel</CardTitle>
                 <CardDescription>
@@ -746,24 +732,14 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                         !field.state.meta.isValid
                                     return (
                                         <Field data-invalid={isInvalid}>
-                                            <Suspense
-                                                fallback={
-                                                    <div>Chargement...</div>
-                                                }
-                                            >
-                                                <EquipmentSelection
-                                                    equipmentList={
-                                                        equipmentList
-                                                    }
-                                                    name="equipment-input"
-                                                    onChange={(value) => {
-                                                        field.handleChange(
-                                                            value
-                                                        )
-                                                        field.handleBlur()
-                                                    }}
-                                                />
-                                            </Suspense>
+                                            <EquipmentSelection
+                                                equipmentList={equipmentList}
+                                                name="equipment-input"
+                                                onChange={(value) => {
+                                                    field.handleChange(value)
+                                                    field.handleBlur()
+                                                }}
+                                            />
                                             {isInvalid && (
                                                 <FieldError
                                                     errors={
@@ -835,8 +811,8 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                             <div className="pt-4">
                                 <Field>
-                                    <CaptchaWidget
-                                        onTokenChange={handleCaptchaComplete}
+                                    <Captcha
+                                        onComplete={handleCaptchaComplete}
                                     />
                                     <form.Field
                                         name="captchaToken"

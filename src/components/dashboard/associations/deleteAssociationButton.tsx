@@ -1,9 +1,9 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { Trash2Icon } from "lucide-react"
-import { startTransition, useActionState, useEffect, useState } from "react"
+import { useState, useTransition } from "react"
+import { toast } from "sonner"
 
-import deleteAssociationAction from "@/actions/associations/deleteAssociationAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -30,32 +30,35 @@ export default function DeleteAssociationButton({
 }: {
     association: Association
 }) {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        number
-    >(deleteAssociationAction, undefined)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isPending, startTransition] = useTransition()
     const [isOpen, setIsOpen] = useState<boolean>(false)
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            setIsLoading(false)
-            setIsOpen(false)
-        }
-
-        setIsLoading(false)
-    }, [formState])
+    const queryClient = useQueryClient()
 
     const handleDelete = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         event.preventDefault()
 
-        setIsLoading(true)
-
-        startTransition(() => {
-            formAction(association.id)
+        startTransition(async () => {
+            const { data, error } =
+                await actions.associations.deleteAssociationAction(
+                    association.id
+                )
+            if (error || !data.success) {
+                toast.error(
+                    data && !data.success
+                        ? data.error
+                        : "Échec de la suppression"
+                )
+            } else {
+                setIsOpen(false)
+                toast.success(
+                    `L'association ${association.name} a bien été supprimée`
+                )
+            }
+            await queryClient.invalidateQueries({
+                queryKey: ["associations"]
+            })
         })
     }
 
@@ -91,7 +94,7 @@ export default function DeleteAssociationButton({
                 <AlertDialogFooter>
                     <AlertDialogCancel>Annuler</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete}>
-                        {isLoading ? <LoadingRing /> : null} Supprimer
+                        {isPending ? <LoadingRing /> : null} Supprimer
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

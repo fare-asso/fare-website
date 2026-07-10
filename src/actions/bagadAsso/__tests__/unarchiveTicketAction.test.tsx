@@ -1,23 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () =>
     dbModule({ bagadAssoTicket: { update: h.update } })
 )
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import unarchiveBagadAssoTicketAction from "../unarchiveTicketAction"
+import { unarchiveBagadAssoTicketAction } from "../unarchiveTicketAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["edit:bagad-ticket"]))
@@ -28,6 +28,7 @@ describe("unarchiveBagadAssoTicketAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
         expect(await unarchiveBagadAssoTicketAction(1)).toEqual({
+            success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
@@ -36,23 +37,26 @@ describe("unarchiveBagadAssoTicketAction", () => {
     it("requires the edit:bagad-ticket permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
         const res = await unarchiveBagadAssoTicketAction(1)
-        expect(res.error).toMatch(/permission/)
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/permission/)
+        })
         expect(h.update).not.toHaveBeenCalled()
     })
 
-    it("unarchives the ticket and revalidates", async () => {
+    it("unarchives the ticket", async () => {
         const res = await unarchiveBagadAssoTicketAction(9)
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: 9 },
             data: { deleted: null }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
     })
 
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         expect(await unarchiveBagadAssoTicketAction(9)).toEqual({
+            success: false,
             error: "Echec de la désarchivation du ticket"
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()

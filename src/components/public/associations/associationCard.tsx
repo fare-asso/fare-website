@@ -1,27 +1,22 @@
-import Image from "next/image"
-import Link from "next/link"
-
 import type { Association } from "@/generated/prisma/client"
-import { createClient } from "@/helpers/supabase/server"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
-export default async function AssociationCard({
+export default function AssociationCard({
     association
 }: {
     association: Association
 }) {
-    const supabase = await createClient()
+    const logoUrl = new StorageUtils()
+        .from("association-pictures")
+        .getPublicUrl(association.logoPath)
 
     return (
-        <Link
+        <a
             href={`/a-propos/reseau/associations/${association.id}`}
             className="relative flex flex-col rounded-lg bg-white p-4 outline-1 outline-black transition-all hover:scale-105"
         >
-            <Image
-                src={
-                    supabase.storage
-                        .from("association-pictures")
-                        .getPublicUrl(association.logoPath).data.publicUrl
-                }
+            <img
+                src={logoUrl}
                 width={400}
                 height={400}
                 alt={`${association.name} logo`}
@@ -37,6 +32,6 @@ export default async function AssociationCard({
                     </span>
                 </div>
             </div>
-        </Link>
+        </a>
     )
 }

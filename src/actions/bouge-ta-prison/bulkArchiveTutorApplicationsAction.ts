@@ -1,26 +1,22 @@
-"use server"
-
 import { type } from "arktype"
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
     BulkArchiveTutorApplicationsSchema,
     type BulkArchiveTutorApplications
 } from "@/schemas/bougeTaPrison"
 
-type Result =
-    | { success: true; value: { count: number } }
-    | { success: false; error: string }
-
 async function bulkArchiveTutorApplicationsActionImpl(
-    input: BulkArchiveTutorApplications
-): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+    input: BulkArchiveTutorApplications,
+    context: ActionAPIContext
+): Promise<ActionResult<{ count: number }>> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -52,11 +48,10 @@ async function bulkArchiveTutorApplicationsActionImpl(
         }
     }
 
-    revalidatePath("/dashboard/bouge-ta-prison")
     return { success: true, value: { count: updated.value.count } }
 }
 
-export default withServerAction(
+export const bulkArchiveTutorApplicationsAction = wrapAction(
     "bulkArchiveTutorApplicationsAction",
     bulkArchiveTutorApplicationsActionImpl
 )

@@ -1,18 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { mockUser } from "@/test/factories/user"
-import { authModule, cacheModule, dbModule, sentryModule } from "@/test/mocks"
+import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     update: vi.fn(),
     getUser: vi.fn(),
-    revalidatePath: vi.fn(),
     captureActionError: vi.fn()
 }))
 
 vi.mock("@/helpers/db", () => dbModule({ user: { update: h.update } }))
-vi.mock("@/helpers/supabase/auth", () => authModule(h.getUser))
-vi.mock("next/cache", () => cacheModule(h.revalidatePath))
+vi.mock("@/helpers/supabase/astro", () =>
+    supabaseAstroModule({ getUserWithPermissions: h.getUser })
+)
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import {
@@ -28,7 +28,7 @@ beforeEach(() => {
 describe("generateBagadCalendarTokenAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await generateBagadCalendarTokenAction()).toEqual({
+        expect(await generateBagadCalendarTokenAction(undefined)).toEqual({
             success: false,
             error: "Authentification requise"
         })
@@ -37,26 +37,25 @@ describe("generateBagadCalendarTokenAction", () => {
 
     it("requires the access:bagad-asso permission", async () => {
         h.getUser.mockResolvedValue(mockUser([]))
-        const res = await generateBagadCalendarTokenAction()
+        const res = await generateBagadCalendarTokenAction(undefined)
         expect(res.success).toBe(false)
         if (!res.success) expect(res.error).toMatch(/permission/)
         expect(h.update).not.toHaveBeenCalled()
     })
 
-    it("generates a url-safe token, persists it and revalidates", async () => {
-        const res = await generateBagadCalendarTokenAction()
+    it("generates a url-safe token and persists it", async () => {
+        const res = await generateBagadCalendarTokenAction(undefined)
         if (!res.success) throw new Error("expected success")
         expect(res.value).toMatch(/^[A-Za-z0-9_-]+$/)
         expect(h.update).toHaveBeenCalledWith({
             where: { id: "user-1" },
             data: { calendarToken: res.value }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
     })
 
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await generateBagadCalendarTokenAction()).toEqual({
+        expect(await generateBagadCalendarTokenAction(undefined)).toEqual({
             success: false,
             error: "Echec de la génération du lien"
         })
@@ -67,27 +66,26 @@ describe("generateBagadCalendarTokenAction", () => {
 describe("revokeBagadCalendarTokenAction", () => {
     it("requires authentication", async () => {
         h.getUser.mockResolvedValue(null)
-        expect(await revokeBagadCalendarTokenAction()).toEqual({
+        expect(await revokeBagadCalendarTokenAction(undefined)).toEqual({
             success: false,
             error: "Authentification requise"
         })
         expect(h.update).not.toHaveBeenCalled()
     })
 
-    it("clears the token and revalidates", async () => {
-        expect(await revokeBagadCalendarTokenAction()).toEqual({
+    it("clears the token", async () => {
+        expect(await revokeBagadCalendarTokenAction(undefined)).toEqual({
             success: true
         })
         expect(h.update).toHaveBeenCalledWith({
             where: { id: "user-1" },
             data: { calendarToken: null }
         })
-        expect(h.revalidatePath).toHaveBeenCalledWith("/dashboard/bagadAsso")
     })
 
     it("captures and returns an error when the update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
-        expect(await revokeBagadCalendarTokenAction()).toEqual({
+        expect(await revokeBagadCalendarTokenAction(undefined)).toEqual({
             success: false,
             error: "Echec de la révocation du lien"
         })

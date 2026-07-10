@@ -1,5 +1,5 @@
-"use client"
-
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { format, isBefore } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
@@ -10,12 +10,9 @@ import {
     UserIcon,
     UsersIcon
 } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 
-import deleteBagadAssoTicketAction from "@/actions/bagadAsso/deleteTicketAction"
-import unarchiveBagadAssoTicketAction from "@/actions/bagadAsso/unarchiveTicketAction"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -52,6 +49,7 @@ export default function BagadAssoTicketCard({
     ticket: BagadAssoTicket
 }) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const queryClient = useQueryClient()
 
     const isArchived = ticket.deleted !== null
     const isExpired = isBefore(new Date(ticket.eventDate), new Date())
@@ -59,12 +57,20 @@ export default function BagadAssoTicketCard({
     const onArchive = async () => {
         setIsLoading(true)
 
-        const response = await deleteBagadAssoTicketAction(ticket.id)
+        const { data, error } =
+            await actions.bagadAsso.deleteBagadAssoTicketAction(ticket.id)
 
-        if (response.error) {
-            toast.error(`${response.error}`)
+        if (error || !data.success) {
+            toast.error(
+                data && !data.success
+                    ? data.error
+                    : "Une erreur est survenue. Veuillez réessayer."
+            )
         } else {
             toast.success("Le ticket a été archivé.")
+            await queryClient.invalidateQueries({
+                queryKey: ["bagadTickets"]
+            })
         }
         setIsLoading(false)
     }
@@ -72,12 +78,20 @@ export default function BagadAssoTicketCard({
     const onUnarchive = async () => {
         setIsLoading(true)
 
-        const response = await unarchiveBagadAssoTicketAction(ticket.id)
+        const { data, error } =
+            await actions.bagadAsso.unarchiveBagadAssoTicketAction(ticket.id)
 
-        if (response.error) {
-            toast.error(`${response.error}`)
+        if (error || !data.success) {
+            toast.error(
+                data && !data.success
+                    ? data.error
+                    : "Une erreur est survenue. Veuillez réessayer."
+            )
         } else {
             toast.success("Le ticket a été désarchivé.")
+            await queryClient.invalidateQueries({
+                queryKey: ["bagadTickets"]
+            })
         }
         setIsLoading(false)
     }
@@ -126,12 +140,12 @@ export default function BagadAssoTicketCard({
                             {getStatusBadge()}
                         </div>
                         <CardTitle className="text-lg">
-                            <Link
+                            <a
                                 href={`/dashboard/bagadAsso/tickets/${ticket.id}`}
                                 className="hover:text-primary transition-colors hover:underline"
                             >
                                 {ticket.association}
-                            </Link>
+                            </a>
                         </CardTitle>
                         <CardDescription className="text-base font-medium">
                             {ticket.eventName}

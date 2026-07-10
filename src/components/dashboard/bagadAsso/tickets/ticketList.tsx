@@ -1,5 +1,3 @@
-"use client"
-
 import { TicketIcon } from "lucide-react"
 
 import type { BagadAssoTicket } from "@/generated/prisma/client"

@@ -1,10 +1,9 @@
-"use client"
-
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
 import { PlusIcon } from "lucide-react"
 import { useState, useTransition } from "react"
 
-import addEquipmentAction from "@/actions/bagadAsso/addEquipmentAction"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { DialogForm } from "@/components/ui/dialog-form"
@@ -17,6 +16,7 @@ import {
 import { FilePondInput } from "@/components/ui/filepond"
 import { NumberField } from "@/components/ui/number-field"
 import { TextField } from "@/components/ui/text-field"
+import { encodeFormPayload } from "@/lib/formPayload"
 import {
     AddEquipmentSchema,
     type TAddEquipment
@@ -35,6 +35,7 @@ export default function AddEquipmentButton() {
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const form = useForm({
         defaultValues: emptyForm,
@@ -46,12 +47,22 @@ export default function AddEquipmentButton() {
         onSubmit: async ({ value }) => {
             setSubmitError(null)
             submit(async () => {
-                const res = await addEquipmentAction(value)
-                if (res.success) {
+                const { data, error } =
+                    await actions.bagadAsso.addEquipmentAction(
+                        encodeFormPayload(value)
+                    )
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
                     setOpen(false)
                     form.reset()
+                    await queryClient.invalidateQueries({
+                        queryKey: ["bagadEquipments"]
+                    })
                 } else {
-                    setSubmitError(res.error)
+                    setSubmitError(data.error)
                 }
             })
         }

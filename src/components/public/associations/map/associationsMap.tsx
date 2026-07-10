@@ -3,18 +3,14 @@
 import L from "leaflet"
 
 import "leaflet/dist/leaflet.css"
-import { Inter } from "next/font/google"
-import Image from "next/image"
 import { type ChangeEvent, useRef, useState } from "react"
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 
 import type { Association } from "@/generated/prisma/client"
 import { parseLocation } from "@/helpers/location"
-import { createClient } from "@/helpers/supabase/client"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 import AssociationMapSearchBar from "./associationMapSearchBar"
-
-const inter = Inter({ subsets: ["latin"] })
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -28,7 +24,7 @@ export default function AssociationMap({
 }: {
     associations: Association[]
 }) {
-    const supabase = createClient()
+    const storage = new StorageUtils()
 
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [searchError, setSearchError] = useState<string | undefined>(
@@ -68,10 +64,7 @@ export default function AssociationMap({
             center={[48.28842852181882, -2.1546832933080085]}
             zoom={9}
             scrollWheelZoom={false}
-            className={
-                "h-[400px] w-full rounded-xl border-[1.5px] border-black md:h-[600px]" +
-                inter.className
-            }
+            className="h-[400px] w-full rounded-xl border-[1.5px] border-black md:h-[600px]"
             ref={mapRef}
         >
             <div className="absolute z-999 mt-5 hidden h-20 w-full md:flex md:flex-col md:items-center md:justify-start">
@@ -107,13 +100,10 @@ export default function AssociationMap({
                     >
                         <Popup>
                             <div className="flex w-full flex-row">
-                                <Image
-                                    src={
-                                        supabase.storage
-                                            .from("association-pictures")
-                                            .getPublicUrl(association.logoPath)
-                                            .data.publicUrl
-                                    }
+                                <img
+                                    src={storage
+                                        .from("association-pictures")
+                                        .getPublicUrl(association.logoPath)}
                                     width={100}
                                     height={100}
                                     alt={

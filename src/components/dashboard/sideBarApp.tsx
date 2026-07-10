@@ -1,5 +1,3 @@
-"use client"
-
 import {
     FileUserIcon,
     LinkIcon,
@@ -13,16 +11,13 @@ import {
     TicketIcon,
     BoxIcon
 } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
 import { FaHandcuffs, FaPeopleGroup, FaUsers } from "react-icons/fa6" // Bouge Ta Prison
 // Link icons
 import { LuHandshake, LuNetwork, LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
 
-import LogoFARE from "#public/logo_fare.png"
+import LogoFARE from "@/assets/logo_fare.png"
 import type { Permission } from "@/generated/prisma/client"
 
 // UI components
@@ -55,15 +50,15 @@ export default function SideBarApp({
     permissions,
     email,
     name,
-    image
+    image,
+    pathname
 }: {
     permissions?: Permission[]
     email: string
     name?: string | null
     image?: string | null
+    pathname: string
 }) {
-    const pathname = usePathname()
-
     const menuGroups: { title?: string; links: SidebarLink[] }[] = [
         {
             title: "Contenu",
@@ -220,15 +215,13 @@ export default function SideBarApp({
     return (
         <Sidebar variant="inset" collapsible="offcanvas">
             <SidebarHeader className="flex flex-row items-center justify-start gap-6 py-4">
-                <Link href="/dashboard" className="flex items-center gap-2">
-                    <Image
-                        src={LogoFARE}
+                <a href="/dashboard" className="flex items-center gap-2">
+                    <img
+                        src={LogoFARE.src}
                         alt="Logo de la FARE"
                         className="w-16 opacity-85"
-                        priority={true}
-                        placeholder="empty"
-                    ></Image>
-                </Link>
+                    />
+                </a>
                 <b className="text-left">
                     Dashboard <br /> Administrateur
                 </b>

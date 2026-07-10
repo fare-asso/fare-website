@@ -1,0 +1,50 @@
+---
+import TicketDetailPage from "@/components/dashboard/bagadAsso/ticketDetailPage"
+import { toShellUser } from "@/components/dashboard/shell"
+import {
+    computeTotalDeposit,
+    joinTicketAndEquipment
+} from "@/helpers/bagadAsso"
+import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
+import Dashboard from "@/layouts/Dashboard.astro"
+
+const user = Astro.locals.user!
+const id = Astro.params.id!
+const ticketId = Number(id)
+
+if (Number.isNaN(ticketId)) {
+    return Astro.rewrite("/404")
+}
+
+const ticket = await prisma.bagadAssoTicket.findUnique({
+    where: { id: ticketId }
+})
+
+if (!ticket) {
+    return Astro.rewrite("/404")
+}
+
+const totalDeposit = await computeTotalDeposit(ticket)
+const joined = await joinTicketAndEquipment(ticket)
+const allEquipments: {
+    id: number
+    quantity: number
+    deposit: number
+    name: string
+    imagePath: string | undefined
+}[] = JSON.parse(JSON.stringify(joined.equipments))
+---
+
+<Dashboard title={`Bagad'Asso - Ticket ${ticket.id}`}>
+    <TicketDetailPage
+        client:load
+        user={toShellUser(user)}
+        pathname={Astro.url.pathname}
+        ticket={ticket}
+        allEquipments={allEquipments}
+        totalDeposit={totalDeposit}
+        canEditTicket={hasPermission(user, "edit:bagad-ticket")}
+        canDeleteTicket={hasPermission(user, "delete:bagad-ticket")}
+    />
+</Dashboard>

@@ -1,21 +1,19 @@
-"use server"
-
 import { randomBytes } from "node:crypto"
 
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-type GenerateResult =
-    | { success: true; value: string }
-    | { success: false; error: string }
-
-async function generateBagadCalendarTokenActionImpl(): Promise<GenerateResult> {
-    const user = await getCurrentUserWithPermissions()
+async function generateBagadCalendarTokenActionImpl(
+    _input: undefined,
+    context: ActionAPIContext
+): Promise<ActionResult<string>> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -39,15 +37,14 @@ async function generateBagadCalendarTokenActionImpl(): Promise<GenerateResult> {
         return { success: false, error: "Echec de la génération du lien" }
     }
 
-    revalidatePath("/dashboard/bagadAsso")
-
     return { success: true, value: token }
 }
 
-type RevokeResult = { success: true } | { success: false; error: string }
-
-async function revokeBagadCalendarTokenActionImpl(): Promise<RevokeResult> {
-    const user = await getCurrentUserWithPermissions()
+async function revokeBagadCalendarTokenActionImpl(
+    _input: undefined,
+    context: ActionAPIContext
+): Promise<ActionResult> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -69,17 +66,15 @@ async function revokeBagadCalendarTokenActionImpl(): Promise<RevokeResult> {
         return { success: false, error: "Echec de la révocation du lien" }
     }
 
-    revalidatePath("/dashboard/bagadAsso")
-
     return { success: true }
 }
 
-export const generateBagadCalendarTokenAction = withServerAction(
+export const generateBagadCalendarTokenAction = wrapAction(
     "generateBagadCalendarTokenAction",
     generateBagadCalendarTokenActionImpl
 )
 
-export const revokeBagadCalendarTokenAction = withServerAction(
+export const revokeBagadCalendarTokenAction = wrapAction(
     "revokeBagadCalendarTokenAction",
     revokeBagadCalendarTokenActionImpl
 )

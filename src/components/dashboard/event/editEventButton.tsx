@@ -1,15 +1,8 @@
-"use client"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
+import { type ChangeEvent, useCallback, useState, useTransition } from "react"
 
-import Image from "next/image"
-import {
-    type ChangeEvent,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
-
-import editEventAction from "@/actions/events/editEventAction"
+import type { EventWithImage } from "@/actions/events/listEventsAction"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -30,69 +23,27 @@ import { Textarea } from "@/components/ui/textarea"
 import CategorySelect from "../../ui/category/categorySelect"
 import TimePicker from "../../ui/input/timePicker"
 import LocationPicker from "../../ui/location/locationPicker"
-
-export interface EventInfo {
-    id: number
-    name: string
-    desc: string
-    image: string
-    startTime: Date
-    endTime: Date
-    location: string
-    visibility: boolean
-    category: {
-        id: number
-        name: string
-    }
-}
+import LoadingRing from "../loadingRing"
 
 export default function EditEventButtonClient({
     eventInfo
 }: {
-    eventInfo: EventInfo
+    eventInfo: EventWithImage
 }) {
-    const [formState, formAction, _isPending] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(editEventAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-
+    const [isPending, startTransition] = useTransition()
+    const [submitError, setSubmitError] = useState<string | null>(null)
     const [switchState, setSwitchState] = useState<boolean>(
         eventInfo.visibility
     )
-
-    const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
-
-    const [previousPath, setPreviousPath] = useState<string | undefined>(
-        undefined
-    )
-
-    // fetch image url
-    useEffect(() => {
-        const fetchImageUrl = async () => {
-            const res = await fetch(`/api/eventImage?id=${eventInfo.id}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-
-            const json = await res.json()
-
-            if (json.error) {
-                console.error(json.error)
-            } else {
-                const imageUrl: string = json.imageUrl
-                setImageUrl(imageUrl)
-                setPreviousPath(json.imagePath)
-            }
-        }
-
-        void fetchImageUrl()
-    }, [eventInfo.id])
+    const [imageUrl, setImageUrl] = useState<string>(eventInfo.imageUrl)
+    const queryClient = useQueryClient()
 
     const handleOpenChange = useCallback((open: boolean) => {
         setDialogIsOpen(open)
+        if (!open) {
+            setSubmitError(null)
+        }
     }, [])
 
     const handleImageInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -112,12 +63,29 @@ export default function EditEventButtonClient({
         }
     }
 
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-        }
-    }, [formState, handleOpenChange])
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+
+        const formData = new FormData(event.currentTarget)
+
+        setSubmitError(null)
+
+        startTransition(async () => {
+            const { data, error } =
+                await actions.events.editEventAction(formData)
+            if (error) {
+                setSubmitError("Une erreur est survenue. Veuillez réessayer.")
+            } else if (data?.success) {
+                handleOpenChange(false)
+                await queryClient.invalidateQueries({ queryKey: ["events"] })
+            } else {
+                setSubmitError(
+                    data?.error ??
+                        "Une erreur est survenue. Veuillez réessayer."
+                )
+            }
+        })
+    }
 
     return (
         <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
@@ -138,7 +106,7 @@ export default function EditEventButtonClient({
 
                 {/* Form */}
                 <form
-                    action={formAction}
+                    onSubmit={handleSubmit}
                     id="editEventForm"
                     className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
                 >
@@ -169,11 +137,11 @@ export default function EditEventButtonClient({
                     <div>
                         <Label htmlFor="picture">Image</Label>
                         {imageUrl ? (
-                            <Image
+                            <img
                                 src={imageUrl}
                                 width={400}
                                 height={200}
-                                alt="Image de l'évènement"
+                                alt={eventInfo.name}
                                 className="my-3 h-auto w-32 rounded-lg outline-2 outline-offset-2 outline-black"
                             />
                         ) : null}
@@ -184,11 +152,11 @@ export default function EditEventButtonClient({
                             onChange={handleImageInputChange}
                             accept="image/*"
                         />
-                        {previousPath ? (
+                        {eventInfo.image ? (
                             <input
                                 type="hidden"
                                 name="previousPath"
-                                value={previousPath}
+                                value={eventInfo.image}
                             />
                         ) : null}
                     </div>
@@ -271,12 +239,10 @@ export default function EditEventButtonClient({
                         </div>
                     </div>
 
-                    {formState?.error ? (
+                    {submitError ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
+                            <AlertDescription>{submitError}</AlertDescription>
                         </Alert>
                     ) : null}
                 </form>
@@ -286,8 +252,9 @@ export default function EditEventButtonClient({
                         variant="outline"
                         type="submit"
                         form="editEventForm"
+                        disabled={isPending}
                     >
-                        Modifier
+                        {isPending ? <LoadingRing /> : null} Modifier
                     </Button>
                 </DialogFooter>
             </DialogContent>

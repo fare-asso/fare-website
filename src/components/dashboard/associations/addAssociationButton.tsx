@@ -1,14 +1,7 @@
-"use client"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
+import { useCallback, useState, useTransition } from "react"
 
-import {
-    startTransition,
-    useActionState,
-    useCallback,
-    useEffect,
-    useState
-} from "react"
-
-import addAssociationAction from "@/actions/associations/addAssociationAction"
 import {
     Accordion,
     AccordionContent,
@@ -35,39 +28,41 @@ import { Textarea } from "@/components/ui/textarea"
 import LoadingRing from "../loadingRing"
 
 export default function AddAssociationButton() {
-    const [formState, formAction] = useActionState<
-        { error?: string; success?: boolean } | undefined,
-        FormData
-    >(addAssociationAction, undefined)
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isPending, startTransition] = useTransition()
+    const [submitError, setSubmitError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
 
     const handleOpenChange = useCallback((open: boolean) => {
         setDialogIsOpen(open)
         if (!open) {
-            setIsLoading(false)
-            // Réinitialiser le formulaire lorsque le dialogue est fermé
+            setSubmitError(null)
         }
     }, [])
-
-    // Fermer le dialogue lorsque l'action du formulaire indique un succès
-    useEffect(() => {
-        if (formState?.success) {
-            handleOpenChange(false)
-            setIsLoading(false)
-        }
-        setIsLoading(false)
-    }, [formState, handleOpenChange])
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)
 
-        setIsLoading(true)
+        setSubmitError(null)
 
-        startTransition(() => {
-            formAction(formData)
+        startTransition(async () => {
+            const { data, error } =
+                await actions.associations.addAssociationAction(formData)
+            if (error) {
+                setSubmitError("Une erreur est survenue. Veuillez réessayer.")
+            } else if (data?.success) {
+                handleOpenChange(false)
+                await queryClient.invalidateQueries({
+                    queryKey: ["associations"]
+                })
+            } else {
+                setSubmitError(
+                    data?.error ??
+                        "Une erreur est survenue. Veuillez réessayer."
+                )
+            }
         })
     }
 
@@ -302,12 +297,10 @@ export default function AddAssociationButton() {
                     </div>
 
                     {/* Error */}
-                    {formState?.error ? (
+                    {submitError ? (
                         <Alert variant="destructive">
                             <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>
-                                {formState.error}
-                            </AlertDescription>
+                            <AlertDescription>{submitError}</AlertDescription>
                         </Alert>
                     ) : null}
                 </form>
@@ -316,9 +309,9 @@ export default function AddAssociationButton() {
                     <Button
                         type="submit"
                         form="addAssociationForm"
-                        disabled={isLoading}
+                        disabled={isPending}
                     >
-                        {isLoading ? <LoadingRing /> : null} Ajouter
+                        {isPending ? <LoadingRing /> : null} Ajouter
                     </Button>
                 </DialogFooter>
             </DialogContent>

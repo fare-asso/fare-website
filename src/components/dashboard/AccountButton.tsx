@@ -1,10 +1,7 @@
-"use client"
-
+import { actions } from "astro:actions"
 import { LogOut } from "lucide-react"
 import { useTransition } from "react"
 import { toast } from "sonner"
-
-import { signOut } from "@/actions/auth/signOutAction"
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import {
@@ -32,10 +29,12 @@ export default function AccountButton({
 
     function handleSignOut(): void {
         startTransition(async () => {
-            const result = await signOut()
-            if (!result.success) {
-                toast.error(result.error || "Erreur lors de la déconnexion")
+            const { data, error } = await actions.auth.signOut()
+            if (error || !data.success) {
+                toast.error("Erreur lors de la déconnexion")
+                return
             }
+            window.location.href = "/login"
         })
     }
 

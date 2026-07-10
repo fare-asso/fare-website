@@ -4,13 +4,13 @@ import { Check, MapPin } from "lucide-react"
 import type React from "react"
 import { useId, useRef, useState } from "react"
 
-import type {
-    LocationSuggestion,
-    SearchLocationResponse
-} from "@/app/api/searchLocation/types"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover"
 import { type JsonLocation, parseLocation } from "@/helpers/location"
+import type {
+    LocationSuggestion,
+    SearchLocationResponse
+} from "@/helpers/searchLocation"
 import { cn, tryCatch } from "@/lib/utils"
 
 interface LocationPickerProps {

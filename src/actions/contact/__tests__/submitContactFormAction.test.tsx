@@ -17,12 +17,12 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock("std-env", () => stdEnvModule(stdenv))
-vi.mock("@/components/captcha/verify", () => captchaModule(h.verifyCaptcha))
+vi.mock("@/helpers/captcha/verify", () => captchaModule(h.verifyCaptcha))
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
 vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
-import submitContactFormAction from "../submitContactFormAction"
+import { submitContactFormAction } from "../submitContactFormAction"
 
 beforeEach(() => {
     stdenv.isDevelopment = false
@@ -33,9 +33,9 @@ beforeEach(() => {
 describe("submitContactFormAction", () => {
     it("rejects an invalid payload with field errors", async () => {
         const res = await submitContactFormAction(
-            undefined,
             validContact({ email: "not-an-email", firstName: "" })
         )
+        if (res.success) throw new Error("expected failure")
         expect(res.error).toBe("Un ou plusieurs champs sont invalides.")
         expect(res.fieldErrors?.email).toBeDefined()
         expect(res.fieldErrors?.firstName).toBeDefined()
@@ -47,7 +47,6 @@ describe("submitContactFormAction", () => {
     it("skips captcha verification in development", async () => {
         stdenv.isDevelopment = true
         const res = await submitContactFormAction(
-            undefined,
             validContact({ captchaToken: "" })
         )
         expect(h.verifyCaptcha).not.toHaveBeenCalled()
@@ -56,8 +55,9 @@ describe("submitContactFormAction", () => {
 
     it("fails when the captcha is invalid", async () => {
         h.verifyCaptcha.mockResolvedValue(false)
-        const res = await submitContactFormAction(undefined, validContact())
+        const res = await submitContactFormAction(validContact())
         expect(res).toEqual({
+            success: false,
             error: "La vérification CAPTCHA a échoué. Veuillez réessayer."
         })
         expect(h.sendEmail).not.toHaveBeenCalled()
@@ -65,15 +65,16 @@ describe("submitContactFormAction", () => {
 
     it("returns an error when sending fails (sendEmail handles capture itself)", async () => {
         h.sendEmail.mockResolvedValue({ success: false })
-        const res = await submitContactFormAction(undefined, validContact())
+        const res = await submitContactFormAction(validContact())
         expect(res).toEqual({
+            success: false,
             error: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer."
         })
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
     it("sends the contact email and succeeds on the happy path", async () => {
-        const res = await submitContactFormAction(undefined, validContact())
+        const res = await submitContactFormAction(validContact())
         expect(res).toEqual({ success: true })
         expect(h.sendEmail).toHaveBeenCalledWith(
             expect.objectContaining({

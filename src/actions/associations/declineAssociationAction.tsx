@@ -1,24 +1,23 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 async function declineAssociationActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    id: number
-): Promise<{ error?: string; success?: boolean }> {
-    const user = await getCurrentUserWithPermissions()
+    id: number,
+    context: ActionAPIContext
+): Promise<ActionResult> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "approve:association")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission de refuser des associations"
         }
     }
@@ -30,23 +29,24 @@ async function declineAssociationActionImpl(
     )
     if (!associationResult.success) {
         captureActionError(associationResult.error)
-        return { error: "Échec du refus de l'association" }
+        return { success: false, error: "Échec du refus de l'association" }
     }
     const association = associationResult.value
 
     if (!association) {
-        return { error: "Association introuvable" }
+        return { success: false, error: "Association introuvable" }
     }
 
     if (association.approved) {
         return {
+            success: false,
             error: "Impossible de refuser une association déjà approuvée"
         }
     }
 
     // Remove logo from association-pictures storage
     if (association.logoPath.length > 0) {
-        const supabase = await createClient()
+        const supabase = createClient(context)
         const { error: storageError } = await supabase.storage
             .from("association-pictures")
             .remove([association.logoPath])
@@ -67,17 +67,13 @@ async function declineAssociationActionImpl(
     )
     if (!deleted.success) {
         captureActionError(deleted.error)
-        return { error: "Échec du refus de l'association" }
+        return { success: false, error: "Échec du refus de l'association" }
     }
-
-    revalidatePath("/dashboard/associations")
-    revalidatePath("/reseau")
-    revalidatePath("/")
 
     return { success: true }
 }
 
-export default withServerAction(
+export const declineAssociationAction = wrapAction(
     "declineAssociationAction",
     declineAssociationActionImpl
 )

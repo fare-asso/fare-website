@@ -1,5 +1,3 @@
-"use client"
-
 import {
     closestCenter,
     DndContext,
@@ -15,10 +13,11 @@ import {
     SortableContext,
     sortableKeyboardCoordinates
 } from "@dnd-kit/sortable"
-import { useState, useTransition } from "react"
+import { useQueryClient } from "@tanstack/react-query"
+import { actions } from "astro:actions"
+import { useOptimistic, useTransition } from "react"
 import { toast } from "sonner"
 
-import updateEluOrderAction from "@/actions/elus/updateEluOrderAction"
 import type { Elu } from "@/generated/prisma/client"
 
 import EluCard from "./eluCard"
@@ -44,8 +43,12 @@ export default function SortableEluList({
     canDelete,
     addCard
 }: SortableEluListProps) {
-    const [elus, setElus] = useState(initialElus)
+    const [elus, setOptimisticElus] = useOptimistic(
+        initialElus,
+        (_current, next: Elu[]) => next
+    )
     const [, startTransition] = useTransition()
+    const queryClient = useQueryClient()
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -60,31 +63,25 @@ export default function SortableEluList({
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event
+        if (!over || active.id === over.id) return
 
-        if (over && active.id !== over.id) {
-            const oldIndex = elus.findIndex((e) => e.id === active.id)
-            const newIndex = elus.findIndex((e) => e.id === over.id)
+        const oldIndex = elus.findIndex((e) => e.id === active.id)
+        const newIndex = elus.findIndex((e) => e.id === over.id)
+        const newElus = arrayMove(elus, oldIndex, newIndex)
 
-            const previousElus = elus
-            const newElus = arrayMove(elus, oldIndex, newIndex)
-            setElus(newElus)
+        startTransition(async () => {
+            setOptimisticElus(newElus)
 
-            // Persist the new order to the database
-            startTransition(async () => {
-                const eluOrder = newElus.map((e, index) => ({
-                    id: e.id,
-                    order: index
-                }))
-
-                const result = await updateEluOrderAction(eluOrder)
-
-                if (!result.success) {
-                    // Revert on error
-                    setElus(previousElus)
-                    toast.error(result.error)
-                }
-            })
-        }
+            const { data, error } = await actions.elus.updateEluOrderAction(
+                newElus.map((e, order) => ({ id: e.id, order }))
+            )
+            if (error) {
+                toast.error("Échec de la mise à jour de l'ordre")
+            } else if (!data.success) {
+                toast.error(data.error)
+            }
+            await queryClient.invalidateQueries({ queryKey: ["elus"] })
+        })
     }
 
     return (

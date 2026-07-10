@@ -1,19 +1,18 @@
-import { use, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
 
 import EquipmentCard from "./equipmentCard"
 
 export default function EquipmentSelection({
-    equipmentList: eL,
+    equipmentList,
     name,
     onChange
 }: {
-    equipmentList: Promise<BagadAssoEquipment[]>
+    equipmentList: BagadAssoEquipment[]
     name?: string
     onChange?: (value: string) => void
 }) {
-    const equipmentList = use(eL)
     const [selectedEquipment, setSelectedEquipment] = useState<{
         [key: number]: number
     }>({})

@@ -1,0 +1,28 @@
+---
+import MemberCard from "@/components/public/bureau/memberCard.astro"
+
+import prisma from "@/helpers/db"
+import Public from "@/layouts/Public.astro"
+
+const bureau = await prisma.member.findMany({
+    orderBy: [{ order: "asc" }, { id: "asc" }]
+})
+
+// the accademic year is from mid-june to mid-june
+const currentAcademicYear =
+    new Date().getMonth() >= 5
+        ? new Date().getFullYear()
+        : new Date().getFullYear() - 1
+---
+
+<Public title="Le Bureau" description="Page des membres du bureau de la FARE">
+    <h1 class="py-24 text-4xl font-semibold">
+        Bureau Fédéral {currentAcademicYear} - {currentAcademicYear + 1}
+    </h1>
+
+    <div
+        class="flex flex-wrap gap-12 items-stretch justify-center w-[90%] max-w-360"
+    >
+        {bureau.map((member) => <MemberCard member={member} />)}
+    </div>
+</Public>

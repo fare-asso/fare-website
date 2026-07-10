@@ -1,16 +1,13 @@
-"use server"
-
 import { randomUUID } from "node:crypto"
 
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { createClient } from "@/helpers/supabase/server"
-import getCurrentUserId from "@/helpers/user/id"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 interface Event {
@@ -26,22 +23,23 @@ interface Event {
 }
 
 async function createEventActionImpl(
-    _prevState: { error?: string; success?: boolean } | undefined,
-    formData: FormData
-) {
+    formData: FormData,
+    context: ActionAPIContext
+): Promise<ActionResult> {
     // Auth and permission verifications
-    const user = await getCurrentUserWithPermissions()
+    const user = await getUserWithPermissions(context)
     if (!user) {
-        return { error: "Authentification requise" }
+        return { success: false, error: "Authentification requise" }
     }
     if (!hasPermission(user, "create:event")) {
         return {
+            success: false,
             error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
     }
 
     // instantiate supabase client
-    const supabase = await createClient()
+    const supabase = createClient(context)
 
     // retrieve form data fields
     const name = formData.get("name")
@@ -70,11 +68,13 @@ async function createEventActionImpl(
         const nameStr: string = name.toString()
         if (nameStr.length < 3) {
             return {
+                success: false,
                 error: "La longueur du nom doit être supérieure à 3 caractères"
             }
         } else data.name = nameStr
     } else {
         return {
+            success: false,
             error: "Le nom n'est pas valide ou n'est pas du bon format"
         }
     }
@@ -84,11 +84,13 @@ async function createEventActionImpl(
         const descriptionStr: string = description.toString()
         if (descriptionStr.length < 10) {
             return {
+                success: false,
                 error: "La longueur de la description doit être supérieure à 10 caractères"
             }
         } else data.desc = descriptionStr
     } else {
         return {
+            success: false,
             error: "La description n'est pas valide ou n'est pas du bon format"
         }
     }
@@ -101,12 +103,11 @@ async function createEventActionImpl(
             // location is a stringified JSON
             data.location = location.toString()
         } else {
-            return {
-                error: "Lieu non-valide"
-            }
+            return { success: false, error: "Lieu non-valide" }
         }
     } else {
         return {
+            success: false,
             error: "Le lieu n'est pas valide ou n'est pas du bon format"
         }
     }
@@ -126,17 +127,20 @@ async function createEventActionImpl(
         if (!found.success) {
             if ("code" in found.error && found.error.code === "P2025") {
                 return {
+                    success: false,
                     error: `La catégorie ${categoryStr} n'existe pas`
                 }
             }
             captureActionError(found.error)
             return {
+                success: false,
                 error: "Une erreur à eu lieu lors de la récupération de la catégorie"
             }
         }
         data.categoryId = found.value.id
     } else {
         return {
+            success: false,
             error: "La catégorie n'est pas valide ou n'est pas du bon format"
         }
     }
@@ -156,6 +160,7 @@ async function createEventActionImpl(
             Number.isNaN(Number(startMinuteStr))
         ) {
             return {
+                success: false,
                 error: "L'heure ou les minutes de départ ne sont pas sous le bon format"
             }
         }
@@ -165,6 +170,7 @@ async function createEventActionImpl(
         data.startTime = parsedDate
     } else {
         return {
+            success: false,
             error: "La date ou l'heure de départ ne sont correctes"
         }
     }
@@ -184,6 +190,7 @@ async function createEventActionImpl(
             Number.isNaN(Number(endMinuteStr))
         ) {
             return {
+                success: false,
                 error: "L'heure ou les minutes de fin ne sont pas sous le bon format"
             }
         }
@@ -193,6 +200,7 @@ async function createEventActionImpl(
         data.endTime = parsedDate
     } else {
         return {
+            success: false,
             error: "La date ou l'heure de fin ne sont pas correctes"
         }
     }
@@ -208,9 +216,7 @@ async function createEventActionImpl(
                 data.visibility = false
                 break
             default:
-                return {
-                    error: "Wrong type of visibility"
-                }
+                return { success: false, error: "Wrong type of visibility" }
         }
     } else {
         // false if null
@@ -234,6 +240,7 @@ async function createEventActionImpl(
                 // Upload Failed
                 console.log(res.error)
                 return {
+                    success: false,
                     error: "L'upload de l'image à échoué, veuillez réessayer"
                 }
             } else {
@@ -242,27 +249,21 @@ async function createEventActionImpl(
             }
         } else {
             return {
+                success: false,
                 error: "L'image n'est pas valide ou la taille de l'image excède 10 mo"
             }
         }
     } else {
         return {
+            success: false,
             error: "L'image n'est pas valide ou n'est pas du bon format"
-        }
-    }
-
-    // fetch current user id
-    const res = await getCurrentUserId()
-
-    if (res.error || !res.userId) {
-        return {
-            error: "Echec de la récupération de l'utilisateur"
         }
     }
 
     // Validate required fields before database insert
     if (!data.name || !data.desc || !data.categoryId || !data.location) {
         return {
+            success: false,
             error: "Des champs obligatoires sont manquants"
         }
     }
@@ -278,7 +279,7 @@ async function createEventActionImpl(
                 startTime: data.startTime,
                 endTime: data.endTime,
                 location: data.location,
-                creatorId: res.userId,
+                creatorId: user.id,
                 visibility: data.visibility
             }
         })
@@ -294,15 +295,15 @@ async function createEventActionImpl(
             )
         }
         return {
+            success: false,
             error: "La création de l'évènement à échoué, veuillez réessayer"
         }
     }
 
-    revalidatePath("/agenda")
-    revalidatePath("/dashboard/events")
     return { success: true }
 }
 
-export default withServerAction("createEventAction", createEventActionImpl, {
-    attachFormData: true
-})
+export const createEventAction = wrapAction(
+    "createEventAction",
+    createEventActionImpl
+)

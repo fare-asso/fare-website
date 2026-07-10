@@ -1,20 +1,19 @@
-import type { BagadAssoTicket } from "@/generated/prisma/client"
-import { tryCatch } from "@/lib/utils"
+import type {
+    BagadAssoTicket,
+    BagadAssoEquipment
+} from "@/generated/prisma/client"
+import { tryCatch, type Prettify } from "@/lib/utils"
 
 import prisma from "./db"
 
-interface Equipement {
-    id: number
-    quantity: number
-}
+type Equipement = Pick<BagadAssoEquipment, "id" | "quantity">
 
-export interface EquipmentNextBooking {
-    ticketId: number
-    association: string
-    eventName: string
-    eventDate: Date
-    quantity: number
-}
+export type EquipmentNextBooking = Prettify<
+    Pick<BagadAssoTicket, "association" | "eventName" | "eventDate"> & {
+        ticketId: BagadAssoTicket["id"]
+        quantity: number
+    }
+>
 
 /**
  * Map each equipment id to its soonest upcoming, non-archived booking.

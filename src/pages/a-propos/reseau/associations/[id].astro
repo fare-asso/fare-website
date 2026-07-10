@@ -1,0 +1,50 @@
+---
+import prisma from "@/helpers/db"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
+import Public from "@/layouts/Public.astro"
+
+const { id } = Astro.params
+
+if (Number.isNaN(Number(id))) {
+    return Astro.rewrite("/404")
+}
+
+const associationRecord = await prisma.association.findUnique({
+    where: {
+        id: Number(id),
+        approved: { not: null }
+    }
+})
+
+if (!associationRecord) {
+    return Astro.rewrite("/404")
+}
+
+const logoUrl = new StorageUtils()
+    .from("association-pictures")
+    .getPublicUrl(associationRecord.logoPath)
+---
+
+<Public
+    title={associationRecord.name}
+    description={associationRecord.desc ?? undefined}
+>
+    <div class="flex w-[90%] flex-col items-start pt-14">
+        <a href="/a-propos/reseau" class="text-sm opacity-40 hover:underline">
+            &lt; Retour aux associations
+        </a>
+        <h1 class="mt-2 text-3xl font-bold">
+            {associationRecord.name}
+        </h1>
+        <div class="flex w-full flex-row">
+            <p>{associationRecord.desc}</p>
+            <img
+                src={logoUrl}
+                width={400}
+                height={400}
+                alt={`${associationRecord.name} logo`}
+                class="aspect-square h-60 w-60 rounded-lg border border-black object-cover"
+            >
+        </div>
+    </div>
+</Public>

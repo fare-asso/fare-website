@@ -1,19 +1,17 @@
-"use server"
-
-import { revalidatePath } from "next/cache"
+import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { getCurrentUserWithPermissions } from "@/helpers/supabase/auth"
-import { captureActionError, withServerAction } from "@/lib/sentry"
+import { getUserWithPermissions } from "@/helpers/supabase/astro"
+import { wrapAction, type ActionResult } from "@/lib/action"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-type Result =
-    | { success: true; value: { count: number } }
-    | { success: false; error: string }
-
-async function bulkRestoreElusActionImpl(ids: number[]): Promise<Result> {
-    const user = await getCurrentUserWithPermissions()
+async function bulkRestoreElusActionImpl(
+    ids: number[],
+    context: ActionAPIContext
+): Promise<ActionResult<{ count: number }>> {
+    const user = await getUserWithPermissions(context)
     if (!user) {
         return { success: false, error: "Authentification requise" }
     }
@@ -43,14 +41,10 @@ async function bulkRestoreElusActionImpl(ids: number[]): Promise<Result> {
         }
     }
 
-    revalidatePath("/dashboard/elus")
-    revalidatePath("/dashboard/elus/instances")
-    revalidatePath("/representation/nos-elues")
-
     return { success: true, value: { count: restored.value.count } }
 }
 
-export default withServerAction(
+export const bulkRestoreElusAction = wrapAction(
     "bulkRestoreElusAction",
     bulkRestoreElusActionImpl
 )
