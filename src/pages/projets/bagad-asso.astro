@@ -2,13 +2,8 @@
 import { Image } from "astro:assets"
 
 import logoBagadAsso from "@/assets/Logo_Bagadasso.png"
-import BagadAssoForm from "@/components/public/bagadAsso/form"
-import prisma from "@/helpers/db"
+import FormIsland from "@/components/public/bagadAsso/formIsland.astro"
 import Public from "@/layouts/Public.astro"
-import { tryCatch } from "@/lib/utils"
-
-const equipment = await tryCatch(prisma.bagadAssoEquipment.findMany())
-const equipmentList = equipment.success ? equipment.value : []
 ---
 
 <Public title="Badag'Asso">
@@ -94,6 +89,13 @@ const equipmentList = equipment.success ? equipment.value : []
             </div>
         </section>
 
-        <BagadAssoForm client:load equipmentList={equipmentList} />
+        <FormIsland server:defer>
+            <p
+                slot="fallback"
+                class="text-muted-foreground w-full max-w-4xl py-12 text-center"
+            >
+                Chargement du formulaire…
+            </p>
+        </FormIsland>
     </div>
 </Public>

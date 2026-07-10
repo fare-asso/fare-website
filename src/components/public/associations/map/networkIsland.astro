@@ -1,0 +1,16 @@
+---
+import prisma from "@/helpers/db"
+import { tryCatch } from "@/lib/utils"
+
+import AssociationMap from "./associationsMap"
+
+const result = await tryCatch(
+    prisma.association.findMany({ where: { approved: { not: null } } })
+)
+---
+
+{result.success ? (
+        <AssociationMap client:only="react" associations={result.value} />
+    ) : (
+        <span>Echec de la récupération des associations</span>
+    )}

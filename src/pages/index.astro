@@ -3,36 +3,15 @@ import { Image } from "astro:assets"
 import { FaDiscord } from "react-icons/fa6"
 
 import heroImage from "@/assets/hero-image.jpg"
-import AssociationMap from "@/components/public/associations/map/associationsMap"
+import NetworkIsland from "@/components/public/associations/map/networkIsland.astro"
 import KeyNumbers from "@/components/public/keyNumbers"
+import KeyNumbersIsland from "@/components/public/keyNumbersIsland.astro"
 import LinkButton from "@/components/public/link"
+import PartnersIsland from "@/components/public/partnersIsland.astro"
 import { Button } from "@/components/ui/button"
-import prisma from "@/helpers/db"
-import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import Public from "@/layouts/Public.astro"
-import { tryCatch } from "@/lib/utils"
 
 import "@/styles/home.css"
-
-const storage = new StorageUtils()
-
-const partenaires = await tryCatch(
-    prisma.partenaire.findMany({ orderBy: { name: "asc" } })
-)
-const partners = partenaires.success
-    ? partenaires.value.map((p) => ({
-          id: p.id,
-          name: p.name,
-          logoUrl: storage.from("partner-pictures").getPublicUrl(p.logoPath)
-      }))
-    : []
-
-const associationsResult = await tryCatch(
-    prisma.association.findMany({ where: { approved: { not: null } } })
-)
-const associations = associationsResult.success
-    ? associationsResult.value
-    : undefined
 ---
 
 <Public title="Accueil">
@@ -46,7 +25,9 @@ const associations = associationsResult.success
                 width={1200}
             />
 
-            <KeyNumbers client:load associationCount={associations?.length} />
+            <KeyNumbersIsland server:defer>
+                <KeyNumbers slot="fallback" />
+            </KeyNumbersIsland>
 
             <div
                 class="intro flex w-full flex-col items-start justify-between rounded-xl bg-black p-8 text-lg text-white"
@@ -75,14 +56,14 @@ const associations = associationsResult.success
         <div class="my-10 flex w-full flex-col">
             <h2 class="mb-2 text-2xl font-semibold">Notre réseau</h2>
             <div class="flex flex-col items-center">
-                {associations ? (
-                        <AssociationMap
-                            client:only="react"
-                            associations={associations}
-                        />
-                    ) : (
-                        <span>Echec de la récupération des associations</span>
-                    )}
+                <NetworkIsland server:defer>
+                    <div
+                        slot="fallback"
+                        class="text-muted-foreground flex min-h-96 w-full items-center justify-center"
+                    >
+                        Chargement de la carte…
+                    </div>
+                </NetworkIsland>
             </div>
         </div>
 
@@ -134,26 +115,6 @@ const associations = associationsResult.success
             </div>
         </div>
 
-        {partners.length > 0 && (
-                <div class="my-10 flex w-full flex-col items-center">
-                    <h2 class="mb-8 text-3xl font-semibold">Nos partenaires</h2>
-                    <div class="flex flex-row flex-wrap items-center justify-center gap-8">
-                        {partners.map((partner) => (
-                            <a
-                                href="/a-propos/partenaires"
-                                class="flex h-24 w-60 items-center justify-center"
-                            >
-                                <img
-                                    src={partner.logoUrl}
-                                    alt={"Logo de " + partner.name}
-                                    width={160}
-                                    height={80}
-                                    class="h-full w-full object-contain"
-                                />
-                            </a>
-                        ))}
-                    </div>
-                </div>
-            )}
+        <PartnersIsland server:defer />
     </div>
 </Public>

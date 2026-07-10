@@ -1,0 +1,11 @@
+---
+import prisma from "@/helpers/db"
+import { tryCatch } from "@/lib/utils"
+
+import BagadAssoForm from "./form"
+
+const equipment = await tryCatch(prisma.bagadAssoEquipment.findMany())
+const equipmentList = equipment.success ? equipment.value : []
+---
+
+<BagadAssoForm client:load equipmentList={equipmentList} />

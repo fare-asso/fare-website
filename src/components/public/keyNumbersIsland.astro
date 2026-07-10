@@ -1,0 +1,15 @@
+---
+import prisma from "@/helpers/db"
+import { tryCatch } from "@/lib/utils"
+
+import KeyNumbers from "./keyNumbers"
+
+const count = await tryCatch(
+    prisma.association.count({ where: { approved: { not: null } } })
+)
+---
+
+<KeyNumbers
+    client:load
+    associationCount={count.success ? count.value : undefined}
+/>
