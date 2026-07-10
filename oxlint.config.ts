@@ -159,6 +159,7 @@ export default defineConfig({
 
         "local/no-try-catch": "error",
         "local/no-non-public-env-in-client": "error",
+        "local/no-dashboard-prerender": "error",
         "local/require-server-action-wrapper": "error",
 
         // Flags non-discriminated action results (optional `success?`/`error?`).

@@ -67,7 +67,7 @@ Always use `pnpm`, never `npm`.
 - **80** col width, **4-space** indent, **no semicolons**, **double quotes** (incl. JSX).
 - **Naming:** camelCase vars/functions, PascalCase components/types, CONSTANT_CASE constants.
 - oxlint checks accessibility (a11y). Tailwind classes auto-sorted by oxfmt (`cn`, `twMerge`, `cva`).
-- Custom local oxlint rules live in `tools/oxlint-rules/` (e.g. `local/no-try-catch`, `local/no-non-public-env-in-client`, `local/require-action-name-matches`).
+- Custom local oxlint rules live in `tools/oxlint-rules/` (e.g. `local/no-try-catch`, `local/no-non-public-env-in-client`, `local/require-action-name-matches`, `local/no-dashboard-prerender`).
 
 ### Component Patterns
 
