@@ -49,11 +49,11 @@ const socials = [
 ---
 
 <footer class="mt-auto w-full bg-black text-white">
-    <div class="mx-auto w-full max-w-7xl px-6 py-12">
+    <div class="mx-auto w-full max-w-7xl px-6 py-8 sm:py-12">
         <div
-            class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]"
+            class="flex flex-col gap-8 lg:flex-row lg:justify-between lg:gap-16"
         >
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-4 lg:max-w-xs">
                 <p class="text-lg font-semibold">FARE</p>
                 <p class="max-w-xs text-sm text-white/70">
                     Fédération des Associations du Réseau Étudiant de
@@ -72,7 +72,10 @@ const socials = [
                         ))}
                 </div>
             </div>
-            {columns.map((col) => (
+            <div
+                class="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3 lg:flex lg:gap-16"
+            >
+                {columns.map((col) => (
                     <nav class="flex flex-col gap-3">
                         <h2 class="text-xs font-semibold tracking-wide text-white/50 uppercase">
                             {col.title}
@@ -91,9 +94,10 @@ const socials = [
                         </ul>
                     </nav>
                 ))}
+            </div>
         </div>
         <div
-            class="mt-10 flex flex-col gap-4 border-t border-white/15 pt-6 text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between"
+            class="mt-8 flex flex-col gap-4 border-t border-white/15 pt-6 text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between"
         >
             <p>© {year} FARE. Tous droits réservés.</p>
             <nav class="flex flex-wrap items-center gap-x-5 gap-y-2">
