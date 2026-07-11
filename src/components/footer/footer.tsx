@@ -8,6 +8,9 @@ export default function Footer() {
             <div className="flex w-full flex-row items-end justify-between">
                 <div className="flex flex-row space-x-1 text-xs opacity-75 md:space-x-4 [&>a]:hover:underline">
                     <a href="/mentions-legales">Mentions Légales</a>
+                    <a href="/politique-de-confidentialite">
+                        Politique de confidentialité
+                    </a>
                     <span>
                         © {new Date().getFullYear()} FARE. Tous droits réservés.
                     </span>
