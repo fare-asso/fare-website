@@ -72,15 +72,15 @@ describe("runPurge", () => {
         await runPurge()
         expect(h.bagadUpdate).toHaveBeenCalledTimes(1)
         const arg = h.bagadUpdate.mock.calls[0][0]
-        expect(arg.where.firstName).toEqual({ not: "" })
+        expect(arg.where.firstName).toEqual({ not: "<redacted>" })
         expect(arg.data).toEqual({
-            firstName: "",
-            lastName: "",
-            position: "",
+            firstName: "<redacted>",
+            lastName: "<redacted>",
+            position: "<redacted>",
             phoneNumber: null,
-            associationEmail: "",
-            representativeEmail: "",
-            eventAddr: ""
+            associationEmail: "<redacted>",
+            representativeEmail: "<redacted>",
+            eventAddr: "<redacted>"
         })
         // stats kept: no association / equipment / dates in the cleared data
         expect(arg.data).not.toHaveProperty("equipments")
@@ -94,11 +94,11 @@ describe("runPurge", () => {
         expect(h.appUpdate).toHaveBeenCalledWith({
             where: { id: { in: [1] } },
             data: {
-                firstName: "",
-                lastName: "",
-                email: "",
-                cvPath: "",
-                mlPath: ""
+                firstName: "<redacted>",
+                lastName: "<redacted>",
+                email: "<redacted>",
+                cvPath: "<redacted>",
+                mlPath: "<redacted>"
             }
         })
     })

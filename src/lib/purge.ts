@@ -59,15 +59,18 @@ async function purgeBtpQuestions(): Promise<number> {
 async function anonymiseBagadTickets(): Promise<number> {
     const res = await tryCatch(
         prisma.bagadAssoTicket.updateMany({
-            where: { eventDate: { lt: yearsAgo(2) }, firstName: { not: "" } },
+            where: {
+                eventDate: { lt: yearsAgo(1) },
+                firstName: { not: "<redacted>" }
+            },
             data: {
-                firstName: "",
-                lastName: "",
-                position: "",
+                firstName: "<redacted>",
+                lastName: "<redacted>",
+                position: "<redacted>",
                 phoneNumber: null,
-                associationEmail: "",
-                representativeEmail: "",
-                eventAddr: ""
+                associationEmail: "<redacted>",
+                representativeEmail: "<redacted>",
+                eventAddr: "<redacted>"
             }
         })
     )
@@ -88,7 +91,10 @@ async function anonymiseBtpApplications(
 ): Promise<number> {
     const expired = await tryCatch(
         prisma.bTPTutorApplication.findMany({
-            where: { createdAt: { lt: yearsAgo(2) }, cvPath: { not: "" } },
+            where: {
+                createdAt: { lt: yearsAgo(2) },
+                cvPath: { not: "<redacted>" }
+            },
             select: { id: true, cvPath: true, mlPath: true }
         })
     )
@@ -107,11 +113,11 @@ async function anonymiseBtpApplications(
         prisma.bTPTutorApplication.updateMany({
             where: { id: { in: expired.value.map((r) => r.id) } },
             data: {
-                firstName: "",
-                lastName: "",
-                email: "",
-                cvPath: "",
-                mlPath: ""
+                firstName: "<redacted>",
+                lastName: "<redacted>",
+                email: "<redacted>",
+                cvPath: "<redacted>",
+                mlPath: "<redacted>"
             }
         })
     )
