@@ -1,0 +1,122 @@
+---
+import { Compass, ShieldUser } from "lucide-react"
+import { FaFacebook, FaInstagram } from "react-icons/fa6"
+
+const year = new Date().getFullYear()
+
+const columns = [
+    {
+        title: "La fédération",
+        links: [
+            { label: "À propos", href: "/a-propos" },
+            { label: "Le Bureau", href: "/a-propos/bureau" },
+            { label: "Le réseau", href: "/a-propos/reseau" },
+            { label: "Nous contacter", href: "/a-propos/contact" }
+        ]
+    },
+    {
+        title: "Nos projets",
+        links: [
+            { label: "AGORAé", href: "/projets/agorae" },
+            { label: "Bouge Ta Prison", href: "/projets/bouge-ta-prison" },
+            { label: "Bagad'Asso", href: "/projets/bagad-asso" }
+        ]
+    },
+    {
+        title: "Ressources",
+        links: [
+            { label: "Représentation", href: "/representation" },
+            { label: "Presse", href: "/presse" },
+            { label: "Rejoindre la FARE", href: "/a-propos/adhesion" },
+            { label: "Assistance", href: "/assistance" }
+        ]
+    }
+]
+
+const socials = [
+    {
+        label: "Instagram",
+        href: "https://www.instagram.com/fare_hautebretagne",
+        Icon: FaInstagram
+    },
+    {
+        label: "Facebook",
+        href: "https://www.facebook.com/fare.hautebretagne/?locale=fr_FR",
+        Icon: FaFacebook
+    },
+    { label: "Tous nos liens", href: "/liens", Icon: Compass }
+]
+---
+
+<footer class="mt-auto w-full bg-black text-white">
+    <div class="mx-auto w-full max-w-7xl px-6 py-12">
+        <div
+            class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]"
+        >
+            <div class="flex flex-col gap-4">
+                <p class="text-lg font-semibold">FARE</p>
+                <p class="max-w-xs text-sm text-white/70">
+                    Fédération des Associations du Réseau Étudiant de
+                    Haute-Bretagne.
+                </p>
+                <div class="mt-2 flex items-center gap-4">
+                    {socials.map(({ label, href, Icon }) => (
+                            <a
+                                href={href}
+                                title={label}
+                                aria-label={label}
+                                class="text-white/80 transition-colors hover:text-white"
+                            >
+                                <Icon size={22} />
+                            </a>
+                        ))}
+                </div>
+            </div>
+            {columns.map((col) => (
+                    <nav class="flex flex-col gap-3">
+                        <h2 class="text-xs font-semibold tracking-wide text-white/50 uppercase">
+                            {col.title}
+                        </h2>
+                        <ul class="flex flex-col gap-2 text-sm">
+                            {col.links.map((link) => (
+                                <li>
+                                    <a
+                                        href={link.href}
+                                        class="text-white/80 transition-colors hover:text-white hover:underline"
+                                    >
+                                        {link.label}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                ))}
+        </div>
+        <div
+            class="mt-10 flex flex-col gap-4 border-t border-white/15 pt-6 text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between"
+        >
+            <p>© {year} FARE. Tous droits réservés.</p>
+            <nav class="flex flex-wrap items-center gap-x-5 gap-y-2">
+                <a
+                    href="/mentions-legales"
+                    class="transition-colors hover:text-white hover:underline"
+                >
+                    Mentions légales
+                </a>
+                <a
+                    href="/politique-de-confidentialite"
+                    class="transition-colors hover:text-white hover:underline"
+                >
+                    Politique de confidentialité
+                </a>
+                <a
+                    href="/login"
+                    class="inline-flex items-center gap-1 transition-colors hover:text-white hover:underline"
+                >
+                    <ShieldUser size={14} />
+                    Espace admin
+                </a>
+            </nav>
+        </div>
+    </div>
+</footer>
