@@ -1,25 +1,21 @@
 ---
 import Public from "@/layouts/Public.astro"
 
+import "@/styles/legal.css"
+
 export const prerender = true
 ---
 
 <Public title="Mentions légales">
-    <article
-        class="mx-auto w-full max-w-3xl py-16 text-justify leading-relaxed [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-400 [&_h2]:mt-8 [&_h2]:mb-2 [&_h2]:text-xl [&_h2]:font-bold [&_p]:mb-4"
-    >
-        <h1 class="mb-2 text-center text-3xl font-semibold">
-            Mentions légales
-        </h1>
-        <p class="mb-10 text-center text-sm text-gray-500">
-            Dernière mise à jour : 11 juillet 2026
-        </p>
+    <article class="legal">
+        <h1>Mentions légales</h1>
+        <p class="legal-updated">Dernière mise à jour : 11 juillet 2026</p>
 
         <h2>Éditeur du site</h2>
         <p>
-            Le présent site est édité par la Fédération des Associations de
-            Haute-Bretagne (FARE), association loi 1901 dont le siège est situé
-            6 Cours des Alliés, 35000 Rennes.
+            Le présent site est édité par la Fédération des Associations du
+            Réseau Étudiant de Haute-Bretagne (FARE), association loi 1901 dont
+            le siège est situé 6 Cours des Alliés, 35000 Rennes.
             <br>
             Contact :
             <a href="mailto:contact@fare-asso.fr">contact@fare-asso.fr</a>.
