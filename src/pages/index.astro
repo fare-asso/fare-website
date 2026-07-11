@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets"
-import { FaDiscord } from "react-icons/fa6"
+import { FaDiscord, FaYoutube } from "react-icons/fa6"
 
 import heroImage from "@/assets/hero-image.jpg"
 import NetworkIsland from "@/components/public/associations/map/networkIsland.astro"
@@ -85,35 +85,34 @@ export const prerender = true
                 et si quelques zones de flou persistent, voici une vidéo de
                 présentation du Discord de la FARE qui devrait vous aider !
             </p>
-            <Button className="bg-[#5865f2] w-full max-w-120 mx-auto">
-                <FaDiscord size={48} className="size-8! text-white" />
-                <a href="https://discord.gg/XcKg3abqFE">Rejoindre le serveur</a>
-            </Button>
             <div
-                class="flex flex-col items-center justify-center space-y-6 md:flex-row md:space-x-12"
+                class="mt-4 flex w-full flex-col items-center justify-center gap-4 sm:flex-row"
             >
-                <div class="mt-4 flex w-full flex-col items-center md:w-1/2">
-                    <p class="mb-2 text-center text-lg font-semibold">
-                        Vidéo de présentation du
-                        <a
-                            href="https://discord.gg/4CmJ5Pa3"
-                            title="Lien vers Discord"
-                            class="text-blue-600 transition-all hover:text-blue-400"
-                        >
-                            Discord
-                        </a>
-                        de la FARE 👇
-                    </p>
+                <Button
+                    className="bg-[#5865f2] hover:bg-[#4752c4] w-full max-w-80"
+                >
+                    <a
+                        href="https://discord.gg/XcKg3abqFE"
+                        class="flex items-center justify-center gap-2"
+                    >
+                        <FaDiscord className="size-6! text-white" />
+                        Rejoindre le serveur
+                    </a>
+                </Button>
+                <Button
+                    className="bg-[#ff0000] hover:bg-[#cc0000] w-full max-w-80"
+                >
                     <a
                         href="https://www.youtube.com/watch?v=_nu4cbdJ8do"
-                        title="Vidéo de présentation du Discord de la FARE"
+                        title="Vidéo de présentation de la FARE"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="text-blue-600 underline transition-all hover:text-blue-400"
+                        class="flex items-center justify-center gap-2"
                     >
-                        Voir la vidéo de présentation
+                        <FaYoutube className="size-6! text-white" />
+                        Voir la vidéo
                     </a>
-                </div>
+                </Button>
             </div>
         </div>
 
