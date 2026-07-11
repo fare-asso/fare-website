@@ -4,9 +4,9 @@ import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
     qDelete: vi.fn(),
-    bagadDelete: vi.fn(),
+    bagadUpdate: vi.fn(),
     appFind: vi.fn(),
-    appDelete: vi.fn(),
+    appUpdate: vi.fn(),
     adhFind: vi.fn(),
     adhDelete: vi.fn(),
     assocUpdate: vi.fn(),
@@ -18,8 +18,8 @@ const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
 vi.mock("@/helpers/db", () =>
     dbModule({
         bTPTutorQuestion: { deleteMany: h.qDelete },
-        bagadAssoTicket: { deleteMany: h.bagadDelete },
-        bTPTutorApplication: { findMany: h.appFind, deleteMany: h.appDelete },
+        bagadAssoTicket: { updateMany: h.bagadUpdate },
+        bTPTutorApplication: { findMany: h.appFind, updateMany: h.appUpdate },
         adhesion: { findMany: h.adhFind, deleteMany: h.adhDelete },
         association: { updateMany: h.assocUpdate }
     })
@@ -34,11 +34,11 @@ import { runPurge } from "../purge"
 beforeEach(() => {
     vi.clearAllMocks()
     h.qDelete.mockResolvedValue({ count: 2 })
-    h.bagadDelete.mockResolvedValue({ count: 1 })
+    h.bagadUpdate.mockResolvedValue({ count: 1 })
     h.appFind.mockResolvedValue([
         { id: 1, cvPath: "a/cv.pdf", mlPath: "a/ml.pdf" }
     ])
-    h.appDelete.mockResolvedValue({ count: 1 })
+    h.appUpdate.mockResolvedValue({ count: 1 })
     h.adhFind.mockResolvedValue([
         {
             id: 5,
@@ -68,11 +68,39 @@ describe("runPurge", () => {
         expect(h.capture).not.toHaveBeenCalled()
     })
 
-    it("removes BTP application files then deletes the rows", async () => {
+    it("anonymises Bagad'Asso tickets, keeping the stats fields", async () => {
+        await runPurge()
+        expect(h.bagadUpdate).toHaveBeenCalledTimes(1)
+        const arg = h.bagadUpdate.mock.calls[0][0]
+        expect(arg.where.firstName).toEqual({ not: "" })
+        expect(arg.data).toEqual({
+            firstName: "",
+            lastName: "",
+            position: "",
+            phoneNumber: null,
+            associationEmail: "",
+            representativeEmail: "",
+            eventAddr: ""
+        })
+        // stats kept: no association / equipment / dates in the cleared data
+        expect(arg.data).not.toHaveProperty("equipments")
+        expect(arg.data).not.toHaveProperty("association")
+    })
+
+    it("removes BTP files then anonymises the rows (no full delete)", async () => {
         await runPurge()
         expect(from).toHaveBeenCalledWith("btp-tutor-application")
         expect(h.remove).toHaveBeenCalledWith(["a/cv.pdf", "a/ml.pdf"])
-        expect(h.appDelete).toHaveBeenCalledWith({ where: { id: { in: [1] } } })
+        expect(h.appUpdate).toHaveBeenCalledWith({
+            where: { id: { in: [1] } },
+            data: {
+                firstName: "",
+                lastName: "",
+                email: "",
+                cvPath: "",
+                mlPath: ""
+            }
+        })
     })
 
     it("removes only non-empty adhesion files, unlinks the association, then deletes", async () => {
@@ -89,13 +117,12 @@ describe("runPurge", () => {
             where: { adhesionId: { in: [5] } },
             data: { adhesionId: null }
         })
-        // association detach happens before the adhesion delete
         expect(h.assocUpdate.mock.invocationCallOrder[0]).toBeLessThan(
             h.adhDelete.mock.invocationCallOrder[0]
         )
     })
 
-    it("skips storage and deletes when nothing is expired", async () => {
+    it("skips storage and updates when nothing is expired", async () => {
         h.appFind.mockResolvedValue([])
         h.adhFind.mockResolvedValue([])
         expect(await runPurge()).toEqual({
@@ -105,7 +132,7 @@ describe("runPurge", () => {
             adhesions: 0
         })
         expect(h.remove).not.toHaveBeenCalled()
-        expect(h.appDelete).not.toHaveBeenCalled()
+        expect(h.appUpdate).not.toHaveBeenCalled()
         expect(h.adhDelete).not.toHaveBeenCalled()
         expect(h.assocUpdate).not.toHaveBeenCalled()
     })
@@ -122,10 +149,10 @@ describe("runPurge", () => {
         expect(h.adhDelete).not.toHaveBeenCalled()
     })
 
-    it("captures a storage error but still deletes the rows", async () => {
+    it("captures a storage error but still anonymises the rows", async () => {
         h.remove.mockResolvedValue({ data: null, error: new Error("storage") })
         expect((await runPurge()).btpApplications).toBe(1)
         expect(h.capture).toHaveBeenCalled()
-        expect(h.appDelete).toHaveBeenCalled()
+        expect(h.appUpdate).toHaveBeenCalled()
     })
 })
