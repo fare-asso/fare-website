@@ -566,7 +566,7 @@ export function AdhesionForm(): React.ReactNode {
                                                         )
                                                     }
                                                     aria-invalid={isInvalid}
-                                                    placeholder="Ex: Fédération des Associations de Haute-Bretagne"
+                                                    placeholder="Ex: Fédération des Associations du Réseau Étudiant de Haute-Bretagne"
                                                 />
                                                 {isInvalid && (
                                                     <FieldError>

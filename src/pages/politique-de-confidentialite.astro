@@ -1,0 +1,145 @@
+---
+import Public from "@/layouts/Public.astro"
+
+import "@/styles/legal.css"
+
+export const prerender = true
+---
+
+<Public title="Politique de confidentialité">
+    <article class="legal">
+        <h1>Politique de confidentialité</h1>
+        <p class="legal-updated">Dernière mise à jour : 11 juillet 2026</p>
+
+        <p>
+            Quand vous remplissez un formulaire sur ce site, vous nous
+            transmettez des informations personnelles. Cette page explique
+            simplement ce que nous collectons, pourquoi, et quels sont vos
+            droits. Nous ne vendons jamais vos données.
+        </p>
+
+        <h2>Responsable du traitement</h2>
+        <p>
+            La Fédération des Associations du Réseau Étudiant de Haute-Bretagne
+            (FARE), représentée par son Bureau Fédéral, est responsable du
+            traitement de vos données. Pour toute question :{" "}
+            <a href="mailto:contact@fare-asso.fr">contact@fare-asso.fr</a>.
+        </p>
+
+        <h2>Données collectées</h2>
+        <p>Selon le formulaire que vous utilisez, nous pouvons collecter :</p>
+        <ul>
+            <li>votre identité (prénom, nom)</li>
+            <li>vos coordonnées (email, téléphone)</li>
+            <li>le contenu de votre message ou de votre demande</li>
+            <li>
+                les pièces jointes que vous ajoutez (par exemple CV, lettre de
+                motivation, documents d'association)
+            </li>
+            <li>les informations relatives à votre association</li>
+        </ul>
+        <p>
+            Ces données servent uniquement à traiter et répondre à votre
+            demande. Selon le cas, la base légale est votre consentement ou
+            l'intérêt légitime de l'association à traiter votre demande.
+        </p>
+
+        <h2>Destinataires</h2>
+        <p>
+            Vos demandes sont transmises par email en interne aux membres de la
+            FARE concernés. Elles ne sont communiquées à aucun tiers, en dehors
+            des prestataires techniques ci-dessous.
+        </p>
+
+        <h2>Prestataires techniques</h2>
+        <p>
+            Pour faire fonctionner le site, nous faisons appel à des
+            prestataires, tous situés dans l'Union européenne :
+        </p>
+        <ul>
+            <li>Supabase (UE) : base de données et stockage des fichiers</li>
+            <li>Scaleway (France) : envoi des emails</li>
+            <li>
+                Friendly Captcha (Allemagne) : protection des formulaires contre
+                les robots
+            </li>
+            <li>
+                Sentry (UE) : suivi technique des erreurs, sans adresse IP ni
+                enregistrement de votre navigation
+            </li>
+        </ul>
+
+        <h2>Durées de conservation</h2>
+        <ul>
+            <li>Formulaire de contact : le temps de traiter votre demande</li>
+            <li>
+                Demande d'assistance (défense des droits) : le temps de traiter
+                votre dossier
+            </li>
+            <li>
+                Demande d'adhésion : 3 ans à partir du dépôt du dossier, puis
+                suppression
+            </li>
+            <li>
+                Demande de matériel Bagad'Asso : vos données identifiantes (nom,
+                email, téléphone, adresse…) sont supprimées 2 ans après
+                l'événement ; seules des données anonymes (date, matériel
+                emprunté) sont conservées à des fins statistiques
+            </li>
+            <li>
+                Candidature au tutorat Bouge Ta Prison : vos données
+                identifiantes et vos documents (CV, lettre de motivation) sont
+                supprimés 2 ans après le dépôt ; seules des données anonymes
+                (filière, année d'étude, date) sont conservées à des fins
+                statistiques
+            </li>
+            <li>
+                Question sur le tutorat Bouge Ta Prison : 1 an, puis suppression
+            </li>
+        </ul>
+
+        <h2>Cookies</h2>
+        <p>
+            Le site n'utilise aucun cookie de suivi ni publicitaire. Seuls des
+            cookies strictement fonctionnels sont utilisés pour la connexion à
+            l'espace d'administration.
+        </p>
+
+        <h2>Mesure d'audience</h2>
+        <p>
+            Pour comprendre comment le site est utilisé, nous mesurons son
+            audience avec <a href="https://umami.is/">Umami</a>, un outil que
+            nous hébergeons nous-mêmes sur notre serveur en Allemagne (UE).
+            Cette mesure ne dépose aucun cookie et ne collecte que des données
+            de navigation anonymes et agrégées (pages vues, provenance), sans
+            permettre de vous identifier.
+        </p>
+
+        <h2>Vos droits</h2>
+        <p>
+            Conformément au RGPD, vous pouvez à tout moment demander l'accès à
+            vos données, leur rectification ou leur suppression, vous opposer à
+            leur traitement, en demander la limitation ou la portabilité. Pour
+            exercer ces droits, écrivez-nous à{" "}
+            <a href="mailto:contact@fare-asso.fr">contact@fare-asso.fr</a>.
+        </p>
+        <p>
+            Si vous estimez que vos droits ne sont pas respectés, vous pouvez
+            saisir la CNIL :{" "}
+            <a
+                href="https://www.cnil.fr/fr/plaintes"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                www.cnil.fr/fr/plaintes
+            </a>.
+        </p>
+
+        <h2>Sécurité</h2>
+        <p>
+            L'accès à vos données est réservé aux membres de la FARE qui en ont
+            besoin, et elles sont hébergées au sein de l'Union européenne. Nous
+            prenons les mesures raisonnables pour les protéger.
+        </p>
+    </article>
+</Public>

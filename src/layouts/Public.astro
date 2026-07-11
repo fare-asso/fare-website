@@ -2,7 +2,7 @@
 import { Image } from "astro:assets"
 
 import logo from "@/assets/logo_fare.png"
-import Footer from "@/components/footer/footer"
+import Footer from "@/components/footer/footer.astro"
 import HeaderLinks from "@/components/header/headerLinks.astro"
 
 import Base from "./Base.astro"
@@ -30,7 +30,7 @@ const fullTitle = title ? `${title} | FARE` : "FARE"
             </a>
             <HeaderLinks />
         </header>
-        <div class="flex w-full flex-1 flex-col items-center p-4 lg:p-10">
+        <div class="flex w-full flex-1 flex-col items-center p-4 pb-16 lg:p-10">
             <slot />
         </div>
         <Footer />

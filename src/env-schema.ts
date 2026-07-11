@@ -17,6 +17,8 @@ export const EnvSchema = type({
 
     "SENTRY_DSN?": "string",
 
+    "CRON_SECRET?": "string > 0",
+
     "DOKPLOY_DEPLOY_URL?": type("string").pipe((val) =>
         val.startsWith("https://") ? val : `https://${val}`
     ),
