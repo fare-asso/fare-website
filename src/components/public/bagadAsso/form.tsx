@@ -785,15 +785,18 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                     htmlFor={field.name}
                                                     className="font-normal"
                                                 >
-                                                    J'accepte les termes et
-                                                    conditions de prêt de
-                                                    matériel
+                                                    J'accepte la politique de
+                                                    confidentialité
                                                 </FieldLabel>
                                                 <FieldDescription>
                                                     En cochant cette case, vous
-                                                    acceptez les conditions
-                                                    d'utilisation et de prêt du
-                                                    matériel de la FARE.
+                                                    afirmez avoir pris
+                                                    connaissance de la{" "}
+                                                    <a href="/politique-de-confidentialite">
+                                                        politique de
+                                                        confidentialité
+                                                    </a>{" "}
+                                                    et que vous l'acceptez.
                                                 </FieldDescription>
                                                 {isInvalid && (
                                                     <FieldError
