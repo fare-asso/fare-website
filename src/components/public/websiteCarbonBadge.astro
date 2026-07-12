@@ -1,0 +1,53 @@
+---
+import { LeafIcon } from "lucide-react"
+import { isDevelopment } from "std-env"
+import { tryCatch } from "@/lib/utils"
+
+interface CarbonResult {
+    c: number
+    p: number
+}
+
+interface CacheEntry {
+    data: CarbonResult
+    t: number
+}
+
+const g = globalThis as { wcbCache?: Map<string, CacheEntry> }
+const cache = (g.wcbCache ??= new Map<string, CacheEntry>())
+
+const THREE_DAYS = 3 * 86_400_000
+const url = new URL(Astro.request.headers.get("Referer") ?? Astro.url)
+url.hash = ""
+if (isDevelopment) url.host = "fare-asso.fr"
+
+let entry = cache.get(url.href)
+if (!entry || Date.now() - entry.t > THREE_DAYS) {
+    const result = await tryCatch(async () => {
+        const res = await fetch(
+            `https://api.websitecarbon.com/b?url=${encodeURIComponent(url.href)}`
+        )
+        if (!res.ok) throw new Error(`Website Carbon API: ${res.status}`)
+        return (await res.json()) as CarbonResult
+    })
+    if (result.success) {
+        entry = { data: result.value, t: Date.now() }
+        cache.set(url.href, entry)
+    }
+}
+
+const data = entry?.data
+---
+
+{data && (
+        <a
+            href="https://websitecarbon.com"
+            target="_blank"
+            rel="noopener"
+            title={`Plus propre que ${data.p} % des pages testées — Website Carbon`}
+            class="-my-0.75 inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 transition-colors hover:border-white/40 hover:text-white"
+        >
+            <LeafIcon size={12} />
+            {data.c.toLocaleString("fr-FR")} g de CO₂/vue
+        </a>
+    )}
