@@ -1,13 +1,17 @@
 import { type } from "arktype"
+import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
+import { NewBagadAssoSuggestion } from "@/../emails/bagadasso/new-suggestion"
 import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
+import { sendEmail } from "@/helpers/email"
 import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
     BagadAssoSuggestionSchema,
+    equipmentTypeLabel,
     type TBagadAssoSuggestion
 } from "@/schemas/bagadAsso"
 
@@ -59,6 +63,21 @@ async function submitSuggestionActionImpl(
             error: "Échec de l'envoi de la suggestion. Veuillez réessayer."
         }
     }
+    const suggestion = created.value
+
+    // Email is best-effort: the suggestion has already been persisted.
+    await sendEmail({
+        to: "evenement@fare-asso.fr",
+        subject: `Nouvelle suggestion de matériel Bagad'Asso #${suggestion.id}`,
+        html: await render(
+            <NewBagadAssoSuggestion
+                data={{
+                    ...suggestion,
+                    equipmentType: equipmentTypeLabel(suggestion.equipmentType)
+                }}
+            />
+        )
+    })
 
     return { success: true }
 }

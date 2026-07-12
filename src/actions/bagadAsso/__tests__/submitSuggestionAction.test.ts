@@ -4,6 +4,8 @@ import { validSuggestionInput } from "@/test/factories/bagadAsso"
 import {
     captchaModule,
     dbModule,
+    emailModule,
+    reactEmailRenderModule,
     sentryModule,
     stdEnvModule
 } from "@/test/mocks"
@@ -11,6 +13,7 @@ import {
 const stdenv = vi.hoisted(() => ({ isDevelopment: false }))
 const h = vi.hoisted(() => ({
     create: vi.fn(),
+    sendEmail: vi.fn(),
     verifyCaptcha: vi.fn(),
     captureActionError: vi.fn()
 }))
@@ -20,6 +23,8 @@ vi.mock("@/helpers/captcha/verify", () => captchaModule(h.verifyCaptcha))
 vi.mock("@/helpers/db", () =>
     dbModule({ bagadAssoSuggestion: { create: h.create } })
 )
+vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
+vi.mock("react-email", () => reactEmailRenderModule())
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import { submitSuggestionAction } from "../submitSuggestionAction"
@@ -28,6 +33,7 @@ beforeEach(() => {
     stdenv.isDevelopment = false
     h.verifyCaptcha.mockResolvedValue(true)
     h.create.mockResolvedValue({ id: 1 })
+    h.sendEmail.mockResolvedValue({ success: true })
 })
 
 describe("submitSuggestionAction", () => {
@@ -81,9 +87,18 @@ describe("submitSuggestionAction", () => {
             error: "Échec de l'envoi de la suggestion. Veuillez réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.sendEmail).not.toHaveBeenCalled()
     })
 
-    it("persists the suggestion on the happy path", async () => {
+    it("still succeeds when the notification email fails (handled inside sendEmail)", async () => {
+        h.sendEmail.mockResolvedValue({ success: false })
+        const res = await submitSuggestionAction(validSuggestionInput())
+        expect(res).toEqual({ success: true })
+        expect(h.create).toHaveBeenCalledOnce()
+        expect(h.captureActionError).not.toHaveBeenCalled()
+    })
+
+    it("persists the suggestion and notifies the team on the happy path", async () => {
         const res = await submitSuggestionAction(
             validSuggestionInput({ details: "Pour nos galas" })
         )
@@ -101,6 +116,13 @@ describe("submitSuggestionAction", () => {
                 details: "Pour nos galas"
             }
         })
+        expect(h.sendEmail).toHaveBeenCalledOnce()
+        expect(h.sendEmail).toHaveBeenCalledWith(
+            expect.objectContaining({
+                to: "evenement@fare-asso.fr",
+                subject: "Nouvelle suggestion de matériel Bagad'Asso #1"
+            })
+        )
     })
 
     it("stores a provided reference url", async () => {
