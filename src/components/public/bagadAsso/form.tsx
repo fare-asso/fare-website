@@ -42,6 +42,7 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
+import { toUtcMidnight } from "@/helpers/eventDate"
 import { cn } from "@/lib/utils"
 
 import EquipmentSelection from "./equipmentSelection"
@@ -109,8 +110,8 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                 referentPhone: value.referentPhone,
                 eventName: value.eventName,
                 eventType: value.eventType,
-                eventDate: value.eventDate ?? new Date(),
-                eventEndDate: value.eventEndDate ?? new Date(),
+                eventDate: toUtcMidnight(value.eventDate ?? new Date()),
+                eventEndDate: toUtcMidnight(value.eventEndDate ?? new Date()),
                 eventAddress: value.eventAddress,
                 eventParticipants: value.eventParticipants,
                 equipment: value.equipment,

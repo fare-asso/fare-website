@@ -10,7 +10,10 @@ export default function ActiveTickets({
     const now = new Date()
     const active = tickets
         .filter(
-            (t) => !t.deleted && !t.validated && new Date(t.eventDate) >= now
+            (t) =>
+                !t.deleted &&
+                !t.validated &&
+                new Date(t.eventEndDate ?? t.eventDate) >= now
         )
         .sort(
             (a, b) =>

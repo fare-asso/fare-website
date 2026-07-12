@@ -41,6 +41,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { formatEventDateRange } from "@/helpers/eventDate"
 import { locationDisplayName } from "@/helpers/location"
 
 import LoadingRing from "../../loadingRing"
@@ -56,7 +57,10 @@ export default function BagadAssoTicketCard({
 
     const isArchived = ticket.deleted !== null
     const isValidated = ticket.validated !== null
-    const isExpired = isBefore(new Date(ticket.eventDate), new Date())
+    const isExpired = isBefore(
+        new Date(ticket.eventEndDate ?? ticket.eventDate),
+        new Date()
+    )
 
     const onToggleValidated = async () => {
         setIsValidateLoading(true)
@@ -352,9 +356,10 @@ export default function BagadAssoTicketCard({
                     <div className="text-muted-foreground flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4 shrink-0" />
                         <span>
-                            {format(ticket.eventDate, "EEEE d MMMM yyyy", {
-                                locale: fr
-                            })}
+                            {formatEventDateRange(
+                                ticket.eventDate,
+                                ticket.eventEndDate
+                            )}
                         </span>
                     </div>
 

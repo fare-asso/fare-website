@@ -9,7 +9,9 @@ export default function PastTickets({
 }) {
     const now = new Date()
     const past = tickets
-        .filter((t) => !t.deleted && new Date(t.eventDate) < now)
+        .filter(
+            (t) => !t.deleted && new Date(t.eventEndDate ?? t.eventDate) < now
+        )
         .sort(
             (a, b) =>
                 new Date(b.eventDate).getTime() -

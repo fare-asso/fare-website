@@ -1,6 +1,8 @@
 import React from "react"
 import { Column, Heading, Hr, Link, Row, Section, Text } from "react-email"
 
+import { formatEventDateRange } from "@/helpers/eventDate"
+
 import BaseTemplate, { APP_URL } from "../base"
 
 interface NewBagadAssoTicketProps {
@@ -8,6 +10,7 @@ interface NewBagadAssoTicketProps {
         id: number
         association: string
         eventDate: Date
+        eventEndDate: Date | null
         eventName: string
         eventType: string
         eventAddr: string
@@ -21,6 +24,7 @@ export function NewBagadAssoTicket({
         id,
         association,
         eventDate,
+        eventEndDate,
         eventName,
         eventType,
         eventAddr,
@@ -55,12 +59,7 @@ export function NewBagadAssoTicket({
                             Date
                         </Text>
                         <Text className="m-0 mt-1 text-sm text-stone-700">
-                            {new Date(eventDate).toLocaleDateString("fr-FR", {
-                                weekday: "long",
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric"
-                            })}
+                            {formatEventDateRange(eventDate, eventEndDate)}
                         </Text>
                     </Column>
                     <Column className="w-1/2">
@@ -131,6 +130,7 @@ NewBagadAssoTicket.PreviewProps = {
     data: {
         association: "BDE Pharma",
         eventDate: new Date("2025-03-15"),
+        eventEndDate: new Date("2025-03-16"),
         eventName: "Soirée d'intégration",
         eventType: "Soirée étudiante",
         eventAddr: "Salle des fêtes, 12 rue de la République, Rennes",
