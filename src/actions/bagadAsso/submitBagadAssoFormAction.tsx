@@ -1,6 +1,8 @@
 import { render } from "react-email"
 import { isDevelopment } from "std-env"
 
+import NewBagadAssoTicket from "@/../emails/bagadasso/new-ticket"
+import NewBagadAssoTicketAck from "@/../emails/bagadasso/new-ticket-ack"
 import {
     type BagadAssoFormData,
     BagadAssoFormSchema
@@ -13,7 +15,7 @@ import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-import NewBagadAssoTicket from "../../../emails/badagasso-ticket"
+import type { EquipmentWithDetails } from "./listEquipmentsAction"
 
 export type FormState =
     | { success: true }
@@ -94,19 +96,46 @@ async function submitBagadAssoFormActionImpl(
     }
     const ticketRecord = ticket.value
 
+    const equipments = (
+        JSON.parse(
+            validatedData.equipment
+        ) as EquipmentWithDetails["equipment"][]
+    ).map((eq) => ({
+        name: eq.name,
+        quantity: eq.quantity
+    }))
+
     // Email is best-effort: the ticket has already been persisted.
-    await sendEmail({
-        to: "evenement@fare-asso.fr",
-        subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
-        html: await render(
-            <NewBagadAssoTicket
-                data={{
-                    ...ticketRecord,
-                    eventAddr: locationDisplayName(ticketRecord.eventAddr)
-                }}
-            />
-        )
-    })
+    await Promise.allSettled([
+        sendEmail({
+            to: "evenement@fare-asso.fr",
+            subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
+            html: await render(
+                <NewBagadAssoTicket
+                    data={{
+                        ...ticketRecord,
+                        eventAddr: locationDisplayName(ticketRecord.eventAddr)
+                    }}
+                />
+            )
+        }),
+        sendEmail({
+            to: [
+                ticketRecord.associationEmail,
+                ticketRecord.representativeEmail
+            ],
+            subject: `Votre demande Bagad'Asso #${ticketRecord.id}`,
+            html: await render(
+                <NewBagadAssoTicketAck
+                    data={{
+                        ...ticketRecord,
+                        eventAddr: locationDisplayName(ticketRecord.eventAddr),
+                        equipments
+                    }}
+                />
+            )
+        })
+    ])
 
     return { success: true }
 }
