@@ -14,7 +14,6 @@ import BaseTemplate, { APP_URL } from "../base"
 
 interface NewBagadAssoTicketAckProps {
     data: {
-        id: number
         association: string
         eventDate: Date
         eventName: string
@@ -32,7 +31,6 @@ interface NewBagadAssoTicketAckProps {
 
 export function NewBagadAssoTicketAck({
     data: {
-        id,
         association,
         eventDate,
         eventName,
@@ -203,7 +201,6 @@ NewBagadAssoTicketAck.PreviewProps = {
         eventAddr: "Salle des fêtes, 12 rue de la République, Rennes",
         estimatedParticipants: 150,
         representativeEmail: "contact@bde-pharma.fr",
-        id: 81,
         equipments: [
             {
                 name: "Projecteur",
