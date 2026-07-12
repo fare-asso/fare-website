@@ -8,6 +8,7 @@ RUN apk add --no-cache libc6-compat curl
 
 ENV HUSKY=0
 ENV NODE_ENV=production
+ENV ASTRO_TELEMETRY_DISABLED=1
 
 WORKDIR /app
 
