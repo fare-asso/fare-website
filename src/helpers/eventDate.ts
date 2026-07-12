@@ -25,6 +25,24 @@ export function formatEventDateRange(
     return `Du ${startLabel} au ${endLabel}`
 }
 
+const FR_COMPACT_OPTIONS: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Europe/Paris"
+}
+
+/** Single-line variant for cards, e.g. "ven. 17 – sam. 18 juillet 2026". */
+export function formatEventDateRangeCompact(
+    start: Date | string,
+    end: Date | string | null
+): string {
+    const fmt = new Intl.DateTimeFormat("fr-FR", FR_COMPACT_OPTIONS)
+    if (!end) return fmt.format(new Date(start))
+    return fmt.formatRange(new Date(start), new Date(end))
+}
+
 /**
  * The calendar picker returns local-midnight dates, which serialize to the
  * previous day for timezones east of UTC. Normalize the picked calendar day

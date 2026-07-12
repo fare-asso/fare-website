@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
     formatEventDate,
     formatEventDateRange,
+    formatEventDateRangeCompact,
     toUtcMidnight
 } from "../eventDate"
 
@@ -44,6 +45,29 @@ describe("formatEventDateRange", () => {
                 new Date("2026-07-26T00:00:00Z")
             )
         ).toBe("Du vendredi 24 juillet 2026 au dimanche 26 juillet 2026")
+    })
+})
+
+describe("formatEventDateRangeCompact", () => {
+    it("formats a range on a single line with shared parts collapsed", () => {
+        const range = formatEventDateRangeCompact(
+            new Date("2026-07-17T00:00:00Z"),
+            new Date("2026-07-18T00:00:00Z")
+        )
+        // ICU may use thin spaces around the dash depending on the runtime
+        expect(range.replace(/\s/g, " ")).toBe("ven. 17 – sam. 18 juillet 2026")
+    })
+
+    it("returns a single date when there is no end date or it is the same day", () => {
+        expect(
+            formatEventDateRangeCompact(new Date("2026-07-17T00:00:00Z"), null)
+        ).toBe("ven. 17 juillet 2026")
+        expect(
+            formatEventDateRangeCompact(
+                new Date("2026-07-17T00:00:00Z"),
+                new Date("2026-07-17T00:00:00Z")
+            )
+        ).toBe("ven. 17 juillet 2026")
     })
 })
 

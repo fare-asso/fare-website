@@ -41,7 +41,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
-import { formatEventDateRange } from "@/helpers/eventDate"
+import { formatEventDateRangeCompact } from "@/helpers/eventDate"
 import { locationDisplayName } from "@/helpers/location"
 
 import LoadingRing from "../../loadingRing"
@@ -356,7 +356,7 @@ export default function BagadAssoTicketCard({
                     <div className="text-muted-foreground flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4 shrink-0" />
                         <span>
-                            {formatEventDateRange(
+                            {formatEventDateRangeCompact(
                                 ticket.eventDate,
                                 ticket.eventEndDate
                             )}
