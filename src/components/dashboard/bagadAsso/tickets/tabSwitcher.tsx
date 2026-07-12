@@ -17,7 +17,7 @@ export default function TabSwitcher({
             className="flex h-full w-full flex-col items-center gap-2"
         >
             <TabsList className="grid w-full grid-cols-4 md:w-1/2">
-                <TabsTrigger value="active">Actifs</TabsTrigger>
+                <TabsTrigger value="active">En attente</TabsTrigger>
                 <TabsTrigger value="validated">Validés</TabsTrigger>
                 <TabsTrigger value="past">Passés</TabsTrigger>
                 <TabsTrigger value="archived">Archivés</TabsTrigger>
