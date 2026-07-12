@@ -206,6 +206,21 @@ model BagadAssoTicket {
   deleted               DateTime?
 }
 
+model BagadAssoSuggestion {
+  id              Int       @id @default(autoincrement())
+  equipmentName   String
+  equipmentType   String
+  referenceUrl    String?
+  associationName String
+  firstName       String
+  lastName        String
+  position        String
+  contactEmail    String
+  details         String    @default("")
+  creationDate    DateTime  @default(now())
+  archived        DateTime?
+}
+
 model Adhesion {
   id                         Int          @id @default(autoincrement())
   createdAt                  DateTime     @default(now())

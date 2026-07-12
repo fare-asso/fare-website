@@ -716,14 +716,28 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                         {/* Section: Equipment Selection */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold">
-                                Sélection du matériel
-                            </h3>
-                            <FieldDescription>
-                                Sélectionnez le matériel que vous souhaitez
-                                emprunter et indiquez la quantité souhaitée.
-                            </FieldDescription>
-
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="space-y-1.5">
+                                    <h3 className="text-lg font-semibold">
+                                        Sélection du matériel
+                                    </h3>
+                                    <FieldDescription>
+                                        Sélectionnez le matériel que vous
+                                        souhaitez emprunter et indiquez la
+                                        quantité souhaitée.
+                                    </FieldDescription>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    asChild
+                                    className="shrink-0"
+                                >
+                                    <a href="/projets/bagad-asso/suggestion">
+                                        Suggérer du matériel
+                                    </a>
+                                </Button>
+                            </div>
                             <form.Field
                                 name="equipment"
                                 children={(field) => {

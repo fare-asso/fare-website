@@ -23,6 +23,7 @@ import { editAssociationAction } from "./associations/editAssociationAction"
 import { listAssociationsAction } from "./associations/listAssociationsAction"
 import { signOut } from "./auth/signOutAction"
 import { addEquipmentAction } from "./bagadAsso/addEquipmentAction"
+import { archiveSuggestionAction } from "./bagadAsso/archiveSuggestionAction"
 import {
     generateBagadCalendarTokenAction,
     revokeBagadCalendarTokenAction
@@ -33,8 +34,11 @@ import { editEquipmentAction } from "./bagadAsso/editEquipmentAction"
 import { hardDeleteBagadAssoTicketAction } from "./bagadAsso/hardDeleteTicketAction"
 import { listCalendarAction } from "./bagadAsso/listCalendarAction"
 import { listEquipmentsAction } from "./bagadAsso/listEquipmentsAction"
+import { listSuggestionsAction } from "./bagadAsso/listSuggestionsAction"
 import { listTicketsAction } from "./bagadAsso/listTicketsAction"
 import { submitBagadAssoFormAction } from "./bagadAsso/submitBagadAssoFormAction"
+import { submitSuggestionAction } from "./bagadAsso/submitSuggestionAction"
+import { unarchiveSuggestionAction } from "./bagadAsso/unarchiveSuggestionAction"
 import { unarchiveBagadAssoTicketAction } from "./bagadAsso/unarchiveTicketAction"
 import { archiveTutorApplication } from "./bouge-ta-prison/archiveTutorApplication"
 import { archiveTutorQuestion } from "./bouge-ta-prison/archiveTutorQuestion"
@@ -247,7 +251,11 @@ export const server = {
         ),
         listCalendarAction: jsonAction(listCalendarAction),
         listTicketsAction: jsonAction(listTicketsAction),
-        listEquipmentsAction: jsonAction(listEquipmentsAction)
+        listEquipmentsAction: jsonAction(listEquipmentsAction),
+        submitSuggestionAction: jsonAction(submitSuggestionAction),
+        archiveSuggestionAction: jsonAction(archiveSuggestionAction),
+        unarchiveSuggestionAction: jsonAction(unarchiveSuggestionAction),
+        listSuggestionsAction: jsonAction(listSuggestionsAction)
     },
     bougeTaPrison: {
         submitTutorApplication: formAction(submitTutorApplication),

@@ -60,6 +60,7 @@ This document lists all permissions required for the FARE Website application. T
 - `delete:bagad-equipment` - Remove equipment from catalog
 - `edit:bagad-ticket` - Archive/unarchive tickets
 - `delete:bagad-ticket` - Soft delete and hard delete tickets
+- `edit:bagad-suggestion` - Archive/unarchive equipment suggestions
 
 ### Adhésions (Membership Applications)
 
@@ -175,6 +176,7 @@ INSERT INTO "Permission" (name, title, category, description) VALUES
 ('delete:bagad-equipment', 'Supprimer Matériel', 'Bagad''Asso', 'Retirer du matériel du catalogue'),
 ('edit:bagad-ticket', 'Modifier Ticket', 'Bagad''Asso', 'Archiver/désarchiver des tickets'),
 ('delete:bagad-ticket', 'Supprimer Ticket', 'Bagad''Asso', 'Supprimer des tickets'),
+('edit:bagad-suggestion', 'Modifier Suggestion', 'Bagad''Asso', 'Archiver/désarchiver des suggestions de matériel'),
 
 -- Adhésions
 ('access:adhesions', 'Accès Adhésions', 'Adhésions', 'Voir la page de gestion des adhésions'),

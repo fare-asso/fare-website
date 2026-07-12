@@ -3,6 +3,7 @@ import type {
     BagadAssoEquipment,
     BagadAssoTicket
 } from "@/generated/prisma/client"
+import type { TBagadAssoSuggestion } from "@/schemas/bagadAsso"
 import type { TAddEquipment, TEditEquipment } from "@/schemas/bagadEquipment"
 
 export function validBagadAssoForm(
@@ -23,6 +24,24 @@ export function validBagadAssoForm(
         eventDate: new Date("2026-09-01T00:00:00Z"),
         equipment: JSON.stringify([{ id: 1, quantity: 2 }]),
         termsAccepted: true,
+        captchaToken: "token-123",
+        ...overrides
+    }
+}
+
+export function validSuggestionInput(
+    overrides: Partial<TBagadAssoSuggestion> = {}
+): TBagadAssoSuggestion {
+    return {
+        equipmentName: "Vidéoprojecteur",
+        equipmentType: "electronique",
+        referenceUrl: "",
+        associationName: "Asso Test",
+        firstName: "Lea",
+        lastName: "Martin",
+        position: "Presidente",
+        contactEmail: "lea@example.com",
+        details: "",
         captchaToken: "token-123",
         ...overrides
     }
