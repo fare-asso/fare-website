@@ -640,6 +640,25 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                                 <form.Field
                                     name="eventEndDate"
+                                    validators={{
+                                        // Revalidate when the start date
+                                        // changes (linked-fields pattern)
+                                        onChangeListenTo: ["eventDate"],
+                                        onChange: ({ value, fieldApi }) => {
+                                            const start =
+                                                fieldApi.form.getFieldValue(
+                                                    "eventDate"
+                                                )
+                                            if (
+                                                value &&
+                                                start &&
+                                                value < start
+                                            ) {
+                                                return "La date de fin ne peut pas être avant la date de début."
+                                            }
+                                            return undefined
+                                        }
+                                    }}
                                     children={(field) => {
                                         const isInvalid =
                                             field.state.meta.isTouched &&
