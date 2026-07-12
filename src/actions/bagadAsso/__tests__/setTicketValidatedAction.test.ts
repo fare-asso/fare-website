@@ -49,6 +49,18 @@ describe("setTicketValidatedAction", () => {
         expect(h.update).not.toHaveBeenCalled()
     })
 
+    it("rejects an invalid payload before touching the db", async () => {
+        const res = await setTicketValidatedAction({
+            ticketId: -1,
+            validated: true
+        })
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.update).not.toHaveBeenCalled()
+    })
+
     it("marks the ticket as validated", async () => {
         const res = await setTicketValidatedAction({
             ticketId: 9,

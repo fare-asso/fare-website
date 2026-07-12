@@ -1,3 +1,4 @@
+import { type } from "arktype"
 import type { ActionAPIContext } from "astro:actions"
 
 import prisma from "@/helpers/db"
@@ -6,9 +7,13 @@ import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
+import {
+    SetTicketValidatedSchema,
+    type TSetTicketValidated
+} from "@/schemas/bagadTicket"
 
 async function setTicketValidatedActionImpl(
-    input: { ticketId: number; validated: boolean },
+    input: TSetTicketValidated,
     context: ActionAPIContext
 ): Promise<ActionResult> {
     // Auth and permission verifications
@@ -23,13 +28,21 @@ async function setTicketValidatedActionImpl(
         }
     }
 
+    const data = SetTicketValidatedSchema(input)
+    if (data instanceof type.errors) {
+        return {
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        }
+    }
+
     const result = await tryCatch(
         prisma.bagadAssoTicket.update({
             where: {
-                id: input.ticketId
+                id: data.ticketId
             },
             data: {
-                validated: input.validated ? new Date() : null
+                validated: data.validated ? new Date() : null
             }
         })
     )
