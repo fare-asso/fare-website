@@ -25,7 +25,7 @@ describe("<BagadAssoForm />", () => {
     it("renders the equipment-loan request form", async () => {
         const screen = await render(<BagadAssoForm equipmentList={[]} />)
         await expect
-            .element(screen.getByText("Demande de prêt de matériel"))
+            .element(screen.getByText("Formulaire de demande"))
             .toBeVisible()
         await expect
             .element(screen.getByRole("button", { name: "Envoyer la demande" }))
@@ -39,5 +39,12 @@ describe("<BagadAssoForm />", () => {
         await expect
             .element(screen.getByRole("button", { name: "Envoyer la demande" }))
             .toBeVisible()
+    })
+
+    it("links to the suggestion page from the equipment section", async () => {
+        const screen = await render(<BagadAssoForm equipmentList={[]} />)
+        await expect
+            .element(screen.getByRole("link", { name: "Suggérez du matériel" }))
+            .toHaveAttribute("href", "/projets/bagad-asso/suggestion")
     })
 })

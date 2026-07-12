@@ -1,0 +1,24 @@
+---
+import { ArrowLeftIcon } from "lucide-react"
+
+import SuggestionForm from "@/components/public/bagadAsso/suggestionForm"
+import Public from "@/layouts/Public.astro"
+
+export const prerender = true
+---
+
+<Public title="Suggérer du matériel — Bagad'Asso">
+    <div class="flex w-full flex-col items-center justify-start">
+        <div class="mb-8 w-full max-w-2xl">
+            <a
+                href="/projets/bagad-asso"
+                class="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+            >
+                <ArrowLeftIcon className="h-4 w-4" />
+                Retour au Bagad'Asso
+            </a>
+        </div>
+
+        <SuggestionForm client:load />
+    </div>
+</Public>

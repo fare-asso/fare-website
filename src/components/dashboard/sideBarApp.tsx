@@ -9,7 +9,8 @@ import {
     Megaphone,
     Calendar1Icon,
     TicketIcon,
-    BoxIcon
+    BoxIcon,
+    LightbulbIcon
 } from "lucide-react"
 import type { ReactNode } from "react"
 import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
@@ -159,6 +160,11 @@ export default function SideBarApp({
                             href: "/dashboard/bagadAsso/equipments",
                             title: "Matériel",
                             icon: <BoxIcon />
+                        },
+                        {
+                            href: "/dashboard/bagadAsso/suggestions",
+                            title: "Suggestions",
+                            icon: <LightbulbIcon />
                         }
                     ]
                 },

@@ -3,6 +3,7 @@ import { Image } from "astro:assets"
 
 import logoBagadAsso from "@/assets/Logo_Bagadasso.png"
 import FormIsland from "@/components/public/bagadAsso/formIsland.astro"
+import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
 
 export const prerender = true
@@ -17,87 +18,122 @@ export const prerender = true
         />
 
         <div
-            class="mb-12 max-w-4xl rounded-xl bg-black p-8 text-justify text-white"
+            class="mb-16 flex w-full max-w-3xl flex-col items-center text-center"
         >
-            <h2 class="mb-4 text-xl font-semibold">Présentation du projet</h2>
-            <p class="mb-4 text-justify">
-                La FARE et son réseau sont aujourd'hui des acteurs primordiaux
-                pour la vie étudiante du territoire de Haute Bretagne. Parmi la
-                vingtaine d'associations du réseau, plusieurs ont parmi leurs
-                missions la réalisation d'évènements de cohésion et de
-                rencontre, mais aussi de réduire l'isolement social des jeunes,
-                de plus en plus présent durant ces dernières années.
+            <h1 class="mb-4 text-3xl font-extrabold sm:text-4xl">
+                Du matériel{" "}
+                <span
+                    class="bg-fare-yellow/60 inline-block -rotate-2 rounded-md px-2"
+                >
+                    gratuit
+                </span>{" "}
+                pour vos évènements !
+            </h1>
+            <p class="mb-3 text-lg">
+                La FARE met à disposition <strong>gratuitement</strong> des
+                associations étudiantes du territoire, du matériel
+                d'évènementiel et de prévention pour la réalisation de leurs
+                évènements.
             </p>
-            <p class="mb-4 text-justify">
-                Dans ce contexte, et afin d'accompagner et de permettre aux
-                associations de son réseau de se développer et de réaliser des
-                projets à hauteur de leurs ambitions, la FARE vous présente le
-                Bagad'Asso.
+            <p class="text-muted-foreground mb-8 text-sm italic">
+                Mais ça veut dire quoi "Bagad'Asso" ? Un Bagad, c'est un
+                orchestre traditionnel breton : ici, on remplace les musiciens
+                par des associatifs et le public par nos étudiant.e.s
+                breton.ne.s !
             </p>
-            <p class="mb-4 text-justify italic">
-                Mais ça veut dire quoi "Bagad'Asso" ? Un Bagad c'est un
-                orchestre traditionnel breton, alors cette fois-ci on remplace
-                les musiciens par des associatifs et le public par nos
-                étudiant.e.s breton.ne.s !
-            </p>
-            <p class="mb-4 text-justify">
-                Cette malle à disposition des associations du réseau de la FARE
-                a pour objectif de mettre à disposition de manière gratuite du
-                matériel d'événementiel et de prévention pour la réalisation de
-                vos évènements. Concrètement, ça veut dire que lorsque vous
-                souhaitez organiser votre WEC, gala, soirée ou quelconque
-                évènement, vous nous dites "On aurait besoin d'une enceinte, un
-                jeu de lumière et un tapis rouge, c'est possible ?", on vérifie
-                que personne ne les a déjà réservé, si c'est tout bon on ne vous
-                demande qu'une caution et hop c'est à vous pour l'évent !
-            </p>
-            <p class="text-justify">
-                Nous avons construit cette malle en 2 volets, inséparables pour
-                le bon déroulement de vos évènements :
+            <a href="#demande" class={buttonVariants({ size: "lg" })}>
+                Réserver du matériel
+            </a>
+            <p class="text-muted-foreground mt-4 text-sm">
+                Un matériel manque au catalogue ?{" "}
+                <a href="/projets/bagad-asso/suggestion" class="link">
+                    Suggérez-le
+                </a>
             </p>
         </div>
 
-        <section class="mb-12 w-full max-w-4xl">
-            <h2 class="mb-4 text-2xl font-bold">Nos services</h2>
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-                <div>
-                    <h3 class="mb-2 text-xl font-semibold">Logistique</h3>
-                    <ul class="list-inside list-disc">
-                        <li>Enceinte</li>
-                        <li>Jeu de lumières</li>
-                        <li>Machine à fumée</li>
-                        <li>Mégaphone</li>
-                        <li>Talkies-Walkies</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="mb-2 text-xl font-semibold">Prévention</h3>
-                    <ul class="list-inside list-disc">
-                        <li>Préservatifs</li>
-                        <li>Capotes de verre</li>
-                        <li>Boules quies</li>
-                        <li>Éthylomètre</li>
-                        <li>Flyers sensibilisation drogues</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="mb-2 text-xl font-semibold">Services</h3>
-                    <ul class="list-inside list-disc">
-                        <li>Personnes de confiance</li>
-                        <li>Tarif réduit sur la SACEM</li>
-                        <li>Tarifs réduits sur les goodies</li>
-                    </ul>
-                </div>
-            </div>
+        <section class="mb-16 w-full max-w-4xl">
+            <h2 class="mb-6 text-center text-2xl font-bold">
+                Comment ça marche ?
+            </h2>
+            <ol class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <li
+                    class="border-bagad-wood/25 bg-fare-cream/40 flex -rotate-1 flex-col items-center rounded-2xl border-2 p-6 text-center"
+                >
+                    <span
+                        class="bg-bagad-wood text-fare-cream mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold"
+                    >
+                        1
+                    </span>
+                    <h3 class="mb-2 font-semibold">
+                        Choisissez votre matériel
+                    </h3>
+                    <p class="text-muted-foreground text-sm">
+                        Parcourez le catalogue ci-dessous&nbsp;: sono, lumières,
+                        matériel de prévention et bien plus.
+                    </p>
+                </li>
+                <li
+                    class="border-fare-blue/25 bg-fare-blue/5 flex rotate-1 flex-col items-center rounded-2xl border-2 p-6 text-center"
+                >
+                    <span
+                        class="bg-fare-blue mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
+                    >
+                        2
+                    </span>
+                    <h3 class="mb-2 font-semibold">Envoyez votre demande</h3>
+                    <p class="text-muted-foreground text-sm">
+                        Remplissez le formulaire avec les informations de votre
+                        évènement&nbsp;: WEC, gala, soirée…
+                    </p>
+                </li>
+                <li
+                    class="border-fare-yellow/40 bg-fare-yellow/5 flex -rotate-1 flex-col items-center rounded-2xl border-2 p-6 text-center"
+                >
+                    <span
+                        class="bg-fare-yellow mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-neutral-900"
+                    >
+                        3
+                    </span>
+                    <h3 class="mb-2 font-semibold">Récupérez-le</h3>
+                    <p class="text-muted-foreground text-sm">
+                        On vérifie la disponibilité, on ne vous demande qu'une
+                        caution, et c'est à vous pour l'évènement !
+                    </p>
+                </li>
+            </ol>
+
+            <p class="text-muted-foreground mt-10 mb-4 text-center">
+                Et en plus du matériel&nbsp;:
+            </p>
+            <ul class="flex flex-wrap items-center justify-center gap-3">
+                <li
+                    class="rotate-1 rounded-full border-2 px-4 py-2 text-sm font-medium"
+                >
+                    Des personnes de confiance
+                </li>
+                <li
+                    class="-rotate-1 rounded-full border-2 px-4 py-2 text-sm font-medium"
+                >
+                    Tarif réduit sur la SACEM
+                </li>
+                <li
+                    class="rotate-1 rounded-full border-2 px-4 py-2 text-sm font-medium"
+                >
+                    Tarifs réduits sur les goodies
+                </li>
+            </ul>
         </section>
 
-        <FormIsland server:defer>
-            <p
-                slot="fallback"
-                class="text-muted-foreground w-full max-w-4xl py-12 text-center"
-            >
-                Chargement du formulaire…
-            </p>
-        </FormIsland>
+        <section id="demande" class="flex w-full scroll-mt-24 justify-center">
+            <FormIsland server:defer>
+                <p
+                    slot="fallback"
+                    class="text-muted-foreground w-full max-w-4xl py-12 text-center"
+                >
+                    Chargement du formulaire…
+                </p>
+            </FormIsland>
+        </section>
     </div>
 </Public>

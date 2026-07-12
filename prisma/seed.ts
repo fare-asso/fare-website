@@ -263,6 +263,12 @@ async function main() {
             category: "Bagad'Asso",
             description: "Supprimer des tickets"
         },
+        {
+            name: "edit:bagad-suggestion",
+            title: "Modifier Suggestion",
+            category: "Bagad'Asso",
+            description: "Archiver/désarchiver des suggestions de matériel"
+        },
 
         // Adhésions
         {

@@ -145,7 +145,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
     if (formState?.success) {
         return (
-            <Card className="mx-auto w-full max-w-4xl">
+            <Card className="mx-auto w-full max-w-4xl" variant="ghost">
                 <CardContent className="pt-6">
                     <Alert className="border-green-600 text-green-600">
                         <AlertTitle>Succès</AlertTitle>
@@ -162,7 +162,9 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
     return (
         <Card className="w-full max-w-4xl" variant="ghost">
             <CardHeader>
-                <CardTitle>Demande de prêt de matériel</CardTitle>
+                <CardTitle className="text-3xl font-bold">
+                    Formulaire de demande
+                </CardTitle>
                 <CardDescription>
                     Remplissez ce formulaire pour demander un prêt de matériel
                     pour votre évènement associatif.
@@ -751,6 +753,16 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                     )
                                 }}
                             />
+
+                            <p className="text-muted-foreground text-sm">
+                                Vous ne trouvez pas ce qu'il vous faut ?{" "}
+                                <a
+                                    href="/projets/bagad-asso/suggestion"
+                                    className="link"
+                                >
+                                    Suggérez du matériel
+                                </a>
+                            </p>
                         </div>
 
                         <FieldSeparator />
