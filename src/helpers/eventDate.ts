@@ -15,16 +15,6 @@ export function formatEventDate(date: Date | string): string {
     return new Date(date).toLocaleDateString("fr-FR", FR_OPTIONS)
 }
 
-export function formatEventDateRange(
-    start: Date | string,
-    end: Date | string | null
-): string {
-    const startLabel = formatEventDate(start)
-    const endLabel = end ? formatEventDate(end) : startLabel
-    if (endLabel === startLabel) return startLabel
-    return `Du ${startLabel} au ${endLabel}`
-}
-
 const FR_COMPACT_OPTIONS: Intl.DateTimeFormatOptions = {
     weekday: "short",
     day: "numeric",
@@ -33,14 +23,25 @@ const FR_COMPACT_OPTIONS: Intl.DateTimeFormatOptions = {
     timeZone: "Europe/Paris"
 }
 
-/** Single-line variant for cards, e.g. "ven. 17 – sam. 18 juillet 2026". */
-export function formatEventDateRangeCompact(
+/**
+ * "Du vendredi 17 juillet 2026 au samedi 18 juillet 2026", or with
+ * `compact`, a single line for cards: "ven. 17 – sam. 18 juillet 2026".
+ */
+export function formatEventDateRange(
     start: Date | string,
-    end: Date | string | null
+    end: Date | string | null,
+    compact = false
 ): string {
-    const fmt = new Intl.DateTimeFormat("fr-FR", FR_COMPACT_OPTIONS)
-    if (!end) return fmt.format(new Date(start))
-    return fmt.formatRange(new Date(start), new Date(end))
+    if (compact) {
+        const fmt = new Intl.DateTimeFormat("fr-FR", FR_COMPACT_OPTIONS)
+        if (!end) return fmt.format(new Date(start))
+        return fmt.formatRange(new Date(start), new Date(end))
+    }
+
+    const startLabel = formatEventDate(start)
+    const endLabel = end ? formatEventDate(end) : startLabel
+    if (endLabel === startLabel) return startLabel
+    return `Du ${startLabel} au ${endLabel}`
 }
 
 /**
