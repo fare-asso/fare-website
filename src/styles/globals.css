@@ -6,7 +6,10 @@
 @theme {
     --color-fare-accent: var(--color-fare-accent);
 
-    --color-fahbyellow: rgb(255, 203, 0);
+    --color-fare-yellow: rgb(255, 203, 0);
+    --color-fare-blue: #0077b6;
+    --color-fare-cream: #f0e9e2;
+    --color-bagad-wood: #8a5a33;
     --color-border: hsl(var(--border));
     --color-input: hsl(var(--input));
     --color-ring: hsl(var(--ring));

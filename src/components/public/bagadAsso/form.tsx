@@ -162,7 +162,9 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
     return (
         <Card className="w-full max-w-4xl" variant="ghost">
             <CardHeader>
-                <CardTitle>Demande de prêt de matériel</CardTitle>
+                <CardTitle className="text-3xl font-bold">
+                    Formulaire de demande
+                </CardTitle>
                 <CardDescription>
                     Remplissez ce formulaire pour demander un prêt de matériel
                     pour votre évènement associatif.
@@ -716,28 +718,14 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
                         {/* Section: Equipment Selection */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="space-y-1.5">
-                                    <h3 className="text-lg font-semibold">
-                                        Sélection du matériel
-                                    </h3>
-                                    <FieldDescription>
-                                        Sélectionnez le matériel que vous
-                                        souhaitez emprunter et indiquez la
-                                        quantité souhaitée.
-                                    </FieldDescription>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    asChild
-                                    className="shrink-0"
-                                >
-                                    <a href="/projets/bagad-asso/suggestion">
-                                        Suggérer du matériel
-                                    </a>
-                                </Button>
-                            </div>
+                            <h3 className="text-lg font-semibold">
+                                Sélection du matériel
+                            </h3>
+                            <FieldDescription>
+                                Sélectionnez le matériel que vous souhaitez
+                                emprunter et indiquez la quantité souhaitée.
+                            </FieldDescription>
+
                             <form.Field
                                 name="equipment"
                                 children={(field) => {
@@ -765,6 +753,16 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                     )
                                 }}
                             />
+
+                            <p className="text-muted-foreground text-sm">
+                                Vous ne trouvez pas ce qu'il vous faut ?{" "}
+                                <a
+                                    href="/projets/bagad-asso/suggestion"
+                                    className="link"
+                                >
+                                    Suggérez du matériel
+                                </a>
+                            </p>
                         </div>
 
                         <FieldSeparator />
