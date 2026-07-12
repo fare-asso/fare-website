@@ -136,6 +136,9 @@ export default function BagadAssoTicketCard({
                 </Badge>
             )
         }
+        if (isExpired) {
+            return <Badge variant="destructive">Terminé</Badge>
+        }
         if (isValidated) {
             return (
                 <Badge
@@ -145,9 +148,6 @@ export default function BagadAssoTicketCard({
                     Validé
                 </Badge>
             )
-        }
-        if (isExpired) {
-            return <Badge variant="destructive">Terminé</Badge>
         }
         return (
             <Badge
