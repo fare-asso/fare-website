@@ -1,20 +1,19 @@
 import type { BagadAssoTicket } from "@/generated/prisma/client"
-import { isEventPast } from "@/helpers/eventDate"
 
 import TicketList from "./ticketList"
 
-export default function ActiveTickets({
+export default function ValidatedTickets({
     tickets
 }: {
     tickets: BagadAssoTicket[]
 }) {
     const now = new Date()
-    const active = tickets
+    const validated = tickets
         .filter(
             (t) =>
                 !t.deleted &&
-                !t.validated &&
-                !isEventPast(t.eventDate, t.eventEndDate, now)
+                t.validated &&
+                new Date(t.eventEndDate ?? t.eventDate) >= now
         )
         .sort(
             (a, b) =>
@@ -25,10 +24,11 @@ export default function ActiveTickets({
     return (
         <div>
             <p className="my-4 text-sm text-gray-500">
-                <span className="font-bold"> {active.length} tickets</span> à
-                traiter dont la date d'évènement n'est pas encore passée.
+                <span className="font-bold"> {validated.length} tickets</span>{" "}
+                validés par l'équipe dont la date d'évènement n'est pas encore
+                passée.
             </p>
-            <TicketList tickets={active} />
+            <TicketList tickets={validated} />
         </div>
     )
 }

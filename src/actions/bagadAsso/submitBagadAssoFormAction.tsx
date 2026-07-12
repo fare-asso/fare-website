@@ -80,6 +80,7 @@ async function submitBagadAssoFormActionImpl(
                 eventName: validatedData.eventName,
                 eventType: validatedData.eventType,
                 eventDate: validatedData.eventDate,
+                eventEndDate: validatedData.eventEndDate,
                 eventAddr: validatedData.eventAddress,
                 estimatedParticipants: validatedData.eventParticipants,
                 equipments: validatedData.equipment

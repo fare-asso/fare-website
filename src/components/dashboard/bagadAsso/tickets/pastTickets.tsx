@@ -1,4 +1,5 @@
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { isEventPast } from "@/helpers/eventDate"
 
 import TicketList from "./ticketList"
 
@@ -9,7 +10,9 @@ export default function PastTickets({
 }) {
     const now = new Date()
     const past = tickets
-        .filter((t) => !t.deleted && new Date(t.eventDate) < now)
+        .filter(
+            (t) => !t.deleted && isEventPast(t.eventDate, t.eventEndDate, now)
+        )
         .sort(
             (a, b) =>
                 new Date(b.eventDate).getTime() -

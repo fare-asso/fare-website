@@ -22,6 +22,7 @@ export function validBagadAssoForm(
         eventAddress: "1 rue de la Paix, 35000 Rennes",
         eventParticipants: 120,
         eventDate: new Date("2026-09-01T00:00:00Z"),
+        eventEndDate: new Date("2026-09-02T00:00:00Z"),
         equipment: JSON.stringify([{ id: 1, quantity: 2 }]),
         termsAccepted: true,
         captchaToken: "token-123",
@@ -97,6 +98,7 @@ export function bagadAssoTicketRecord(
         eventName: "Gala annuel",
         eventType: "Soirée",
         eventDate: new Date("2026-09-01T00:00:00Z"),
+        eventEndDate: new Date("2026-09-02T00:00:00Z"),
         eventAddr: "1 rue de la Paix, 35000 Rennes",
         estimatedParticipants: 120,
         creationDate: new Date("2026-01-01T00:00:00Z"),
@@ -104,6 +106,7 @@ export function bagadAssoTicketRecord(
         associationEmail: "asso@example.com",
         representativeEmail: "lea@example.com",
         deleted: null,
+        validated: null,
         ...overrides
     }
 }

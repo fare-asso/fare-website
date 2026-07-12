@@ -1,12 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { actions } from "astro:actions"
-import { format, isBefore } from "date-fns"
+import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
     ArchiveIcon,
     ArchiveRestoreIcon,
     CalendarIcon,
+    CheckIcon,
     MapPinIcon,
+    Undo2Icon,
     UserIcon,
     UsersIcon
 } from "lucide-react"
@@ -39,6 +41,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { formatEventDateRange, isEventPast } from "@/helpers/eventDate"
 import { locationDisplayName } from "@/helpers/location"
 
 import LoadingRing from "../../loadingRing"
@@ -49,10 +52,40 @@ export default function BagadAssoTicketCard({
     ticket: BagadAssoTicket
 }) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isValidateLoading, setIsValidateLoading] = useState<boolean>(false)
     const queryClient = useQueryClient()
 
     const isArchived = ticket.deleted !== null
-    const isExpired = isBefore(new Date(ticket.eventDate), new Date())
+    const isValidated = ticket.validated !== null
+    const isExpired = isEventPast(ticket.eventDate, ticket.eventEndDate)
+
+    const onToggleValidated = async () => {
+        setIsValidateLoading(true)
+
+        const { data, error } =
+            await actions.bagadAsso.setTicketValidatedAction({
+                ticketId: ticket.id,
+                validated: !isValidated
+            })
+
+        if (error || !data.success) {
+            toast.error(
+                data && !data.success
+                    ? data.error
+                    : "Une erreur est survenue. Veuillez réessayer."
+            )
+        } else {
+            toast.success(
+                isValidated
+                    ? "Le ticket est de nouveau à traiter."
+                    : "Le ticket a été validé."
+            )
+            await queryClient.invalidateQueries({
+                queryKey: ["bagadTickets"]
+            })
+        }
+        setIsValidateLoading(false)
+    }
 
     const onArchive = async () => {
         setIsLoading(true)
@@ -107,6 +140,16 @@ export default function BagadAssoTicketCard({
         if (isExpired) {
             return <Badge variant="destructive">Terminé</Badge>
         }
+        if (isValidated) {
+            return (
+                <Badge
+                    variant="default"
+                    className="bg-blue-600 hover:bg-blue-700"
+                >
+                    Validé
+                </Badge>
+            )
+        }
         return (
             <Badge
                 variant="default"
@@ -152,84 +195,156 @@ export default function BagadAssoTicketCard({
                         </CardDescription>
                     </div>
 
-                    <AlertDialog>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className={`shrink-0 ${
-                                            isArchived
-                                                ? "text-primary hover:bg-primary/10 hover:text-primary"
-                                                : "text-muted-foreground hover:text-foreground"
-                                        }`}
-                                        disabled={isLoading}
-                                    >
-                                        {isLoading ? (
-                                            <LoadingRing className="m-0!" />
-                                        ) : isArchived ? (
-                                            <ArchiveRestoreIcon className="h-4 w-4" />
-                                        ) : (
-                                            <ArchiveIcon className="h-4 w-4" />
-                                        )}
-                                        <span className="sr-only">
-                                            {isArchived
-                                                ? "Désarchiver"
-                                                : "Archiver"}
-                                        </span>
-                                    </Button>
-                                </AlertDialogTrigger>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                {isArchived ? "Désarchiver" : "Archiver"}
-                            </TooltipContent>
-                        </Tooltip>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    {isArchived
-                                        ? "Désarchiver le ticket ?"
-                                        : "Archiver le ticket ?"}
-                                </AlertDialogTitle>
-                                <AlertDialogDescription asChild>
-                                    <div>
-                                        {isArchived ? (
-                                            <p>
-                                                Le ticket #{ticket.id} pour "
-                                                {ticket.association}" sera
-                                                restauré et réapparaîtra dans la
-                                                liste des tickets actifs.
-                                            </p>
-                                        ) : (
-                                            <>
+                    <div className="flex shrink-0 gap-2">
+                        {!isArchived && (
+                            <AlertDialog>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <AlertDialogTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className={
+                                                    isValidated
+                                                        ? "text-muted-foreground hover:text-foreground shrink-0"
+                                                        : "shrink-0 text-green-600 hover:bg-green-50 hover:text-green-700"
+                                                }
+                                                disabled={isValidateLoading}
+                                            >
+                                                {isValidateLoading ? (
+                                                    <LoadingRing className="m-0!" />
+                                                ) : isValidated ? (
+                                                    <Undo2Icon className="h-4 w-4" />
+                                                ) : (
+                                                    <CheckIcon className="h-4 w-4" />
+                                                )}
+                                                <span className="sr-only">
+                                                    {isValidated
+                                                        ? "Invalider"
+                                                        : "Valider"}
+                                                </span>
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        {isValidated
+                                            ? "Marquer à traiter"
+                                            : "Valider"}
+                                    </TooltipContent>
+                                </Tooltip>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            {isValidated
+                                                ? "Invalider le ticket ?"
+                                                : "Valider le ticket ?"}
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            {isValidated
+                                                ? `Le ticket #${ticket.id} pour "${ticket.association}" redeviendra à traiter.`
+                                                : `Le ticket #${ticket.id} pour "${ticket.association}" sera marqué comme traité et déplacé dans l'onglet Validés.`}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                            Annuler
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={onToggleValidated}
+                                        >
+                                            {isValidated
+                                                ? "Invalider"
+                                                : "Valider"}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        )}
+                        <AlertDialog>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className={`shrink-0 ${
+                                                isArchived
+                                                    ? "text-primary hover:bg-primary/10 hover:text-primary"
+                                                    : "text-muted-foreground hover:text-foreground"
+                                            }`}
+                                            disabled={isLoading}
+                                        >
+                                            {isLoading ? (
+                                                <LoadingRing className="m-0!" />
+                                            ) : isArchived ? (
+                                                <ArchiveRestoreIcon className="h-4 w-4" />
+                                            ) : (
+                                                <ArchiveIcon className="h-4 w-4" />
+                                            )}
+                                            <span className="sr-only">
+                                                {isArchived
+                                                    ? "Désarchiver"
+                                                    : "Archiver"}
+                                            </span>
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {isArchived ? "Désarchiver" : "Archiver"}
+                                </TooltipContent>
+                            </Tooltip>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                        {isArchived
+                                            ? "Désarchiver le ticket ?"
+                                            : "Archiver le ticket ?"}
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription asChild>
+                                        <div>
+                                            {isArchived ? (
                                                 <p>
                                                     Le ticket #{ticket.id} pour
                                                     "{ticket.association}" sera
-                                                    marqué comme traité et
-                                                    masqué de la liste.
+                                                    restauré et réapparaîtra
+                                                    dans la liste des tickets
+                                                    actifs.
                                                 </p>
-                                                <p className="mt-1">
-                                                    Il pourra être restauré si
-                                                    besoin.
-                                                </p>
-                                            </>
-                                        )}
-                                    </div>
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                <AlertDialogAction
-                                    onClick={
-                                        isArchived ? onUnarchive : onArchive
-                                    }
-                                >
-                                    {isArchived ? "Désarchiver" : "Archiver"}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                                            ) : (
+                                                <>
+                                                    <p>
+                                                        Le ticket #{ticket.id}{" "}
+                                                        pour "
+                                                        {ticket.association}"
+                                                        sera marqué comme traité
+                                                        et masqué de la liste.
+                                                    </p>
+                                                    <p className="mt-1">
+                                                        Il pourra être restauré
+                                                        si besoin.
+                                                    </p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        Annuler
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={
+                                            isArchived ? onUnarchive : onArchive
+                                        }
+                                    >
+                                        {isArchived
+                                            ? "Désarchiver"
+                                            : "Archiver"}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                 </div>
             </CardHeader>
 
@@ -238,9 +353,11 @@ export default function BagadAssoTicketCard({
                     <div className="text-muted-foreground flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4 shrink-0" />
                         <span>
-                            {format(ticket.eventDate, "EEEE d MMMM yyyy", {
-                                locale: fr
-                            })}
+                            {formatEventDateRange(
+                                ticket.eventDate,
+                                ticket.eventEndDate,
+                                true
+                            )}
                         </span>
                     </div>
 

@@ -36,6 +36,7 @@ import { listCalendarAction } from "./bagadAsso/listCalendarAction"
 import { listEquipmentsAction } from "./bagadAsso/listEquipmentsAction"
 import { listSuggestionsAction } from "./bagadAsso/listSuggestionsAction"
 import { listTicketsAction } from "./bagadAsso/listTicketsAction"
+import { setTicketValidatedAction } from "./bagadAsso/setTicketValidatedAction"
 import { submitBagadAssoFormAction } from "./bagadAsso/submitBagadAssoFormAction"
 import { submitSuggestionAction } from "./bagadAsso/submitSuggestionAction"
 import { unarchiveSuggestionAction } from "./bagadAsso/unarchiveSuggestionAction"
@@ -240,6 +241,7 @@ export const server = {
         unarchiveBagadAssoTicketAction: jsonAction(
             unarchiveBagadAssoTicketAction
         ),
+        setTicketValidatedAction: jsonAction(setTicketValidatedAction),
         hardDeleteBagadAssoTicketAction: jsonAction(
             hardDeleteBagadAssoTicketAction
         ),

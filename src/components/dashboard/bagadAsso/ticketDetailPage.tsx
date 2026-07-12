@@ -1,5 +1,4 @@
 import { format } from "date-fns"
-import { fr } from "date-fns/locale"
 import {
     BalloonIcon,
     HandCoinsIcon,
@@ -29,6 +28,7 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { formatEventDateRange } from "@/helpers/eventDate"
 import { locationDisplayName, parseLocation } from "@/helpers/location"
 
 import TicketActions from "./tickets/ticketActions"
@@ -194,10 +194,9 @@ function TicketDetailContent({
                                 <div className="flex items-start gap-2 text-sm">
                                     <FaCalendarAlt className="text-muted-foreground mt-0.5" />
                                     <span>
-                                        {format(
-                                            new Date(ticket.eventDate),
-                                            "EEEE dd MMMM yyyy",
-                                            { locale: fr }
+                                        {formatEventDateRange(
+                                            ticket.eventDate,
+                                            ticket.eventEndDate
                                         )}
                                     </span>
                                 </div>

@@ -197,6 +197,7 @@ model BagadAssoTicket {
   eventName             String
   eventType             String
   eventDate             DateTime
+  eventEndDate          DateTime?
   eventAddr             String
   estimatedParticipants Int       @default(0)
   creationDate          DateTime  @default(now())
@@ -204,6 +205,7 @@ model BagadAssoTicket {
   associationEmail      String
   representativeEmail   String
   deleted               DateTime?
+  validated             DateTime?
 }
 
 model BagadAssoSuggestion {

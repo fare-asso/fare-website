@@ -6,6 +6,7 @@ import NewBagadAssoTicketAck from "../bagadasso/new-ticket-ack"
 const data = {
     association: "BDE Test",
     eventDate: new Date("2026-09-01T00:00:00Z"),
+    eventEndDate: new Date("2026-09-03T00:00:00Z"),
     eventName: "Gala annuel",
     eventType: "Soirée",
     eventAddr: "1 rue de la Paix, Rennes",
@@ -26,6 +27,19 @@ describe("NewBagadAssoTicketAck email", () => {
         expect(text).toContain("1x Pack sono")
         expect(text).toContain("Gala annuel")
         expect(text).toContain("lea@example.com")
+    })
+
+    it("renders the event date range in the event timezone", async () => {
+        const html = await render(<NewBagadAssoTicketAck data={data} />)
+        expect(html).toContain(
+            "Du mardi 1 septembre 2026 au jeudi 3 septembre 2026"
+        )
+
+        const singleDay = await render(
+            <NewBagadAssoTicketAck data={{ ...data, eventEndDate: null }} />
+        )
+        expect(singleDay).toContain("mardi 1 septembre 2026")
+        expect(singleDay).not.toContain("Du mardi")
     })
 
     it("shows the modification code only when a secret is provided", async () => {

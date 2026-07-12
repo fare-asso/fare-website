@@ -120,7 +120,9 @@ describe("submitBagadAssoFormAction", () => {
                 associationEmail: "asso@example.com",
                 firstName: "Lea",
                 lastName: "Martin",
-                eventName: "Gala annuel"
+                eventName: "Gala annuel",
+                eventDate: new Date("2026-09-01T00:00:00Z"),
+                eventEndDate: new Date("2026-09-02T00:00:00Z")
             })
         })
         expect(h.sendEmail).toHaveBeenCalledTimes(2)
