@@ -1,7 +1,7 @@
 import { render } from "react-email"
 import { describe, expect, it } from "vitest"
 
-import AssistanceAck from "./assistance-acknowledgement"
+import AssistanceAck from "../assistance-acknowledgement"
 
 describe("AssistanceAck email", () => {
     it("renders the situation label and configured delay", async () => {

@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer"
+import type { MailOptions } from "nodemailer/lib/smtp-transport"
 import { isProduction } from "std-env"
 
 import { env } from "@/env"
@@ -12,7 +13,7 @@ interface EmailAttachment {
 }
 
 interface EmailPayload {
-    to: string
+    to: MailOptions["to"]
     subject: string
     html: string
     attachments?: EmailAttachment[]

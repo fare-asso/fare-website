@@ -1,11 +1,14 @@
+import type { ReactElement } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { validBagadAssoForm } from "@/test/factories/bagadAsso"
+import {
+    bagadAssoTicketRecord,
+    validBagadAssoForm
+} from "@/test/factories/bagadAsso"
 import {
     captchaModule,
     dbModule,
     emailModule,
-    reactEmailRenderModule,
     sentryModule,
     stdEnvModule
 } from "@/test/mocks"
@@ -13,7 +16,15 @@ import {
 const stdenv = vi.hoisted(() => ({ isDevelopment: false }))
 const h = vi.hoisted(() => ({
     create: vi.fn(),
+    findEquipments: vi.fn(),
     sendEmail: vi.fn(),
+    render: vi.fn(
+        async (
+            _node: ReactElement<{
+                data: { equipments: { name: string; quantity: number }[] }
+            }>
+        ) => "<html></html>"
+    ),
     verifyCaptcha: vi.fn(),
     captureActionError: vi.fn()
 }))
@@ -21,10 +32,13 @@ const h = vi.hoisted(() => ({
 vi.mock("std-env", () => stdEnvModule(stdenv))
 vi.mock("@/helpers/captcha/verify", () => captchaModule(h.verifyCaptcha))
 vi.mock("@/helpers/db", () =>
-    dbModule({ bagadAssoTicket: { create: h.create } })
+    dbModule({
+        bagadAssoTicket: { create: h.create },
+        bagadAssoEquipment: { findMany: h.findEquipments }
+    })
 )
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
-vi.mock("react-email", () => reactEmailRenderModule())
+vi.mock("react-email", () => ({ render: h.render }))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import { submitBagadAssoFormAction } from "../submitBagadAssoFormAction"
@@ -32,7 +46,10 @@ import { submitBagadAssoFormAction } from "../submitBagadAssoFormAction"
 beforeEach(() => {
     stdenv.isDevelopment = false
     h.verifyCaptcha.mockResolvedValue(true)
-    h.create.mockResolvedValue({ id: 1 })
+    h.create.mockResolvedValue(bagadAssoTicketRecord())
+    h.findEquipments.mockResolvedValue([
+        { id: 1, deposit: 50, name: "Barnum", imagePath: null }
+    ])
     h.sendEmail.mockResolvedValue({ success: true })
 })
 
@@ -74,9 +91,10 @@ describe("submitBagadAssoFormAction", () => {
             error: "Le formulaire est incorrect. Veuillez recharger la page et réessayer."
         })
         expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.sendEmail).not.toHaveBeenCalled()
     })
 
-    it("still succeeds when the notification email fails (handled inside sendEmail)", async () => {
+    it("still succeeds when the notification emails fail (handled inside sendEmail)", async () => {
         h.sendEmail.mockResolvedValue({ success: false })
         const res = await submitBagadAssoFormAction(validBagadAssoForm())
         expect(res).toEqual({ success: true })
@@ -84,7 +102,16 @@ describe("submitBagadAssoFormAction", () => {
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
-    it("persists and emails on the happy path", async () => {
+    it("still succeeds and sends empty equipments when the name lookup throws", async () => {
+        h.findEquipments.mockRejectedValue(new Error("db down"))
+        const res = await submitBagadAssoFormAction(validBagadAssoForm())
+        expect(res).toEqual({ success: true })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.sendEmail).toHaveBeenCalledTimes(2)
+        expect(h.render.mock.calls[1]?.[0]?.props.data.equipments).toEqual([])
+    })
+
+    it("persists and notifies both the team and the association on the happy path", async () => {
         const res = await submitBagadAssoFormAction(validBagadAssoForm())
         expect(res).toEqual({ success: true })
         expect(h.create).toHaveBeenCalledWith({
@@ -96,6 +123,30 @@ describe("submitBagadAssoFormAction", () => {
                 eventName: "Gala annuel"
             })
         })
-        expect(h.sendEmail).toHaveBeenCalledOnce()
+        expect(h.sendEmail).toHaveBeenCalledTimes(2)
+        expect(h.sendEmail).toHaveBeenNthCalledWith(
+            1,
+            expect.objectContaining({
+                to: "evenement@fare-asso.fr",
+                subject: "Nouveau ticket bagad'Asso #1"
+            })
+        )
+        expect(h.sendEmail).toHaveBeenNthCalledWith(
+            2,
+            expect.objectContaining({
+                to: ["asso@example.com", "lea@example.com"],
+                subject: "Votre demande Bagad'Asso #1"
+            })
+        )
+    })
+
+    it("resolves equipment names from the db for the acknowledgement email", async () => {
+        await submitBagadAssoFormAction(validBagadAssoForm())
+        expect(h.findEquipments).toHaveBeenCalledWith(
+            expect.objectContaining({ where: { id: { in: [1] } } })
+        )
+        expect(h.render.mock.calls[1]?.[0]?.props.data.equipments).toEqual([
+            { name: "Barnum", quantity: 2 }
+        ])
     })
 })
