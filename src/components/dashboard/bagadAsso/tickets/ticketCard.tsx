@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { actions } from "astro:actions"
-import { format, isBefore } from "date-fns"
+import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
     ArchiveIcon,
@@ -41,7 +41,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
-import { formatEventDateRange } from "@/helpers/eventDate"
+import { formatEventDateRange, isEventPast } from "@/helpers/eventDate"
 import { locationDisplayName } from "@/helpers/location"
 
 import LoadingRing from "../../loadingRing"
@@ -57,10 +57,7 @@ export default function BagadAssoTicketCard({
 
     const isArchived = ticket.deleted !== null
     const isValidated = ticket.validated !== null
-    const isExpired = isBefore(
-        new Date(ticket.eventEndDate ?? ticket.eventDate),
-        new Date()
-    )
+    const isExpired = isEventPast(ticket.eventDate, ticket.eventEndDate)
 
     const onToggleValidated = async () => {
         setIsValidateLoading(true)

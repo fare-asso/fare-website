@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
     formatEventDate,
     formatEventDateRange,
+    isEventPast,
     toUtcMidnight
 } from "../eventDate"
 
@@ -69,6 +70,32 @@ describe("formatEventDateRange compact", () => {
                 true
             )
         ).toBe("ven. 17 juillet 2026")
+    })
+})
+
+describe("isEventPast", () => {
+    const lastDay = new Date("2026-07-18T00:00:00Z")
+
+    it("stays ongoing during the whole last day", () => {
+        expect(
+            isEventPast(lastDay, null, new Date("2026-07-18T21:00:00Z"))
+        ).toBe(false)
+    })
+
+    it("is past once the following day starts", () => {
+        expect(
+            isEventPast(lastDay, null, new Date("2026-07-19T00:00:00Z"))
+        ).toBe(true)
+    })
+
+    it("uses the end date when present", () => {
+        expect(
+            isEventPast(
+                new Date("2026-07-17T00:00:00Z"),
+                lastDay,
+                new Date("2026-07-18T12:00:00Z")
+            )
+        ).toBe(false)
     })
 })
 

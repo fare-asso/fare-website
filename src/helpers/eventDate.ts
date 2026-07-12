@@ -44,6 +44,22 @@ export function formatEventDateRange(
     return `Du ${startLabel} au ${endLabel}`
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Event dates are day-precision midnights, so an event stays ongoing through
+ * the whole of its last day: compare against the following midnight instead
+ * of the stored instant.
+ */
+export function isEventPast(
+    eventDate: Date | string,
+    eventEndDate: Date | string | null,
+    now = new Date()
+): boolean {
+    const lastDay = new Date(eventEndDate ?? eventDate)
+    return new Date(lastDay.getTime() + DAY_MS) <= now
+}
+
 /**
  * The calendar picker returns local-midnight dates, which serialize to the
  * previous day for timezones east of UTC. Normalize the picked calendar day
