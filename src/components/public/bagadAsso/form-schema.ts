@@ -72,6 +72,9 @@ export const BagadAssoClientFormSchema = z.object({
     ...baseFields,
     eventDate: z.date({
         error: "La date de l'évènement est requise."
+    }),
+    eventEndDate: z.date({
+        error: "La date de fin de l'évènement est requise."
     })
 })
 
@@ -81,6 +84,9 @@ export const BagadAssoFormSchema = z.object({
     ...baseFields,
     eventDate: z.coerce.date({
         error: "La date de l'évènement est requise."
+    }),
+    eventEndDate: z.coerce.date({
+        error: "La date de fin de l'évènement est requise."
     })
 })
 
