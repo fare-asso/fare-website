@@ -16,7 +16,8 @@ import {
     Field,
     FieldError,
     FieldGroup,
-    FieldLabel
+    FieldLabel,
+    FieldSeparator
 } from "@/components/ui/field"
 import {
     Select,
@@ -84,7 +85,7 @@ export default function SuggestionForm() {
 
     if (isSubmitted) {
         return (
-            <Card className="mx-auto w-full max-w-2xl">
+            <Card className="mx-auto w-full max-w-2xl" variant="ghost">
                 <CardHeader>
                     <CardTitle>Merci pour votre suggestion !</CardTitle>
                 </CardHeader>
@@ -116,155 +117,175 @@ export default function SuggestionForm() {
                     }}
                 >
                     <FieldGroup>
-                        <form.Field
-                            name="equipmentName"
-                            children={(field) => (
-                                <TextField
-                                    field={field}
-                                    label="Nom de l'article"
-                                    placeholder="ex. Vidéoprojecteur"
-                                    error="Le nom de l'article est requis"
-                                />
-                            )}
-                        />
-                        <form.Field
-                            name="equipmentType"
-                            children={(field) => {
-                                const isInvalid =
-                                    field.state.meta.isTouched &&
-                                    !field.state.meta.isValid
-                                return (
-                                    <Field data-invalid={isInvalid}>
-                                        <FieldLabel htmlFor={field.name}>
-                                            Type de matériel
-                                        </FieldLabel>
-                                        <Select
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onValueChange={(value) => {
-                                                field.handleChange(
-                                                    value as TBagadAssoSuggestion["equipmentType"]
-                                                )
-                                                field.handleBlur()
-                                            }}
-                                        >
-                                            <SelectTrigger
-                                                id={field.name}
-                                                aria-invalid={isInvalid}
-                                                className="w-full"
-                                            >
-                                                <SelectValue placeholder="Sélectionnez un type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {equipmentTypes.map((type) => (
-                                                    <SelectItem
-                                                        key={type.value}
-                                                        value={type.value}
-                                                    >
-                                                        {type.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        {isInvalid && (
-                                            <FieldError>
-                                                Veuillez sélectionner un type de
-                                                matériel
-                                            </FieldError>
-                                        )}
-                                    </Field>
-                                )
-                            }}
-                        />
-                        <form.Field
-                            name="referenceUrl"
-                            children={(field) => (
-                                <TextField
-                                    field={field}
-                                    label="Lien vers une référence (optionnel)"
-                                    placeholder="ex. https://www.exemple.fr/produit"
-                                    error="URL invalide"
-                                />
-                            )}
-                        />
-                        <form.Field
-                            name="associationName"
-                            children={(field) => (
-                                <TextField
-                                    field={field}
-                                    label="Nom de l'association"
-                                    placeholder="ex. FARE"
-                                    error="Le nom de l'association est requis"
-                                />
-                            )}
-                        />
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold">
+                                Le matériel suggéré
+                            </h3>
+
                             <form.Field
-                                name="firstName"
+                                name="equipmentName"
                                 children={(field) => (
                                     <TextField
                                         field={field}
-                                        label="Prénom"
-                                        placeholder="ex. Anna"
-                                        error="Le prénom est requis"
+                                        label="Nom de l'article"
+                                        placeholder="ex. Vidéoprojecteur"
+                                        error="Le nom de l'article est requis"
                                     />
                                 )}
                             />
-
                             <form.Field
-                                name="lastName"
+                                name="equipmentType"
+                                children={(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched &&
+                                        !field.state.meta.isValid
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>
+                                                Type de matériel
+                                            </FieldLabel>
+                                            <Select
+                                                name={field.name}
+                                                value={field.state.value}
+                                                onValueChange={(value) => {
+                                                    field.handleChange(
+                                                        value as TBagadAssoSuggestion["equipmentType"]
+                                                    )
+                                                    field.handleBlur()
+                                                }}
+                                            >
+                                                <SelectTrigger
+                                                    id={field.name}
+                                                    aria-invalid={isInvalid}
+                                                    className="w-full"
+                                                >
+                                                    <SelectValue placeholder="Sélectionnez un type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {equipmentTypes.map(
+                                                        (type) => (
+                                                            <SelectItem
+                                                                key={type.value}
+                                                                value={
+                                                                    type.value
+                                                                }
+                                                            >
+                                                                {type.label}
+                                                            </SelectItem>
+                                                        )
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                            {isInvalid && (
+                                                <FieldError>
+                                                    Veuillez sélectionner un
+                                                    type de matériel
+                                                </FieldError>
+                                            )}
+                                        </Field>
+                                    )
+                                }}
+                            />
+                            <form.Field
+                                name="referenceUrl"
                                 children={(field) => (
                                     <TextField
                                         field={field}
-                                        label="Nom"
-                                        placeholder="ex. Le Goff"
-                                        error="Le nom est requis"
+                                        label="Lien vers une référence (optionnel)"
+                                        placeholder="ex. https://www.exemple.fr/produit"
+                                        error="URL invalide"
+                                    />
+                                )}
+                            />
+                            <form.Field
+                                name="details"
+                                children={(field) => (
+                                    <TextField
+                                        field={field}
+                                        label="Autres précisions (optionnel)"
+                                        placeholder="Tout ce qui peut nous aider à étudier votre suggestion : usage prévu, fréquence, quantité…"
+                                        multiline
                                     />
                                 )}
                             />
                         </div>
-                        <form.Field
-                            name="position"
-                            children={(field) => (
-                                <TextField
-                                    field={field}
-                                    label="Rôle dans l'association"
-                                    placeholder="ex. Responsable événementiel"
-                                    error="Le rôle dans l'association est requis"
+
+                        <FieldSeparator />
+
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold">
+                                Vos coordonnées
+                            </h3>
+
+                            <form.Field
+                                name="associationName"
+                                children={(field) => (
+                                    <TextField
+                                        field={field}
+                                        label="Nom de l'association"
+                                        placeholder="ex. FARE"
+                                        error="Le nom de l'association est requis"
+                                    />
+                                )}
+                            />
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <form.Field
+                                    name="firstName"
+                                    children={(field) => (
+                                        <TextField
+                                            field={field}
+                                            label="Prénom"
+                                            placeholder="ex. Anna"
+                                            error="Le prénom est requis"
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                        <form.Field
-                            name="contactEmail"
-                            children={(field) => (
-                                <TextField
-                                    field={field}
-                                    label="Email de contact (personnel ou de l'association)"
-                                    placeholder="ex. contact@asso.fr"
-                                    error={
-                                        field.state.value
-                                            ? "Email invalide"
-                                            : "L'email de contact est requis"
-                                    }
+
+                                <form.Field
+                                    name="lastName"
+                                    children={(field) => (
+                                        <TextField
+                                            field={field}
+                                            label="Nom"
+                                            placeholder="ex. Le Goff"
+                                            error="Le nom est requis"
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                        <form.Field
-                            name="details"
-                            children={(field) => (
-                                <TextField
-                                    field={field}
-                                    label="Autres précisions (optionnel)"
-                                    placeholder="Tout ce qui peut nous aider à étudier votre suggestion : usage prévu, fréquence, quantité…"
-                                    multiline
-                                />
-                            )}
-                        />
+                            </div>
+                            <form.Field
+                                name="position"
+                                children={(field) => (
+                                    <TextField
+                                        field={field}
+                                        label="Rôle dans l'association"
+                                        placeholder="ex. Responsable événementiel"
+                                        error="Le rôle dans l'association est requis"
+                                    />
+                                )}
+                            />
+                            <form.Field
+                                name="contactEmail"
+                                children={(field) => (
+                                    <TextField
+                                        field={field}
+                                        label="Email de contact (personnel ou de l'association)"
+                                        placeholder="ex. contact@asso.fr"
+                                        error={
+                                            field.state.value
+                                                ? "Email invalide"
+                                                : "L'email de contact est requis"
+                                        }
+                                    />
+                                )}
+                            />
+                        </div>
+
+                        <FieldSeparator />
+
                         <Field>
-                            <FieldLabel>Vérification anti-robot</FieldLabel>
                             <Captcha onComplete={handleCaptchaComplete} />
                         </Field>
-                        a
                         {submitError && (
                             <p
                                 role="alert"

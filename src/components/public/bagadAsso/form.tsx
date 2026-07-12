@@ -145,7 +145,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
     if (formState?.success) {
         return (
-            <Card className="mx-auto w-full max-w-4xl">
+            <Card className="mx-auto w-full max-w-4xl" variant="ghost">
                 <CardContent className="pt-6">
                     <Alert className="border-green-600 text-green-600">
                         <AlertTitle>Succès</AlertTitle>
