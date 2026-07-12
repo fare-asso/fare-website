@@ -53,11 +53,25 @@ export default defineConfig({
     fonts: [
         {
             provider: fontProviders.fontsource(),
-            name: "Inter",
-            cssVariable: "--font-inter",
-            weights: [400, 500, 600, 700],
+            name: "Ovo",
+            cssVariable: "--font-ovo",
+            weights: [400],
             styles: ["normal"],
             subsets: ["latin"]
+        },
+        {
+            provider: fontProviders.local(),
+            name: "ValleySans",
+            cssVariable: "--font-valley-sans",
+            options: {
+                variants: [
+                    {
+                        src: ["./src/assets/fonts/ValleySans[wght].woff2"],
+                        weight: "normal",
+                        style: "normal"
+                    }
+                ]
+            }
         }
     ],
     vite: {

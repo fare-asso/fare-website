@@ -41,6 +41,9 @@
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
 
+    --font-title: var(--font-ovo);
+    --font-sans: var(--font-valley-sans);
+
     --animate-accordion-down: accordion-down 0.2s ease-out;
     --animate-accordion-up: accordion-up 0.2s ease-out;
 
@@ -104,7 +107,7 @@
     }
 
     body {
-        font-family: var(--font-inter), sans-serif;
+        font-family: var(--font-valley-sans), sans-serif;
     }
 }
 
@@ -201,11 +204,11 @@
     }
 
     h1 {
-        @apply mb-4 text-4xl font-semibold;
+        @apply font-title mb-4 text-4xl font-semibold;
     }
 
     h2 {
-        @apply mb-4 text-2xl font-semibold;
+        @apply font-title mb-4 text-2xl font-semibold;
     }
 
     .title {
