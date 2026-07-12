@@ -96,13 +96,13 @@ export default function BagadAssoSuggestionCard({
 
     return (
         <Card
-            className={`transition-all hover:shadow-md ${
+            className={`gap-3 transition-all hover:shadow-md ${
                 isArchived
                     ? "border-muted bg-muted/30 opacity-75"
                     : "border-border"
             }`}
         >
-            <CardHeader className="pb-3">
+            <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0 flex-1 space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
@@ -222,12 +222,12 @@ export default function BagadAssoSuggestionCard({
                 </div>
             </CardHeader>
 
-            <CardContent className="pt-0">
+            <CardContent>
                 <div className="grid gap-3 text-sm sm:grid-cols-2">
                     <div className="text-muted-foreground flex items-center gap-2">
                         <UserIcon className="h-4 w-4 shrink-0" />
                         <span>
-                            {suggestion.firstName} {suggestion.lastName} —{" "}
+                            {suggestion.firstName} {suggestion.lastName},{" "}
                             {suggestion.position}
                         </span>
                     </div>
