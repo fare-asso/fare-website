@@ -1,7 +1,7 @@
 import { render } from "react-email"
 import { describe, expect, it } from "vitest"
 
-import AssistanceTemplate from "./assistance"
+import AssistanceTemplate from "../assistance"
 
 const base = {
     prenom: "Marie",
