@@ -7,6 +7,7 @@ import {
     type BagadAssoFormData,
     BagadAssoFormSchema
 } from "@/components/public/bagadAsso/form-schema"
+import { joinTicketAndEquipment } from "@/helpers/bagadAsso"
 import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
@@ -14,8 +15,6 @@ import { locationDisplayName } from "@/helpers/location"
 import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
-
-import type { EquipmentWithDetails } from "./listEquipmentsAction"
 
 export type FormState =
     | { success: true }
@@ -96,14 +95,21 @@ async function submitBagadAssoFormActionImpl(
     }
     const ticketRecord = ticket.value
 
-    const equipments = (
-        JSON.parse(
-            validatedData.equipment
-        ) as EquipmentWithDetails["equipment"][]
-    ).map((eq) => ({
-        name: eq.name,
-        quantity: eq.quantity
-    }))
+    // The client JSON only holds {id, quantity} — resolve names from the DB
+    // for the acknowledgement email. Best-effort: fall back to an empty list.
+    const joined = await tryCatch(joinTicketAndEquipment(ticketRecord))
+    if (!joined.success) captureActionError(joined.error)
+    const equipments = joined.success
+        ? (
+              joined.value.equipments as unknown as {
+                  name?: string
+                  quantity: number
+              }[]
+          ).map((eq) => ({
+              name: eq.name ?? "Matériel inconnu",
+              quantity: eq.quantity
+          }))
+        : []
 
     // Email is best-effort: the ticket has already been persisted.
     await Promise.allSettled([

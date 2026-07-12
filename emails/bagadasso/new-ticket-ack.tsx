@@ -138,17 +138,15 @@ export function NewBagadAssoTicketAck({
                             Matériel demandé
                         </Text>
                         {equipments.map((equipment) => (
-                            <>
-                                <Text
-                                    key={equipment.name}
-                                    className="m-0 font-medium tracking-wide text-stone-700"
-                                >
-                                    <span className="text-stone-500">
-                                        {equipment.quantity}x{" "}
-                                    </span>
-                                    {equipment.name}
-                                </Text>
-                            </>
+                            <Text
+                                key={equipment.name}
+                                className="m-0 font-medium tracking-wide text-stone-700"
+                            >
+                                <span className="text-stone-500">
+                                    {equipment.quantity}x{" "}
+                                </span>
+                                {equipment.name}
+                            </Text>
                         ))}
                     </Column>
                 </Row>
