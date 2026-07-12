@@ -565,7 +565,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
-                                                    Date de l'évènement
+                                                    Date de début de l'évènement
                                                 </FieldLabel>
                                                 <Popover>
                                                     <PopoverTrigger asChild>
@@ -620,6 +620,94 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                                 new Date()
                                                             }
                                                             startMonth={
+                                                                new Date()
+                                                            }
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                                {isInvalid && (
+                                                    <FieldError
+                                                        errors={
+                                                            field.state.meta
+                                                                .errors
+                                                        }
+                                                    />
+                                                )}
+                                            </Field>
+                                        )
+                                    }}
+                                />
+
+                                <form.Field
+                                    name="eventEndDate"
+                                    children={(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched &&
+                                            !field.state.meta.isValid
+                                        const startDate =
+                                            form.getFieldValue("eventDate")
+                                        return (
+                                            <Field data-invalid={isInvalid}>
+                                                <FieldLabel
+                                                    htmlFor={field.name}
+                                                >
+                                                    Date de fin de l'évènement
+                                                </FieldLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                            className={cn(
+                                                                "w-full justify-start text-left font-normal",
+                                                                !field.state
+                                                                    .value &&
+                                                                    "text-muted-foreground"
+                                                            )}
+                                                            aria-invalid={
+                                                                isInvalid
+                                                            }
+                                                        >
+                                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                                            {field.state
+                                                                .value ? (
+                                                                format(
+                                                                    field.state
+                                                                        .value,
+                                                                    "PPP",
+                                                                    {
+                                                                        locale: fr
+                                                                    }
+                                                                )
+                                                            ) : (
+                                                                <span>
+                                                                    Sélectionnez
+                                                                    une date
+                                                                </span>
+                                                            )}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={
+                                                                field.state
+                                                                    .value
+                                                            }
+                                                            onSelect={(
+                                                                date
+                                                            ) => {
+                                                                field.handleChange(
+                                                                    date
+                                                                )
+                                                                field.handleBlur()
+                                                            }}
+                                                            disabled={(date) =>
+                                                                date <
+                                                                (startDate ??
+                                                                    new Date())
+                                                            }
+                                                            startMonth={
+                                                                startDate ??
                                                                 new Date()
                                                             }
                                                         />
@@ -883,7 +971,8 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                     referentPhone: "Numéro de téléphone",
                                     eventName: "Nom de l'évènement",
                                     eventType: "Type de l'évènement",
-                                    eventDate: "Date de l'évènement",
+                                    eventDate: "Date de début de l'évènement",
+                                    eventEndDate: "Date de fin de l'évènement",
                                     eventAddress: "Adresse de l'évènement",
                                     eventParticipants: "Nombre de participants",
                                     equipment: "Matériel",

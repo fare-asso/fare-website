@@ -39,6 +39,29 @@ describe("BagadAssoFormSchema", () => {
         expect(res.success).toBe(false)
     })
 
+    it("rejects an end date before the start date", () => {
+        const res = BagadAssoFormSchema.safeParse(
+            validBagadAssoForm({
+                eventDate: new Date("2026-09-02T00:00:00Z"),
+                eventEndDate: new Date("2026-09-01T00:00:00Z")
+            })
+        )
+        expect(res.success).toBe(false)
+        if (!res.success) {
+            expect(res.error.issues[0]?.path).toEqual(["eventEndDate"])
+        }
+    })
+
+    it("accepts an end date equal to the start date", () => {
+        const res = BagadAssoFormSchema.safeParse(
+            validBagadAssoForm({
+                eventDate: new Date("2026-09-01T00:00:00Z"),
+                eventEndDate: new Date("2026-09-01T00:00:00Z")
+            })
+        )
+        expect(res.success).toBe(true)
+    })
+
     it("requires termsAccepted to be true", () => {
         const res = BagadAssoFormSchema.safeParse({
             ...validBagadAssoForm(),

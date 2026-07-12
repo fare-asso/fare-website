@@ -16,6 +16,7 @@ import ActiveTickets from "./tickets/activeTickets"
 import ArchivedTickets from "./tickets/archivedTickets"
 import PastTickets from "./tickets/pastTickets"
 import TabSwitcher from "./tickets/tabSwitcher"
+import ValidatedTickets from "./tickets/validatedTickets"
 
 interface TicketsPageProps {
     user: ShellUser
@@ -56,6 +57,7 @@ function TicketsContent({
             <CardContent className="h-1/2 flex-1 p-0">
                 <TabSwitcher>
                     <ActiveTickets tickets={tickets} />
+                    <ValidatedTickets tickets={tickets} />
                     <PastTickets tickets={tickets} />
                     <ArchivedTickets tickets={tickets} />
                 </TabSwitcher>

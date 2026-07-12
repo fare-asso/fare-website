@@ -68,27 +68,40 @@ const baseFields = {
 
 // Schema for client-side validation (used in TanStack Form)
 // Uses z.date() for eventDate since the form works with Date objects
-export const BagadAssoClientFormSchema = z.object({
-    ...baseFields,
-    eventDate: z.date({
-        error: "La date de l'évènement est requise."
-    }),
-    eventEndDate: z.date({
-        error: "La date de fin de l'évènement est requise."
+const endAfterStart = {
+    check: (d: { eventDate: Date; eventEndDate: Date }) =>
+        d.eventEndDate >= d.eventDate,
+    params: {
+        path: ["eventEndDate"],
+        message: "La date de fin ne peut pas être avant la date de début."
+    }
+}
+
+export const BagadAssoClientFormSchema = z
+    .object({
+        ...baseFields,
+        eventDate: z.date({
+            error: "La date de l'évènement est requise."
+        }),
+        eventEndDate: z.date({
+            error: "La date de fin de l'évènement est requise."
+        })
     })
-})
+    .refine(endAfterStart.check, endAfterStart.params)
 
 // Schema for server-side validation
 // Uses z.coerce.date() for eventDate to handle string serialization
-export const BagadAssoFormSchema = z.object({
-    ...baseFields,
-    eventDate: z.coerce.date({
-        error: "La date de l'évènement est requise."
-    }),
-    eventEndDate: z.coerce.date({
-        error: "La date de fin de l'évènement est requise."
+export const BagadAssoFormSchema = z
+    .object({
+        ...baseFields,
+        eventDate: z.coerce.date({
+            error: "La date de l'évènement est requise."
+        }),
+        eventEndDate: z.coerce.date({
+            error: "La date de fin de l'évènement est requise."
+        })
     })
-})
+    .refine(endAfterStart.check, endAfterStart.params)
 
 // Type for data sent to server action
 export type BagadAssoFormData = z.infer<typeof BagadAssoFormSchema>
