@@ -4,12 +4,14 @@ import { tryCatch } from "@/lib/utils"
 
 import KeyNumbers from "./keyNumbers"
 
-const count = await tryCatch(
-    prisma.association.count({ where: { approved: { not: null } } })
-)
+const count = await Promise.allSettled([
+    tryCatch(prisma.association.count({ where: { approved: { not: null } } })),
+    tryCatch(prisma.elu.count({ where: { deletedAt: null } }))
+])
 ---
 
 <KeyNumbers
     client:load
-    associationCount={count.success ? count.value : undefined}
+    associationCount={count[0].status === "fulfilled" && count[0].value.success ? count[0].value.value : undefined}
+    eluesCount={count[1].status === "fulfilled" && count[1].value.success ? count[1].value.value : undefined}
 />

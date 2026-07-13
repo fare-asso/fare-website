@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets"
+import { ChevronDownIcon } from "lucide-react"
 import { FaDiscord, FaYoutube } from "react-icons/fa6"
 
 import heroImage from "@/assets/hero-image.jpg"
@@ -17,20 +18,50 @@ export const prerender = true
 ---
 
 <Public title="Accueil">
-    <div class="flex w-full flex-col items-center md:w-[90%]">
-        <section class="hero gap-4 md:gap-6">
-            <Image
-                src={heroImage}
-                alt="Image des membres du bureau"
-                class="w-full rounded-xl"
-                loading="eager"
-                width={1200}
-            />
-
+    <section slot="hero" class="relative min-h-120 w-full">
+        <Image
+            src={heroImage}
+            alt="Image des membres du bureau"
+            class="absolute inset-0 h-full w-full rounded-b-xl object-cover"
+            priority
+            inferSize
+        />
+        <div
+            class="absolute inset-0 rounded-b-xl bg-linear-to-t from-black/80 via-black/25 to-transparent"
+        ></div>
+        <div
+            class="absolute right-0 bottom-0 left-0 flex flex-col items-start gap-8 px-6 pb-12 sm:px-10 sm:py-16 xl:flex-row xl:items-end xl:justify-between"
+        >
+            <div>
+                <h1
+                    class="mb-2 text-3xl font-extrabold text-white sm:text-4xl xl:text-5xl"
+                >
+                    Par et pour les{" "}
+                    <span class="bg-fare-accent highlight text-neutral-200">
+                        étudiant·e·s
+                    </span>
+                </h1>
+                <p class="text-lg text-white/90 text-balance">
+                    La Fédération des Associations du Réseau Étudiant de
+                    Haute-Bretagne
+                </p>
+            </div>
             <KeyNumbersIsland server:defer>
                 <KeyNumbers slot="fallback" />
             </KeyNumbersIsland>
-
+        </div>
+        <div
+            aria-hidden="true"
+            class="absolute bottom-3 left-1/2 -translate-x-1/2"
+        >
+            <ChevronDownIcon
+                size={24}
+                className="motion-safe:animate-bounce text-white"
+            />
+        </div>
+    </section>
+    <div class="flex w-full flex-col items-center">
+        <section class="hero gap-4 md:gap-6">
             <div
                 class="intro flex w-full flex-col items-start justify-between rounded-xl bg-black p-8 text-lg text-white"
             >
