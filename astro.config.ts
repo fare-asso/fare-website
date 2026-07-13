@@ -12,6 +12,10 @@ import { EnvSchema } from "./src/env-schema"
 
 export default defineConfig({
     output: "server",
+    prefetch: {
+        defaultStrategy: "hover",
+        prefetchAll: true
+    },
     adapter: node({ mode: "standalone" }),
     // Disabled: behind the TLS-terminating proxy the Node adapter sees http
     // internally, so its Origin/url.origin comparison rejects valid form POSTs.
