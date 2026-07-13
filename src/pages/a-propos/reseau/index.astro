@@ -1,5 +1,5 @@
 ---
-import AssociationMap from "@/components/public/associations/map/associationsMap"
+import ReseauMap from "@/components/public/associations/map/reseauMap.astro"
 import { buttonVariants } from "@/components/ui/button"
 import prisma from "@/helpers/db"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
@@ -29,7 +29,7 @@ const associations = assos.map((asso) => ({
         </h1>
 
         <section class="mb-16 w-full max-w-5xl">
-            <AssociationMap client:only="react" associations={assos} />
+            <ReseauMap associations={assos} />
         </section>
 
         <section class="mb-16 w-full max-w-5xl">

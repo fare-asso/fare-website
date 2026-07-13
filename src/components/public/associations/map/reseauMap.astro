@@ -1,0 +1,81 @@
+---
+import type { Association } from "@/generated/prisma/client"
+import { buildReseauMap } from "@/helpers/reseauMap"
+
+interface Props {
+    associations: Pick<Association, "name" | "location">[]
+}
+
+const { associations } = Astro.props
+const map = buildReseauMap(associations)
+const radius = (count: number): number => 12 + Math.sqrt(count) * 4
+// garde les libellés de villes en bord de carte dans le viewBox
+const labelX = (x: number): number => Math.min(Math.max(x, 90), map.width - 90)
+---
+
+<figure class="w-full">
+    <svg
+        viewBox={`0 0 ${map.width} ${map.height}`}
+        role="img"
+        aria-label="Carte des associations du réseau en Haute-Bretagne"
+        class="border-border h-auto w-full rounded-2xl border"
+    >
+        <rect
+            width={map.width}
+            height={map.height}
+            class="fill-fare-blue/10"
+        ></rect>
+        <path
+            d={map.contextPath}
+            class="fill-background stroke-border"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+        ></path>
+        <path
+            d={map.coveredPath}
+            class="fill-fare-cream stroke-bagad-wood/50"
+            stroke-width="2"
+            stroke-linejoin="round"
+        ></path>
+        {map.clusters.map((cluster) => (
+                <g>
+                    <title>{cluster.names.join(", ")}</title>
+                    <circle
+                        cx={cluster.x}
+                        cy={cluster.y}
+                        r={radius(cluster.count)}
+                        class="fill-fare-accent stroke-white"
+                        stroke-width="2.5"
+                    />
+                    <text
+                        x={cluster.x}
+                        y={cluster.y}
+                        text-anchor="middle"
+                        dominant-baseline="central"
+                        class="fill-white font-bold"
+                        font-size="18"
+                    >
+                        {cluster.count}
+                    </text>
+                    {cluster.city && (
+                        <text
+                            x={labelX(cluster.x)}
+                            y={cluster.y + radius(cluster.count) + 24}
+                            text-anchor="middle"
+                            class="fill-foreground font-title font-semibold"
+                            font-size="26"
+                            stroke="white"
+                            stroke-width="5"
+                            stroke-linejoin="round"
+                            paint-order="stroke"
+                        >
+                            {cluster.city}
+                        </text>
+                    )}
+                </g>
+            ))}
+    </svg>
+    <figcaption class="text-muted-foreground mt-2 text-center text-xs">
+        {associations.length}{" "}associations réparties sur la Haute-Bretagne
+    </figcaption>
+</figure>
