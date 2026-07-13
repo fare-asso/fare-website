@@ -1,5 +1,6 @@
 ---
-import { Font } from "astro:assets"
+import { Font, getImage } from "astro:assets"
+import logo from "@/assets/logo_fare.png"
 
 import "@/styles/globals.css"
 
@@ -12,6 +13,15 @@ const {
     title = "FARE",
     description = "Fédération des Associations du Réseau Étudiant de Haute-Bretagne"
 } = Astro.props
+
+const favicon = await getImage({
+    src: logo,
+    format: "webp",
+    width: 32,
+    height: 32,
+    quality: 100,
+    fallbackFormat: "png"
+})
 ---
 
 <!doctype html>
@@ -19,7 +29,7 @@ const {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" href="/icon.png" type="image/png">
+        <link rel="icon" href={favicon.src} type="image/png">
         <title>{title}</title>
         <meta name="description" content={description}>
         <Font cssVariable="--font-ovo" preload />
