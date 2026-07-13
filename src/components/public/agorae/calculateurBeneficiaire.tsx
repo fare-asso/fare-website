@@ -1,112 +1,124 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
+
+interface Panier {
+    montantPanier: string
+    prixPaye: string
+    ravClasse: string
+}
+
+function determinerPanier(rav: number): Panier {
+    if (rav > 7.5) {
+        return {
+            montantPanier: "10€",
+            prixPaye: "1€",
+            ravClasse: "text-green-600"
+        }
+    }
+    if (rav >= 0.7) {
+        return {
+            montantPanier: "jusqu'à 240€",
+            prixPaye: "jusqu'à 24€",
+            ravClasse: "text-orange-500"
+        }
+    }
+    return {
+        montantPanier: "selon le besoin",
+        prixPaye: "0€",
+        ravClasse: "text-red-500"
+    }
+}
 
 export default function CalculateurBeneficiaire() {
     const [recettes, setRecettes] = useState("")
     const [depenses, setDepenses] = useState("")
-    const [rav, setRav] = useState<number>(0)
 
-    useEffect(() => {
-        if (recettes && depenses) {
-            const ravJournalier: number =
-                (Number.parseFloat(recettes) - Number.parseFloat(depenses)) / 30
-            setRav(ravJournalier)
-        }
-    }, [recettes, depenses])
-
-    const determinerPanier = (ravJournalier: number) => {
-        if (ravJournalier > 7.5) {
-            return {
-                montantPanier: "10€",
-                prixPaye: "1€",
-                classe: "bg-green-50"
-            }
-        } else if (ravJournalier >= 0.7 && ravJournalier <= 7.5) {
-            return {
-                montantPanier: "jusqu'à 240€",
-                prixPaye: "jusqu'à 24€",
-                classe: "bg-yellow-50"
-            }
-        } else {
-            return {
-                montantPanier: "selon le besoin",
-                prixPaye: "0€",
-                classe: "bg-red-50"
-            }
-        }
-    }
-
-    const computeRavColor = () => {
-        if (rav > 7.5) {
-            return "text-green-500"
-        } else if (rav >= 0.7 && rav <= 7.5) {
-            return "text-orange-500"
-        } else {
-            return "text-red-500"
-        }
-    }
+    const rav =
+        recettes && depenses
+            ? (Number.parseFloat(recettes) - Number.parseFloat(depenses)) / 30
+            : null
+    const panier = rav === null ? null : determinerPanier(rav)
 
     return (
-        <Card className="mx-auto w-full max-w-lg">
+        <Card className="border-agorae/25 mx-auto w-full max-w-lg border-2">
             <CardHeader>
-                <CardTitle>Calculateur d'éligibilité AGORAÉ</CardTitle>
+                <CardTitle>Calcule ton éligibilité</CardTitle>
+                <CardDescription>
+                    Renseigne tes recettes et dépenses mensuelles pour estimer
+                    ton Reste à Vivre et le panier auquel tu as droit.
+                </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="space-y-4 [&>div]:space-y-2">
-                    <div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
                         <Label htmlFor="recettes">Recettes par mois (€)</Label>
                         <Input
                             id="recettes"
                             type="number"
                             value={recettes}
                             onChange={(e) => setRecettes(e.target.value)}
-                            placeholder="Entrez vos recettes mensuelles"
+                            placeholder="Bourse, salaire, aides…"
                         />
                     </div>
-
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="depenses">Dépenses par mois (€)</Label>
                         <Input
                             id="depenses"
                             type="number"
                             value={depenses}
                             onChange={(e) => setDepenses(e.target.value)}
-                            placeholder="Entrez vos dépenses mensuelles"
+                            placeholder="Loyer, factures, transport…"
                         />
                     </div>
                 </div>
 
-                {rav !== null && (
+                {rav === null || panier === null ? (
+                    <p className="text-muted-foreground text-center text-sm">
+                        Remplis les deux champs pour voir ton résultat.
+                    </p>
+                ) : (
                     <div className="space-y-4">
-                        <Alert>
-                            <AlertDescription
-                                className={`${computeRavColor()}`}
+                        <div className="text-center">
+                            <p className="text-muted-foreground text-sm">
+                                Ton Reste à Vivre (RAV) quotidien
+                            </p>
+                            <p
+                                className={cn(
+                                    "text-3xl font-bold",
+                                    panier.ravClasse
+                                )}
                             >
-                                Votre Reste à Vivre (RAV) quotidien est de :{" "}
                                 {rav.toFixed(2)}€
-                            </AlertDescription>
-                        </Alert>
-
-                        <Card
-                            className={`${determinerPanier(rav).classe} border-none`}
-                        >
-                            <CardContent>
-                                <div className="space-y-2 text-center">
-                                    <p className="font-medium">
-                                        Denrées en valeurs marchande :{" "}
-                                        {determinerPanier(rav).montantPanier}
-                                    </p>
-                                    <p className="font-semibold">
-                                        Prix payé à l'AGORAÉ :{" "}
-                                        {determinerPanier(rav).prixPaye}
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
+                            </p>
+                        </div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <div className="bg-agorae/5 rounded-xl p-4 text-center">
+                                <p className="text-muted-foreground text-sm">
+                                    Denrées en valeur marchande
+                                </p>
+                                <p className="text-lg font-semibold">
+                                    {panier.montantPanier}
+                                </p>
+                            </div>
+                            <div className="bg-agorae/5 rounded-xl p-4 text-center">
+                                <p className="text-muted-foreground text-sm">
+                                    Prix payé à l'AGORAé
+                                </p>
+                                <p className="text-lg font-semibold">
+                                    {panier.prixPaye}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 )}
             </CardContent>
