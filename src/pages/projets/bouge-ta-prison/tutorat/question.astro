@@ -6,7 +6,12 @@ export const prerender = true
 ---
 
 <Public title="Questions Bouge ta Prison">
-    <div class="w-full md:w-1/2">
+    <div class="flex w-full max-w-3xl flex-col items-center">
         <QuestionForm client:load />
+        <p class="text-muted-foreground mt-6 text-sm">
+            <a href="/projets/bouge-ta-prison/tutorat" class="link">
+                ← Retour à la page tutorat
+            </a>
+        </p>
     </div>
 </Public>
