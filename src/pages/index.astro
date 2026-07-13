@@ -10,9 +10,12 @@ import KeyNumbersIsland from "@/components/public/keyNumbersIsland.astro"
 import PartnersIsland from "@/components/public/partnersIsland.astro"
 import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
+import { lqip } from "@/helpers/lqip"
 import { cn } from "@/lib/utils"
 
 export const prerender = true
+
+const heroPlaceholder = await lqip(heroImage)
 ---
 
 <Public title="Accueil">
@@ -20,7 +23,8 @@ export const prerender = true
         <Image
             src={heroImage}
             alt="Image des membres du bureau"
-            class="absolute inset-0 h-full w-full rounded-b-xl object-cover"
+            class="absolute inset-0 h-full w-full rounded-b-xl bg-cover bg-center object-cover"
+            style={`background-image: url(${heroPlaceholder})`}
             priority
             inferSize
         />
