@@ -3,6 +3,7 @@ import prisma from "@/helpers/db"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import Public from "@/layouts/Public.astro"
 import { tryCatch } from "@/lib/utils"
+import { Image } from "astro:assets"
 
 const storage = new StorageUtils()
 const partenaires = await tryCatch(
@@ -53,11 +54,10 @@ const partners = partenaires.success
                                     }`}
                                 >
                                     <div class="w-full shrink-0 md:w-1/2">
-                                        <img
+                                        <Image
                                             src={partner.logoUrl}
                                             alt={`Logo de ${partner.name}`}
-                                            width={500}
-                                            height={500}
+                                            inferSize
                                             class="h-auto max-h-64 w-full object-contain"
                                         />
                                     </div>
