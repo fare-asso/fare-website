@@ -353,8 +353,7 @@
         [content-end]
         var(--full)
         [full-end];
-    justify-content: center;
-    align-items: center;
+    place-items: center;
 }
 
 /** CLASSES **/
