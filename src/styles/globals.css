@@ -130,7 +130,12 @@
 }
 
 @utility highlight {
-    @apply bg-fare-yellow/60 inline-block -rotate-2 rounded-md px-2;
+    @apply relative isolate inline-block px-2;
+
+    &::before {
+        @apply bg-fare-yellow/60 absolute inset-0 -z-10 -rotate-2 rounded-md;
+        content: "";
+    }
 }
 
 @layer base {
