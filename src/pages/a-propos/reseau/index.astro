@@ -1,8 +1,10 @@
 ---
-import AssociationList from "@/components/public/associations/associationList"
 import AssociationMap from "@/components/public/associations/map/associationsMap"
+import { buttonVariants } from "@/components/ui/button"
 import prisma from "@/helpers/db"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import Public from "@/layouts/Public.astro"
+import { cn } from "@/lib/utils"
 
 const assos = await prisma.association.findMany({
     where: {
@@ -12,35 +14,69 @@ const assos = await prisma.association.findMany({
         name: "asc"
     }
 })
+
+const storage = new StorageUtils().from("association-pictures")
+const associations = assos.map((asso) => ({
+    ...asso,
+    logoUrl: storage.getPublicUrl(asso.logoPath)
+}))
 ---
 
-<Public title="Réseau" description="Page des associations du réseau FARE">
-    <div class="flex w-full flex-col items-center justify-start pb-20">
-        <h1 class="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
-            Le Réseau Associatif
+<Public title="Réseau" description="Les associations étudiantes du réseau FARE">
+    <div class="flex w-full flex-col items-center justify-start">
+        <h1 class="mt-6 mb-12 text-center text-3xl font-extrabold sm:text-4xl">
+            Le <span class="highlight"> réseau </span> associatif
         </h1>
-        <AssociationMap client:only="react" associations={assos} />
-        <AssociationList associations={assos} />
 
-        <div
-            class="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-1/2"
-        >
-            <h2 class="mb-2 text-lg font-semibold">
-                Votre association souhaite intégrer notre réseau ?{" "}
+        <section class="mb-16 w-full max-w-5xl">
+            <AssociationMap client:only="react" associations={assos} />
+        </section>
+
+        <section class="mb-16 w-full max-w-5xl">
+            <h2 class="mb-6 text-center text-2xl font-bold">
+                Les associations
             </h2>
-            <p class="text-justify">
-                La FARE accueille de nouveaux membres partageant nos objectifs
-                pour la vie étudiante. En nous rejoignant, vous aurez accès à
-                notre réseau, nos ressources et notre soutien.
-                <br>
-                Pour plus d'informations sur l'adhésion, cliquez ci-dessous.
+            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {associations.map((asso) => (
+                    <a
+                        href={`/a-propos/reseau/associations/${asso.id}`}
+                        class="border-border bg-card flex flex-col rounded-2xl border p-4 transition-shadow hover:shadow-md"
+                    >
+                        <img
+                            src={asso.logoUrl}
+                            width={400}
+                            height={400}
+                            loading="lazy"
+                            alt={`Logo de ${asso.name}`}
+                            class="mb-3 aspect-square w-full rounded-xl object-cover"
+                        />
+                        <span class="font-semibold">{asso.name}</span>
+                        <span class="text-muted-foreground text-sm">
+                            {asso.major}
+                        </span>
+                    </a>
+                ))}
+            </div>
+        </section>
+
+        <section class="w-full max-w-2xl text-center">
+            <h2 class="mb-4 text-center text-2xl font-bold">
+                Votre association souhaite intégrer le réseau ?
+            </h2>
+            <p class="mb-6">
+                La FARE accueille de nouveaux membres partageant ses objectifs
+                pour la vie étudiante. En rejoignant le réseau, vous accédez à
+                ses ressources, son soutien et ses évènements.
             </p>
             <a
                 href="/a-propos/adhesion"
-                class="mt-4 ml-auto w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
+                class={cn(
+                    buttonVariants(),
+                    "bg-fare-accent hover:bg-fare-accent/90 text-white"
+                )}
             >
                 Nous rejoindre
             </a>
-        </div>
+        </section>
     </div>
 </Public>

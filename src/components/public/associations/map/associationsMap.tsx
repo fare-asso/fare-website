@@ -3,6 +3,9 @@
 import L from "leaflet"
 
 import "leaflet/dist/leaflet.css"
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png"
+import markerIcon from "leaflet/dist/images/marker-icon.png"
+import markerShadow from "leaflet/dist/images/marker-shadow.png"
 import { type ChangeEvent, useRef, useState } from "react"
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 
@@ -12,11 +15,12 @@ import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 import AssociationMapSearchBar from "./associationMapSearchBar"
 
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
+    ._getIconUrl
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl:
-        "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
-    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png"
+    iconRetinaUrl: markerIcon2x.src,
+    iconUrl: markerIcon.src,
+    shadowUrl: markerShadow.src
 })
 
 export default function AssociationMap({
@@ -42,8 +46,6 @@ export default function AssociationMap({
             assoc.name.toLowerCase().includes(value.toLowerCase())
         )
 
-        console.log(association)
-
         if (association) {
             setSearchError(undefined)
             const parsed = parseLocation(association.location)
@@ -64,7 +66,7 @@ export default function AssociationMap({
             center={[48.28842852181882, -2.1546832933080085]}
             zoom={9}
             scrollWheelZoom={false}
-            className="h-[400px] w-full rounded-xl border-[1.5px] border-black md:h-[600px]"
+            className="border-border isolate z-0 h-100 w-full rounded-2xl border md:h-150"
             ref={mapRef}
         >
             <div className="absolute z-999 mt-5 hidden h-20 w-full md:flex md:flex-col md:items-center md:justify-start">
