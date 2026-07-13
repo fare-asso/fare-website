@@ -17,8 +17,9 @@ const dossiers = await prisma.communiqueDePresse.findMany({
     <div
         class="mb-20 flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16"
     >
-        <h1 class="py-12 text-center text-4xl font-bold sm:py-24">
-            Dossiers de presse
+        <h1 class="mt-6 mb-12 text-center text-3xl font-extrabold sm:text-4xl">
+            Dossiers de{" "}
+            <span class="highlight"> presse </span>
         </h1>
 
         <div class="flex w-3/4 flex-col items-center space-y-2">
