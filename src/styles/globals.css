@@ -125,6 +125,10 @@
     scrollbar-width: none; /* Firefox */
 }
 
+@utility highlight {
+    @apply bg-fare-yellow/60 inline-block -rotate-2 rounded-md px-2;
+}
+
 @layer base {
     :root {
         --color-fare-accent: #004aad;
