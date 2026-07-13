@@ -18,7 +18,7 @@ export function BtpApplicationAck({
     return (
         <BaseTemplate>
             <Heading className="text-4xl font-normal text-stone-800">
-                Candiudature reçue
+                Candidature reçue
             </Heading>
             <Text>
                 Bonjour {firstName} {lastName},
