@@ -471,7 +471,9 @@ export function AdhesionForm(): React.ReactNode {
     return (
         <Card className="w-full sm:max-w-3xl" variant="ghost">
             <CardHeader>
-                <CardTitle>Formulaire d'adhésion</CardTitle>
+                <CardTitle className="text-3xl font-bold">
+                    Formulaire d'adhésion
+                </CardTitle>
                 <CardDescription>
                     En cas de difficulté, contactez le secrétariat général sur{" "}
                     <a

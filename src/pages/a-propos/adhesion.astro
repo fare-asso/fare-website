@@ -1,183 +1,300 @@
 ---
+import {
+    FiBookOpen,
+    FiBox,
+    FiCalendar,
+    FiCheck,
+    FiFlag,
+    FiUserCheck,
+    FiUsers
+} from "react-icons/fi"
+
 import { AdhesionForm } from "@/components/public/adhesion/adhesionForm"
+import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
+import { cn } from "@/lib/utils"
 
 export const prerender = true
 ---
 
 <Public title="Formulaire d'adhésion">
     <div class="flex w-full flex-col items-center justify-start">
-        <h1 class="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
-            Rejoindre la FARE
-        </h1>
-        <div class="mb-8 w-full max-w-3xl text-left">
-            <h2 class="mb-4 text-2xl font-bold">Adhésion à la FARE :</h2>
-            <p class="mb-4 text-justify">
-                La Fédération des Associations du Réseau Étudiant de
-                Haute-Bretagne (FARE) étant une organisation représentative
-                asyndicale, les étudiant.e.s ne peuvent pas adhérer à la
-                structure en tant qu'individu.
+        <div
+            class="mt-6 mb-16 flex w-full max-w-3xl flex-col items-center text-center"
+        >
+            <h1 class="mb-4 text-3xl font-extrabold sm:text-4xl">
+                Rejoindre le{" "}
+                <span class="highlight"> réseau </span>
+            </h1>
+            <p class="mb-8 text-lg">
+                La FARE est une organisation représentative asyndicale&nbsp;: on
+                n'y adhère pas en tant qu'étudiant·e, mais en tant qu'<strong
+                    >association étudiante</strong
+                >, locale, de filière ou thématique, pour représenter ses
+                étudiant·e·s et porter leurs projets.
             </p>
-            <p class="mb-4 text-justify">
-                Selon le modèle associatif, les étudiant.e.s participent au
-                système en adhérant et administrant leurs associations locales,
-                de filière ou thématique. De cette manière, les associations
-                étudiantes peuvent adhérer à la FARE pour représenter les
-                étudiant.e.s de leur filière, ou alors travailler sur des
-                projets ou des thématiques qui concernent leurs étudiant.e.s ou
-                adhérent.e.s.
-            </p>
-            <p class="mb-4 text-justify">
-                L'adhésion peut être remplie à n'importe quel moment de l'année
-                universitaire, et est effective jusqu'à la prochaine campagne de
-                ré-adhésion, soit la prochaine Assemblée Générale Ordinaire de
-                Passation.
-            </p>
-
-            <h2 class="mt-8 mb-4 text-2xl font-bold">
-                Pourquoi adhérer à la FARE ? :
-            </h2>
-            <p class="mb-4 text-justify">
-                Concrètement, à quoi ça sert d'adhérer à la FARE pour les
-                associations étudiantes ?
-            </p>
-            <ul class="mb-4 list-disc pl-6 text-justify">
-                <li class="mb-2">
-                    <strong>
-                        Être membre d'un réseau associatif fort et soudé :
-                    </strong>{" "}
-                    la FARE compte aujourd'hui une vingtaine d'associations
-                    adhérentes, de Rennes à Saint-Brieuc, en passant par
-                    Saint-Malo ou Lannion par exemple. C'est l'occasion de créer
-                    ou maintenir des liens entre les associations, favorisant
-                    l'échange, l'entraide et la solidarité. Être membre du
-                    réseau, c'est aussi avoir la possibilité de faire remonter
-                    ses propres positions et problématiques, afin d'être
-                    représenté au niveau local, territorial et national grâce à
-                    la FARE !
-                </li>
-                <li class="mb-2">
-                    <strong>
-                        Participer aux décisions et aux positions de la
-                        fédération :
-                    </strong>{" "}
-                    une association étudiante peut administrer la FARE en jouant
-                    un rôle central dans la coordination et la représentation,
-                    puisque la fédération agit comme un porte-parole des
-                    intérêts des étudiants auprès des administrations
-                    universitaires, des collectivités locales, et même au niveau
-                    national, en servant de relais entre les étudiants et les
-                    décideur.euse.s.
-                </li>
-                <li class="mb-2">
-                    <strong>Profiter d'un suivi personnalisé :</strong>
-                    en faisant partie du réseau de la FARE, une association
-                    étudiante se fait assigner un.e membre du bureau fédéral,
-                    afin d'établir un lien de confiance entre l'association et
-                    la fédération. Ce suivi personnalisé, c'est une ressource
-                    d'accompagnement des projets, des recherches de
-                    financements, des soutiens pour l'administratif, de la
-                    réflexion pour l'évolution de l'association adhérente.
-                </li>
-                <li class="mb-2">
-                    <strong>
-                        Bénéficier de formations enrichissantes et accessibles :
-                    </strong>{" "}
-                    en tant que fédération associative, la FARE forme et
-                    accompagne l'ensemble des associatif.ve.s, étudiant.e.s,
-                    élu.e.s ou bénévoles qui en font la demande. C'est une
-                    mission de notre structure qui permet à chacun.e d'acquérir
-                    des compétences et permettre une meilleure appropriation des
-                    thématiques, projets ou combats des étudiant.e.s. Ces
-                    formations sont réalisées par des formateur.rice.s de la
-                    FARE, sur des temps personnalisés (semaine ou week-end)
-                    comme sur des événements généraux de la fédération.
-                </li>
-                <li class="mb-2">
-                    <strong>
-                        Accéder plus facilement aux projets de la FARE :
-                    </strong>{" "}
-                    Bagad'Asso, AGORAé ou Bouge Ta Prison, les projets de la
-                    FARE ne sont pas si éloignés que ça de vous ! Il est
-                    évidemment possible de s'investir dans ces projets sans être
-                    adhérent.e.s à la fédération, mais il n'a jamais été aussi
-                    simple d'obtenir du matériel du projet Bagad'Asso,
-                    s'investir en tant que bénévole de l'AGORAé ou suivre le
-                    tutorat pour les étudiant.e.s détenu.e.s.
-                </li>
-                <li class="mb-2">
-                    <strong>
-                        Participer à des évènements et des projets à grande
-                        échelle :
-                    </strong>{" "}
-                    des congrès, des conférences, des week-ends thématiques tout
-                    au long de l'année, des journées ou projets sont souvent
-                    organisés sur le territoire de Haute-Bretagne, et la FARE
-                    est là pour vous y intégrer. En tant qu'association, vous
-                    pouvez contribuer à l'évolution de la condition et la vie de
-                    vos étudiant.e.s.
-                </li>
-            </ul>
-
-            <h2 class="mt-8 mb-4 text-2xl font-bold">
-                Comment adhérer à la FARE ? :
-            </h2>
-            <p class="mb-4 text-justify">
-                Pour adhérer à la FARE, quelques éléments sont demandés à une
-                association étudiante :
-            </p>
-            <ul class="mb-4 list-disc pl-6">
-                <li>
-                    Être indépendante de tout parti politique, syndicat
-                    professionnel ou de toute confession regroupant des
-                    étudiant.e.s ou des jeunes
-                </li>
-                <li>
-                    Prendre contact avec le bureau fédéral de la FARE afin
-                    d'échanger sur la situation
-                </li>
-                <li>
-                    Fournir les pièces administratives suivantes :
-                    <ul class="mt-2 list-disc pl-6">
-                        <li>
-                            Récepissé de déclaration du bureau de l'association
-                            en préfecture
-                        </li>
-                        <li>
-                            Liste des dirigeant.e.s de l'association en exercice
-                            ainsi que leurs coordonnées
-                        </li>
-                        <li>
-                            Extrait de procès-verbal de son instance qualifiée
-                            autorisant l'association à adhérer à la FARE
-                        </li>
-                        <li>
-                            Les statuts (et règlement intérieur si existant) de
-                            l'association
-                        </li>
-                        <li>
-                            La liste des élu.e.s étudiant.e.s soutenu.e.s et
-                            revendiqué.e.s
-                        </li>
-                        <li>
-                            Le nombre d'étudiant.e.s adhérent.e.s dans
-                            l'association
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    Régler la cotisation à hauteur de la somme demandée pour son
-                    collège d'association
-                </li>
-            </ul>
-            <p>
-                Une fois ces documents remplis, envoyés puis validés par le
-                secrétariat général de la FARE, l'adhésion est soumise au vote
-                du Conseil d'Administration lors du prochain CA pour les
-                associations néo-adhérentes.
+            <a
+                href="#formulaire"
+                class={cn(
+                    buttonVariants({ size: "lg" }),
+                    "bg-fare-accent hover:bg-fare-accent/90 text-white"
+                )}
+            >
+                Remplir le formulaire d'adhésion
+            </a>
+            <p class="text-muted-foreground mt-4 text-sm">
+                L'adhésion est ouverte à tout moment de l'année
             </p>
         </div>
 
-        <AdhesionForm client:load />
+        <section class="mb-16 w-full max-w-4xl">
+            <h2 class="mb-8 text-center text-2xl font-bold">
+                Pourquoi adhérer ?
+            </h2>
+            <div class="grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-2">
+                <div>
+                    <h3 class="mb-1 flex items-center gap-2 font-semibold">
+                        <FiUsers
+                            className="text-fare-accent shrink-0"
+                            size={18}
+                        />
+                        Un réseau fort et soudé
+                    </h3>
+                    <p class="text-muted-foreground text-sm">
+                        Une vingtaine d'associations adhérentes, de Rennes à
+                        Saint-Brieuc en passant par Saint-Malo ou Fougères. De
+                        quoi créer des liens, échanger et s'entraider entre
+                        associations du territoire.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="mb-1 flex items-center gap-2 font-semibold">
+                        <FiFlag
+                            className="text-fare-accent shrink-0"
+                            size={18}
+                        />
+                        Du poids dans les décisions
+                    </h3>
+                    <p class="text-muted-foreground text-sm">
+                        La fédération porte la voix des étudiant·e·s auprès des
+                        administrations universitaires, des collectivités et au
+                        niveau national. Adhérer, c'est pouvoir y faire remonter
+                        vos positions et administrer la FARE.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="mb-1 flex items-center gap-2 font-semibold">
+                        <FiUserCheck
+                            className="text-fare-accent shrink-0"
+                            size={18}
+                        />
+                        Un suivi personnalisé
+                    </h3>
+                    <p class="text-muted-foreground text-sm">
+                        Chaque association adhérente se voit assigner un·e
+                        membre du bureau fédéral&nbsp;: accompagnement des
+                        projets, recherche de financements, soutien
+                        administratif.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="mb-1 flex items-center gap-2 font-semibold">
+                        <FiBookOpen
+                            className="text-fare-accent shrink-0"
+                            size={18}
+                        />
+                        Des formations accessibles
+                    </h3>
+                    <p class="text-muted-foreground text-sm">
+                        La FARE forme les associatif·ve·s, étudiant·e·s, élu·e·s
+                        ou bénévoles qui en font la demande, sur des temps
+                        personnalisés ou lors des événements de la fédération.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="mb-1 flex items-center gap-2 font-semibold">
+                        <FiBox
+                            className="text-fare-accent shrink-0"
+                            size={18}
+                        />
+                        Un accès facilité aux projets
+                    </h3>
+                    <p class="text-muted-foreground text-sm">
+                        S'investir reste possible sans adhérer, que ce soit pour
+                        emprunter du matériel{" "}
+                        <a href="/projets/bagad-asso" class="link">
+                            Bagad'Asso
+                        </a>, devenir bénévole à l'<a
+                            href="/projets/agorae"
+                            class="link"
+                            >AGORAé</a
+                        >{" "}ou tuteur·ice avec{" "}
+                        <a href="/projets/bouge-ta-prison" class="link">
+                            Bouge Ta Prison
+                        </a>.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="mb-1 flex items-center gap-2 font-semibold">
+                        <FiCalendar
+                            className="text-fare-accent shrink-0"
+                            size={18}
+                        />
+                        Des évènements à grande échelle
+                    </h3>
+                    <p class="text-muted-foreground text-sm">
+                        Congrès, conférences, week-ends thématiques&nbsp;: des
+                        temps forts organisés toute l'année sur le territoire de
+                        Haute-Bretagne, auxquels la FARE vous intègre.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12 w-full max-w-4xl">
+            <h2 class="mb-4 text-center text-2xl font-bold">
+                Comment adhérer ?
+            </h2>
+            <p class="mx-auto mb-10 max-w-2xl text-center">
+                Une seule condition&nbsp;: être{" "}
+                <strong>
+                    indépendante de tout parti politique, syndicat professionnel
+                    ou confession
+                </strong>{" "}
+                regroupant des étudiant·e·s ou des jeunes.
+            </p>
+            <ol
+                class="mb-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4"
+            >
+                <li class="flex flex-col items-center text-center">
+                    <span
+                        class="bg-fare-accent mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
+                    >
+                        1
+                    </span>
+                    <h3 class="mb-2 font-semibold">Contactez le bureau</h3>
+                    <p class="text-muted-foreground text-sm">
+                        Un premier échange avec le bureau fédéral pour faire le
+                        point sur votre situation.
+                    </p>
+                </li>
+                <li class="flex flex-col items-center text-center">
+                    <span
+                        class="bg-fare-accent mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
+                    >
+                        2
+                    </span>
+                    <h3 class="mb-2 font-semibold">Rassemblez les pièces</h3>
+                    <p class="text-muted-foreground text-sm">
+                        Les documents administratifs listés ci-dessous, à
+                        joindre au formulaire.
+                    </p>
+                </li>
+                <li class="flex flex-col items-center text-center">
+                    <span
+                        class="bg-fare-accent mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
+                    >
+                        3
+                    </span>
+                    <h3 class="mb-2 font-semibold">Réglez la cotisation</h3>
+                    <p class="text-muted-foreground text-sm">
+                        À hauteur de la somme demandée pour le collège de votre
+                        association.
+                    </p>
+                </li>
+                <li class="flex flex-col items-center text-center">
+                    <span
+                        class="bg-fare-accent mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
+                    >
+                        4
+                    </span>
+                    <h3 class="mb-2 font-semibold">Le CA vote</h3>
+                    <p class="text-muted-foreground text-sm">
+                        Après validation par le secrétariat général, l'adhésion
+                        des associations néo-adhérentes est soumise au vote du
+                        prochain Conseil d'Administration.
+                    </p>
+                </li>
+            </ol>
+
+            <div class="text-center">
+                <h3 class="mb-4 text-xl font-semibold">Les pièces à fournir</h3>
+                <ul class="inline-flex flex-col items-start gap-2 text-left">
+                    <li class="flex items-center gap-2">
+                        <FiCheck
+                            className="text-fare-accent shrink-0"
+                            size={20}
+                        />
+                        <span>
+                            le récépissé de déclaration du bureau de
+                            l'association en préfecture
+                        </span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <FiCheck
+                            className="text-fare-accent shrink-0"
+                            size={20}
+                        />
+                        <span>
+                            la liste des dirigeant·e·s en exercice et leurs
+                            coordonnées
+                        </span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <FiCheck
+                            className="text-fare-accent shrink-0"
+                            size={20}
+                        />
+                        <span>
+                            l'extrait de procès-verbal de son instance qualifiée
+                            autorisant l'association à adhérer à la FARE
+                        </span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <FiCheck
+                            className="text-fare-accent shrink-0"
+                            size={20}
+                        />
+                        <span>
+                            les statuts (et règlement intérieur si existant)
+                        </span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <FiCheck
+                            className="text-fare-accent shrink-0"
+                            size={20}
+                        />
+                        <span>
+                            la liste des élu·e·s étudiant·e·s soutenu·e·s et
+                            revendiqué·e·s
+                        </span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <FiCheck
+                            className="text-fare-accent shrink-0"
+                            size={20}
+                        />
+                        <span>le nombre d'étudiant·e·s adhérent·e·s</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <aside
+            class="border-fare-yellow mb-16 w-full max-w-2xl border-l-4 pl-4"
+        >
+            <p class="text-muted-foreground text-sm">
+                Bon à savoir&nbsp;: l'adhésion peut être remplie à n'importe
+                quel moment de l'année universitaire. Elle reste effective
+                jusqu'à la prochaine campagne de ré-adhésion.
+            </p>
+        </aside>
+
+        <section
+            id="formulaire"
+            class="flex w-full max-w-3xl scroll-mt-24 justify-center"
+        >
+            <AdhesionForm client:load />
+        </section>
     </div>
 </Public>
