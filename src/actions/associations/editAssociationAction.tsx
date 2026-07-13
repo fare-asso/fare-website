@@ -67,8 +67,7 @@ async function editAssociationActionImpl(
         !description ||
         !birthdate ||
         !location ||
-        !email ||
-        !logoPicture
+        !email
     ) {
         return {
             success: false,
@@ -76,45 +75,49 @@ async function editAssociationActionImpl(
         }
     }
 
-    const maxFileSize = 15 // max file size in mb
+    // Logo optionnel : sans nouveau fichier, le logo actuel est conservé
+    let logoPath: string = currentAssociation.logoPath
 
-    // Logo Picture
-    if (!(logoPicture instanceof File))
-        return { success: false, error: "Logo non-valide." }
+    if (logoPicture !== null && logoPicture !== "") {
+        const maxFileSize = 15 // max file size in mb
 
-    const file: File = logoPicture
+        if (!(logoPicture instanceof File))
+            return { success: false, error: "Logo non-valide." }
 
-    // size validation
-    if (file.size === 0 || file.size / (1024 * 1024) > maxFileSize) {
-        return {
-            success: false,
-            error: `La taille de chaque photo doit être inférieure à ${maxFileSize} Mo.`
+        const file: File = logoPicture
+
+        // size validation
+        if (file.size === 0 || file.size / (1024 * 1024) > maxFileSize) {
+            return {
+                success: false,
+                error: `La taille de chaque photo doit être inférieure à ${maxFileSize} Mo.`
+            }
         }
-    }
 
-    // type validation
-    if (
-        ![
-            "image/png",
-            "image/jpeg",
-            "image/jpg",
-            "image/webp",
-            "image/gif"
-        ].includes(file.type)
-    ) {
-        return {
-            success: false,
-            error: "Le format de l'image doit être : PNG, JPEG, JPG, WebP ou GIF"
+        // type validation
+        if (
+            ![
+                "image/png",
+                "image/jpeg",
+                "image/jpg",
+                "image/webp",
+                "image/gif"
+            ].includes(file.type)
+        ) {
+            return {
+                success: false,
+                error: "Le format de l'image doit être : PNG, JPEG, JPG, WebP ou GIF"
+            }
         }
+
+        // update logo picture
+        const { data, error: err } = await supabase.storage
+            .from("association-pictures")
+            .update(currentAssociation.logoPath, file)
+        if (err) return { success: false, error: err.message }
+
+        logoPath = data.path
     }
-
-    // update logo picture
-    const { data, error: err } = await supabase.storage
-        .from("association-pictures")
-        .update(currentAssociation.logoPath, file)
-    if (err) return { success: false, error: err.message }
-
-    const logoPath: string = data.path
 
     const edited = await tryCatch(
         prisma.association.update({

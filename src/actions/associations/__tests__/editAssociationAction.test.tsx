@@ -101,6 +101,20 @@ describe("editAssociationAction", () => {
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
+    it("keeps the current logo when no new file is provided", async () => {
+        const data = fd()
+        data.delete("logo-picture")
+        const res = await editAssociationAction(data)
+        expect(res).toEqual({ success: true })
+        expect(h.storageUpdate).not.toHaveBeenCalled()
+        expect(h.update).toHaveBeenCalledWith({
+            where: { id: 1 },
+            data: expect.objectContaining({
+                logoPath: "association-pictures/old.png"
+            })
+        })
+    })
+
     it("updates the association on the happy path", async () => {
         const res = await editAssociationAction(fd())
         expect(res).toEqual({ success: true })

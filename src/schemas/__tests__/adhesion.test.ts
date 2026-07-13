@@ -12,6 +12,19 @@ describe("AdhesionFormSchema", () => {
         expect(isErrors(AdhesionFormSchema(validAdhesionForm()))).toBe(false)
     })
 
+    it("parses an ISO-string dateAG (shape after the JSON payload)", () => {
+        const out = AdhesionFormSchema(
+            validAdhesionForm({
+                dateAG: "2026-01-15T00:00:00.000Z" as unknown as Date
+            })
+        )
+        expect(isErrors(out)).toBe(false)
+        if (!(out instanceof type.errors)) {
+            expect(out.dateAG).toBeInstanceOf(Date)
+            expect(out.dateAG.toISOString()).toBe("2026-01-15T00:00:00.000Z")
+        }
+    })
+
     it("rejects a too-short sigle", () => {
         expect(
             isErrors(AdhesionFormSchema(validAdhesionForm({ sigle: "F" })))

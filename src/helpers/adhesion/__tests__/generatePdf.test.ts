@@ -50,6 +50,32 @@ describe("generateAdhesionPdf", () => {
         expect(isPdf(pdf)).toBe(true)
     })
 
+    it("renders JSON locations from the location picker", async () => {
+        const jsonLocation = JSON.stringify({
+            displayName: "6 Cours des Alliés, 35000 Rennes",
+            coordinates: { lat: "48.1047", lon: "-1.6768" }
+        })
+        const pdf = await generateAdhesionPdf({
+            dateAdhesion: new Date("2026-02-01T00:00:00Z"),
+            sigle: "FARE",
+            nomComplet: "Federation",
+            college: "A",
+            objetPrincipal: "Representation",
+            adresseAdministrative: jsonLocation,
+            siegeSocial: jsonLocation,
+            numeroSalle: "",
+            dateAG: new Date("2026-01-15T00:00:00Z"),
+            nombreEtudiantsRepresentes: 1000,
+            nombreAdherents: 100,
+            engagementCotisation: true,
+            emailAssociation: "contact@asso.fr",
+            telephonePortable: "0612345678",
+            telephoneFixe: "",
+            bureau: [member]
+        })
+        expect(isPdf(pdf)).toBe(true)
+    })
+
     it("handles a null AG date without throwing", async () => {
         const pdf = await generateAdhesionPdf({
             dateAdhesion: new Date("2026-02-01T00:00:00Z"),

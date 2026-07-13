@@ -1,320 +1,320 @@
+import { useForm } from "@tanstack/react-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { actions } from "astro:actions"
-import { useCallback, useState, useTransition } from "react"
+import { useState, useTransition } from "react"
 
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger
-} from "@/components/ui/accordion"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { DateField } from "@/components/ui/date-field"
+import { DialogTrigger } from "@/components/ui/dialog"
+import { DialogForm } from "@/components/ui/dialog-form"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import DatePicker from "@/components/ui/input/datePicker"
-import { Label } from "@/components/ui/label"
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldLabel
+} from "@/components/ui/field"
+import { FilePondInput } from "@/components/ui/filepond"
 import LocationPicker from "@/components/ui/location/locationPicker"
-import { Textarea } from "@/components/ui/textarea"
+import { TextField } from "@/components/ui/text-field"
+import {
+    AddAssociationSchema,
+    ASSOCIATION_SOCIAL_KEYS,
+    MAX_LOGO_SIZE,
+    type TAddAssociation
+} from "@/schemas/associations"
 
-import LoadingRing from "../loadingRing"
+const emptyForm: TAddAssociation = {
+    name: "",
+    major: "",
+    description: "",
+    logo: undefined as unknown as File,
+    birthdate: undefined as unknown as Date,
+    location: "",
+    email: "",
+    website: "",
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    discord: ""
+}
+
+function Optionnel() {
+    return <span className="text-muted-foreground">(optionnel)</span>
+}
 
 export default function AddAssociationButton() {
-    const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
-    const [isPending, startTransition] = useTransition()
+    const [open, setOpen] = useState(false)
+    const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
     const queryClient = useQueryClient()
 
-    const handleOpenChange = useCallback((open: boolean) => {
-        setDialogIsOpen(open)
-        if (!open) {
+    const form = useForm({
+        defaultValues: emptyForm,
+        validators: {
+            onChange: AddAssociationSchema,
+            onSubmit: AddAssociationSchema
+        },
+        // oxlint-disable-next-line require-await -- submission runs inside a transition
+        onSubmit: async ({ value }) => {
+            setSubmitError(null)
+            submit(async () => {
+                // l'action attend un FormData plat avec les clés historiques
+                const formData = new FormData()
+                formData.set("name", value.name)
+                formData.set("major", value.major)
+                formData.set("description", value.description)
+                formData.set("logo-picture", value.logo)
+                formData.set("birthdate", value.birthdate.toISOString())
+                formData.set("location", value.location)
+                formData.set("email", value.email)
+                for (const key of ASSOCIATION_SOCIAL_KEYS) {
+                    if (value[key]) formData.set(key, value[key])
+                }
+
+                const { data, error } =
+                    await actions.associations.addAssociationAction(formData)
+                if (error) {
+                    setSubmitError(
+                        "Une erreur est survenue. Veuillez réessayer."
+                    )
+                } else if (data.success) {
+                    setOpen(false)
+                    form.reset()
+                    await queryClient.invalidateQueries({
+                        queryKey: ["associations"]
+                    })
+                } else {
+                    setSubmitError(data.error)
+                }
+            })
+        }
+    })
+
+    const handleOpenChange = (nextOpen: boolean): void => {
+        setOpen(nextOpen)
+        if (!nextOpen) {
             setSubmitError(null)
         }
-    }, [])
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        const formData = new FormData(event.currentTarget)
-
-        setSubmitError(null)
-
-        startTransition(async () => {
-            const { data, error } =
-                await actions.associations.addAssociationAction(formData)
-            if (error) {
-                setSubmitError("Une erreur est survenue. Veuillez réessayer.")
-            } else if (data?.success) {
-                handleOpenChange(false)
-                await queryClient.invalidateQueries({
-                    queryKey: ["associations"]
-                })
-            } else {
-                setSubmitError(
-                    data?.error ??
-                        "Une erreur est survenue. Veuillez réessayer."
-                )
-            }
-        })
     }
 
     return (
-        <Dialog open={dialogIsOpen} onOpenChange={handleOpenChange}>
-            {/* Trigger */}
-            <DialogTrigger asChild>
-                <Button>Ajouter une nouvelle association</Button>
-            </DialogTrigger>
+        <DialogForm
+            open={open}
+            onOpenChange={handleOpenChange}
+            trigger={
+                <DialogTrigger asChild>
+                    <Button>Ajouter une nouvelle association</Button>
+                </DialogTrigger>
+            }
+            title="Nouvelle Association"
+            description="Ceci est le formulaire d'ajout d'association du réseau"
+            formId="addAssociationForm"
+            onSubmit={() => form.handleSubmit()}
+            isPending={isPending}
+            submitError={submitError}
+            submitLabel="Ajouter"
+        >
+            <form.Field
+                name="name"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label="Nom de l'association"
+                        placeholder="Nom"
+                        error="Le nom est requis."
+                    />
+                )}
+            />
 
-            {/* Content */}
-            <DialogContent className="h-[90%] max-h-[90%] sm:max-w-[60%] lg:max-w-[40%]">
-                <DialogHeader>
-                    <DialogTitle>Nouvelle Association</DialogTitle>
-                    <DialogDescription>
-                        Ceci est le formulaire d'ajout d'association du réseau
-                    </DialogDescription>
-                </DialogHeader>
+            <form.Field
+                name="major"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label="Filière"
+                        placeholder="exemple: Médecine, Informatique, Biologie..."
+                        error="La filière est requise."
+                    />
+                )}
+            />
 
-                {/* Form */}
-                <form
-                    onSubmit={handleSubmit}
-                    id="addAssociationForm"
-                    className="space-y-3 overflow-y-auto p-2 [&_label]:mb-2"
-                >
-                    {/* Name */}
-                    <div>
-                        <Label htmlFor="name">Nom de l'association</Label>
-                        <Input
-                            type="text"
-                            id="name"
-                            name="name"
-                            placeholder="Nom"
-                            required
-                        />
-                    </div>
+            <form.Field
+                name="description"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label="Description"
+                        multiline
+                        maxLength={1000}
+                        className="max-h-[170px]"
+                        placeholder="(Max: 1000 caractères)"
+                        error="La description est requise (max 1000 caractères)."
+                    />
+                )}
+            />
 
-                    {/* Major */}
-                    <div>
-                        <Label htmlFor="major">Filière</Label>
-                        <Input
-                            type="text"
-                            id="major"
-                            name="major"
-                            placeholder="exemple: Médecine, Informatique, Biologie..."
-                            required
-                        />
-                    </div>
+            <form.Field
+                name="logo"
+                children={(field) => {
+                    const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                        <Field data-invalid={isInvalid}>
+                            <FieldLabel htmlFor={field.name}>Logo</FieldLabel>
+                            <FieldDescription>
+                                Format : PNG, JPEG, JPG, WebP, GIF. Maximum{" "}
+                                {MAX_LOGO_SIZE / (1024 * 1024)} Mo. Format
+                                recommandé : carré.
+                            </FieldDescription>
+                            <FilePondInput
+                                maxFileSize={`${MAX_LOGO_SIZE / (1024 * 1024)}MB`}
+                                acceptedFileTypes={[
+                                    "image/png",
+                                    "image/jpeg",
+                                    "image/webp",
+                                    "image/gif"
+                                ]}
+                                onChange={(file) => field.handleChange(file)}
+                            />
+                            {isInvalid && (
+                                <FieldError errors={field.state.meta.errors} />
+                            )}
+                        </Field>
+                    )
+                }}
+            />
 
-                    {/* Description */}
-                    <div>
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            name="description"
-                            maxLength={1000}
-                            placeholder="(Max: 1000 caractères)"
-                            className="max-h-[170px]"
-                        />
-                    </div>
+            <form.Field
+                name="birthdate"
+                children={(field) => (
+                    <DateField
+                        field={field}
+                        label="Date de naissance de l'association"
+                        error="La date de naissance est requise."
+                        captionLayout="dropdown"
+                        startMonth={new Date(1950, 0)}
+                        endMonth={new Date(new Date().getFullYear() + 1, 11)}
+                    />
+                )}
+            />
 
-                    {/* Pictures */}
-                    <div>
-                        <Accordion type="single" collapsible>
-                            {/* Logo Picture */}
-                            <AccordionItem value="logo-picture">
-                                <AccordionTrigger>
-                                    <Label htmlFor="logo-picture">Logo</Label>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="text-muted-foreground text-sm">
-                                        Format d'image accepté : PNG, JPEG, JPG,
-                                        WebP, GIF
-                                    </div>
-                                    <div className="text-muted-foreground text-sm">
-                                        Taille maximale : 15 Mo
-                                    </div>
-                                    <div className="text-muted-foreground mb-1 text-sm">
-                                        Format recommandée: carré
-                                    </div>
-                                    <Input
-                                        type="file"
-                                        id="logo-picture"
-                                        name="logo-picture"
-                                        accept="image/*"
-                                        required
-                                    />
-                                </AccordionContent>
-                            </AccordionItem>
+            <form.Field
+                name="location"
+                children={(field) => {
+                    const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                        <Field data-invalid={isInvalid}>
+                            <FieldLabel htmlFor={field.name}>
+                                Adresse du local
+                            </FieldLabel>
+                            <LocationPicker
+                                id={field.name}
+                                value={field.state.value}
+                                onBlur={field.handleBlur}
+                                onChange={field.handleChange}
+                                aria-invalid={isInvalid}
+                                placeholder="6 Cours des Alliés, 35000 Rennes"
+                            />
+                            {isInvalid && (
+                                <FieldError>L'adresse est requise.</FieldError>
+                            )}
+                        </Field>
+                    )
+                }}
+            />
 
-                            {/* Office Picture */}
-                            <AccordionItem value="office-picture">
-                                <AccordionTrigger>
-                                    <Label htmlFor="office-picture">
-                                        Photo du local
-                                    </Label>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="text-muted-foreground text-sm">
-                                        Format d'image accepté : PNG, JPEG, JPG,
-                                        WebP, GIF
-                                    </div>
-                                    <div className="text-muted-foreground text-sm">
-                                        Taille maximale : 15 Mo
-                                    </div>
-                                    <Input
-                                        type="file"
-                                        id="office-picture"
-                                        name="office-picture"
-                                        accept="image/*"
-                                        required
-                                    />
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </div>
+            <form.Field
+                name="email"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label="Email de contact"
+                        placeholder="john.doe@gmail.com"
+                        error="L'adresse email n'est pas valide."
+                    />
+                )}
+            />
 
-                    {/* Birth date */}
-                    <div>
-                        <Label htmlFor="birthdate">
-                            Date de Naissance de l'Association
-                        </Label>
-                        <DatePicker
-                            name="birthdate"
-                            fromYear={1950}
-                            toYear={new Date().getFullYear() + 1}
-                        />
-                    </div>
+            <form.Field
+                name="website"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label={
+                            <>
+                                Site internet <Optionnel />
+                            </>
+                        }
+                        placeholder="https://www.fare-asso.fr"
+                        error="L'URL du site n'est pas valide."
+                    />
+                )}
+            />
 
-                    {/* Location */}
-                    <div>
-                        <Label htmlFor="location">Adresse du local</Label>
-                        <LocationPicker defaultValue="" name="location" />
-                    </div>
+            <form.Field
+                name="facebook"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label={
+                            <>
+                                Lien Facebook <Optionnel />
+                            </>
+                        }
+                        placeholder="https://www.facebook.com/johndoe"
+                        error="L'URL Facebook n'est pas valide."
+                    />
+                )}
+            />
 
-                    {/* Email */}
-                    <div>
-                        <Label htmlFor="email">Email de contact</Label>
-                        <Input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="john.doe@gmail.com"
-                        />
-                    </div>
+            <form.Field
+                name="instagram"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label={
+                            <>
+                                Lien Instagram <Optionnel />
+                            </>
+                        }
+                        placeholder="https://www.instagram.com/johndoe"
+                        error="L'URL Instagram n'est pas valide."
+                    />
+                )}
+            />
 
-                    {/* Website */}
-                    <div>
-                        <div className="flex flex-row items-center space-x-1">
-                            <Label htmlFor="website">Site internet</Label>
-                            <div className="text-sm opacity-50">
-                                (Optionnel)
-                            </div>
-                        </div>
-                        <Input
-                            type="url"
-                            id="website"
-                            name="website"
-                            pattern="https://.*"
-                            placeholder="https://www.fare-asso.fr"
-                        />
-                    </div>
+            <form.Field
+                name="twitter"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label={
+                            <>
+                                Lien X <Optionnel />
+                            </>
+                        }
+                        placeholder="https://x.com/johndoe"
+                        error="L'URL X n'est pas valide."
+                    />
+                )}
+            />
 
-                    {/* Facebook */}
-                    <div>
-                        <div className="flex flex-row items-center space-x-1">
-                            <Label htmlFor="facebook">Lien Facebook</Label>
-                            <div className="text-sm opacity-50">
-                                (Optionnel)
-                            </div>
-                        </div>
-                        <Input
-                            type="url"
-                            id="facebook"
-                            name="facebook"
-                            pattern="https://www.facebook.com/.*"
-                            placeholder="https://www.facebook.com/johndoe"
-                        />
-                    </div>
-
-                    {/* Instagram */}
-                    <div>
-                        <div className="flex flex-row items-center space-x-1">
-                            <Label htmlFor="instagram">Lien Instagram</Label>
-                            <div className="text-sm opacity-50">
-                                (Optionnel)
-                            </div>
-                        </div>
-                        <Input
-                            type="url"
-                            id="instagram"
-                            name="instagram"
-                            pattern="https://www.instagram.com/.*"
-                            placeholder="https://www.instagram.com/johndoe"
-                        />
-                    </div>
-
-                    {/* X/Twitter */}
-                    <div>
-                        <div className="flex flex-row items-center space-x-1">
-                            <Label htmlFor="twitter">Lien X</Label>
-                            <div className="text-sm opacity-50">
-                                (Optionnel)
-                            </div>
-                        </div>
-                        <Input
-                            type="url"
-                            id="twitter"
-                            name="twitter"
-                            pattern="https://twitter.com/.*|https://x.com/.*"
-                            placeholder="https://x.com/johndoe"
-                        />
-                    </div>
-
-                    {/* Discord */}
-                    <div>
-                        <div className="flex flex-row items-center space-x-1">
-                            <Label htmlFor="discord">
-                                Lien Serveur Discord
-                            </Label>
-                            <div className="text-sm opacity-50">
-                                (Optionnel)
-                            </div>
-                        </div>
-                        <Input
-                            type="url"
-                            id="discord"
-                            name="discord"
-                            pattern="https://discord.com/.*"
-                            placeholder="https://discord.com/invite/fahb"
-                        />
-                    </div>
-
-                    {/* Error */}
-                    {submitError ? (
-                        <Alert variant="destructive">
-                            <AlertTitle>Erreur</AlertTitle>
-                            <AlertDescription>{submitError}</AlertDescription>
-                        </Alert>
-                    ) : null}
-                </form>
-
-                <DialogFooter>
-                    <Button
-                        type="submit"
-                        form="addAssociationForm"
-                        disabled={isPending}
-                    >
-                        {isPending ? <LoadingRing /> : null} Ajouter
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+            <form.Field
+                name="discord"
+                children={(field) => (
+                    <TextField
+                        field={field}
+                        label={
+                            <>
+                                Lien Serveur Discord <Optionnel />
+                            </>
+                        }
+                        placeholder="https://discord.com/invite/fahb"
+                        error="L'URL Discord n'est pas valide."
+                    />
+                )}
+            />
+        </DialogForm>
     )
 }
