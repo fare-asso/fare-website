@@ -24,7 +24,7 @@ const detailsById = new Map(
         asso.id,
         {
             major: asso.major,
-            logoUrl: storage.getPublicUrl(asso.logoPath)
+            logoUrl: asso.logoPath ? storage.getPublicUrl(asso.logoPath) : null
         }
     ])
 )
@@ -149,31 +149,41 @@ const labelX = (x: number): number => Math.min(Math.max(x, 90), map.width - 90)
                 </button>
             </div>
             <ul class="space-y-2">
-                {cluster.assos.toSorted((a, b) => a.name.localeCompare(b.name)).map((asso) => (
-                    <li>
-                        <a
-                            href={`/a-propos/reseau/associations/${asso.id}`}
-                            class="border-border bg-card flex items-center gap-3 rounded-xl border p-2.5 transition-shadow hover:bg-accent/60"
-                        >
-                            <Image
-                                src={detailsById.get(asso.id)?.logoUrl ?? ""}
-                                width={96}
-                                height={96}
-                                loading="lazy"
-                                alt={`Logo de ${asso.name}`}
-                                class="h-12 w-12 shrink-0 rounded-lg object-cover"
-                            />
-                            <span class="min-w-0">
-                                <span class="block truncate font-semibold">
-                                    {asso.name}
+                {cluster.assos.toSorted((a, b) => a.name.localeCompare(b.name)).map((asso) => {
+                    const details = detailsById.get(asso.id)
+                    return (
+                        <li>
+                            <a
+                                href={`/a-propos/reseau/associations/${asso.id}`}
+                                class="border-border bg-card flex items-center gap-3 rounded-xl border p-2.5 transition-shadow hover:bg-accent/60"
+                            >
+                                {details?.logoUrl ? (
+                                    <Image
+                                        src={details.logoUrl}
+                                        width={96}
+                                        height={96}
+                                        loading="lazy"
+                                        alt={`Logo de ${asso.name}`}
+                                        class="h-12 w-12 shrink-0 rounded-lg object-cover"
+                                    />
+                                ) : (
+                                    <span
+                                        class="bg-muted h-12 w-12 shrink-0 rounded-lg"
+                                        aria-hidden="true"
+                                    />
+                                )}
+                                <span class="min-w-0">
+                                    <span class="block truncate font-semibold">
+                                        {asso.name}
+                                    </span>
+                                    <span class="text-muted-foreground block truncate text-sm">
+                                        {details?.major}
+                                    </span>
                                 </span>
-                                <span class="text-muted-foreground block truncate text-sm">
-                                    {detailsById.get(asso.id)?.major}
-                                </span>
-                            </span>
-                        </a>
-                    </li>
-                ))}
+                            </a>
+                        </li>
+                    )
+                })}
             </ul>
         </div>
     ))}

@@ -149,7 +149,7 @@ export function buildReseauMap(
     let minLat = Infinity
     let maxLat = -Infinity
     for (const code of covered) {
-        for (const ring of departements[code]) {
+        for (const ring of departements[code] ?? []) {
             for (const [lon, lat] of ring) {
                 if (lon < minLon) minLon = lon
                 if (lon > maxLon) maxLon = lon
@@ -176,7 +176,7 @@ export function buildReseauMap(
     })
     const toPath = (codes: string[]): string =>
         codes
-            .flatMap((code) => departements[code])
+            .flatMap((code) => departements[code] ?? [])
             .map((ring) => {
                 const pts = ring.map(([lon, lat]) => {
                     const { x, y } = project(lat, lon)

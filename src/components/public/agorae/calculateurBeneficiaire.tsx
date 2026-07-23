@@ -43,10 +43,11 @@ export default function CalculateurBeneficiaire() {
     const [recettes, setRecettes] = useState("")
     const [depenses, setDepenses] = useState("")
 
-    const rav =
+    const brut =
         recettes && depenses
             ? (Number.parseFloat(recettes) - Number.parseFloat(depenses)) / 30
-            : null
+            : Number.NaN
+    const rav = Number.isFinite(brut) ? brut : null
     const panier = rav === null ? null : determinerPanier(rav)
 
     return (
@@ -65,6 +66,7 @@ export default function CalculateurBeneficiaire() {
                         <Input
                             id="recettes"
                             type="number"
+                            min="0"
                             value={recettes}
                             onChange={(e) => setRecettes(e.target.value)}
                             placeholder="Bourse, salaire, aides…"
@@ -75,6 +77,7 @@ export default function CalculateurBeneficiaire() {
                         <Input
                             id="depenses"
                             type="number"
+                            min="0"
                             value={depenses}
                             onChange={(e) => setDepenses(e.target.value)}
                             placeholder="Loyer, factures, transport…"

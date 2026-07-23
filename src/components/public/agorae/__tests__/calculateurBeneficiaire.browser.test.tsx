@@ -52,6 +52,19 @@ describe("<CalculateurBeneficiaire />", () => {
             .toBeVisible()
     })
 
+    it("falls back to the empty state on a non-finite RAV", async () => {
+        const screen = await render(<CalculateurBeneficiaire />)
+        await screen.getByLabelText("Recettes par mois (€)").fill("1e999")
+        await screen.getByLabelText("Dépenses par mois (€)").fill("300")
+        await expect
+            .element(
+                screen.getByText(
+                    "Remplis les deux champs pour voir ton résultat."
+                )
+            )
+            .toBeVisible()
+    })
+
     it("shows the free basket when the RAV is under 0,70€", async () => {
         const screen = await render(<CalculateurBeneficiaire />)
         await screen.getByLabelText("Recettes par mois (€)").fill("300")

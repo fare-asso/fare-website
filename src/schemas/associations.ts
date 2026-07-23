@@ -26,7 +26,7 @@ const AssociationBaseSchema = type({
     name: "string >= 1",
     major: "string >= 1",
     description: "1 <= string <= 1000",
-    birthdate: "Date",
+    birthdate: "Date | string.date.iso.parse",
     location: "string >= 1",
     email: "string.email",
     website: "string.url | ''",

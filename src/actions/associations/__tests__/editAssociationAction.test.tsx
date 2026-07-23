@@ -74,30 +74,60 @@ describe("editAssociationAction", () => {
         const res = await editAssociationAction(fd({ name: "" }))
         expect(res).toEqual({
             success: false,
-            error: "Veuillez remplir tous les champs obligatoires."
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.update).not.toHaveBeenCalled()
+    })
+
+    it("rejects an invalid social link server-side", async () => {
+        const res = await editAssociationAction(fd({ website: "pas-une-url" }))
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.update).not.toHaveBeenCalled()
+    })
+
+    it("rejects an invalid birthdate server-side", async () => {
+        const res = await editAssociationAction(
+            fd({ birthdate: "pas-une-date" })
+        )
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
         })
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("rejects a non-file logo", async () => {
         const res = await editAssociationAction(fd({ "logo-picture": "nope" }))
-        expect(res).toEqual({ success: false, error: "Logo non-valide." })
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
     })
 
-    it("returns the storage error when the update fails", async () => {
+    it("returns a generic error when the storage update fails", async () => {
         h.storageUpdate.mockResolvedValue({
             data: null,
             error: { message: "upload boom" }
         })
         const res = await editAssociationAction(fd())
-        expect(res).toEqual({ success: false, error: "upload boom" })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de la mise à jour du logo"
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         const res = await editAssociationAction(fd())
-        expect(res).toEqual({ success: false, error: "db down" })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de la modification de l'association"
+        })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 
