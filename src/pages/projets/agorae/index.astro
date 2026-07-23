@@ -6,6 +6,8 @@ import { FiDownload, FiExternalLink } from "react-icons/fi"
 import food from "@/assets/AGORAe/food.jpg"
 import logoAgoraE from "@/assets/AGORAe/logo_AgoraE.png"
 import salle from "@/assets/AGORAe/salle.jpg"
+import logoUR2 from "@/assets/univ/Logo_univ-rennes2-2016.png"
+import logoUR from "@/assets/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
 import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
 import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
@@ -354,6 +356,28 @@ export const prerender = true
                     Soliguide
                 </a>.
             </p>
+        </section>
+
+        <section class="mt-16 w-full max-w-3xl text-center">
+            <p class="text-muted-foreground mb-6 text-sm">
+                Un projet financé par&nbsp;:
+            </p>
+            <div
+                class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6"
+            >
+                <Image
+                    src={logoUR}
+                    alt="Logo de l'Université de Rennes"
+                    class="h-16 w-auto object-contain"
+                    width={175}
+                />
+                <Image
+                    src={logoUR2}
+                    alt="Logo de l'Université Rennes 2"
+                    class="h-16 w-auto object-contain"
+                    width={175}
+                />
+            </div>
         </section>
     </div>
 </Public>
