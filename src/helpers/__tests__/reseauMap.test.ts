@@ -31,8 +31,8 @@ describe("departementOf", () => {
 describe("buildReseauMap", () => {
     it("covers the départements where associations are located", () => {
         const map = buildReseauMap([
-            { name: "A", location: loc(...RENNES) },
-            { name: "B", location: loc(...SAINT_BRIEUC) }
+            { id: 1, name: "A", location: loc(...RENNES) },
+            { id: 2, name: "B", location: loc(...SAINT_BRIEUC) }
         ])
         expect(map.covered).toEqual(["22", "35"])
         expect(map.coveredPath.startsWith("M")).toBe(true)
@@ -40,10 +40,12 @@ describe("buildReseauMap", () => {
     })
 
     it("extends coverage and the frame when a new département appears", () => {
-        const base = buildReseauMap([{ name: "A", location: loc(...RENNES) }])
+        const base = buildReseauMap([
+            { id: 1, name: "A", location: loc(...RENNES) }
+        ])
         const wide = buildReseauMap([
-            { name: "A", location: loc(...RENNES) },
-            { name: "B", location: loc(...VANNES) }
+            { id: 1, name: "A", location: loc(...RENNES) },
+            { id: 2, name: "B", location: loc(...VANNES) }
         ])
         expect(base.covered).toEqual(["35"])
         expect(wide.covered).toEqual(["35", "56"])
@@ -56,7 +58,7 @@ describe("buildReseauMap", () => {
 
     it("falls back to 22 + 35 when no association has coordinates", () => {
         const map = buildReseauMap([
-            { name: "A", location: "adresse en texte libre" }
+            { id: 1, name: "A", location: "adresse en texte libre" }
         ])
         expect(map.covered).toEqual(["22", "35"])
         expect(map.clusters).toEqual([])
@@ -64,43 +66,69 @@ describe("buildReseauMap", () => {
 
     it("merges nearby campuses into one cluster named after the city", () => {
         const map = buildReseauMap([
-            { name: "A", location: loc(...VILLEJEAN) },
-            { name: "B", location: loc(...BEAULIEU) },
-            { name: "C", location: loc(...SAINT_BRIEUC) }
+            { id: 1, name: "A", location: loc(...VILLEJEAN) },
+            { id: 2, name: "B", location: loc(...BEAULIEU) },
+            { id: 3, name: "C", location: loc(...SAINT_BRIEUC) }
         ])
         expect(map.clusters).toHaveLength(2)
         const rennes = map.clusters.find((c) => c.city === "Rennes")
         expect(rennes?.count).toBe(2)
-        expect(rennes?.names).toEqual(["A", "B"])
+        expect(rennes?.assos).toEqual([
+            { id: 1, name: "A" },
+            { id: 2, name: "B" }
+        ])
         expect(map.clusters.find((c) => c.city === "Saint-Brieuc")?.count).toBe(
             1
         )
     })
 
+    it("tints Finistère separately for the Fédé B while it is not covered", () => {
+        const map = buildReseauMap([
+            { id: 1, name: "A", location: loc(...RENNES) }
+        ])
+        expect(map.fedeB).not.toBeNull()
+        expect(map.fedeB!.path.startsWith("M")).toBe(true)
+        expect(map.fedeB!.x).toBeLessThan(map.width)
+        expect(map.fedeB!.y).toBeGreaterThan(0)
+        expect(map.fedeB!.y).toBeLessThan(map.height)
+    })
+
+    it("drops the Fédé B tint if Finistère becomes covered", () => {
+        const map = buildReseauMap([
+            { id: 1, name: "A", location: loc(48.39, -4.49) }
+        ])
+        expect(map.covered).toContain("29")
+        expect(map.fedeB).toBeNull()
+    })
+
     it("names a cluster after the nearest known city", () => {
         const map = buildReseauMap([
-            { name: "ADEAF", location: loc(...JAVENE) }
+            { id: 5, name: "ADEAF", location: loc(...JAVENE) }
         ])
         expect(map.clusters[0].city).toBe("Fougères")
     })
 
     it("sorts clusters by size descending and skips invalid rows", () => {
         const map = buildReseauMap([
-            { name: "A", location: loc(...SAINT_BRIEUC) },
-            { name: "B", location: loc(...RENNES) },
+            { id: 1, name: "A", location: loc(...SAINT_BRIEUC) },
+            { id: 2, name: "B", location: loc(...RENNES) },
             {
+                id: 3,
                 name: "C",
                 location: JSON.stringify({
                     displayName: "x",
                     coordinates: { lat: "abc", lon: "-1.7" }
                 })
             },
-            { name: "D", location: loc(...RENNES) }
+            { id: 4, name: "D", location: loc(...RENNES) }
         ])
         expect(map.clusters.map((c) => c.city)).toEqual([
             "Rennes",
             "Saint-Brieuc"
         ])
-        expect(map.clusters[0].names).toEqual(["B", "D"])
+        expect(map.clusters[0].assos).toEqual([
+            { id: 2, name: "B" },
+            { id: 4, name: "D" }
+        ])
     })
 })

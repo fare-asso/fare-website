@@ -101,7 +101,7 @@ interface CityCluster {
     y: number
     count: number
     city: string | null
-    names: string[]
+    assos: { id: number; name: string }[]
 }
 
 export interface ReseauMap {
@@ -110,22 +110,27 @@ export interface ReseauMap {
     covered: string[]
     coveredPath: string
     contextPath: string
+    fedeB: { path: string; x: number; y: number } | null
     clusters: CityCluster[]
 }
 
+const FEDEB_DEP = "29"
+// centre approximatif du Finistère, pour ancrer le logo
+const FEDEB_ANCHOR = { lat: 48.25, lon: -4.05 }
+
 export function buildReseauMap(
-    associations: { name: string; location: string }[]
+    associations: { id: number; name: string; location: string }[]
 ): ReseauMap {
     // 1. coordonnées exploitables uniquement ; les autres associations
     // sont ignorées jusqu'à correction de leur adresse
-    const points: { name: string; lat: number; lon: number }[] = []
+    const points: { id: number; name: string; lat: number; lon: number }[] = []
     for (const asso of associations) {
         const parsed = parseLocation(asso.location)
         if (!parsed.success) continue
         const lat = Number(parsed.value.coordinates.lat)
         const lon = Number(parsed.value.coordinates.lon)
         if (Number.isNaN(lat) || Number.isNaN(lon)) continue
-        points.push({ name: asso.name, lat, lon })
+        points.push({ id: asso.id, name: asso.name, lat, lon })
     }
 
     // 2. départements couverts : ceux qui contiennent au moins un point
@@ -185,7 +190,7 @@ export function buildReseauMap(
     const groups: {
         lats: number[]
         lons: number[]
-        names: string[]
+        assos: { id: number; name: string }[]
         lat: number
         lon: number
     }[] = []
@@ -196,7 +201,7 @@ export function buildReseauMap(
         if (group) {
             group.lats.push(point.lat)
             group.lons.push(point.lon)
-            group.names.push(point.name)
+            group.assos.push({ id: point.id, name: point.name })
             group.lat =
                 group.lats.reduce((s, v) => s + v, 0) / group.lats.length
             group.lon =
@@ -205,7 +210,7 @@ export function buildReseauMap(
             groups.push({
                 lats: [point.lat],
                 lons: [point.lon],
-                names: [point.name],
+                assos: [{ id: point.id, name: point.name }],
                 lat: point.lat,
                 lon: point.lon
             })
@@ -217,12 +222,14 @@ export function buildReseauMap(
             return {
                 x: round(x),
                 y: round(y),
-                count: group.names.length,
+                count: group.assos.length,
                 city: nearestCity(group.lat, group.lon),
-                names: group.names
+                assos: group.assos
             }
         })
         .sort((a, b) => b.count - a.count)
+
+    const fedeBAnchor = project(FEDEB_ANCHOR.lat, FEDEB_ANCHOR.lon)
 
     return {
         width: MAP_WIDTH,
@@ -230,8 +237,17 @@ export function buildReseauMap(
         covered: [...covered].sort(),
         coveredPath: toPath([...covered]),
         contextPath: toPath(
-            Object.keys(departements).filter((code) => !covered.has(code))
+            Object.keys(departements).filter(
+                (code) => !covered.has(code) && code !== FEDEB_DEP
+            )
         ),
+        fedeB: covered.has(FEDEB_DEP)
+            ? null
+            : {
+                  path: toPath([FEDEB_DEP]),
+                  x: round(fedeBAnchor.x),
+                  y: round(fedeBAnchor.y)
+              },
         clusters
     }
 }

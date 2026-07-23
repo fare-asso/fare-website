@@ -1,45 +1,85 @@
 ---
+import { Image } from "astro:assets"
+import logoFedeB from "@/assets/FEDEB-Logo.webp"
 import type { Association } from "@/generated/prisma/client"
 import { buildReseauMap } from "@/helpers/reseauMap"
+import { StorageUtils } from "@/helpers/supabase/storageUtils"
 
 interface Props {
-    associations: Pick<Association, "name" | "location">[]
+    associations: Pick<
+        Association,
+        "id" | "name" | "location" | "major" | "logoPath"
+    >[]
 }
+
+const FEDEB_LOGO_SIZE = 56
 
 const { associations } = Astro.props
 const map = buildReseauMap(associations)
+const storage = new StorageUtils().from("association-pictures")
+const detailsById = new Map(
+    associations.map((asso) => [
+        asso.id,
+        {
+            major: asso.major,
+            logoUrl: storage.getPublicUrl(asso.logoPath)
+        }
+    ])
+)
 const radius = (count: number): number => 12 + Math.sqrt(count) * 4
 // garde les libellés de villes en bord de carte dans le viewBox
 const labelX = (x: number): number => Math.min(Math.max(x, 90), map.width - 90)
 ---
 
 <figure class="w-full">
-    <svg
-        viewBox={`0 0 ${map.width} ${map.height}`}
-        role="img"
-        aria-label="Carte des associations du réseau en Haute-Bretagne"
-        class="border-border h-auto w-full rounded-2xl border"
-    >
-        <rect
-            width={map.width}
-            height={map.height}
-            class="fill-fare-blue/10"
-        ></rect>
-        <path
-            d={map.contextPath}
-            class="fill-background stroke-border"
-            stroke-width="1.5"
-            stroke-linejoin="round"
-        ></path>
-        <path
-            d={map.coveredPath}
-            class="fill-fare-cream stroke-bagad-wood/50"
-            stroke-width="2"
-            stroke-linejoin="round"
-        ></path>
-        {map.clusters.map((cluster) => (
+    <div class="relative">
+        <svg
+            viewBox={`0 0 ${map.width} ${map.height}`}
+            role="img"
+            aria-label="Carte des associations du réseau en Haute-Bretagne"
+            class="border-border h-auto w-full rounded-2xl border"
+        >
+            <rect
+                width={map.width}
+                height={map.height}
+                class="fill-fare-blue/10"
+            ></rect>
+            <path
+                d={map.contextPath}
+                class="fill-background stroke-border"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+            ></path>
+            {map.fedeB && (
                 <g>
-                    <title>{cluster.names.join(", ")}</title>
+                    <title>Le Finistère, territoire de la Fédé B</title>
+                    <path
+                        d={map.fedeB.path}
+                        class="fill-fedeb/25 stroke-fedeb/50"
+                        stroke-width="1.5"
+                        stroke-linejoin="round"
+                    />
+                    <image
+                        href={logoFedeB.src}
+                        x={map.fedeB.x - FEDEB_LOGO_SIZE / 2}
+                        y={map.fedeB.y - FEDEB_LOGO_SIZE / 2}
+                        width={FEDEB_LOGO_SIZE}
+                        height={FEDEB_LOGO_SIZE}
+                        opacity="0.85"
+                    />
+                </g>
+            )}
+            <path
+                d={map.coveredPath}
+                class="fill-fare-accent/25 stroke-fare-accent/60"
+                stroke-width="2"
+                stroke-linejoin="round"
+            ></path>
+            {map.clusters.map((cluster) => (
+                <g>
+                    <title>
+                        {cluster.assos.map((asso) => asso.name).join(", ")}
+                    </title>
                     <circle
                         cx={cluster.x}
                         cy={cluster.y}
@@ -74,8 +114,57 @@ const labelX = (x: number): number => Math.min(Math.max(x, 90), map.width - 90)
                     )}
                 </g>
             ))}
-    </svg>
+        </svg>
+        {map.clusters.map((cluster, index) => (
+            <button
+                type="button"
+                popovertarget={`cluster-${index}`}
+                aria-label={`Voir les associations à ${cluster.city ?? "cet endroit"}`}
+                title={cluster.assos.map((asso) => asso.name).join(", ")}
+                class="absolute h-11 w-11 -translate-x-1/2 -translate-y-1/2 rounded-full ring-white/60 transition hover:ring-4 focus-visible:ring-4"
+                style={`left: ${(cluster.x / map.width) * 100}%; top: ${(cluster.y / map.height) * 100}%`}
+            ></button>
+        ))}
+    </div>
+    {map.clusters.map((cluster, index) => (
+        <div
+            popover
+            id={`cluster-${index}`}
+            class="bg-background m-auto max-h-[85vh] w-[min(92vw,26rem)] overflow-y-auto rounded-2xl border p-5 opacity-0 shadow-lg transition-all transition-discrete duration-150 backdrop:bg-black/40 open:opacity-100 starting:open:opacity-0"
+        >
+            <h3 class="font-title mb-3 text-lg font-semibold">
+                {cluster.city ?? "Associations"}
+            </h3>
+            <ul class="space-y-2">
+                {cluster.assos.toSorted((a, b) => a.name.localeCompare(b.name)).map((asso) => (
+                    <li>
+                        <a
+                            href={`/a-propos/reseau/associations/${asso.id}`}
+                            class="border-border bg-card flex items-center gap-3 rounded-xl border p-2.5 transition-shadow hover:bg-accent/60"
+                        >
+                            <Image
+                                src={detailsById.get(asso.id)?.logoUrl ?? ""}
+                                width={96}
+                                height={96}
+                                loading="lazy"
+                                alt={`Logo de ${asso.name}`}
+                                class="h-12 w-12 shrink-0 rounded-lg object-cover"
+                            />
+                            <span class="min-w-0">
+                                <span class="block truncate font-semibold">
+                                    {asso.name}
+                                </span>
+                                <span class="text-muted-foreground block truncate text-sm">
+                                    {detailsById.get(asso.id)?.major}
+                                </span>
+                            </span>
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    ))}
     <figcaption class="text-muted-foreground mt-2 text-center text-xs">
-        {associations.length}{" "}associations réparties sur la Haute-Bretagne
+        {associations.length}{" "}associations réparties sur la Haute-Bretagne{map.fedeB && ". Dans le Finistère, notre voisine la Fédé B."}
     </figcaption>
 </figure>
