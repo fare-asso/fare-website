@@ -1,5 +1,7 @@
 ---
 import { Image } from "astro:assets"
+import { XIcon } from "lucide-react"
+
 import logoFedeB from "@/assets/FEDEB-Logo.webp"
 import type { Association } from "@/generated/prisma/client"
 import { buildReseauMap } from "@/helpers/reseauMap"
@@ -130,11 +132,22 @@ const labelX = (x: number): number => Math.min(Math.max(x, 90), map.width - 90)
         <div
             popover
             id={`cluster-${index}`}
-            class="bg-background m-auto max-h-[85vh] w-[min(92vw,26rem)] overflow-y-auto rounded-2xl border p-5 opacity-0 shadow-lg transition-all transition-discrete duration-150 backdrop:bg-black/40 open:opacity-100 starting:open:opacity-0"
+            class="map-popover bg-background m-auto max-h-[85vh] w-[min(92vw,26rem)] overflow-y-auto rounded-2xl border p-5 opacity-0 shadow-lg transition-all transition-discrete duration-150 backdrop:bg-black/40 open:opacity-100 starting:open:opacity-0"
         >
-            <h3 class="font-title mb-3 text-lg font-semibold">
-                {cluster.city ?? "Associations"}
-            </h3>
+            <div class="mb-3 flex items-center justify-between gap-4">
+                <h3 class="font-title text-lg font-semibold">
+                    {cluster.city ?? "Associations"}
+                </h3>
+                <button
+                    type="button"
+                    popovertarget={`cluster-${index}`}
+                    popovertargetaction="hide"
+                    aria-label="Fermer"
+                    class="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    <XIcon size={18} />
+                </button>
+            </div>
             <ul class="space-y-2">
                 {cluster.assos.toSorted((a, b) => a.name.localeCompare(b.name)).map((asso) => (
                     <li>
@@ -168,3 +181,13 @@ const labelX = (x: number): number => Math.min(Math.max(x, 90), map.width - 90)
         {associations.length}{" "}associations réparties sur la Haute-Bretagne{map.fedeB && ". Dans le Finistère, notre voisine la Fédé B."}
     </figcaption>
 </figure>
+
+<style is:global>
+body:has(.map-popover:popover-open) {
+    overflow: hidden;
+    pointer-events: none;
+}
+.map-popover:popover-open {
+    pointer-events: auto;
+}
+</style>
