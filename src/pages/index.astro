@@ -50,9 +50,15 @@ const heroPlaceholder = await lqip(heroImage)
                     Haute-Bretagne
                 </p>
             </div>
-            <KeyNumbersIsland server:defer>
-                <KeyNumbers slot="fallback" />
-            </KeyNumbersIsland>
+            <div class="relative isolate">
+                <div
+                    aria-hidden="true"
+                    class="bg-fare-accent/60 absolute -inset-x-10 -inset-y-8 -z-10 rounded-full blur-2xl"
+                ></div>
+                <KeyNumbersIsland server:defer>
+                    <KeyNumbers slot="fallback" />
+                </KeyNumbersIsland>
+            </div>
         </div>
         <div
             aria-hidden="true"
