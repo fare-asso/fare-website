@@ -14,7 +14,7 @@ import Public from "@/layouts/Public.astro"
 
 const { id } = Astro.params
 
-if (Number.isNaN(Number(id))) {
+if (!id || !/^\d+$/.test(id)) {
     return Astro.rewrite("/404")
 }
 

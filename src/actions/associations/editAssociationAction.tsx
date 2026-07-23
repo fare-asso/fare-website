@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto"
+
 import { type } from "arktype"
 import type { ActionAPIContext } from "astro:actions"
 
@@ -39,11 +41,11 @@ async function editAssociationActionImpl(
         birthdate: formData.get("birthdate"),
         location: formData.get("location"),
         email: formData.get("email"),
-        website: formData.get("website"),
-        facebook: formData.get("facebook"),
-        instagram: formData.get("instagram"),
-        twitter: formData.get("twitter"),
-        discord: formData.get("discord"),
+        website: formData.get("website") ?? "",
+        facebook: formData.get("facebook") ?? "",
+        instagram: formData.get("instagram") ?? "",
+        twitter: formData.get("twitter") ?? "",
+        discord: formData.get("discord") ?? "",
         // Logo optionnel : sans nouveau fichier, le logo actuel est conservé
         ...(logoPicture === null || logoPicture === ""
             ? {}
@@ -57,30 +59,41 @@ async function editAssociationActionImpl(
     }
 
     // fetch current association logo path
-    const currentAssociation = await prisma.association.findUnique({
-        where: {
-            id: id
-        },
-        select: {
-            logoPath: true,
-            officePath: true
-        }
-    })
-
-    // validate current association
-    if (!currentAssociation)
+    const currentAssociation = await tryCatch(
+        prisma.association.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                logoPath: true,
+                officePath: true
+            }
+        })
+    )
+    if (!currentAssociation.success) {
+        captureActionError(currentAssociation.error)
         return {
             success: false,
-            error: "Echec de la récupération des informations l'association"
+            error: "Echec de la récupération des informations de l'association"
         }
+    }
+    if (!currentAssociation.value) {
+        return {
+            success: false,
+            error: "Echec de la récupération des informations de l'association"
+        }
+    }
 
-    let logoPath: string = currentAssociation.logoPath
+    const previousLogoPath = currentAssociation.value.logoPath
+    let logoPath = previousLogoPath
 
     if (data.logo) {
-        // update logo picture
+        // nouveau chemin (et non écrasement en place) : l'ancien logo
+        // reste intact si la mise à jour en base échoue, et l'URL
+        // publique change, ce qui invalide les caches navigateur/CDN
         const { data: uploaded, error: err } = await supabase.storage
             .from("association-pictures")
-            .update(currentAssociation.logoPath, data.logo)
+            .upload(randomUUID(), data.logo)
         if (err) {
             captureActionError(err)
             return {
@@ -105,20 +118,33 @@ async function editAssociationActionImpl(
                 birthdate: data.birthdate,
                 location: data.location,
                 email: data.email,
-                website: data.website,
-                facebook: data.facebook,
-                instagram: data.instagram,
-                twitter: data.twitter,
-                discord: data.discord
+                website: data.website || null,
+                facebook: data.facebook || null,
+                instagram: data.instagram || null,
+                twitter: data.twitter || null,
+                discord: data.discord || null
             }
         })
     )
     if (!edited.success) {
         captureActionError(edited.error)
+        if (logoPath !== previousLogoPath) {
+            // best-effort : ne pas laisser le nouveau logo orphelin
+            await supabase.storage
+                .from("association-pictures")
+                .remove([logoPath])
+        }
         return {
             success: false,
             error: "Echec de la modification de l'association"
         }
+    }
+
+    if (logoPath !== previousLogoPath) {
+        // best-effort : l'ancien logo n'est plus référencé
+        await supabase.storage
+            .from("association-pictures")
+            .remove([previousLogoPath])
     }
 
     return { success: true }

@@ -6,7 +6,8 @@ import Public from "@/layouts/Public.astro"
 
 import "@/styles/not-found.css"
 
-export const prerender = true
+// rendue à la demande : Astro interdit Astro.rewrite("/404") depuis une
+// route SSR vers une page prérendue (ForbiddenRewrite)
 ---
 
 <Public title="Page introuvable">

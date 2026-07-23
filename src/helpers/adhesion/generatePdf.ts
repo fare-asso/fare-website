@@ -180,7 +180,7 @@ export async function generateAdhesionPdf(
     )
 
     // --- Page 2: Bureau members ---
-    const memberPage = createPage()
+    let memberPage = createPage()
 
     memberPage.drawText("Membres du bureau:", {
         x: 50,
@@ -192,6 +192,8 @@ export async function generateAdhesionPdf(
     yPosition -= 36
 
     for (const member of data.bureau) {
+        // saut de page avant de déborder sous la marge basse
+        if (yPosition < 140) memberPage = createPage()
         addField(
             memberPage,
             `${member.poste}`,

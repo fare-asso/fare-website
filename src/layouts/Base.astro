@@ -19,17 +19,16 @@ const favicon = await getImage({
     format: "webp",
     width: 32,
     height: 32,
-    quality: 100,
-    fallbackFormat: "png"
+    quality: 100
 })
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="fr">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" href={favicon.src} type="image/png">
+        <link rel="icon" href={favicon.src} type="image/webp">
         <title>{title}</title>
         <meta name="description" content={description}>
         <Font cssVariable="--font-ovo" preload />

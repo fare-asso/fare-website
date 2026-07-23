@@ -331,17 +331,14 @@
     }
 }
 
-.page-layout > *,
-.full-width > * {
+.page-layout > * {
     grid-column: content;
 }
 
-.page-layout,
-.full-width {
+.page-layout {
     --minimum-content-padding: 2rem;
 
     /** TRACK WIDTHS **/
-    --full-max-width: 1fr;
     --content-max-width: 90vw;
 
     /** TRACK SIZES **/
@@ -361,25 +358,4 @@
         var(--full)
         [full-end];
     place-items: center;
-}
-
-/** CLASSES **/
-.full {
-    grid-column: full;
-}
-.full-start {
-    grid-column-start: full-start;
-}
-.full-end {
-    grid-column-end: full-end;
-}
-
-.content {
-    grid-column: content;
-}
-.content-start {
-    grid-column-start: content-start;
-}
-.content-end {
-    grid-column-end: content-end;
 }

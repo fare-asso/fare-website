@@ -1,3 +1,4 @@
+import { PDFDocument } from "pdf-lib"
 import { describe, expect, it } from "vitest"
 
 import type { BureauMember } from "@/schemas/adhesion"
@@ -74,6 +75,29 @@ describe("generateAdhesionPdf", () => {
             bureau: [member]
         })
         expect(isPdf(pdf)).toBe(true)
+    })
+
+    it("paginates a large bureau instead of drawing off-page", async () => {
+        const pdf = await generateAdhesionPdf({
+            dateAdhesion: new Date("2026-02-01T00:00:00Z"),
+            sigle: "FARE",
+            nomComplet: "Federation",
+            college: "A",
+            objetPrincipal: "Representation",
+            adresseAdministrative: "Rennes",
+            siegeSocial: "",
+            numeroSalle: "",
+            dateAG: null,
+            nombreEtudiantsRepresentes: 1000,
+            nombreAdherents: 100,
+            engagementCotisation: true,
+            emailAssociation: "contact@asso.fr",
+            telephonePortable: "0612345678",
+            telephoneFixe: "",
+            bureau: Array.from({ length: 12 }, () => member)
+        })
+        const doc = await PDFDocument.load(pdf)
+        expect(doc.getPageCount()).toBeGreaterThanOrEqual(3)
     })
 
     it("handles a null AG date without throwing", async () => {

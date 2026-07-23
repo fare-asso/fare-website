@@ -84,13 +84,22 @@ describe("buildReseauMap", () => {
 
     it("tints Finistère separately for the Fédé B while it is not covered", () => {
         const map = buildReseauMap([
-            { id: 1, name: "A", location: loc(...RENNES) }
+            { id: 1, name: "A", location: loc(...RENNES) },
+            { id: 2, name: "B", location: loc(...SAINT_BRIEUC) }
         ])
         expect(map.fedeB).not.toBeNull()
         expect(map.fedeB!.path.startsWith("M")).toBe(true)
+        expect(map.fedeB!.x).toBeGreaterThan(0)
         expect(map.fedeB!.x).toBeLessThan(map.width)
         expect(map.fedeB!.y).toBeGreaterThan(0)
         expect(map.fedeB!.y).toBeLessThan(map.height)
+    })
+
+    it("drops the Fédé B tint when the frame does not reach it", () => {
+        const map = buildReseauMap([
+            { id: 1, name: "A", location: loc(...RENNES) }
+        ])
+        expect(map.fedeB).toBeNull()
     })
 
     it("drops the Fédé B tint if Finistère becomes covered", () => {
@@ -99,6 +108,40 @@ describe("buildReseauMap", () => {
         ])
         expect(map.covered).toContain("29")
         expect(map.fedeB).toBeNull()
+    })
+
+    it("skips non-finite coordinates", () => {
+        const map = buildReseauMap([
+            { id: 1, name: "A", location: loc(...RENNES) },
+            {
+                id: 2,
+                name: "B",
+                location: JSON.stringify({
+                    displayName: "x",
+                    coordinates: { lat: "Infinity", lon: "1e999" }
+                })
+            },
+            {
+                id: 3,
+                name: "C",
+                location: JSON.stringify({
+                    displayName: "x",
+                    coordinates: { lat: "", lon: "" }
+                })
+            }
+        ])
+        expect(map.covered).toEqual(["35"])
+        expect(map.clusters).toHaveLength(1)
+    })
+
+    it("drops clusters that fall outside the mapped frame", () => {
+        const map = buildReseauMap([
+            { id: 1, name: "A", location: loc(...RENNES) },
+            { id: 2, name: "B", location: loc(48.857, 2.352) } // Paris
+        ])
+        expect(map.covered).toEqual(["35"])
+        expect(map.clusters).toHaveLength(1)
+        expect(map.clusters[0].city).toBe("Rennes")
     })
 
     it("names a cluster after the nearest known city", () => {

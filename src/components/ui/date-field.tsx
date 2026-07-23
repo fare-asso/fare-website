@@ -74,7 +74,7 @@ export function DateField({
                         endMonth={endMonth}
                         selected={value}
                         onSelect={(date) => {
-                            field.handleChange(date as Date)
+                            if (date) field.handleChange(date)
                             field.handleBlur()
                         }}
                     />

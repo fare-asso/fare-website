@@ -25,6 +25,18 @@ describe("AdhesionFormSchema", () => {
         }
     })
 
+    it("rejects a non-ISO dateAG string", () => {
+        expect(
+            isErrors(
+                AdhesionFormSchema(
+                    validAdhesionForm({
+                        dateAG: "pas-une-date" as unknown as Date
+                    })
+                )
+            )
+        ).toBe(true)
+    })
+
     it("rejects a too-short sigle", () => {
         expect(
             isErrors(AdhesionFormSchema(validAdhesionForm({ sigle: "F" })))

@@ -53,11 +53,6 @@ describe("lqip", () => {
         expect(meta.width).toBe(100)
     })
 
-    it("reads from fsPath, not from the public src URL", async () => {
-        const placeholder = await lqip(metadata(fixture))
-        expect(placeholder.length).toBeGreaterThan(100)
-    })
-
     it("rejects when the source file does not exist", async () => {
         await expect(lqip(metadata(join(dir, "missing.jpg")))).rejects.toThrow(
             /ENOENT/

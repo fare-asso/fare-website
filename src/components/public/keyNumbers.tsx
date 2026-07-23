@@ -29,15 +29,16 @@ export default function KeyNumbers({
     associationCount?: number
     eluesCount?: number
 }) {
+    // valeurs statiques de secours si la lecture DB a échoué
     const values = [
         {
             title: "Associations étudiantes",
-            value: associationCount ?? 0
+            value: associationCount ?? 20
         },
         { title: "Étudiant·e·s", value: 88000 },
         {
             title: "Élu·e·s universitaires & CROUS",
-            value: eluesCount ?? 0
+            value: eluesCount ?? 57
         }
     ]
     return (

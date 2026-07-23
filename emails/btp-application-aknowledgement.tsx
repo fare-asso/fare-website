@@ -30,7 +30,7 @@ export function BtpApplicationAck({
                 <span className="text-stone-600">{email}</span>.
             </Text>
             <Text>
-                A bientôt, <br />
+                À bientôt, <br />
                 L'équipe Bouge Ta Prison
             </Text>
         </BaseTemplate>

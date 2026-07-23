@@ -106,6 +106,8 @@ export default function EditAssociationButton({
     const handleOpenChange = (nextOpen: boolean): void => {
         setOpen(nextOpen)
         if (!nextOpen) {
+            // abandonner les modifications non enregistrées
+            form.reset()
             setSubmitError(null)
         }
     }

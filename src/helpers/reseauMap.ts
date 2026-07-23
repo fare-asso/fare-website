@@ -129,7 +129,7 @@ export function buildReseauMap(
         if (!parsed.success) continue
         const lat = Number(parsed.value.coordinates.lat)
         const lon = Number(parsed.value.coordinates.lon)
-        if (Number.isNaN(lat) || Number.isNaN(lon)) continue
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue
         points.push({ id: asso.id, name: asso.name, lat, lon })
     }
 
@@ -216,6 +216,8 @@ export function buildReseauMap(
             })
         }
     }
+    const inFrame = (x: number, y: number): boolean =>
+        x >= 0 && x <= MAP_WIDTH && y >= 0 && y <= height
     const clusters = groups
         .map((group) => {
             const { x, y } = project(group.lat, group.lon)
@@ -227,6 +229,9 @@ export function buildReseauMap(
                 assos: group.assos
             }
         })
+        // un point hors cadre (géocodage aberrant) produirait un bouton
+        // focusable hors carte
+        .filter((cluster) => inFrame(cluster.x, cluster.y))
         .sort((a, b) => b.count - a.count)
 
     const fedeBAnchor = project(FEDEB_ANCHOR.lat, FEDEB_ANCHOR.lon)
@@ -241,13 +246,14 @@ export function buildReseauMap(
                 (code) => !covered.has(code) && code !== FEDEB_DEP
             )
         ),
-        fedeB: covered.has(FEDEB_DEP)
-            ? null
-            : {
-                  path: toPath([FEDEB_DEP]),
-                  x: round(fedeBAnchor.x),
-                  y: round(fedeBAnchor.y)
-              },
+        fedeB:
+            covered.has(FEDEB_DEP) || !inFrame(fedeBAnchor.x, fedeBAnchor.y)
+                ? null
+                : {
+                      path: toPath([FEDEB_DEP]),
+                      x: round(fedeBAnchor.x),
+                      y: round(fedeBAnchor.y)
+                  },
         clusters
     }
 }

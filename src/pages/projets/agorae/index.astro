@@ -117,7 +117,7 @@ export const prerender = true
 
         <section id="beneficiaire" class="mb-16 w-full max-w-4xl scroll-mt-24">
             <h2 class="mb-8 text-center text-2xl font-bold">
-                Comment devenir bénéficiaire ?
+                Comment devenir bénéficiaire&nbsp;?
             </h2>
             <ol class="mb-14 grid grid-cols-1 gap-8 md:grid-cols-3">
                 <li class="flex flex-col items-center text-center">
@@ -169,7 +169,7 @@ export const prerender = true
             </ol>
 
             <h3 class="mb-4 text-center text-xl font-semibold">
-                Le Reste à Vivre (RAV), c'est quoi ?
+                Le Reste à Vivre (RAV), c'est quoi&nbsp;?
             </h3>
             <p class="mb-8 text-center">
                 C'est la somme qu'il te reste chaque jour pour te nourrir, une
@@ -246,7 +246,7 @@ export const prerender = true
             </div>
 
             <p class="text-muted-foreground text-center text-balance text-sm">
-                En difficulté pour compléter la démarche d'inscription ?
+                En difficulté pour compléter la démarche d'inscription&nbsp;?
                 Écris-nous à{" "}
                 <a href="mailto:agorae@fare-asso.fr" class="link text-nowrap">
                     agorae@fare-asso.fr
@@ -261,11 +261,13 @@ export const prerender = true
             class="mb-16 grid w-full max-w-4xl scroll-mt-24 grid-cols-1 gap-10 md:grid-cols-2"
         >
             <div class="flex flex-col items-center text-center">
-                <h2 class="mb-2 text-xl font-bold">Envie de participer ?</h2>
+                <h2 class="mb-2 text-xl font-bold">
+                    Envie de participer&nbsp;?
+                </h2>
                 <p class="text-muted-foreground mb-4 text-sm">
-                    Quelques heures ou quelques jours de disponibles ? Accueil,
-                    gestion des stocks, communication&nbsp;: tout engagement est
-                    le bienvenu.
+                    Quelques heures ou quelques jours de disponibles&nbsp;?
+                    Accueil, gestion des stocks, communication&nbsp;: tout
+                    engagement est le bienvenu.
                 </p>
                 <a
                     href="https://forms.gle/DHoMDL7N3QRHTL1w7"
@@ -277,10 +279,10 @@ export const prerender = true
                 </a>
             </div>
             <div class="flex flex-col items-center text-center">
-                <h2 class="mb-2 text-xl font-bold">Quand venir ?</h2>
+                <h2 class="mb-2 text-xl font-bold">Quand venir&nbsp;?</h2>
                 <p class="text-muted-foreground mb-4 text-sm">
                     Les horaires d'ouverture sont publiés sur Instagram. Un
-                    imprévu ? Contacte-nous à{" "}
+                    imprévu&nbsp;? Contacte-nous à{" "}
                     <a href="mailto:agorae@fare-asso.fr" class="link">
                         agorae@fare-asso.fr
                     </a>.
@@ -333,7 +335,7 @@ export const prerender = true
                         class="bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm shadow-xs transition-colors"
                     >
                         <FiExternalLink size={16} />
-                        <span class="hidden md:inline">Consulter</span>
+                        <span class="sr-only md:not-sr-only">Consulter</span>
                     </a>
                     <a
                         href={rapportActiviteUrl}
@@ -341,7 +343,7 @@ export const prerender = true
                         class="bg-agorae hover:bg-agorae/90 inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm text-white shadow-xs transition-colors"
                     >
                         <FiDownload size={16} />
-                        <span class="hidden md:inline">Télécharger</span>
+                        <span class="sr-only md:not-sr-only">Télécharger</span>
                     </a>
                 </div>
             </div>
@@ -351,6 +353,8 @@ export const prerender = true
                 <a
                     href="https://soliguide.fr/fr/fiche/agorae-saint-brieuc-37414"
                     title="Lien vers soliguide"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     class="link"
                 >
                     Soliguide
