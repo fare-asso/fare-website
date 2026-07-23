@@ -2,6 +2,8 @@
 import { Image } from "astro:assets"
 
 import logoBagadAsso from "@/assets/Logo_Bagadasso.png"
+import logoUR2 from "@/assets/univ/Logo_univ-rennes2-2016.png"
+import logoUR from "@/assets/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
 import FormIsland from "@/components/public/bagadAsso/formIsland.astro"
 import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
@@ -114,6 +116,28 @@ export const prerender = true
                     Tarifs réduits sur les goodies
                 </li>
             </ul>
+        </section>
+
+        <section class="mb-16 w-full max-w-3xl text-center">
+            <p class="text-muted-foreground mb-6 text-sm">
+                Un projet financé par&nbsp;:
+            </p>
+            <div
+                class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6"
+            >
+                <Image
+                    src={logoUR}
+                    alt="Logo de l'Université de Rennes"
+                    class="h-16 w-auto object-contain"
+                    width={175}
+                />
+                <Image
+                    src={logoUR2}
+                    alt="Logo de l'Université Rennes 2"
+                    class="h-16 w-auto object-contain"
+                    width={175}
+                />
+            </div>
         </section>
 
         <section id="demande" class="flex w-full scroll-mt-24 justify-center">
