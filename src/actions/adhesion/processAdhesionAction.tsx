@@ -21,6 +21,7 @@ const logoExtensionByMime: Record<string, string> = {
     "image/png": "png",
     "image/jpeg": "jpg",
     "image/webp": "webp",
+    "image/svg+xml": "svg",
     "application/pdf": "pdf"
 }
 

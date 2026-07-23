@@ -8,10 +8,13 @@ const h = vi.hoisted(() => ({
     findUnique: vi.fn(),
     update: vi.fn(),
     getUser: vi.fn(),
-    storageUpdate: vi.fn(),
+    upload: vi.fn(),
+    remove: vi.fn(),
     captureActionError: vi.fn()
 }))
-const from = vi.hoisted(() => vi.fn(() => ({ update: h.storageUpdate })))
+const from = vi.hoisted(() =>
+    vi.fn(() => ({ upload: h.upload, remove: h.remove }))
+)
 
 vi.mock("@/helpers/db", () =>
     dbModule({
@@ -37,10 +40,11 @@ beforeEach(() => {
         logoPath: "association-pictures/old.png",
         officePath: null
     })
-    h.storageUpdate.mockResolvedValue({
+    h.upload.mockResolvedValue({
         data: { path: "association-pictures/new.png" },
         error: null
     })
+    h.remove.mockResolvedValue({ data: null, error: null })
     h.update.mockResolvedValue({ id: 1 })
 })
 
@@ -70,38 +74,116 @@ describe("editAssociationAction", () => {
         })
     })
 
+    it("captures and fails when the fetch throws", async () => {
+        h.findUnique.mockRejectedValue(new Error("db down"))
+        const res = await editAssociationAction(fd())
+        expect(res).toEqual({
+            success: false,
+            error: expect.stringMatching(/récupération des informations/)
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.update).not.toHaveBeenCalled()
+    })
+
+    it("rejects a non-numeric id", async () => {
+        const res = await editAssociationAction(fd({ id: "abc" }))
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.update).not.toHaveBeenCalled()
+    })
+
     it("rejects a payload missing required fields", async () => {
         const res = await editAssociationAction(fd({ name: "" }))
         expect(res).toEqual({
             success: false,
-            error: "Veuillez remplir tous les champs obligatoires."
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.update).not.toHaveBeenCalled()
+    })
+
+    it("rejects an invalid social link server-side", async () => {
+        const res = await editAssociationAction(fd({ website: "pas-une-url" }))
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.update).not.toHaveBeenCalled()
+    })
+
+    it("rejects an invalid birthdate server-side", async () => {
+        const res = await editAssociationAction(
+            fd({ birthdate: "pas-une-date" })
+        )
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
         })
         expect(h.update).not.toHaveBeenCalled()
     })
 
     it("rejects a non-file logo", async () => {
         const res = await editAssociationAction(fd({ "logo-picture": "nope" }))
-        expect(res).toEqual({ success: false, error: "Logo non-valide." })
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
     })
 
-    it("returns the storage error when the update fails", async () => {
-        h.storageUpdate.mockResolvedValue({
+    it("rejects an oversized logo", async () => {
+        const big = new File([new Uint8Array(16 * 1024 * 1024)], "big.png", {
+            type: "image/png"
+        })
+        const res = await editAssociationAction(fd({ "logo-picture": big }))
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.upload).not.toHaveBeenCalled()
+    })
+
+    it("returns a generic error when the logo upload fails", async () => {
+        h.upload.mockResolvedValue({
             data: null,
             error: { message: "upload boom" }
         })
         const res = await editAssociationAction(fd())
-        expect(res).toEqual({ success: false, error: "upload boom" })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de la mise à jour du logo"
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.update).not.toHaveBeenCalled()
     })
 
-    it("captures and fails when the db update throws", async () => {
+    it("captures, cleans up the new logo and fails when the db update throws", async () => {
         h.update.mockRejectedValue(new Error("db down"))
         const res = await editAssociationAction(fd())
-        expect(res).toEqual({ success: false, error: "db down" })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de la modification de l'association"
+        })
         expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.remove).toHaveBeenCalledWith(["association-pictures/new.png"])
     })
 
-    it("updates the association on the happy path", async () => {
+    it("keeps the current logo when no new file is provided", async () => {
+        const data = fd()
+        data.delete("logo-picture")
+        const res = await editAssociationAction(data)
+        expect(res).toEqual({ success: true })
+        expect(h.upload).not.toHaveBeenCalled()
+        expect(h.remove).not.toHaveBeenCalled()
+        expect(h.update).toHaveBeenCalledWith({
+            where: { id: 1 },
+            data: expect.objectContaining({
+                logoPath: "association-pictures/old.png"
+            })
+        })
+    })
+
+    it("updates the association and removes the old logo on the happy path", async () => {
         const res = await editAssociationAction(fd())
         expect(res).toEqual({ success: true })
         expect(h.update).toHaveBeenCalledWith({
@@ -111,5 +193,6 @@ describe("editAssociationAction", () => {
                 logoPath: "association-pictures/new.png"
             })
         })
+        expect(h.remove).toHaveBeenCalledWith(["association-pictures/old.png"])
     })
 })

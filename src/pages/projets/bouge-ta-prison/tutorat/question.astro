@@ -5,8 +5,16 @@ import Public from "@/layouts/Public.astro"
 export const prerender = true
 ---
 
-<Public title="Questions Bouge ta Prison">
-    <div class="w-full md:w-1/2">
+<Public title="Questions Bouge Ta Prison">
+    <div class="flex w-full max-w-3xl flex-col items-center">
+        <h1 class="mt-6 mb-8 text-center text-3xl font-extrabold sm:text-4xl">
+            Une question sur le tutorat&nbsp;?
+        </h1>
         <QuestionForm client:load />
+        <p class="text-muted-foreground mt-6 text-sm">
+            <a href="/projets/bouge-ta-prison/tutorat" class="link">
+                ← Retour à la page tutorat
+            </a>
+        </p>
     </div>
 </Public>

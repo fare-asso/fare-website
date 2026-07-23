@@ -26,6 +26,7 @@
     border-bottom: 1px solid rgba(10, 10, 10, 0.1);
     background: var(--paper);
     position: relative;
+    z-index: 50;
 }
 /* logo stays left; pushes the CTA + nav (or the burger) to the right */
 .v1f-logo {

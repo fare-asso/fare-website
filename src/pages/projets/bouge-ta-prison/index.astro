@@ -4,157 +4,165 @@ import { Image } from "astro:assets"
 import assemblee0 from "@/assets/BTP/assemblee1.jpg"
 import assemblee1 from "@/assets/BTP/assemblee2.jpg"
 import logoBTP from "@/assets/BTP/Logo_BTP.png"
+import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
+import { cn } from "@/lib/utils"
 
 export const prerender = true
 ---
 
-<Public title="Bouge ta Prison">
-    <div
-        class="mb-20 flex w-full flex-col items-center justify-start gap-6 px-4 md:px-8 lg:px-16"
-    >
+<Public title="Bouge Ta Prison">
+    <div class="flex w-full flex-col items-center justify-start">
         <Image
             src={logoBTP}
             alt="Logo du projet Bouge Ta Prison"
-            class="w-72"
+            class="mb-10 w-72"
+            priority
         />
 
-        <div class="w-full max-w-4xl space-y-12">
-            <section>
-                <h2>Qu'est-ce que le projet Bouge Ta Prison ?</h2>
-                <p class="mb-4 text-justify">
-                    Le projet Bouge Ta Prison est une initiative qui vise à
-                    sensibiliser notamment les étudiant·e·s sur le monde
-                    carcéral et à favoriser la réinsertion des personnes placées
-                    sous main de justice. Pour atteindre ces objectifs,
-                    différents dispositifs sont mis en place.
-                </p>
-            </section>
-
-            <section>
-                <h2>Sensibilisation au milieu carcéral</h2>
-                <p class="mb-4 text-justify">
-                    Afin de sensibiliser au milieu carcéral, le pôle organise
-                    des conférences. C'était le cas en février 2024, à
-                    l'Université de Rennes 2, deux visiteurs de prison sont
-                    venus témoigner de leurs expériences et expliquer le monde
-                    carcéral avec tous ses enjeux et ses difficultés qu'il
-                    présente.
-                </p>
-
-                <div
-                    class="mb-4 flex flex-col space-y-3 space-x-0 md:flex-row md:space-y-0 md:space-x-2 [&>img]:w-full [&>img]:rounded-xl [&>img]:object-cover md:[&>img]:w-1/2"
-                >
-                    <Image
-                        src={assemblee0}
-                        alt="Photo d'une conférence de sensibilisation du milieu carcéral à l'Université de Rennes 2 qui s'est déroulée en février 2024"
-                    />
-                    <Image
-                        src={assemblee1}
-                        alt="Deuxième photo de la conférence de sensibilisation du milieu carcéral à l'Université de Rennes 2"
-                    />
-                </div>
-
-                <p class="mb-4 text-justify">
-                    La FARE fait également partie du{" "}
-                    <a
-                        href="https://collectifprisonrennes.fr/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="link"
-                    >
-                        collectif prison Rennes
-                    </a>{" "}
-                    depuis début d'année 2024 et participe pour la deuxième fois
-                    à l'organisation des{" "}
-                    <strong>Journées Nationales des Prisons (JNP)</strong>{" "}
-                    qui ont lieu tous les ans au mois de novembre. L'objectif
-                    est de faire connaître ces journées auprès des étudiant·e·s
-                    et d'inclure certains événements dans les universités. Par
-                    exemple, l'année dernière, une présentation de livres
-                    portant sur la réinsertion a été réalisée à l'Université
-                    Rennes 2.
-                </p>
-            </section>
-
-            <section>
-                <h2>Réinsertion des personnes placées sous main de justice</h2>
-                <p class="mb-4 text-justify">
-                    Le projet Bouge Ta Prison propose l'accompagnement de
-                    personnes placées sous main de justice sur les différents
-                    campus universitaires lors de permissions de sortie. Cet
-                    accompagnement permet de faire visiter le campus,
-                    d'expliquer le fonctionnement administratif, l'emprunt de
-                    livres dans les bibliothèques universitaires, etc. En
-                    septembre 2023, le projet a accompagné deux étudiant·e·s
-                    placé·e·s sous main de justice.
-                </p>
-                <p class="mb-4 text-justify">
-                    Le projet organise également, en collaboration avec
-                    l'Université Rennes 2 et l'Administration pénitentiaire, du
-                    tutorat en détention pour les étudiant·e·s-détenu·e·s en
-                    reprise d'études universitaires. Le projet assure le
-                    recrutement des tuteur·rice·s), une partie de la formation
-                    et le suivi du tutorat toute l'année scolaire. L'année
-                    dernière, le projet a accompagné 24 tuteurs(ices) qui sont
-                    intervenu·e·s au Centre Pénitentiaire pour Femmes de Rennes
-                    et à la Centre Pénitentiaire pour Hommes de Vezin-le-Coquet
-                    en binôme pour suivre 12 détenu·e·s.
-                </p>
-
-                <div class="flex h-auto w-full flex-col items-center pt-4">
-                    <div
-                        class="flex w-full flex-col rounded-xl bg-black p-8 text-white md:w-3/4"
-                    >
-                        <h2 class="mb-2 text-lg font-semibold">
-                            Intéressé pour devenir tuteur?
-                        </h2>
-                        <p class="text-justify">
-                            Le projet Bouge Ta Prison accueille de nouveaux
-                            tuteurs chaque année. <br>
-                            Pour en savoir plus sur le tutorat, les prérequis et
-                            les modalités, cliquez ci-dessous.
-                        </p>
-                        <a
-                            href="/projets/bouge-ta-prison/tutorat"
-                            class="mt-4 ml-auto w-full rounded-full border-white bg-white px-4 py-2 text-center font-semibold text-black transition-all hover:scale-105 md:w-1/3"
-                        >
-                            En savoir plus
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <h2>Couverture médiatique</h2>
-                <p class="mb-4">
-                    Ces différents projets ont pu donner lieu à des articles de
-                    presse dans le Ouest France, France 3 et des journaux
-                    locaux.
-                </p>
-                <ul class="list-inside list-disc space-y-2">
-                    <li>
-                        <a
-                            href="https://france3-regions.francetvinfo.fr/bretagne/ille-et-vilaine/rennes/temoignage-si-je-peux-aider-un-peu-pour-leur-reinsertion-tant-mieux-pourquoi-cette-etudiante-accompagne-les-detenus-qui-reprennent-leurs-etudes-2912339.html"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="link"
-                        >
-                            Article France 3 Régions
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="https://www.campusmatin.com/vie-campus/experience-etudiante/une-supbox-pour-repenser-l-acces-a-l-enseignement-superieur-en-prison.html"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="link"
-                        >
-                            Article Campus Matin
-                        </a>
-                    </li>
-                </ul>
-            </section>
+        <div
+            class="mb-16 flex w-full max-w-3xl flex-col items-center text-center"
+        >
+            <h1 class="mb-4 text-3xl font-extrabold sm:text-4xl">
+                Sensibiliser,{" "}
+                <span class="highlight before:bg-btp-gold/40"
+                    >accompagner</span
+                >, réinsérer
+            </h1>
+            <p class="mb-8 text-lg">
+                Bouge Ta Prison sensibilise les étudiant·e·s au monde carcéral
+                et favorise la réinsertion des personnes placées sous main de
+                justice&nbsp;: conférences, accompagnement sur les campus et
+                tutorat en détention.
+            </p>
+            <a
+                href="/projets/bouge-ta-prison/tutorat"
+                class={cn(
+                    buttonVariants({ size: "lg" }),
+                    "bg-btp-blue hover:bg-btp-blue/90 text-white"
+                )}
+            >
+                Devenir tuteur·ice
+            </a>
         </div>
+
+        <section class="mb-16 w-full max-w-4xl">
+            <h2>Sensibiliser au milieu carcéral</h2>
+            <p class="mb-6">
+                Le pôle organise des conférences, comme en février 2024 à
+                l'Université Rennes 2, où deux visiteurs de prison sont venus
+                témoigner de leur expérience. Au sein du{" "}
+                <a
+                    href="https://collectifprisonrennes.fr/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link"
+                >
+                    Collectif Prison Rennes
+                </a>, la FARE participe aussi chaque novembre aux{" "}
+                <strong>Journées Nationales des Prisons (JNP)</strong>
+                {" "}pour les faire connaître auprès des étudiant·e·s.
+            </p>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Image
+                    src={assemblee0}
+                    alt="Photo d'une conférence de sensibilisation au milieu carcéral à l'Université Rennes 2 qui s'est déroulée en février 2024"
+                    class="w-full rounded-2xl object-cover"
+                    width={1000}
+                    height={1000}
+                />
+                <Image
+                    src={assemblee1}
+                    alt="Deuxième photo de la conférence de sensibilisation au milieu carcéral à l'Université Rennes 2"
+                    class="w-full rounded-2xl object-cover"
+                    width={1000}
+                    height={1000}
+                />
+            </div>
+        </section>
+
+        <section class="mb-16 w-full max-w-4xl">
+            <h2>Accompagner la réinsertion</h2>
+            <p class="mb-4">
+                Lors de permissions de sortie, le projet accompagne des
+                personnes placées sous main de justice sur les campus
+                universitaires&nbsp;: visite du campus, fonctionnement
+                administratif, emprunt de livres dans les bibliothèques
+                universitaires…
+            </p>
+            <p class="mb-10">
+                En collaboration avec l'Université Rennes 2 et l'Administration
+                pénitentiaire, la FARE organise aussi du tutorat pour les
+                étudiant·e·s détenu·e·s en reprise d'études universitaires. Le
+                projet assure le recrutement des tuteur·ice·s, une partie de
+                leur formation et le suivi du tutorat toute l'année scolaire.
+                L'année dernière&nbsp;:
+            </p>
+            <div
+                class="mb-10 grid grid-cols-1 gap-8 text-center sm:grid-cols-3"
+            >
+                <div>
+                    <p class="text-btp-blue text-4xl font-extrabold">24</p>
+                    <p class="text-muted-foreground text-sm">
+                        tuteur·ice·s intervenu·e·s en binôme
+                    </p>
+                </div>
+                <div>
+                    <p class="text-btp-blue text-4xl font-extrabold">12</p>
+                    <p class="text-muted-foreground text-sm">
+                        étudiant·e·s détenu·e·s suivi·e·s
+                    </p>
+                </div>
+                <div>
+                    <p class="text-btp-blue text-4xl font-extrabold">2</p>
+                    <p class="text-muted-foreground text-sm">
+                        centres pénitentiaires, à Rennes et Vezin-le-Coquet
+                    </p>
+                </div>
+            </div>
+            <p class="text-center">
+                <a
+                    href="/projets/bouge-ta-prison/tutorat"
+                    class={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "border-btp-blue text-btp-blue hover:text-btp-blue"
+                    )}
+                >
+                    Tout savoir sur le tutorat
+                </a>
+            </p>
+        </section>
+
+        <section class="w-full max-w-3xl text-center">
+            <h2 class="mb-8 text-center text-2xl font-bold">Dans la presse</h2>
+            <blockquote class="mb-3">
+                <p class="font-title text-2xl">
+                    «&nbsp;Si je peux aider un peu pour leur réinsertion, tant
+                    mieux&nbsp;»
+                </p>
+            </blockquote>
+            <p class="text-muted-foreground mb-8 text-sm">
+                Une étudiante tutrice, dans un reportage de France 3
+            </p>
+            <p>
+                À lire&nbsp;: le{" "}
+                <a
+                    href="https://france3-regions.francetvinfo.fr/bretagne/ille-et-vilaine/rennes/temoignage-si-je-peux-aider-un-peu-pour-leur-reinsertion-tant-mieux-pourquoi-cette-etudiante-accompagne-les-detenus-qui-reprennent-leurs-etudes-2912339.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link"
+                >
+                    témoignage sur France 3 Régions
+                </a>
+                {" "}et l'<a
+                    href="https://www.campusmatin.com/vie-campus/experience-etudiante/une-supbox-pour-repenser-l-acces-a-l-enseignement-superieur-en-prison.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link"
+                    >article de Campus Matin</a
+                >. Le projet est aussi apparu dans Ouest France et des journaux
+                locaux.
+            </p>
+        </section>
     </div>
 </Public>

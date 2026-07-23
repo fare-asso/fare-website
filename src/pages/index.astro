@@ -1,121 +1,166 @@
 ---
 import { Image } from "astro:assets"
+import { ChevronDownIcon } from "lucide-react"
 import { FaDiscord, FaYoutube } from "react-icons/fa6"
 
 import heroImage from "@/assets/hero-image.jpg"
 import NetworkIsland from "@/components/public/associations/map/networkIsland.astro"
 import KeyNumbers from "@/components/public/keyNumbers"
 import KeyNumbersIsland from "@/components/public/keyNumbersIsland.astro"
-import LinkButton from "@/components/public/link"
 import PartnersIsland from "@/components/public/partnersIsland.astro"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
-
-import "@/styles/home.css"
+import { lqip } from "@/helpers/lqip"
+import { cn } from "@/lib/utils"
 
 export const prerender = true
+
+const heroPlaceholder = await lqip(heroImage)
 ---
 
 <Public title="Accueil">
-    <div class="flex w-full flex-col items-center md:w-[90%]">
-        <section class="hero gap-4 md:gap-6">
-            <Image
-                src={heroImage}
-                alt="Image des membres du bureau"
-                class="w-full rounded-xl"
-                loading="eager"
-                width={1200}
-            />
-
-            <KeyNumbersIsland server:defer>
-                <KeyNumbers slot="fallback" />
-            </KeyNumbersIsland>
-
-            <div
-                class="intro flex w-full flex-col items-start justify-between rounded-xl bg-black p-8 text-lg text-white"
-            >
-                <h2 class="mb-2 text-2xl font-semibold">Qui sommes-nous ?</h2>
-                <p class="text-justify">
+    <section slot="hero" class="relative min-h-120 w-full">
+        <Image
+            src={heroImage}
+            alt="Membres du bureau de la FARE"
+            class="absolute inset-0 h-full w-full rounded-b-xl bg-cover bg-center object-cover"
+            style={`background-image: url(${heroPlaceholder})`}
+            priority
+        />
+        <div
+            class="absolute inset-0 rounded-b-xl bg-linear-to-t from-black/80 via-black/25 to-transparent"
+        ></div>
+        <div
+            class="absolute right-0 bottom-0 left-0 flex flex-col items-start gap-8 px-6 pb-12 sm:px-10 sm:py-16 xl:flex-row xl:items-end xl:justify-between"
+        >
+            <div>
+                <h1
+                    class="mb-2 text-3xl font-extrabold text-white sm:text-4xl xl:text-5xl"
+                >
+                    Par et pour les{" "}
+                    <span
+                        class="highlight text-neutral-200 before:bg-fare-accent"
+                    >
+                        étudiant·e·s
+                    </span>
+                </h1>
+                <p class="text-lg text-white/90 text-balance">
                     La Fédération des Associations du Réseau Étudiant de
-                    Haute-Bretagne (FARE) est une organisation humaniste et
-                    militante qui représente les étudiant.e.s d'Ille-et-Vilaine
-                    et des Côtes-d'Armor. Indépendante de tout parti politique,
-                    elle œuvre chaque jour pour améliorer la vie des 88 000
-                    étudiant.e.s du territoire grâce à des projets construits
-                    "par et pour les étudiant.e.s".
+                    Haute-Bretagne
                 </p>
-                <div class="flex w-full flex-col items-center pt-4">
-                    <LinkButton
-                        href="/a-propos"
-                        title="En savoir +"
-                        className="bg-white text-black"
-                        variant="outline"
-                    />
-                </div>
             </div>
+            <div class="relative isolate">
+                <div
+                    aria-hidden="true"
+                    class="bg-fare-accent/60 absolute -inset-x-10 -inset-y-8 -z-10 rounded-full blur-2xl"
+                ></div>
+                <KeyNumbersIsland server:defer>
+                    <KeyNumbers slot="fallback" />
+                </KeyNumbersIsland>
+            </div>
+        </div>
+        <div
+            aria-hidden="true"
+            class="absolute bottom-3 left-1/2 -translate-x-1/2"
+        >
+            <ChevronDownIcon
+                size={24}
+                className="motion-safe:animate-bounce text-white"
+            />
+        </div>
+    </section>
+    <div class="flex w-full flex-col items-center">
+        <section class="mt-10 mb-16 w-full max-w-2xl text-center">
+            <h2 class="mb-4 text-center text-2xl font-bold">
+                Qui sommes-nous&nbsp;?
+            </h2>
+            <p class="mb-8">
+                La FARE est une organisation humaniste et militante,
+                indépendante de tout parti politique, qui représente les
+                étudiant·e·s d'Ille-et-Vilaine et des Côtes-d'Armor. Elle œuvre
+                au quotidien pour améliorer la vie des 88 000 étudiant·e·s du
+                territoire, à travers des projets construits par et pour les
+                étudiant·e·s.
+            </p>
+            <a
+                href="/a-propos"
+                class={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "border-fare-accent text-fare-accent hover:text-fare-accent"
+                )}
+            >
+                En savoir plus sur la FARE
+            </a>
         </section>
 
-        <div class="my-10 flex w-full flex-col">
-            <h2 class="mb-2 text-2xl font-semibold">Notre réseau</h2>
-            <div class="flex flex-col items-center">
-                <NetworkIsland server:defer>
-                    <div
-                        slot="fallback"
-                        class="text-muted-foreground flex min-h-96 w-full items-center justify-center"
-                    >
-                        Chargement de la carte…
-                    </div>
-                </NetworkIsland>
-            </div>
-        </div>
+        <section class="mb-16 w-full max-w-5xl">
+            <h2 class="mb-4 text-center text-2xl font-bold">Notre réseau</h2>
+            <p class="mx-auto mb-8 max-w-2xl text-center text-balance">
+                Des associations étudiantes fédérées sur toute la
+                Haute-Bretagne, de Rennes à Saint-Brieuc, en passant par
+                Saint-Malo et Fougères.
+            </p>
+            <NetworkIsland server:defer>
+                <div
+                    slot="fallback"
+                    class="text-muted-foreground flex min-h-96 w-full items-center justify-center"
+                >
+                    Chargement de la carte…
+                </div>
+            </NetworkIsland>
+            <p class="mt-8 text-center">
+                <a
+                    href="/a-propos/reseau"
+                    class={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "border-fare-accent text-fare-accent hover:text-fare-accent"
+                    )}
+                >
+                    Découvrir les associations
+                </a>
+            </p>
+        </section>
 
-        <div class="my-10 flex w-full flex-col">
-            <h2 class="mb-2 text-2xl font-semibold">Discord</h2>
-            <p class="mb-12 text-justify">
-                Intéressé·e par la FARE et son réseau ? Étudiant·e en
-                Ille-et-Vilaine ou Côtes-d'Armor ? La FARE possède un serveur
-                Discord, conçu par les étudiant·e·s à destination des
-                étudiant·e·s. C'est une plateforme d'échange, de partage et de
-                travail sur laquelle sont déjà présent·e·s les
-                administrateur·rice·s, les élu·e·s de la FARE mais aussi les
-                membres d'association étudiante de Haute-Bretagne. Ce serveur
-                est un réel outil pour vous et vous permet de profiter au mieux
-                des services que nous vous proposons. Maintenant que c'est
-                clair, il ne vous reste plus qu'à cliquer sur le lien d'accès,
-                et si quelques zones de flou persistent, voici une vidéo de
-                présentation du Discord de la FARE qui devrait vous aider !
+        <section class="mb-10 w-full max-w-2xl text-center">
+            <h2 class="mb-4 text-center text-2xl font-bold">
+                Retrouvez-nous sur Discord
+            </h2>
+            <p class="mb-8">
+                Le serveur Discord de la FARE est un espace d'échange conçu par
+                et pour les étudiant·e·s de Haute-Bretagne. Vous y retrouverez
+                le bureau fédéral, les administrateur·rice·s, les élu·e·s et les
+                membres des associations du réseau.
             </p>
             <div
-                class="mt-4 flex w-full flex-col items-center justify-center gap-4 sm:flex-row"
+                class="flex w-full flex-col items-center justify-center gap-4 sm:flex-row"
             >
-                <Button
-                    className="bg-[#5865f2] hover:bg-[#4752c4] w-full max-w-80"
+                <a
+                    href="https://discord.gg/XcKg3abqFE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={cn(
+                        buttonVariants(),
+                        "w-full max-w-80 gap-2 bg-[#5865f2] text-white hover:bg-[#4752c4]"
+                    )}
                 >
-                    <a
-                        href="https://discord.gg/XcKg3abqFE"
-                        class="flex items-center justify-center gap-2"
-                    >
-                        <FaDiscord className="size-6! text-white" />
-                        Rejoindre le serveur
-                    </a>
-                </Button>
-                <Button
-                    variant="outline"
-                    className="border-[#ff0000] bg-transparent text-[#ff0000] hover:bg-[#ff0000]/10 hover:text-[#ff0000] w-full max-w-80"
+                    <FaDiscord className="size-6!" />
+                    Rejoindre le serveur
+                </a>
+                <a
+                    href="https://www.youtube.com/watch?v=_nu4cbdJ8do"
+                    title="Vidéo de présentation de la FARE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "w-full max-w-80 gap-2 border-[#ff0000] text-[#ff0000] hover:bg-[#ff0000]/10 hover:text-[#ff0000]"
+                    )}
                 >
-                    <a
-                        href="https://www.youtube.com/watch?v=_nu4cbdJ8do"
-                        title="Vidéo de présentation de la FARE"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="flex items-center justify-center gap-2"
-                    >
-                        <FaYoutube className="size-6!" />
-                        Voir la vidéo
-                    </a>
-                </Button>
+                    <FaYoutube className="size-6!" />
+                    Voir la vidéo de présentation
+                </a>
             </div>
-        </div>
+        </section>
 
         <PartnersIsland server:defer />
     </div>

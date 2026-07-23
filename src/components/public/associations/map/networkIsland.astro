@@ -2,7 +2,7 @@
 import prisma from "@/helpers/db"
 import { tryCatch } from "@/lib/utils"
 
-import AssociationMap from "./associationsMap"
+import ReseauMap from "./reseauMap.astro"
 
 const result = await tryCatch(
     prisma.association.findMany({ where: { approved: { not: null } } })
@@ -10,7 +10,7 @@ const result = await tryCatch(
 ---
 
 {result.success ? (
-        <AssociationMap client:only="react" associations={result.value} />
+        <ReseauMap associations={result.value} />
     ) : (
         <span>Echec de la récupération des associations</span>
     )}

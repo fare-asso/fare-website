@@ -1,50 +1,129 @@
 ---
+import {
+    FaDiscord,
+    FaFacebookF,
+    FaInstagram,
+    FaXTwitter
+} from "react-icons/fa6"
+import { FiGlobe, FiMail, FiMapPin } from "react-icons/fi"
+
 import prisma from "@/helpers/db"
+import { locationDisplayName } from "@/helpers/location"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import Public from "@/layouts/Public.astro"
 
 const { id } = Astro.params
 
-if (Number.isNaN(Number(id))) {
+if (!id || !/^\d+$/.test(id)) {
     return Astro.rewrite("/404")
 }
 
-const associationRecord = await prisma.association.findUnique({
+const asso = await prisma.association.findUnique({
     where: {
         id: Number(id),
         approved: { not: null }
     }
 })
 
-if (!associationRecord) {
+if (!asso) {
     return Astro.rewrite("/404")
 }
 
 const logoUrl = new StorageUtils()
     .from("association-pictures")
-    .getPublicUrl(associationRecord.logoPath)
+    .getPublicUrl(asso.logoPath)
+const address = locationDisplayName(asso.location)
+
+const linkPill =
+    "border-border text-muted-foreground hover:border-fare-accent hover:text-fare-accent inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors"
 ---
 
-<Public
-    title={associationRecord.name}
-    description={associationRecord.desc ?? undefined}
->
-    <div class="flex w-[90%] flex-col items-start pt-14">
-        <a href="/a-propos/reseau" class="text-sm opacity-40 hover:underline">
-            &lt; Retour aux associations
+<Public title={asso.name} description={asso.desc}>
+    <div class="w-full max-w-3xl pt-6">
+        <a
+            href="/a-propos/reseau"
+            class="text-muted-foreground hover:text-foreground text-sm transition-colors"
+        >
+            ← Retour au réseau
         </a>
-        <h1 class="mt-2 text-3xl font-bold">
-            {associationRecord.name}
-        </h1>
-        <div class="flex w-full flex-row">
-            <p>{associationRecord.desc}</p>
+
+        <div class="mt-8 flex flex-col items-start gap-6 sm:flex-row">
             <img
                 src={logoUrl}
                 width={400}
                 height={400}
-                alt={`${associationRecord.name} logo`}
-                class="aspect-square h-60 w-60 rounded-lg border border-black object-cover"
+                alt={`Logo de ${asso.name}`}
+                class="aspect-square w-32 rounded-2xl object-cover sm:w-40"
             >
+            <div>
+                <h1 class="mb-1 text-3xl font-extrabold">{asso.name}</h1>
+                <p class="text-muted-foreground">{asso.major}</p>
+                <p
+                    class="text-muted-foreground mt-3 flex items-start gap-1.5 text-sm"
+                >
+                    <FiMapPin size={16} className="mt-0.5 shrink-0" />
+                    {address}
+                </p>
+                <div class="mt-5 flex flex-wrap gap-2">
+                    {asso.website && (
+                        <a
+                            href={asso.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class={linkPill}
+                        >
+                            <FiGlobe size={14} /> Site web
+                        </a>
+                    )}
+                    {asso.instagram && (
+                        <a
+                            href={asso.instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class={linkPill}
+                        >
+                            <FaInstagram size={14} /> Instagram
+                        </a>
+                    )}
+                    {asso.facebook && (
+                        <a
+                            href={asso.facebook}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class={linkPill}
+                        >
+                            <FaFacebookF size={14} /> Facebook
+                        </a>
+                    )}
+                    {asso.twitter && (
+                        <a
+                            href={asso.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class={linkPill}
+                        >
+                            <FaXTwitter size={14} /> Twitter
+                        </a>
+                    )}
+                    {asso.discord && (
+                        <a
+                            href={asso.discord}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class={linkPill}
+                        >
+                            <FaDiscord size={14} /> Discord
+                        </a>
+                    )}
+                    {asso.email && (
+                        <a href={`mailto:${asso.email}`} class={linkPill}>
+                            <FiMail size={14} /> Contact
+                        </a>
+                    )}
+                </div>
+            </div>
         </div>
+
+        <p class="mt-10">{asso.desc}</p>
     </div>
 </Public>

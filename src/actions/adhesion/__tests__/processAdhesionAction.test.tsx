@@ -65,6 +65,22 @@ describe("processAdhesion", () => {
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
+    it("accepts a dateAG serialized to an ISO string by the payload codec", async () => {
+        const res = await processAdhesion(
+            validAdhesionForm({
+                dateAG: "2026-01-15T00:00:00.000Z" as unknown as Date
+            })
+        )
+        expect(res.success).toBe(true)
+        expect(h.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+                data: expect.objectContaining({
+                    dateAG: new Date("2026-01-15T00:00:00.000Z")
+                })
+            })
+        )
+    })
+
     it("skips captcha verification in development", async () => {
         stdenv.isDevelopment = true
         const res = await processAdhesion(validAdhesionForm())

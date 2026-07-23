@@ -57,7 +57,7 @@ describe("addAssociationAction", () => {
         )
         expect(res).toEqual({
             success: false,
-            error: "Veuillez remplir tous les champs obligatoires."
+            error: "Un ou plusieurs champs sont invalides."
         })
         expect(h.upload).not.toHaveBeenCalled()
     })
@@ -66,7 +66,10 @@ describe("addAssociationAction", () => {
         const res = await addAssociationAction(
             validAssociationFormData({ "logo-picture": "not-a-file" })
         )
-        expect(res).toEqual({ success: false, error: "Logo non-valide." })
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
     })
 
     it("rejects an oversized logo", async () => {
@@ -75,8 +78,9 @@ describe("addAssociationAction", () => {
         )
         expect(res).toEqual({
             success: false,
-            error: expect.stringMatching(/taille/)
+            error: "Un ou plusieurs champs sont invalides."
         })
+        expect(h.upload).not.toHaveBeenCalled()
     })
 
     it("rejects an unsupported image type", async () => {
@@ -89,24 +93,53 @@ describe("addAssociationAction", () => {
         )
         expect(res).toEqual({
             success: false,
-            error: expect.stringMatching(/format de l'image/)
+            error: "Un ou plusieurs champs sont invalides."
         })
     })
 
-    it("returns the storage error when the upload fails", async () => {
+    it("rejects an invalid social link server-side", async () => {
+        const res = await addAssociationAction(
+            validAssociationFormData({ website: "pas-une-url" })
+        )
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.upload).not.toHaveBeenCalled()
+    })
+
+    it("rejects an invalid birthdate server-side", async () => {
+        const res = await addAssociationAction(
+            validAssociationFormData({ birthdate: "pas-une-date" })
+        )
+        expect(res).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.upload).not.toHaveBeenCalled()
+    })
+
+    it("returns a generic error when the upload fails", async () => {
         h.upload.mockResolvedValue({
             data: null,
             error: { message: "upload boom" }
         })
         const res = await addAssociationAction(validAssociationFormData())
-        expect(res).toEqual({ success: false, error: "upload boom" })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de l'envoi du logo"
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.create).not.toHaveBeenCalled()
     })
 
     it("captures and fails when the db insert throws", async () => {
         h.create.mockRejectedValue(new Error("db down"))
         const res = await addAssociationAction(validAssociationFormData())
-        expect(res).toEqual({ success: false, error: "db down" })
+        expect(res).toEqual({
+            success: false,
+            error: "Echec de la création de l'association"
+        })
         expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 

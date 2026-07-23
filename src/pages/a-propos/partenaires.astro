@@ -3,6 +3,7 @@ import prisma from "@/helpers/db"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import Public from "@/layouts/Public.astro"
 import { tryCatch } from "@/lib/utils"
+import { Image } from "astro:assets"
 
 const storage = new StorageUtils()
 const partenaires = await tryCatch(
@@ -30,8 +31,9 @@ const partners = partenaires.success
             </div>
         ) : (
             <div class="flex w-full flex-col items-center justify-start pb-20">
-                <h1 class="py-12 text-[3rem] font-semibold sm:py-24 md:py-32 lg:py-44">
-                    Nos Partenaires
+                <h1 class="mt-6 mb-12 text-center text-3xl font-extrabold sm:text-4xl">
+                    Nos{" "}
+                    <span class="highlight"> partenaires </span>
                 </h1>
                 {partners.length === 0 ? (
                     <p class="px-4 text-center text-lg">
@@ -52,11 +54,10 @@ const partners = partenaires.success
                                     }`}
                                 >
                                     <div class="w-full shrink-0 md:w-1/2">
-                                        <img
+                                        <Image
                                             src={partner.logoUrl}
                                             alt={`Logo de ${partner.name}`}
-                                            width={500}
-                                            height={500}
+                                            inferSize
                                             class="h-auto max-h-64 w-full object-contain"
                                         />
                                     </div>

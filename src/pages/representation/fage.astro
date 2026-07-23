@@ -2,111 +2,182 @@
 import { Image } from "astro:assets"
 
 import logoFage from "@/assets/Logo_FAGE.png"
+import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
+import { cn } from "@/lib/utils"
 
 export const prerender = true
 ---
 
 <Public title="FAGE">
-    <div
-        class="flex w-full flex-col items-center justify-start px-4 md:px-8 lg:px-16"
-    >
-        <Image src={logoFage} alt="Logo de la FAGE" class="w-full md:w-1/2" />
+    <div class="flex w-full flex-col items-center justify-start">
+        <Image
+            src={logoFage}
+            alt="Logo de la FAGE"
+            class="mb-10 w-64"
+            priority
+            width={750}
+        />
 
-        <div class="mb-20 w-full max-w-4xl space-y-8">
-            <section>
-                <h2 class="mb-4 text-2xl font-semibold">Présentation</h2>
-                <p class="mb-4 text-justify">
-                    La{" "}
-                    <strong>
-                        Fédération des Associations du Réseau Étudiant de
-                        Haute-Bretagne (FAGE)
-                    </strong>{" "}
-                    est la première organisation étudiante de France. Fondée en
-                    1989, elle assoit son fonctionnement sur la démocratie
-                    participative et regroupe près de 2000 associations et
-                    syndicats, soit environ 300 000 étudiantEs.
-                </p>
-                <p class="mb-4 text-justify">
-                    La FAGE a pour but de garantir l'égalité des chances de
-                    réussite dans le système éducatif. C'est pourquoi elle agit
-                    pour l'amélioration constante des conditions de vie et
-                    d'études des jeunes en déployant des activités dans le champ
-                    de la représentation et de la défense des droits. En gérant
-                    des services et des œuvres répondant aux besoins sociaux,
-                    elle est également actrice de l'innovation sociale.
-                </p>
-            </section>
-
-            <section>
-                <h2 class="mb-4 text-2xl font-semibold">
-                    Reconnaissance et indépendance
-                </h2>
-                <p class="mb-4 text-justify">
-                    La FAGE est reconnue organisation étudiante représentative
-                    par le Ministère chargé de l'enseignement supérieur.
-                    Indépendante des partis, des syndicats de salariés et des
-                    mutuelles étudiantes, elle base ses actions sur une démarche
-                    militante, humaniste et pragmatique. Partie prenante de
-                    l'économie sociale et solidaire, elle est par ailleurs
-                    agréée jeunesse et éducation populaire par le ministère
-                    chargé de la jeunesse.
-                </p>
-                <p class="mb-4 text-justify">
-                    À travers la FAGE, les jeunes trouvent un formidable outil
-                    citoyen pour débattre, entreprendre des projets et prendre
-                    des responsabilités dans la société.
-                </p>
-            </section>
-
-            <section>
-                <h2 class="mb-4 text-2xl font-semibold">Rôle et valeurs</h2>
-                <p class="mb-4 text-justify">
-                    La FAGE, en tant qu'organisation de jeunesse représentative
-                    des étudiantEs, s'affirme comme un acteur majeur de
-                    l'Éducation Populaire. Elle base ses initiatives sur les
-                    valeurs de solidarité et de progressisme. Face aux multiples
-                    défis et besoins sociaux des jeunes, la FAGE est tenue
-                    d'agir afin de répondre à leurs préoccupations et d'orienter
-                    les politiques publiques en faveur des jeunes et des
-                    étudiantEs.
-                </p>
-            </section>
-
-            <section>
-                <h2 class="mb-4 text-2xl font-semibold">Histoire</h2>
-                <p class="mb-4 text-justify">
-                    À la fin des années 80, l'idée de fonder une organisation
-                    germe à Lyon. Plusieurs réunions, se déroulant à Paris,
-                    mènent par la suite à l'assemblée constitutive de la FAGE le
-                    20 novembre 1989, à la Faculté de pharmacie de Paris V.
-                    L'enjeu principal ? Obtenir une reconnaissance nationale et
-                    permettre aux associations étudiantes de dialoguer
-                    directement avec le ministère, en réponse à la loi
-                    d'orientation sur l'éducation du 10 juillet 1989.
-                </p>
-                <p class="mb-4 text-justify">
-                    Depuis lors, la FAGE a réalisé d'importantes avancées en
-                    faveur des étudiantEs et de la jeunesse, se positionnant
-                    comme l'unique héritière des AGE. Forte des membres de son
-                    réseau et de ses projets, la FAGE s'efforce quotidiennement
-                    de se perfectionner pour répondre aux besoins de la
-                    jeunesse.
-                </p>
-            </section>
-
-            <section>
-                <h2 class="mb-4 text-2xl font-semibold">Projet éducatif</h2>
-                <p class="mb-4 text-justify">
-                    Dans une volonté d'émancipation et de développement
-                    personnel, le projet éducatif, pour la deuxième fois depuis
-                    sa création, offre l'opportunité de découvrir ce que la FAGE
-                    a à offrir. Il vise à donner à chaque individu, quelles que
-                    soient ses responsabilités au sein de l'organisation, son
-                    niveau d'investissement et sa manière de s'engager, un
-                    repère pour donner du sens aux projets destinés à ses pairs.
-                </p>
-            </section>
+        <div
+            class="mb-16 flex w-full max-w-3xl flex-col items-center text-center"
+        >
+            <a
+                href="/representation"
+                class="text-fage mb-3 text-sm font-semibold tracking-widest uppercase hover:underline"
+            >
+                Représentation
+            </a>
+            <h1 class="mb-4 text-3xl font-extrabold sm:text-4xl">
+                La première organisation{" "}
+                <span class="highlight before:bg-fage/40"> étudiante </span>
+                {" "}
+                de France
+            </h1>
+            <p class="text-lg">
+                Fondée en 1989, la{" "}
+                <strong>
+                    Fédération des Associations Générales Étudiantes (FAGE)
+                </strong>{" "}
+                assoit son fonctionnement sur la démocratie participative et
+                regroupe près de 2 000 associations et syndicats, soit environ
+                300 000 étudiant·e·s.
+            </p>
         </div>
+
+        <div
+            class="mb-16 grid w-full max-w-4xl grid-cols-1 gap-8 text-center sm:grid-cols-3"
+        >
+            <div>
+                <p class="text-fage text-4xl font-extrabold">1989</p>
+                <p class="text-muted-foreground text-sm">année de fondation</p>
+            </div>
+            <div>
+                <p class="text-fage text-4xl font-extrabold">2 000</p>
+                <p class="text-muted-foreground text-sm">
+                    associations et syndicats
+                </p>
+            </div>
+            <div>
+                <p class="text-fage text-4xl font-extrabold">300 000</p>
+                <p class="text-muted-foreground text-sm">
+                    étudiant·e·s représenté·e·s
+                </p>
+            </div>
+        </div>
+
+        <section class="mb-12 w-full max-w-4xl">
+            <h2>Une mission d'égalité des chances</h2>
+            <p>
+                La FAGE a pour but de garantir l'égalité des chances de réussite
+                dans le système éducatif. C'est pourquoi elle agit pour
+                l'amélioration constante des conditions de vie et d'études des
+                jeunes en déployant des activités dans le champ de la
+                représentation et de la défense des droits. En gérant des
+                services et des œuvres répondant aux besoins sociaux, elle est
+                également actrice de l'innovation sociale.
+            </p>
+        </section>
+
+        <section class="mb-12 w-full max-w-4xl">
+            <h2>Reconnaissance et indépendance</h2>
+            <p class="mb-4">
+                La FAGE est reconnue organisation étudiante représentative par
+                le Ministère chargé de l'enseignement supérieur. Indépendante
+                des partis, des syndicats de salariés et des mutuelles
+                étudiantes, elle base ses actions sur une démarche militante,
+                humaniste et pragmatique. Partie prenante de l'économie sociale
+                et solidaire, elle est par ailleurs agréée jeunesse et éducation
+                populaire par le ministère chargé de la jeunesse.
+            </p>
+            <p>
+                À travers la FAGE, les jeunes trouvent un formidable outil
+                citoyen pour débattre, entreprendre des projets et prendre des
+                responsabilités dans la société.
+            </p>
+        </section>
+
+        <section class="mb-12 w-full max-w-4xl">
+            <h2>Rôle et valeurs</h2>
+            <p>
+                La FAGE, en tant qu'organisation de jeunesse représentative des
+                étudiant·e·s, s'affirme comme un acteur majeur de l'Éducation
+                Populaire. Elle base ses initiatives sur les valeurs de
+                solidarité et de progressisme. Face aux multiples défis et
+                besoins sociaux des jeunes, la FAGE est tenue d'agir afin de
+                répondre à leurs préoccupations et d'orienter les politiques
+                publiques en faveur des jeunes et des étudiant·e·s.
+            </p>
+        </section>
+
+        <section class="mb-12 w-full max-w-4xl">
+            <h2>Histoire</h2>
+            <ol class="border-fage/30 ml-2 space-y-8 border-l-2 pl-8">
+                <li class="relative">
+                    <span
+                        class="bg-fage absolute top-1.5 -left-[2.45rem] h-3 w-3 rounded-full"
+                    ></span>
+                    <h3 class="mb-1 font-semibold">Fin des années 80</h3>
+                    <p class="text-muted-foreground">
+                        L'idée de fonder une organisation germe à Lyon.
+                        Plusieurs réunions, se déroulant à Paris, mènent à
+                        l'assemblée constitutive.
+                    </p>
+                </li>
+                <li class="relative">
+                    <span
+                        class="bg-fage absolute top-1.5 -left-[2.45rem] h-3 w-3 rounded-full"
+                    ></span>
+                    <h3 class="mb-1 font-semibold">20 novembre 1989</h3>
+                    <p class="text-muted-foreground">
+                        Assemblée constitutive de la FAGE à la Faculté de
+                        pharmacie de Paris V. L'enjeu principal&nbsp;? Obtenir
+                        une reconnaissance nationale et permettre aux
+                        associations étudiantes de dialoguer directement avec le
+                        ministère, en réponse à la loi d'orientation sur
+                        l'éducation du 10 juillet 1989.
+                    </p>
+                </li>
+                <li class="relative">
+                    <span
+                        class="bg-fage absolute top-1.5 -left-[2.45rem] h-3 w-3 rounded-full"
+                    ></span>
+                    <h3 class="mb-1 font-semibold">Depuis</h3>
+                    <p class="text-muted-foreground">
+                        La FAGE a réalisé d'importantes avancées en faveur des
+                        étudiant·e·s et de la jeunesse, se positionnant comme
+                        l'unique héritière des AGE. Forte des membres de son
+                        réseau et de ses projets, elle s'efforce quotidiennement
+                        de se perfectionner pour répondre aux besoins de la
+                        jeunesse.
+                    </p>
+                </li>
+            </ol>
+        </section>
+
+        <section class="mb-16 w-full max-w-4xl">
+            <h2>Projet éducatif</h2>
+            <p>
+                Dans une volonté d'émancipation et de développement personnel,
+                le projet éducatif, pour la deuxième fois depuis sa création,
+                offre l'opportunité de découvrir ce que la FAGE a à offrir. Il
+                vise à donner à chaque individu, quelles que soient ses
+                responsabilités au sein de l'organisation, son niveau
+                d'investissement et sa manière de s'engager, un repère pour
+                donner du sens aux projets destinés à ses pairs.
+            </p>
+        </section>
+
+        <a
+            href="https://www.fage.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            class={cn(
+                buttonVariants({ variant: "outline" }),
+                "border-fage text-fage hover:text-fage mb-10"
+            )}
+        >
+            Visiter le site de la FAGE
+        </a>
     </div>
 </Public>

@@ -2,6 +2,8 @@
 import { Image } from "astro:assets"
 
 import logoBagadAsso from "@/assets/Logo_Bagadasso.png"
+import logoUR2 from "@/assets/univ/Logo_univ-rennes2-2016.png"
+import logoUR from "@/assets/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
 import FormIsland from "@/components/public/bagadAsso/formIsland.astro"
 import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
@@ -9,12 +11,13 @@ import Public from "@/layouts/Public.astro"
 export const prerender = true
 ---
 
-<Public title="Badag'Asso">
+<Public title="Bagad'Asso">
     <div class="flex w-full flex-col items-center justify-start">
         <Image
             src={logoBagadAsso}
             alt="Logo du projet Bagad'Asso"
             class="mb-12 w-72"
+            priority
         />
 
         <div
@@ -22,12 +25,8 @@ export const prerender = true
         >
             <h1 class="mb-4 text-3xl font-extrabold sm:text-4xl">
                 Du matériel{" "}
-                <span
-                    class="bg-fare-yellow/60 inline-block -rotate-2 rounded-md px-2"
-                >
-                    gratuit
-                </span>{" "}
-                pour vos évènements !
+                <span class="highlight"> gratuit </span>{" "}
+                pour vos évènements&nbsp;!
             </h1>
             <p class="mb-3 text-lg">
                 La FARE met à disposition <strong>gratuitement</strong> des
@@ -36,16 +35,16 @@ export const prerender = true
                 évènements.
             </p>
             <p class="text-muted-foreground mb-8 text-sm italic">
-                Mais ça veut dire quoi "Bagad'Asso" ? Un Bagad, c'est un
-                orchestre traditionnel breton : ici, on remplace les musiciens
-                par des associatifs et le public par nos étudiant.e.s
-                breton.ne.s !
+                Mais ça veut dire quoi «&nbsp;Bagad'Asso&nbsp;»&nbsp;? Un Bagad,
+                c'est un orchestre traditionnel breton&nbsp;: ici, on remplace
+                les musiciens par des associatifs et le public par nos
+                étudiant·e·s breton·ne·s&nbsp;!
             </p>
             <a href="#demande" class={buttonVariants({ size: "lg" })}>
                 Réserver du matériel
             </a>
             <p class="text-muted-foreground mt-4 text-sm">
-                Un matériel manque au catalogue ?{" "}
+                Un matériel manque au catalogue&nbsp;?{" "}
                 <a href="/projets/bagad-asso/suggestion" class="link">
                     Suggérez-le
                 </a>
@@ -54,11 +53,11 @@ export const prerender = true
 
         <section class="mb-16 w-full max-w-4xl">
             <h2 class="mb-6 text-center text-2xl font-bold">
-                Comment ça marche ?
+                Comment ça marche&nbsp;?
             </h2>
             <ol class="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <li
-                    class="border-bagad-wood/25 bg-fare-cream/40 flex -rotate-1 flex-col items-center rounded-2xl border-2 p-6 text-center"
+                    class="border-bagad-wood/25 bg-fare-cream/40 flex flex-col items-center rounded-2xl border-2 p-6 text-center"
                 >
                     <span
                         class="bg-bagad-wood text-fare-cream mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold"
@@ -74,7 +73,7 @@ export const prerender = true
                     </p>
                 </li>
                 <li
-                    class="border-fare-blue/25 bg-fare-blue/5 flex rotate-1 flex-col items-center rounded-2xl border-2 p-6 text-center"
+                    class="border-fare-blue/25 bg-fare-blue/5 flex flex-col items-center rounded-2xl border-2 p-6 text-center"
                 >
                     <span
                         class="bg-fare-blue mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
@@ -88,7 +87,7 @@ export const prerender = true
                     </p>
                 </li>
                 <li
-                    class="border-fare-yellow/40 bg-fare-yellow/5 flex -rotate-1 flex-col items-center rounded-2xl border-2 p-6 text-center"
+                    class="border-fare-yellow/40 bg-fare-yellow/5 flex flex-col items-center rounded-2xl border-2 p-6 text-center"
                 >
                     <span
                         class="bg-fare-yellow mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-neutral-900"
@@ -98,7 +97,7 @@ export const prerender = true
                     <h3 class="mb-2 font-semibold">Récupérez-le</h3>
                     <p class="text-muted-foreground text-sm">
                         On vérifie la disponibilité, on ne vous demande qu'une
-                        caution, et c'est à vous pour l'évènement !
+                        caution, et c'est à vous pour l'évènement&nbsp;!
                     </p>
                 </li>
             </ol>
@@ -107,22 +106,38 @@ export const prerender = true
                 Et en plus du matériel&nbsp;:
             </p>
             <ul class="flex flex-wrap items-center justify-center gap-3">
-                <li
-                    class="rotate-1 rounded-full border-2 px-4 py-2 text-sm font-medium"
-                >
+                <li class="rounded-full border-2 px-4 py-2 text-sm font-medium">
                     Des personnes de confiance
                 </li>
-                <li
-                    class="-rotate-1 rounded-full border-2 px-4 py-2 text-sm font-medium"
-                >
+                <li class="rounded-full border-2 px-4 py-2 text-sm font-medium">
                     Tarif réduit sur la SACEM
                 </li>
-                <li
-                    class="rotate-1 rounded-full border-2 px-4 py-2 text-sm font-medium"
-                >
+                <li class="rounded-full border-2 px-4 py-2 text-sm font-medium">
                     Tarifs réduits sur les goodies
                 </li>
             </ul>
+        </section>
+
+        <section class="mb-16 w-full max-w-3xl text-center">
+            <p class="text-muted-foreground mb-6 text-sm">
+                Un projet financé par&nbsp;:
+            </p>
+            <div
+                class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6"
+            >
+                <Image
+                    src={logoUR}
+                    alt="Logo de l'Université de Rennes"
+                    class="h-16 w-auto object-contain"
+                    width={175}
+                />
+                <Image
+                    src={logoUR2}
+                    alt="Logo de l'Université Rennes 2"
+                    class="h-16 w-auto object-contain"
+                    width={175}
+                />
+            </div>
         </section>
 
         <section id="demande" class="flex w-full scroll-mt-24 justify-center">

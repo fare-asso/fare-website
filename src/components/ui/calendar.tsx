@@ -1,5 +1,6 @@
 "use client"
 
+import { fr } from "date-fns/locale"
 import {
     ChevronDownIcon,
     ChevronLeftIcon,
@@ -22,7 +23,7 @@ function Calendar({
     showOutsideDays = true,
     captionLayout = "label",
     buttonVariant = "ghost",
-    locale,
+    locale = fr,
     formatters,
     components,
     ...props

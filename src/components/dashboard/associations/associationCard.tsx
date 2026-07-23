@@ -151,7 +151,10 @@ export default function AssociationCard({
                             </>
                         ) : null}
                         {!isPending && canEdit ? (
-                            <EditAssociationButton association={association} />
+                            <EditAssociationButton
+                                association={association}
+                                logoUrl={logoUrl}
+                            />
                         ) : null}
                         {canDelete ? (
                             <div className="ml-auto">

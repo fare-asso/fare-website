@@ -1,15 +1,20 @@
 ---
 import prisma from "@/helpers/db"
+import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 import KeyNumbers from "./keyNumbers"
 
-const count = await tryCatch(
-    prisma.association.count({ where: { approved: { not: null } } })
-)
+const [associations, elues] = await Promise.all([
+    tryCatch(prisma.association.count({ where: { approved: { not: null } } })),
+    tryCatch(prisma.elu.count({ where: { deletedAt: null } }))
+])
+if (!associations.success) captureActionError(associations.error)
+if (!elues.success) captureActionError(elues.error)
 ---
 
 <KeyNumbers
     client:load
-    associationCount={count.success ? count.value : undefined}
+    associationCount={associations.success ? associations.value : undefined}
+    eluesCount={elues.success ? elues.value : undefined}
 />

@@ -17,6 +17,7 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import type { Adhesion } from "@/generated/prisma/client"
+import { locationDisplayName } from "@/helpers/location"
 
 import AdhesionCardActions from "./adhesionCardActions"
 
@@ -122,7 +123,9 @@ export default function AdhesionCard({
                         <div className="text-muted-foreground flex items-center gap-2">
                             <MapPinIcon className="h-4 w-4 shrink-0" />
                             <span className="truncate">
-                                {adhesion.adresseAdministrative}
+                                {locationDisplayName(
+                                    adhesion.adresseAdministrative
+                                )}
                             </span>
                         </div>
                     )}

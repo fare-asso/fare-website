@@ -1,13 +1,8 @@
 ---
-import { Image } from "astro:assets"
-
-import logo from "@/assets/logo_fare.png"
 import Footer from "@/components/footer/footer.astro"
-import HeaderLinks from "@/components/header/headerLinks.astro"
+import Header from "@/components/header/header.astro"
 
 import Base from "./Base.astro"
-
-import "@/components/header/header.css"
 
 interface Props {
     title?: string
@@ -16,21 +11,21 @@ interface Props {
 
 const { title, description } = Astro.props
 const fullTitle = title ? `${title} | FARE` : "FARE"
+
+const hasHero = Astro.slots.has("hero")
 ---
 
 <Base title={fullTitle} description={description}>
-    <main class="flex min-h-screen flex-col items-center">
-        <header class="v1f">
-            <a href="/" class="v1f-logo" aria-label="Accueil">
-                <Image
-                    src={logo}
-                    alt="FARE de Haute-Bretagne"
-                    loading="eager"
-                />
-            </a>
-            <HeaderLinks />
-        </header>
-        <div class="flex w-full flex-1 flex-col items-center p-4 pb-16 lg:p-10">
+    <main class="grid min-h-svh grid-rows-[auto_1fr_auto] items-center">
+        {hasHero ? (
+                <div class="grid min-h-svh w-full grid-rows-[auto_1fr]">
+                    <Header />
+                    <slot name="hero" />
+                </div>
+            ) : (
+                <Header />
+            )}
+        <div class="page-layout mt-6 pb-16">
             <slot />
         </div>
         <Footer />

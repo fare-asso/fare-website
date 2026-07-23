@@ -35,7 +35,9 @@ export const AdhesionFormSchema = type({
     adresseAdministrative: "string >= 1",
     siegeSocial: "string",
     numeroSalle: "string",
-    dateAG: "Date",
+    // Date côté client, mais chaîne ISO après le passage JSON du payload
+    // d'action (encodeFormPayload) : on accepte les deux et on parse.
+    dateAG: "Date | string.date.iso.parse",
     nombreEtudiantsRepresentes: "number.integer >= 1",
     nombreAdherents: "number.integer >= 1",
     engagementCotisation: "true",

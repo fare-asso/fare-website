@@ -10,6 +10,12 @@
     --color-fare-blue: #0077b6;
     --color-fare-cream: #f0e9e2;
     --color-bagad-wood: #8a5a33;
+    --color-agorae: #14a994;
+    --color-btp-gold: #d4993f;
+    --color-btp-navy: #2d384e;
+    --color-btp-blue: #355a99;
+    --color-fage: #00a0d0;
+    --color-fedeb: #fcb017;
     --color-border: hsl(var(--border));
     --color-input: hsl(var(--input));
     --color-ring: hsl(var(--ring));
@@ -123,6 +129,15 @@
     }
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+}
+
+@utility highlight {
+    @apply relative isolate inline-block px-2;
+
+    &::before {
+        @apply bg-fare-yellow/60 absolute inset-0 -z-10 -rotate-2 rounded-md;
+        content: "";
+    }
 }
 
 @layer base {
@@ -314,4 +329,33 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+.page-layout > * {
+    grid-column: content;
+}
+
+.page-layout {
+    --minimum-content-padding: 2rem;
+
+    /** TRACK WIDTHS **/
+    --content-max-width: 90vw;
+
+    /** TRACK SIZES **/
+    --full: minmax(var(--minimum-content-padding), 1fr);
+    --content: min(
+        var(--content-max-width),
+        100% - var(--minimum-content-padding) * 2
+    );
+
+    display: grid;
+    grid-template-columns:
+        [full-start]
+        var(--full)
+        [content-start]
+        var(--content)
+        [content-end]
+        var(--full)
+        [full-end];
+    place-items: center;
 }

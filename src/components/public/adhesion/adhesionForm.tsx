@@ -1,13 +1,10 @@
 import { useForm } from "@tanstack/react-form"
 import { actions } from "astro:actions"
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
-import { CalendarIcon, Loader2Icon, Trash2, UserPlus } from "lucide-react"
+import { Loader2Icon, Trash2, UserPlus } from "lucide-react"
 import { useCallback, useState } from "react"
 
 import { Captcha } from "@/components/captcha"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import {
     Card,
     CardContent,
@@ -16,6 +13,7 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { DateField } from "@/components/ui/date-field"
 import {
     Field,
     FieldDescription,
@@ -28,11 +26,7 @@ import {
 } from "@/components/ui/field"
 import { FilePondInput } from "@/components/ui/filepond"
 import { Input } from "@/components/ui/input"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger
-} from "@/components/ui/popover"
+import LocationPicker from "@/components/ui/location/locationPicker"
 import {
     Select,
     SelectContent,
@@ -41,7 +35,6 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import { encodeFormPayload } from "@/lib/formPayload"
-import { cn } from "@/lib/utils"
 import {
     AdhesionFormSchema,
     type BureauMember,
@@ -419,12 +412,12 @@ export function AdhesionForm(): React.ReactNode {
                                     <FieldLabel htmlFor={field.name}>
                                         Adresse postale
                                     </FieldLabel>
-                                    <Input
+                                    <LocationPicker
                                         id={field.name}
                                         value={field.state.value as string}
                                         onBlur={field.handleBlur}
-                                        onChange={(e) =>
-                                            field.handleChange(e.target.value)
+                                        onChange={(value) =>
+                                            field.handleChange(value)
                                         }
                                         aria-invalid={isInvalid}
                                         placeholder="1 Rue de la Paix, 35000 Rennes"
@@ -471,7 +464,9 @@ export function AdhesionForm(): React.ReactNode {
     return (
         <Card className="w-full sm:max-w-3xl" variant="ghost">
             <CardHeader>
-                <CardTitle>Formulaire d'adhésion</CardTitle>
+                <CardTitle className="text-3xl font-bold">
+                    Formulaire d'adhésion
+                </CardTitle>
                 <CardDescription>
                     En cas de difficulté, contactez le secrétariat général sur{" "}
                     <a
@@ -791,15 +786,12 @@ export function AdhesionForm(): React.ReactNode {
                                                     L'adresse officielle de
                                                     votre association.
                                                 </FieldDescription>
-                                                <Input
+                                                <LocationPicker
                                                     id={field.name}
-                                                    name={field.name}
                                                     value={field.state.value}
                                                     onBlur={field.handleBlur}
-                                                    onChange={(e) =>
-                                                        field.handleChange(
-                                                            e.target.value
-                                                        )
+                                                    onChange={
+                                                        field.handleChange
                                                     }
                                                     aria-invalid={isInvalid}
                                                     placeholder="Ex: 6 Cours des Alliés, 35000 Rennes"
@@ -831,15 +823,12 @@ export function AdhesionForm(): React.ReactNode {
                                                         (optionnel)
                                                     </span>
                                                 </FieldLabel>
-                                                <Input
+                                                <LocationPicker
                                                     id={field.name}
-                                                    name={field.name}
                                                     value={field.state.value}
                                                     onBlur={field.handleBlur}
-                                                    onChange={(e) =>
-                                                        field.handleChange(
-                                                            e.target.value
-                                                        )
+                                                    onChange={
+                                                        field.handleChange
                                                     }
                                                     aria-invalid={isInvalid}
                                                     placeholder="Ex: 1 Rue de l'Université, 35000 Rennes"
@@ -872,7 +861,6 @@ export function AdhesionForm(): React.ReactNode {
                                                 </FieldLabel>
                                                 <Input
                                                     id={field.name}
-                                                    type="number"
                                                     value={field.state.value}
                                                     onBlur={field.handleBlur}
                                                     onChange={(e) =>
@@ -896,85 +884,13 @@ export function AdhesionForm(): React.ReactNode {
 
                                 <form.Field
                                     name="dateAG"
-                                    children={(field) => {
-                                        const isInvalid =
-                                            field.state.meta.isTouched &&
-                                            !field.state.meta.isValid
-                                        return (
-                                            <Field data-invalid={isInvalid}>
-                                                <FieldLabel
-                                                    htmlFor={field.name}
-                                                >
-                                                    Date de la dernière
-                                                    Assemblée Générale
-                                                </FieldLabel>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <Button
-                                                            id={field.name}
-                                                            variant="outline"
-                                                            className={cn(
-                                                                "w-full justify-start text-left font-normal",
-                                                                !field.state
-                                                                    .value &&
-                                                                    "text-muted-foreground",
-                                                                isInvalid &&
-                                                                    "border-destructive focus-visible:ring-destructive"
-                                                            )}
-                                                            aria-invalid={
-                                                                isInvalid
-                                                            }
-                                                        >
-                                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                                            {field.state
-                                                                .value ? (
-                                                                format(
-                                                                    field.state
-                                                                        .value,
-                                                                    "PPP",
-                                                                    {
-                                                                        locale: fr
-                                                                    }
-                                                                )
-                                                            ) : (
-                                                                <span>
-                                                                    Sélectionnez
-                                                                    une date
-                                                                </span>
-                                                            )}
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent
-                                                        className="w-auto p-0"
-                                                        align="start"
-                                                    >
-                                                        <Calendar
-                                                            mode="single"
-                                                            selected={
-                                                                field.state
-                                                                    .value ??
-                                                                undefined
-                                                            }
-                                                            onSelect={(
-                                                                date
-                                                            ) => {
-                                                                field.handleChange(
-                                                                    date as Date
-                                                                )
-                                                                field.handleBlur()
-                                                            }}
-                                                        />
-                                                    </PopoverContent>
-                                                </Popover>
-                                                {isInvalid && (
-                                                    <FieldError>
-                                                        La date de la dernière
-                                                        AG est requise.
-                                                    </FieldError>
-                                                )}
-                                            </Field>
-                                        )
-                                    }}
+                                    children={(field) => (
+                                        <DateField
+                                            field={field}
+                                            label="Date de la dernière Assemblée Générale"
+                                            error="La date de la dernière AG est requise."
+                                        />
+                                    )}
                                 />
 
                                 <div className="grid gap-4 md:grid-cols-2">

@@ -6,6 +6,7 @@ import { format } from "date-fns"
 import { PDFDocument, type PDFPage, rgb, StandardFonts } from "pdf-lib"
 
 import type { Adhesion } from "@/generated/prisma/client"
+import { locationDisplayName } from "@/helpers/location"
 import { type BureauMember, bureauMemberSchema } from "@/schemas/adhesion"
 
 interface AdhesionPdfData {
@@ -134,11 +135,17 @@ export async function generateAdhesionPdf(
     yPosition -= 20
 
     addSectionTitle(page, "- LOCALISATION -")
-    addField(page, "Adresse administrative", data.adresseAdministrative)
+    addField(
+        page,
+        "Adresse administrative",
+        locationDisplayName(data.adresseAdministrative)
+    )
     addField(
         page,
         "Siège social (si différent)",
-        data.siegeSocial || "Non spécifié"
+        data.siegeSocial
+            ? locationDisplayName(data.siegeSocial)
+            : "Non spécifié"
     )
     addField(
         page,
@@ -173,7 +180,7 @@ export async function generateAdhesionPdf(
     )
 
     // --- Page 2: Bureau members ---
-    const memberPage = createPage()
+    let memberPage = createPage()
 
     memberPage.drawText("Membres du bureau:", {
         x: 50,
@@ -185,6 +192,8 @@ export async function generateAdhesionPdf(
     yPosition -= 36
 
     for (const member of data.bureau) {
+        // saut de page avant de déborder sous la marge basse
+        if (yPosition < 140) memberPage = createPage()
         addField(
             memberPage,
             `${member.poste}`,
@@ -196,7 +205,7 @@ export async function generateAdhesionPdf(
             "Années d'études",
             `${member.annee} (${member.filiere})`
         )
-        addField(memberPage, "Adresse", member.adresse)
+        addField(memberPage, "Adresse", locationDisplayName(member.adresse))
         yPosition -= 20
     }
 
