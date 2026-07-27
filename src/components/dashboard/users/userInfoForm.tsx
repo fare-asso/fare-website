@@ -12,7 +12,7 @@ import type { User } from "@/generated/prisma/client"
 
 const schema = z.object({
     name: z.string().min(1, "Le nom d'utilisateur est requis").nullable(),
-    email: z.string().email("Email invalide")
+    email: z.email("Email invalide")
 })
 
 type SchemaType = z.infer<typeof schema>

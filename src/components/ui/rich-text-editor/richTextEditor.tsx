@@ -4,19 +4,10 @@ import Color from "@tiptap/extension-color"
 import Image from "@tiptap/extension-image"
 import TextAlign from "@tiptap/extension-text-align"
 import { TextStyle } from "@tiptap/extension-text-style"
-import {
-    type Editor,
-    EditorContent,
-    type JSONContent,
-    useEditor
-} from "@tiptap/react"
+import { EditorContent, type JSONContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
-// import FileHandler from "@tiptap-pro/extension-file-handler";
 import clsx from "clsx"
 import { useRef } from "react"
-
-import { compressImage } from "@/helpers/image"
-import { tryCatch } from "@/lib/utils"
 
 import EditorBubbleMenu from "./bubbleMenu"
 
@@ -30,39 +21,6 @@ export default function RichTextEditor({
     onChange?: (content: JSONContent) => void
 }) {
     const editorRef = useRef<HTMLDivElement>(null)
-
-    const _processAndInsertImage = async (editor: Editor, file: File) => {
-        // Compression de l'image
-        const compressed = await tryCatch(
-            compressImage(
-                file,
-                800, // Largeur maximale
-                600, // Hauteur maximale
-                0.8, // Qualité de compression
-                "image/webp" // Format cible
-            )
-        )
-        if (!compressed.success) {
-            console.error(
-                "Erreur lors de la compression de l'image :",
-                compressed.error
-            )
-            return
-        }
-        const compressedFile = new File([compressed.value], file.name, {
-            type: compressed.value.type
-        })
-
-        // Convertir en base64 pour affichage immédiat
-        const reader = new FileReader()
-        reader.onload = (readerEvent) => {
-            const imageUrl = readerEvent.target?.result as string
-            if (imageUrl) {
-                editor.chain().focus().setImage({ src: imageUrl }).run()
-            }
-        }
-        reader.readAsDataURL(compressedFile)
-    }
 
     const editor = useEditor({
         extensions: [
@@ -82,18 +40,6 @@ export default function RichTextEditor({
             TextAlign.configure({
                 types: ["heading", "paragraph"]
             }),
-            // FileHandler.configure({
-            //     onPaste(editor, files, pasteContent) {
-            //         if (files[0].type.startsWith("image/")) {
-            //             processAndInsertImage(editor, files[0]);
-            //         }
-            //     },
-            //     onDrop(editor, files, dropContent) {
-            //         if (files[0].type.startsWith("image/")) {
-            //             processAndInsertImage(editor, files[0]);
-            //         }
-            //     },
-            // }),
             Image
         ],
         content: defaultContent ?? "<p>Lorem ispum</p>",

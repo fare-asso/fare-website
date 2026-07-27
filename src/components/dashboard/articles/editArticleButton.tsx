@@ -128,7 +128,7 @@ export default function EditArticleButton({ article }: { article: Article }) {
         [article.content]
     )
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         if (!content) return

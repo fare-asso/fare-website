@@ -127,7 +127,7 @@ async function editEventActionImpl(
 
             // Remove Old Path if its possible
             if (previousPath != null && typeof previousPath === "string") {
-                const _res = await supabase.storage
+                await supabase.storage
                     .from("EventPictures")
                     .remove([previousPath.toString()])
             }

@@ -1,4 +1,3 @@
-import React from "react"
 import { Heading, Text } from "react-email"
 
 import type { Contact } from "@/schemas/contact"

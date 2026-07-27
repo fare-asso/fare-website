@@ -11,9 +11,6 @@ import {
 /**
  * Chart component for displaying database size in a pie chart format.
  * The unit of measurement is in gigabytes (GB).
- * @param {number} size - The database size used in GB.
- * @param {number} total - The total database capacity in GB.
- * @returns {JSX.Element} - A pie chart representing the storage usage.
  */
 export function DbSizeChartClient({
     size,

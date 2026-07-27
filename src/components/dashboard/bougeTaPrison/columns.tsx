@@ -1,4 +1,4 @@
-import type { ColumnDef, RowData } from "@tanstack/react-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 
@@ -7,12 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import type { BTPTutorApplication } from "@/generated/prisma/client"
 
 import RowActions from "./rowActions"
-
-declare module "@tanstack/react-table" {
-    interface ColumnMeta<TData extends RowData, TValue> {
-        className?: string
-    }
-}
 
 function StatusBadge({ application }: { application: BTPTutorApplication }) {
     if (application.archived) {

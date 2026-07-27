@@ -1,4 +1,3 @@
-import React from "react"
 import { Heading, Hr, Text } from "react-email"
 
 import BaseTemplate from "./base"

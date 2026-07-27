@@ -23,7 +23,7 @@ export default function ConfigForm({
     const [delayValue, setDelayValue] = useState(delay)
     const [isPending, startTransition] = useTransition()
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
+    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>): void {
         e.preventDefault()
         startTransition(async () => {
             const { data, error } =

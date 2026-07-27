@@ -40,7 +40,7 @@ export default function AddNewCDPButton() {
         }
     }, [])
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
         event.preventDefault()
         setError(undefined)
 
