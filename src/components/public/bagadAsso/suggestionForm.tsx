@@ -4,6 +4,7 @@ import { Loader2Icon } from "lucide-react"
 import { useCallback, useState, useTransition } from "react"
 
 import { Captcha } from "@/components/captcha"
+import FormSuccess from "@/components/public/formSuccess"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -85,17 +86,19 @@ export default function SuggestionForm() {
 
     if (isSubmitted) {
         return (
-            <Card className="mx-auto w-full max-w-2xl" variant="ghost">
-                <CardHeader>
-                    <CardTitle>Merci pour votre suggestion !</CardTitle>
-                </CardHeader>
-                <CardDescription className="w-full px-6">
-                    <p>
-                        Votre suggestion de matériel a bien été envoyée. Nous
-                        l'étudierons prochainement.
-                    </p>
-                </CardDescription>
-            </Card>
+            <FormSuccess>
+                <Card className="mx-auto w-full max-w-2xl" variant="ghost">
+                    <CardHeader>
+                        <CardTitle>Merci pour votre suggestion !</CardTitle>
+                    </CardHeader>
+                    <CardDescription className="w-full px-6">
+                        <p>
+                            Votre suggestion de matériel a bien été envoyée.
+                            Nous l'étudierons prochainement.
+                        </p>
+                    </CardDescription>
+                </Card>
+            </FormSuccess>
         )
     }
 
@@ -105,7 +108,8 @@ export default function SuggestionForm() {
                 <CardTitle>Suggérer du matériel</CardTitle>
                 <CardDescription>
                     Un matériel manque au catalogue Bagad'Asso ? Proposez-le ici
-                    et nous étudierons votre suggestion.
+                    et nous étudierons votre suggestion. Tous les champs sont
+                    obligatoires sauf mention contraire.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -192,6 +196,7 @@ export default function SuggestionForm() {
                                     <TextField
                                         field={field}
                                         label="Lien vers une référence (optionnel)"
+                                        optional
                                         placeholder="ex. https://www.exemple.fr/produit"
                                         error="URL invalide"
                                     />
@@ -203,6 +208,7 @@ export default function SuggestionForm() {
                                     <TextField
                                         field={field}
                                         label="Autres précisions (optionnel)"
+                                        optional
                                         placeholder="Tout ce qui peut nous aider à étudier votre suggestion : usage prévu, fréquence, quantité…"
                                         multiline
                                     />
@@ -298,7 +304,13 @@ export default function SuggestionForm() {
 
                     <Button type="submit" disabled={isPending}>
                         {isPending ? (
-                            <Loader2Icon className="animate-spin" />
+                            <>
+                                <Loader2Icon
+                                    aria-hidden="true"
+                                    className="animate-spin"
+                                />
+                                <span className="sr-only">Envoi en cours…</span>
+                            </>
                         ) : null}{" "}
                         Envoyer la suggestion
                     </Button>

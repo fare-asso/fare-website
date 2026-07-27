@@ -8,6 +8,7 @@ import { useCallback, useState } from "react"
 import type { FormState } from "@/actions/bagadAsso/submitBagadAssoFormAction"
 import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
+import FormSuccess from "@/components/public/formSuccess"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -148,17 +149,20 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
 
     if (formState?.success) {
         return (
-            <Card className="mx-auto w-full max-w-4xl" variant="ghost">
-                <CardContent className="pt-6">
-                    <Alert className="border-green-600 text-green-600">
-                        <AlertTitle>Succès</AlertTitle>
-                        <AlertDescription>
-                            Votre demande de prêt de matériel a été envoyée avec
-                            succès. Nous vous contacterons prochainement.
-                        </AlertDescription>
-                    </Alert>
-                </CardContent>
-            </Card>
+            <FormSuccess>
+                <Card className="mx-auto w-full max-w-4xl" variant="ghost">
+                    <CardContent className="pt-6">
+                        <Alert className="border-green-600 text-green-600">
+                            <AlertTitle>Succès</AlertTitle>
+                            <AlertDescription>
+                                Votre demande de prêt de matériel a été envoyée
+                                avec succès. Nous vous contacterons
+                                prochainement.
+                            </AlertDescription>
+                        </Alert>
+                    </CardContent>
+                </Card>
+            </FormSuccess>
         )
     }
 
@@ -170,7 +174,8 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                 </CardTitle>
                 <CardDescription>
                     Remplissez ce formulaire pour demander un prêt de matériel
-                    pour votre évènement associatif.
+                    pour votre évènement associatif. Tous les champs sont
+                    obligatoires sauf mention contraire.
                 </CardDescription>
             </CardHeader>
             <CardContent>

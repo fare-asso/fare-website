@@ -4,6 +4,7 @@ import { Loader2Icon } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { Captcha } from "@/components/captcha"
+import FormSuccess from "@/components/public/formSuccess"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -166,18 +167,21 @@ export function AssistanceForm(): React.ReactNode {
 
     if (isSubmitted) {
         return (
-            <Card className="w-full sm:max-w-3xl" variant="ghost">
-                <CardHeader>
-                    <CardTitle>Demande bien reçue</CardTitle>
-                </CardHeader>
-                <CardDescription className="w-full px-4">
-                    <p>
-                        Merci, votre demande a été transmise aux éluEs
-                        étudiantEs de la FARE. Vous allez recevoir un e-mail de
-                        confirmation. Nous reviendrons vers vous rapidement.
-                    </p>
-                </CardDescription>
-            </Card>
+            <FormSuccess>
+                <Card className="w-full sm:max-w-3xl" variant="ghost">
+                    <CardHeader>
+                        <CardTitle>Demande bien reçue</CardTitle>
+                    </CardHeader>
+                    <CardDescription className="w-full px-4">
+                        <p>
+                            Merci, votre demande a été transmise aux éluEs
+                            étudiantEs de la FARE. Vous allez recevoir un e-mail
+                            de confirmation. Nous reviendrons vers vous
+                            rapidement.
+                        </p>
+                    </CardDescription>
+                </Card>
+            </FormSuccess>
         )
     }
 
@@ -188,7 +192,8 @@ export function AssistanceForm(): React.ReactNode {
                 <CardDescription>
                     Expliquez votre situation le plus clairement possible. Vos
                     informations restent confidentielles et ne servent qu'à
-                    traiter votre demande.
+                    traiter votre demande. Tous les champs sont obligatoires
+                    sauf mention contraire.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -372,7 +377,7 @@ export function AssistanceForm(): React.ReactNode {
                                     <form.Field
                                         name="ufr"
                                         children={(field) => (
-                                            <Field>
+                                            <Field optional>
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
@@ -522,7 +527,7 @@ export function AssistanceForm(): React.ReactNode {
                                 <form.Field
                                     name="pieces"
                                     children={(field) => (
-                                        <Field>
+                                        <Field optional>
                                             <FieldLabel htmlFor={field.name}>
                                                 Pièces jointes{" "}
                                                 <span className="text-muted-foreground">
@@ -633,7 +638,10 @@ export function AssistanceForm(): React.ReactNode {
                                                 field.state.meta.isTouched &&
                                                 !field.state.meta.isValid
                                             return (
-                                                <Field data-invalid={isInvalid}>
+                                                <Field
+                                                    data-invalid={isInvalid}
+                                                    optional
+                                                >
                                                     <FieldLabel
                                                         htmlFor={field.name}
                                                     >
@@ -768,7 +776,15 @@ export function AssistanceForm(): React.ReactNode {
                                 disabled={isPending}
                             >
                                 {isPending ? (
-                                    <Loader2Icon className="animate-spin" />
+                                    <>
+                                        <Loader2Icon
+                                            aria-hidden="true"
+                                            className="animate-spin"
+                                        />
+                                        <span className="sr-only">
+                                            Envoi en cours…
+                                        </span>
+                                    </>
                                 ) : (
                                     "Envoyer ma demande"
                                 )}

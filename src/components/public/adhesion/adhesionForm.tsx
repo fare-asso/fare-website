@@ -4,6 +4,7 @@ import { Loader2Icon, Trash2, UserPlus } from "lucide-react"
 import { useCallback, useState } from "react"
 
 import { Captcha } from "@/components/captcha"
+import FormSuccess from "@/components/public/formSuccess"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -171,9 +172,13 @@ export function AdhesionForm(): React.ReactNode {
                                 type="button"
                                 variant="ghost"
                                 size="sm"
+                                aria-label="Supprimer ce membre"
                                 onClick={onDelete}
                             >
-                                <Trash2 className="text-destructive h-4 w-4" />
+                                <Trash2
+                                    aria-hidden="true"
+                                    className="text-destructive h-4 w-4"
+                                />
                             </Button>
                         )}
                     </div>
@@ -438,26 +443,28 @@ export function AdhesionForm(): React.ReactNode {
 
     if (isSubmitted) {
         return (
-            <Card className="w-full sm:max-w-3xl" variant="ghost">
-                <CardHeader>
-                    <CardTitle>Merci pour votre adhésion !</CardTitle>
-                </CardHeader>
-                <CardDescription className="w-full px-4">
-                    <p>
-                        Nous reviendrons vers vous rapidement pour confirmer
-                        votre adhésion.
-                    </p>
-                    <p>
-                        Pour toute question, veuillez envoyer un mail à{" "}
-                        <a
-                            href="mailto:secretariat@fare-asso.fr"
-                            className="underline"
-                        >
-                            secretariat@fare-asso.fr
-                        </a>
-                    </p>
-                </CardDescription>
-            </Card>
+            <FormSuccess>
+                <Card className="w-full sm:max-w-3xl" variant="ghost">
+                    <CardHeader>
+                        <CardTitle>Merci pour votre adhésion !</CardTitle>
+                    </CardHeader>
+                    <CardDescription className="w-full px-4">
+                        <p>
+                            Nous reviendrons vers vous rapidement pour confirmer
+                            votre adhésion.
+                        </p>
+                        <p>
+                            Pour toute question, veuillez envoyer un mail à{" "}
+                            <a
+                                href="mailto:secretariat@fare-asso.fr"
+                                className="underline"
+                            >
+                                secretariat@fare-asso.fr
+                            </a>
+                        </p>
+                    </CardDescription>
+                </Card>
+            </FormSuccess>
         )
     }
 
@@ -475,7 +482,7 @@ export function AdhesionForm(): React.ReactNode {
                     >
                         secretariat@fare-asso.fr
                     </a>
-                    .
+                    . Tous les champs sont obligatoires sauf mention contraire.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -814,7 +821,10 @@ export function AdhesionForm(): React.ReactNode {
                                             field.state.meta.isTouched &&
                                             !field.state.meta.isValid
                                         return (
-                                            <Field data-invalid={isInvalid}>
+                                            <Field
+                                                data-invalid={isInvalid}
+                                                optional
+                                            >
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
@@ -850,7 +860,10 @@ export function AdhesionForm(): React.ReactNode {
                                             field.state.meta.isTouched &&
                                             !field.state.meta.isValid
                                         return (
-                                            <Field data-invalid={isInvalid}>
+                                            <Field
+                                                data-invalid={isInvalid}
+                                                optional
+                                            >
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
@@ -1175,7 +1188,10 @@ export function AdhesionForm(): React.ReactNode {
                                             field.state.meta.isTouched &&
                                             !field.state.meta.isValid
                                         return (
-                                            <Field data-invalid={isInvalid}>
+                                            <Field
+                                                data-invalid={isInvalid}
+                                                optional
+                                            >
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
@@ -1217,7 +1233,10 @@ export function AdhesionForm(): React.ReactNode {
                                             field.state.meta.isTouched &&
                                             !field.state.meta.isValid
                                         return (
-                                            <Field data-invalid={isInvalid}>
+                                            <Field
+                                                data-invalid={isInvalid}
+                                                optional
+                                            >
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
@@ -1258,7 +1277,10 @@ export function AdhesionForm(): React.ReactNode {
                                             field.state.meta.isTouched &&
                                             !field.state.meta.isValid
                                         return (
-                                            <Field data-invalid={isInvalid}>
+                                            <Field
+                                                data-invalid={isInvalid}
+                                                optional
+                                            >
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
@@ -1299,7 +1321,10 @@ export function AdhesionForm(): React.ReactNode {
                                             field.state.meta.isTouched &&
                                             !field.state.meta.isValid
                                         return (
-                                            <Field data-invalid={isInvalid}>
+                                            <Field
+                                                data-invalid={isInvalid}
+                                                optional
+                                            >
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
@@ -1402,7 +1427,10 @@ export function AdhesionForm(): React.ReactNode {
                                                 field.state.meta.isTouched &&
                                                 !field.state.meta.isValid
                                             return (
-                                                <Field data-invalid={isInvalid}>
+                                                <Field
+                                                    data-invalid={isInvalid}
+                                                    optional
+                                                >
                                                     <FieldLabel
                                                         htmlFor={field.name}
                                                     >
@@ -1449,7 +1477,10 @@ export function AdhesionForm(): React.ReactNode {
                                                 field.state.meta.isTouched &&
                                                 !field.state.meta.isValid
                                             return (
-                                                <Field data-invalid={isInvalid}>
+                                                <Field
+                                                    data-invalid={isInvalid}
+                                                    optional
+                                                >
                                                     <FieldLabel
                                                         htmlFor={field.name}
                                                     >
@@ -1579,7 +1610,15 @@ export function AdhesionForm(): React.ReactNode {
                                 disabled={isPending}
                             >
                                 {isPending ? (
-                                    <Loader2Icon className="animate-spin" />
+                                    <>
+                                        <Loader2Icon
+                                            aria-hidden="true"
+                                            className="animate-spin"
+                                        />
+                                        <span className="sr-only">
+                                            Envoi en cours…
+                                        </span>
+                                    </>
                                 ) : (
                                     "Envoyer le formulaire d'adhésion"
                                 )}

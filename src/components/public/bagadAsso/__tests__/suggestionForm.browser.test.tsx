@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render } from "vitest-browser-react"
 
+import { expectNoA11yViolations } from "@/test/a11y"
+
 const h = vi.hoisted(() => ({ action: vi.fn() }))
 
 vi.mock("astro:actions", () => ({
@@ -48,6 +50,7 @@ describe("<SuggestionForm />", () => {
                 screen.getByRole("button", { name: "Envoyer la suggestion" })
             )
             .toBeVisible()
+        await expectNoA11yViolations()
     })
 
     it("blocks an empty submit client-side and never calls the action", async () => {
