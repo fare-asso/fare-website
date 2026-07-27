@@ -11,9 +11,6 @@ import {
 /**
  * Chart component for displaying storage usage in a pie chart format.
  * The unit of measurement is in gigabytes (GB).
- * @param {number} used - The amount of storage used in GB.
- * @param {number} total - The total storage capacity in GB.
- * @returns {JSX.Element} - A pie chart representing the storage usage.
  */
 export function StorageChartClient({
     used,

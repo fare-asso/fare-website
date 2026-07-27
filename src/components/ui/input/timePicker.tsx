@@ -7,13 +7,6 @@ type Time = {
     minutes: number
 }
 
-/**
- * @param {Time} defaultValue - Default hour and minutes of the inputs
- * @param {string} hoursInputName - name of the hours input field
- * @param {string} minutesInputName - name of the minutes input field
- * @return {JSX.Element} two inputs wrapped in a container
- *
- */
 export default function TimePicker({
     defaultValue,
     hoursInputName,

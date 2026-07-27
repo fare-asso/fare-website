@@ -1,4 +1,4 @@
-import { useForm, useStore } from "@tanstack/react-form"
+import { useForm, useSelector } from "@tanstack/react-form"
 import { actions } from "astro:actions"
 import { Loader2Icon } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -108,7 +108,7 @@ export function AssistanceForm(): React.ReactNode {
         }
     })
 
-    const values = useStore(form.store, (state) => state.values)
+    const values = useSelector(form.store, (state) => state.values)
 
     useEffect(() => {
         const id = setTimeout(() => {
