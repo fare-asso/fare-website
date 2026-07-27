@@ -118,9 +118,9 @@ export default function SuggestionForm() {
                 >
                     <FieldGroup>
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold">
+                            <h2 className="mb-0 font-sans text-lg font-semibold">
                                 Le matériel suggéré
-                            </h3>
+                            </h2>
 
                             <form.Field
                                 name="equipmentName"
@@ -213,9 +213,9 @@ export default function SuggestionForm() {
                         <FieldSeparator />
 
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold">
+                            <h2 className="mb-0 font-sans text-lg font-semibold">
                                 Vos coordonnées
-                            </h3>
+                            </h2>
 
                             <form.Field
                                 name="associationName"

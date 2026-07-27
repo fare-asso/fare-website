@@ -1,4 +1,6 @@
 :root {
+    /* header height: 22px x2 padding + 56px logo + 1px border */
+    --v1f-h: 101px;
     --ink: #0a0a0a;
     --paper: #faf9f5;
     --paper-2: #f1efe7;
@@ -499,6 +501,9 @@
    ========================================================= */
 
 @media (max-width: 1179px) {
+    :root {
+        --v1f-h: 67px;
+    }
     .v1f {
         padding: 14px 20px;
     }

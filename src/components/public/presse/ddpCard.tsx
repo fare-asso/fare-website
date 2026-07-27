@@ -62,14 +62,14 @@ export default function DossierDePresseCard({
                     className="bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm shadow-xs transition-colors"
                 >
                     <FiExternalLink size={16} />
-                    <span className="hidden md:inline">Consulter</span>
+                    <span className="sr-only md:not-sr-only">Consulter</span>
                 </a>
                 <a
                     href={downloadUrl}
                     className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm shadow-xs transition-colors"
                 >
                     <FiDownload size={16} />
-                    <span className="hidden md:inline">Telecharger</span>
+                    <span className="sr-only md:not-sr-only">Télécharger</span>
                 </a>
             </div>
         </div>

@@ -60,9 +60,9 @@ const imageUrl = (image: string): string =>
         <div class="flex h-full w-full flex-col items-center">
             {currentEvents.length > 0 && (
                     <div class="mb-8 flex w-full flex-col">
-                        <span class="mb-4 text-2xl font-semibold">
+                        <h2 class="mb-4 font-sans text-2xl font-semibold">
                             En ce moment
-                        </span>
+                        </h2>
                         <div class="flex h-auto w-full flex-col items-center">
                             {currentEvents.map((event) => (
                                 <EventCard
@@ -76,7 +76,7 @@ const imageUrl = (image: string): string =>
                 )}
             {soonEvents.length > 0 && (
                     <div class="mb-8 flex w-full flex-col">
-                        <span class="mb-4 text-2xl font-semibold">Bientôt</span>
+                        <h2 class="mb-4 font-sans text-2xl font-semibold">Bientôt</h2>
                         <div class="flex h-auto w-full flex-col items-center">
                             {soonEvents.map((event) => (
                                 <EventCard
@@ -90,9 +90,9 @@ const imageUrl = (image: string): string =>
                 )}
             {archivedEvents.length > 0 && (
                     <div class="mb-8 flex w-full flex-col">
-                        <span class="mb-4 text-2xl font-semibold">
+                        <h2 class="mb-4 font-sans text-2xl font-semibold">
                             Archives
-                        </span>
+                        </h2>
                         <div class="flex h-auto w-full flex-col items-center space-y-3">
                             {archivedEvents.map((event) => (
                                 <EventCard

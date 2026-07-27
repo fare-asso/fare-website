@@ -68,7 +68,7 @@ const socials = [
                                 aria-label={label}
                                 class="text-white/80 transition-colors hover:text-white"
                             >
-                                <Icon size={22} />
+                                <Icon size={22} aria-hidden="true" />
                             </a>
                         ))}
                 </div>
@@ -77,22 +77,20 @@ const socials = [
                 class="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3 lg:flex lg:gap-16"
             >
                 {columns.map((col) => (
-                    <nav class="flex flex-col gap-3">
+                    <nav class="flex flex-col gap-3" aria-label={col.title}>
                         <h2 class="text-xs font-semibold tracking-wide text-white/50 uppercase">
                             {col.title}
                         </h2>
-                        <ul class="flex flex-col gap-2 text-sm">
+                        <div class="flex flex-col gap-2 text-sm">
                             {col.links.map((link) => (
-                                <li>
-                                    <a
-                                        href={link.href}
-                                        class="text-white/80 transition-colors hover:text-white hover:underline"
-                                    >
-                                        {link.label}
-                                    </a>
-                                </li>
+                                <a
+                                    href={link.href}
+                                    class="text-white/80 transition-colors hover:text-white hover:underline"
+                                >
+                                    {link.label}
+                                </a>
                             ))}
-                        </ul>
+                        </div>
                     </nav>
                 ))}
             </div>
@@ -104,7 +102,10 @@ const socials = [
                 © {year} FARE. Tous droits réservés.
                 <WebsiteCarbonBadge server:defer />
             </p>
-            <nav class="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <nav
+                aria-label="Liens légaux"
+                class="flex flex-wrap items-center gap-x-5 gap-y-2"
+            >
                 <a
                     href="/mentions-legales"
                     class="transition-colors hover:text-white hover:underline"
@@ -121,7 +122,7 @@ const socials = [
                     href="/login"
                     class="inline-flex items-center gap-1 transition-colors hover:text-white hover:underline"
                 >
-                    <ShieldUser size={14} />
+                    <ShieldUser size={14} aria-hidden="true" />
                     Espace admin
                 </a>
             </nav>

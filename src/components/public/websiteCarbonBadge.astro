@@ -47,7 +47,8 @@ const data = entry?.data
             title={`Plus propre que ${data.p} % des pages testées — Website Carbon`}
             class="-my-0.75 inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 transition-colors hover:border-white/40 hover:text-white"
         >
-            <LeafIcon size={12} />
+            <LeafIcon size={12} aria-hidden="true" />
             {data.c.toLocaleString("fr-FR")} g de CO₂/vue
+            <span class="sr-only">(nouvelle fenêtre)</span>
         </a>
     )}

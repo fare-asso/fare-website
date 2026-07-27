@@ -16,20 +16,21 @@ const hasHero = Astro.slots.has("hero")
 ---
 
 <Base title={fullTitle} description={description}>
-    <main class="grid min-h-svh grid-rows-[auto_1fr_auto] items-center">
-        {hasHero ? (
-                <div class="grid min-h-svh w-full grid-rows-[auto_1fr]">
-                    <Header />
+    <a href="#contenu" class="skip-link">Aller au contenu principal</a>
+    <div class="grid min-h-svh grid-rows-[auto_1fr_auto] items-center">
+        <Header />
+        <main id="contenu" tabindex="-1" class="w-full outline-none">
+            {hasHero && (
+                <div class="grid min-h-[calc(100svh-var(--v1f-h))] w-full">
                     <slot name="hero" />
                 </div>
-            ) : (
-                <Header />
             )}
-        <div class="page-layout mt-6 pb-16">
-            <slot />
-        </div>
+            <div class="page-layout mt-6 pb-16">
+                <slot />
+            </div>
+        </main>
         <Footer />
-    </main>
+    </div>
     <script
         is:inline
         defer

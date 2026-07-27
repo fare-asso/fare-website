@@ -12,7 +12,9 @@ export default function ArticleCard({ article }: { article: Article }) {
 
             <div className="mt-2 ml-0 flex flex-1 flex-col md:mt-0 md:ml-4">
                 {/* Title */}
-                <span className="text-lg font-bold">{article.title}</span>
+                <h2 className="mb-0 font-sans text-lg font-bold">
+                    {article.title}
+                </h2>
 
                 {/* Date */}
                 <span className="text-sm opacity-80">
