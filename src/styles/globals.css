@@ -140,6 +140,15 @@
     }
 }
 
+@utility skip-link {
+    @apply sr-only;
+
+    &:focus-visible {
+        /* z-60: above the header bar (.v1f is z-50 and painted later) */
+        @apply bg-background text-foreground not-sr-only fixed top-2 left-2 z-60 rounded-md px-4 py-2 font-medium shadow-md;
+    }
+}
+
 @layer base {
     :root {
         --color-fare-accent: #004aad;
@@ -329,6 +338,14 @@
     body {
         @apply bg-background text-foreground;
     }
+    :focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+    }
+    /* the near-black ring colour is invisible on the dark footer */
+    footer :focus-visible {
+        outline-color: white;
+    }
 }
 
 .page-layout > * {
@@ -358,4 +375,16 @@
         var(--full)
         [full-end];
     place-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after,
+    ::backdrop {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
