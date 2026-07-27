@@ -4,8 +4,7 @@
         "taze.config.ts",
         "src/**/*.test.{ts,tsx}",
         "src/test/**",
-        "emails/**/*.test.tsx",
-        "src/components/header/defenseDroitsButton.tsx"
+        "emails/**/*.test.tsx"
     ],
     "ignoreDependencies": ["@prisma/client"],
     "ignoreIssues": {

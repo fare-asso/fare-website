@@ -242,6 +242,16 @@
     .link {
         @apply text-blue-600 hover:underline;
     }
+
+    /* Public pages use a larger radius than the dashboard. The derived
+       radii must be re-declared so var(--radius) resolves in this scope
+       instead of on :root. */
+    .public-radius {
+        --radius: 0.875rem;
+        --radius-lg: var(--radius);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-sm: calc(var(--radius) - 4px);
+    }
 }
 
 @layer utilities {
