@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets"
+import { MessageCircleQuestionMarkIcon } from "lucide-react"
 
 import logo from "@/assets/logo_fare.png"
 
@@ -16,6 +17,15 @@ import "./header.css"
             priority
             width={150}
         />
+    </a>
+    <a href="/assistance" class="v1f-cta">
+        <span class="v1f-cta-pill">
+            <MessageCircleQuestionMarkIcon
+                className="v1f-cta-icon"
+                aria-hidden="true"
+            />
+            <span>Contactez vos éluEs étudiantEs</span>
+        </span>
     </a>
     <HeaderLinks />
 </header>
