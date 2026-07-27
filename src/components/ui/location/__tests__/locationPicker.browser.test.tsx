@@ -49,6 +49,24 @@ describe("<LocationPicker />", () => {
         expect(fetchSpy).not.toHaveBeenCalled()
     })
 
+    it("exposes the ARIA combobox contract", async () => {
+        const screen = await render(<LocationPicker name="location" />)
+        const input = combobox(screen.container)
+        expect(input.getAttribute("aria-autocomplete")).toBe("list")
+        expect(input.getAttribute("aria-haspopup")).toBe("listbox")
+        // aria-controls must not dangle while the listbox is closed
+        expect(input.getAttribute("aria-controls")).toBeNull()
+
+        mockSearch()
+        await screen.getByRole("combobox").fill("rennes")
+        await vi.waitFor(() => {
+            expect(input.getAttribute("aria-expanded")).toBe("true")
+            const controls = input.getAttribute("aria-controls")
+            expect(controls).toBeTruthy()
+            expect(document.getElementById(controls as string)).not.toBeNull()
+        })
+    })
+
     it("fetches, selects on click, and emits the geolocated JSON value", async () => {
         mockSearch()
         const onChange = vi.fn()

@@ -571,6 +571,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                 <Popover>
                                                     <PopoverTrigger asChild>
                                                         <Button
+                                                            id={field.name}
                                                             variant="outline"
                                                             className={cn(
                                                                 "w-full justify-start text-left font-normal",
@@ -676,6 +677,7 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                 <Popover>
                                                     <PopoverTrigger asChild>
                                                         <Button
+                                                            id={field.name}
                                                             variant="outline"
                                                             className={cn(
                                                                 "w-full justify-start text-left font-normal",

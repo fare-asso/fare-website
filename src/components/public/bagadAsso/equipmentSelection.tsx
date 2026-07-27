@@ -76,16 +76,13 @@ export default function EquipmentSelection({
             <input type="hidden" name={name} value={selectedEquipmentJson} />
 
             {/* Caution totale */}
-            <label htmlFor="total-guarantee" className="font-semibold">
-                Caution totale:
-            </label>
-            <span>
-                {" "}
+            <output className="block">
+                <span className="font-semibold">Caution totale :</span>{" "}
                 {totalGuarantee.toLocaleString("fr-FR", {
                     style: "currency",
                     currency: "EUR"
-                })}{" "}
-            </span>
+                })}
+            </output>
         </div>
     )
 }
