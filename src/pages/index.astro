@@ -23,6 +23,8 @@ const heroPlaceholder = await lqip(heroImage)
         <Image
             src={heroImage}
             alt="Membres du bureau de la FARE"
+            widths={[640, 1024, 1440, 1920, 2560, 3840, heroImage.width]}
+            sizes="100vw"
             class="absolute inset-0 h-full w-full rounded-b-xl bg-cover bg-center object-cover"
             style={`background-image: url(${heroPlaceholder})`}
             priority
