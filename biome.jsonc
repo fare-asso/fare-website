@@ -15,15 +15,7 @@
         "enabled": true,
         "rules": {
             "preset": "none",
-            "a11y": {
-                "useAltText": "error",
-                "useAnchorContent": "error",
-                "useValidAnchor": "error",
-                "useValidAriaProps": "error",
-                "useValidAriaValues": "error",
-                "noRedundantAlt": "error",
-                "useAriaPropsForRole": "error"
-            }
+            "a11y": "on"
         }
     },
     "assist": { "enabled": false },

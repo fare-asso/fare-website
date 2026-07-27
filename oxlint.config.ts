@@ -100,10 +100,10 @@ export default defineConfig({
         "typescript/no-base-to-string": "off",
 
         "jsx-a11y/control-has-associated-label": "off",
-        "jsx-a11y/prefer-tag-over-role": "warn",
-        "jsx-a11y/interactive-supports-focus": "warn",
-        "jsx-a11y/role-has-required-aria-props": "warn",
-        "jsx-a11y/no-autofocus": "warn",
+        "jsx-a11y/prefer-tag-over-role": "error",
+        "jsx-a11y/interactive-supports-focus": "error",
+        "jsx-a11y/role-has-required-aria-props": "error",
+        "jsx-a11y/no-autofocus": "error",
         "react-hooks/exhaustive-deps": "warn",
 
         // complexity
