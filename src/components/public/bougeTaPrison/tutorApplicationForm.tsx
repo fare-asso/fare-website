@@ -4,6 +4,7 @@ import { Loader2Icon } from "lucide-react"
 import { useCallback, useState } from "react"
 
 import { Captcha } from "@/components/captcha"
+import FormSuccess from "@/components/public/formSuccess"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -100,17 +101,19 @@ export default function TutorApplicationForm(): React.ReactNode {
 
     if (isSubmitted) {
         return (
-            <Card className="w-full sm:max-w-3xl" variant="ghost">
-                <CardHeader>
-                    <CardTitle>Merci pour votre candidature !</CardTitle>
-                </CardHeader>
-                <CardDescription className="w-full px-4">
-                    <p>
-                        Votre candidature a bien été enregistrée. Nous
-                        reviendrons vers vous rapidement.
-                    </p>
-                </CardDescription>
-            </Card>
+            <FormSuccess>
+                <Card className="w-full sm:max-w-3xl" variant="ghost">
+                    <CardHeader>
+                        <CardTitle>Merci pour votre candidature !</CardTitle>
+                    </CardHeader>
+                    <CardDescription className="w-full px-4">
+                        <p>
+                            Votre candidature a bien été enregistrée. Nous
+                            reviendrons vers vous rapidement.
+                        </p>
+                    </CardDescription>
+                </Card>
+            </FormSuccess>
         )
     }
 
@@ -121,7 +124,8 @@ export default function TutorApplicationForm(): React.ReactNode {
                 <CardDescription>
                     Pour candidater, veuillez remplir le formulaire ci-dessous
                     et déposer obligatoirement votre CV et votre lettre de
-                    motivation.
+                    motivation. Tous les champs sont obligatoires sauf mention
+                    contraire.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -495,7 +499,15 @@ export default function TutorApplicationForm(): React.ReactNode {
                                 disabled={isPending}
                             >
                                 {isPending ? (
-                                    <Loader2Icon className="animate-spin" />
+                                    <>
+                                        <Loader2Icon
+                                            aria-hidden="true"
+                                            className="animate-spin"
+                                        />
+                                        <span className="sr-only">
+                                            Envoi en cours…
+                                        </span>
+                                    </>
                                 ) : (
                                     "Envoyer ma candidature"
                                 )}

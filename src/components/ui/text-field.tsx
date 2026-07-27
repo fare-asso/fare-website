@@ -18,6 +18,8 @@ interface TextFieldProps {
     multiline?: boolean
     maxLength?: number
     className?: string
+    /** Suppress the default aria-required on the control. */
+    optional?: boolean
 }
 
 /**
@@ -33,12 +35,13 @@ export function TextField({
     placeholder,
     multiline,
     maxLength,
-    className
+    className,
+    optional
 }: TextFieldProps) {
     const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
 
     return (
-        <Field data-invalid={isInvalid}>
+        <Field data-invalid={isInvalid} optional={optional}>
             <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
             {multiline ? (
                 <Textarea

@@ -5,6 +5,7 @@ import { useCallback, useState } from "react"
 import type { FormState } from "@/actions/contact/submitContactFormAction"
 import { Captcha } from "@/components/captcha"
 import LoadingRing from "@/components/dashboard/loadingRing"
+import FormSuccess from "@/components/public/formSuccess"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -92,17 +93,19 @@ export default function ContactForm() {
 
     if (formState?.success) {
         return (
-            <Card className="mx-auto w-full max-w-2xl">
-                <CardContent className="pt-6">
-                    <Alert className="border-green-600 text-green-600">
-                        <AlertTitle>Message envoyé</AlertTitle>
-                        <AlertDescription>
-                            Votre message a été envoyé avec succès. Notre équipe
-                            vous répondra dans les plus brefs délais.
-                        </AlertDescription>
-                    </Alert>
-                </CardContent>
-            </Card>
+            <FormSuccess>
+                <Card className="mx-auto w-full max-w-2xl">
+                    <CardContent className="pt-6">
+                        <Alert className="border-green-600 text-green-600">
+                            <AlertTitle>Message envoyé</AlertTitle>
+                            <AlertDescription>
+                                Votre message a été envoyé avec succès. Notre
+                                équipe vous répondra dans les plus brefs délais.
+                            </AlertDescription>
+                        </Alert>
+                    </CardContent>
+                </Card>
+            </FormSuccess>
         )
     }
 
@@ -112,7 +115,8 @@ export default function ContactForm() {
                 <CardTitle>Vous avez une question ?</CardTitle>
                 <CardDescription>
                     N'hésitez pas à nous contacter. Notre équipe se fera un
-                    plaisir de vous répondre dans les plus brefs délais.
+                    plaisir de vous répondre dans les plus brefs délais. Tous
+                    les champs sont obligatoires sauf mention contraire.
                 </CardDescription>
             </CardHeader>
             <CardContent>

@@ -4,6 +4,7 @@ import { Loader2Icon } from "lucide-react"
 import { useCallback, useState } from "react"
 
 import { Captcha } from "@/components/captcha"
+import FormSuccess from "@/components/public/formSuccess"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -88,17 +89,19 @@ export default function QuestionForm(): React.ReactNode {
 
     if (isSubmitted) {
         return (
-            <Card className="w-full sm:max-w-3xl" variant="ghost">
-                <CardHeader>
-                    <CardTitle>Merci pour votre question !</CardTitle>
-                </CardHeader>
-                <CardDescription className="w-full px-4">
-                    <p>
-                        Votre question a bien été envoyée. Nous vous répondrons
-                        dans les plus brefs délais.
-                    </p>
-                </CardDescription>
-            </Card>
+            <FormSuccess>
+                <Card className="w-full sm:max-w-3xl" variant="ghost">
+                    <CardHeader>
+                        <CardTitle>Merci pour votre question !</CardTitle>
+                    </CardHeader>
+                    <CardDescription className="w-full px-4">
+                        <p>
+                            Votre question a bien été envoyée. Nous vous
+                            répondrons dans les plus brefs délais.
+                        </p>
+                    </CardDescription>
+                </Card>
+            </FormSuccess>
         )
     }
 
@@ -111,6 +114,7 @@ export default function QuestionForm(): React.ReactNode {
                 <CardDescription>
                     Posez votre question en remplissant le formulaire
                     ci-dessous. Nous vous répondrons dans les plus brefs délais.
+                    Tous les champs sont obligatoires sauf mention contraire.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -400,7 +404,15 @@ export default function QuestionForm(): React.ReactNode {
                                 disabled={isPending}
                             >
                                 {isPending ? (
-                                    <Loader2Icon className="animate-spin" />
+                                    <>
+                                        <Loader2Icon
+                                            aria-hidden="true"
+                                            className="animate-spin"
+                                        />
+                                        <span className="sr-only">
+                                            Envoi en cours…
+                                        </span>
+                                    </>
                                 ) : (
                                     "Envoyer"
                                 )}

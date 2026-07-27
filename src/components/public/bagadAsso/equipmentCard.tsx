@@ -27,12 +27,15 @@ export default function EquipmentCard({
                         className="aspect-square"
                     />
                 ) : (
-                    <div className="flex aspect-square h-min w-full items-center justify-center bg-gray-200">
-                        No Image
+                    <div
+                        aria-hidden="true"
+                        className="flex aspect-square h-min w-full items-center justify-center bg-gray-200"
+                    >
+                        Pas d'image
                     </div>
                 )}
             </div>
-            <h2 className="mb-2 text-lg font-semibold">{equipment.name}</h2>
+            <h3 className="mb-2 text-lg font-semibold">{equipment.name}</h3>
             <p className="mb-1 text-sm text-gray-600">{`Quantité disponible: ${equipment.quantity}`}</p>
             <p className="mb-4 text-sm text-gray-600">{`Caution par objet: ${equipment.deposit}€`}</p>
             <div className="mt-auto">
@@ -41,6 +44,7 @@ export default function EquipmentCard({
                     min={0}
                     max={equipment.quantity}
                     className="w-full"
+                    aria-label={`Quantité : ${equipment.name}`}
                     onChange={(value) => onQuantityChange(equipment.id, value)}
                 />
             </div>

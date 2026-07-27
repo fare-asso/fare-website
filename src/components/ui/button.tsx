@@ -5,7 +5,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-    "ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+    "focus-visible:border-ring focus-visible:ring-ring/50 inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
     {
         variants: {
             variant: {
@@ -19,7 +19,7 @@ const buttonVariants = cva(
                     "bg-secondary text-secondary-foreground hover:bg-secondary/80",
                 ghost: "hover:bg-accent hover:text-accent-foreground",
                 link: "text-primary underline-offset-4 hover:underline",
-                card: "group text-muted-foreground hover:border-primary/50 hover:text-primary disabled:hover:text-muted-foreground flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-dashed disabled:hover:shadow-none"
+                card: "group text-muted-foreground hover:border-primary/50 hover:text-primary disabled:hover:text-muted-foreground flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed transition-colors disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-dashed disabled:hover:shadow-none"
             },
             size: {
                 default: "h-10 px-4 py-2",

@@ -57,6 +57,9 @@ export function DateField({
                                 "border-destructive focus-visible:ring-destructive"
                         )}
                         aria-invalid={isInvalid}
+                        aria-describedby={
+                            isInvalid ? `${field.name}-error` : undefined
+                        }
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {value ? (
@@ -80,7 +83,9 @@ export function DateField({
                     />
                 </PopoverContent>
             </Popover>
-            {isInvalid && error && <FieldError>{error}</FieldError>}
+            {isInvalid && error && (
+                <FieldError id={`${field.name}-error`}>{error}</FieldError>
+            )}
         </Field>
     )
 }

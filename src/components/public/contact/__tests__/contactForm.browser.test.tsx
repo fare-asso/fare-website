@@ -15,6 +15,8 @@ vi.mock("@/components/captcha", () => ({
     )
 }))
 
+import { expectNoA11yViolations } from "@/test/a11y"
+
 import ContactForm from "../contactForm"
 
 beforeEach(() => {
@@ -29,6 +31,7 @@ describe("<ContactForm />", () => {
         await expect
             .element(screen.getByRole("button", { name: "Envoyer" }))
             .toBeVisible()
+        await expectNoA11yViolations()
     })
 
     it("blocks an empty submit client-side and does not call the action", async () => {
@@ -87,5 +90,48 @@ describe("<ContactForm />", () => {
         await screen.getByRole("button", { name: "Envoyer" }).click()
 
         await expect.element(screen.getByText("Échec de l'envoi")).toBeVisible()
+    })
+
+    it("links an invalid field to its error message via aria-describedby", async () => {
+        const screen = await render(<ContactForm />)
+        await screen.getByRole("button", { name: "Envoyer" }).click()
+        await vi.waitFor(() => {
+            const input = document.getElementById("firstName")
+            const describedBy = input?.getAttribute("aria-describedby")
+            expect(describedBy).toBeTruthy()
+            expect(
+                document.getElementById(describedBy as string)?.textContent
+            ).toBeTruthy()
+        })
+    })
+
+    it("moves focus to the success status after submitting", async () => {
+        const screen = await render(<ContactForm />)
+        await screen.getByLabelText("Prénom").fill("Jean")
+        await screen.getByLabelText("Nom", { exact: true }).fill("Dupont")
+        await screen.getByLabelText("Email").fill("jean@example.com")
+        await screen.getByLabelText("Message").fill("Bonjour, une question.")
+        await screen.getByRole("button", { name: "solve captcha" }).click()
+        await screen.getByRole("button", { name: "Envoyer" }).click()
+
+        await expect.element(screen.getByText("Message envoyé")).toBeVisible()
+        const status = document.querySelector("[role=status]")
+        expect(status).not.toBeNull()
+        await vi.waitFor(() => expect(document.activeElement).toBe(status))
+    })
+
+    it("keeps an accessible name on the pending submit button", async () => {
+        h.action.mockReturnValue(new Promise(() => undefined))
+        const screen = await render(<ContactForm />)
+        await screen.getByLabelText("Prénom").fill("Jean")
+        await screen.getByLabelText("Nom", { exact: true }).fill("Dupont")
+        await screen.getByLabelText("Email").fill("jean@example.com")
+        await screen.getByLabelText("Message").fill("Bonjour, une question.")
+        await screen.getByRole("button", { name: "solve captcha" }).click()
+        await screen.getByRole("button", { name: "Envoyer" }).click()
+
+        await expect
+            .element(screen.getByRole("button", { name: "Chargement" }))
+            .toBeVisible()
     })
 })

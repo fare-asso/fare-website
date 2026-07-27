@@ -11,6 +11,7 @@ type NumberInputProps = {
     defaultValue?: number
     placeholder?: string
     className?: string
+    "aria-label"?: string
     onChange?: (value: number) => void
 }
 
@@ -22,6 +23,7 @@ export default function NumberInput({
     defaultValue = 0,
     placeholder = "0",
     className,
+    "aria-label": ariaLabel,
     onChange
 }: NumberInputProps) {
     const [number, setNumber] = useState<number>(defaultValue)
@@ -50,12 +52,13 @@ export default function NumberInput({
     }
 
     return (
-        <div className={`relative flex max-w-[8rem] items-center${className}`}>
+        <div className={`relative flex max-w-[8rem] items-center ${className}`}>
             <button
                 type="button"
                 onClick={decrement}
                 disabled={number === min}
-                className="h-11 rounded-s-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:ring-2 focus:ring-gray-100 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+                aria-label="Diminuer la quantité"
+                className="h-11 rounded-s-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
                 <svg
                     className="h-3 w-3 text-gray-900 dark:text-white"
@@ -80,6 +83,7 @@ export default function NumberInput({
                 min={min}
                 max={max}
                 onChange={handleChange}
+                aria-label={ariaLabel}
                 className="block h-11 w-full rounded-none! border-x-0 border-y border-gray-300 bg-gray-50 py-2.5 text-center text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 placeholder={placeholder}
                 value={number}
@@ -89,7 +93,8 @@ export default function NumberInput({
                 type="button"
                 onClick={increment}
                 disabled={number === max}
-                className="h-11 rounded-e-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:ring-2 focus:ring-gray-100 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+                aria-label="Augmenter la quantité"
+                className="h-11 rounded-e-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
                 <svg
                     className="h-3 w-3 text-gray-900 dark:text-white"

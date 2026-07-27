@@ -57,9 +57,23 @@ export function FilePondInput({
 }: FilePondInputProps): React.ReactNode {
     const editMode = initialImageUrl !== undefined
     const [files, setFiles] = useState<File[]>([])
+    const wrapperRef = useRef<HTMLDivElement>(null)
     // The existing image, fetched into a File so it lives entirely client-side.
     // Compared by reference to tell "untouched" from a user replacement.
     const originalFile = useRef<File | null>(null)
+
+    // FilePond builds its input outside React with a generated id the
+    // FieldLabel can't know; repoint the label once the widget is ready.
+    const repairLabel = useCallback(() => {
+        const root = wrapperRef.current
+        const input = root?.querySelector<HTMLInputElement>("input[type=file]")
+        const label = root
+            ?.closest("fieldset")
+            ?.querySelector<HTMLLabelElement>("label[for]")
+        if (input && label && !document.getElementById(label.htmlFor)) {
+            label.htmlFor = input.id
+        }
+    }, [])
 
     useEffect(() => {
         if (initialImageUrl === undefined) return
@@ -111,37 +125,40 @@ export function FilePondInput({
     )
 
     return (
-        <ReactFilePond
-            files={files}
-            onupdatefiles={handleUpdateFiles}
-            labelIdle={labelIdle}
-            labelInvalidField="Le champ contient des fichiers invalides"
-            labelFileWaitingForSize="En attente de la taille"
-            labelFileSizeNotAvailable="Taille non disponible"
-            labelFileLoading="Chargement"
-            labelFileLoadError="Erreur lors du chargement"
-            labelFileProcessing="Envoi en cours"
-            labelFileProcessingComplete="Envoi terminé"
-            labelFileProcessingAborted="Envoi annulé"
-            labelFileProcessingError="Erreur lors de l'envoi"
-            labelFileProcessingRevertError="Erreur lors de l'annulation"
-            labelFileRemoveError="Erreur lors de la suppression"
-            labelTapToCancel="appuyez pour annuler"
-            labelTapToRetry="appuyez pour réessayer"
-            labelTapToUndo="appuyez pour annuler"
-            labelButtonRemoveItem="Supprimer"
-            labelButtonAbortItemLoad="Abandonner"
-            labelButtonRetryItemLoad="Réessayer"
-            labelButtonAbortItemProcessing="Annuler"
-            labelButtonUndoItemProcessing="Annuler"
-            labelButtonRetryItemProcessing="Réessayer"
-            labelButtonProcessItem="Envoyer"
-            labelMaxFileSizeExceeded="Le fichier est trop volumineux"
-            labelMaxFileSize="La taille maximale du fichier est {filesize}"
-            labelMaxTotalFileSizeExceeded="La taille totale maximale est dépassée"
-            labelMaxTotalFileSize="La taille totale maximale est {filesize}"
-            credits={false}
-            {...props}
-        />
+        <div ref={wrapperRef}>
+            <ReactFilePond
+                files={files}
+                oninit={repairLabel}
+                onupdatefiles={handleUpdateFiles}
+                labelIdle={labelIdle}
+                labelInvalidField="Le champ contient des fichiers invalides"
+                labelFileWaitingForSize="En attente de la taille"
+                labelFileSizeNotAvailable="Taille non disponible"
+                labelFileLoading="Chargement"
+                labelFileLoadError="Erreur lors du chargement"
+                labelFileProcessing="Envoi en cours"
+                labelFileProcessingComplete="Envoi terminé"
+                labelFileProcessingAborted="Envoi annulé"
+                labelFileProcessingError="Erreur lors de l'envoi"
+                labelFileProcessingRevertError="Erreur lors de l'annulation"
+                labelFileRemoveError="Erreur lors de la suppression"
+                labelTapToCancel="appuyez pour annuler"
+                labelTapToRetry="appuyez pour réessayer"
+                labelTapToUndo="appuyez pour annuler"
+                labelButtonRemoveItem="Supprimer"
+                labelButtonAbortItemLoad="Abandonner"
+                labelButtonRetryItemLoad="Réessayer"
+                labelButtonAbortItemProcessing="Annuler"
+                labelButtonUndoItemProcessing="Annuler"
+                labelButtonRetryItemProcessing="Réessayer"
+                labelButtonProcessItem="Envoyer"
+                labelMaxFileSizeExceeded="Le fichier est trop volumineux"
+                labelMaxFileSize="La taille maximale du fichier est {filesize}"
+                labelMaxTotalFileSizeExceeded="La taille totale maximale est dépassée"
+                labelMaxTotalFileSize="La taille totale maximale est {filesize}"
+                credits={false}
+                {...props}
+            />
+        </div>
     )
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 
+import { expectNoA11yViolations } from "@/test/a11y"
 import { renderWithClient as render } from "@/test/browser"
 
 import CalculateurBeneficiaire from "../calculateurBeneficiaire"
@@ -20,6 +21,7 @@ describe("<CalculateurBeneficiaire />", () => {
                 )
             )
             .toBeVisible()
+        await expectNoA11yViolations()
     })
 
     it("shows the 10€ basket at 1€ when the RAV is above 7,50€", async () => {

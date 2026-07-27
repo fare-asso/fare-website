@@ -13,7 +13,7 @@ export default function EventCard({
     archive: boolean
     imageUrl: string
 }) {
-    const fontColor: string = archive ? "#2B2B2B" : "#FFDAA5"
+    const fontColor = "#2B2B2B"
     const backgroundColor: string = archive ? "#C5C5C5" : "#E0832E"
 
     const parsedLocation = parseLocation(event.location)

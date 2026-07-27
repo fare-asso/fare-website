@@ -1,7 +1,7 @@
 "use client"
 
 import { cva, type VariantProps } from "class-variance-authority"
-import { useMemo } from "react"
+import { createContext, useContext, useId, useMemo } from "react"
 
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
@@ -78,18 +78,49 @@ const fieldVariants = cva(
     }
 )
 
+interface FieldContextValue {
+    errorId: string
+    invalid: boolean
+    optional: boolean
+}
+
+const FieldContext = createContext<FieldContextValue | null>(null)
+
+/**
+ * State of the enclosing `Field`, or null outside one. Controls use it to
+ * render aria-describedby (pointing at the FieldError) and aria-required —
+ * fields are required by convention, opt out with `<Field optional>`.
+ */
+function useField(): FieldContextValue | null {
+    return useContext(FieldContext)
+}
+
 function Field({
     className,
     orientation = "vertical",
+    optional = false,
     ...props
-}: React.ComponentProps<"fieldset"> & VariantProps<typeof fieldVariants>) {
+}: React.ComponentProps<"fieldset"> &
+    VariantProps<typeof fieldVariants> & {
+        optional?: boolean
+        "data-invalid"?: boolean
+    }) {
+    const errorId = useId()
+    const invalid = props["data-invalid"] === true
+    const context = useMemo(
+        () => ({ errorId, invalid, optional }),
+        [errorId, invalid, optional]
+    )
+
     return (
-        <fieldset
-            data-slot="field"
-            data-orientation={orientation}
-            className={cn(fieldVariants({ orientation }), className)}
-            {...props}
-        />
+        <FieldContext.Provider value={context}>
+            <fieldset
+                data-slot="field"
+                data-orientation={orientation}
+                className={cn(fieldVariants({ orientation }), className)}
+                {...props}
+            />
+        </FieldContext.Provider>
     )
 }
 
@@ -225,6 +256,8 @@ function FieldError({
         )
     }, [children, errors])
 
+    const field = useField()
+
     if (!content) {
         return null
     }
@@ -232,6 +265,7 @@ function FieldError({
     return (
         <div
             role="alert"
+            id={field?.errorId}
             data-slot="field-error"
             className={cn("text-destructive text-sm font-normal", className)}
             {...props}
@@ -251,5 +285,6 @@ export {
     FieldSeparator,
     FieldSet,
     FieldContent,
-    FieldTitle
+    FieldTitle,
+    useField
 }

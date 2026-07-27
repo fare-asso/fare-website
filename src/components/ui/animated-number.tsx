@@ -1,6 +1,12 @@
 "use client"
 
-import { type MotionValue, motion, useSpring, useTransform } from "motion/react"
+import {
+    type MotionValue,
+    motion,
+    useReducedMotion,
+    useSpring,
+    useTransform
+} from "motion/react"
 import { useEffect, useRef, useState } from "react"
 
 interface AnimatedNumberProps {
@@ -57,6 +63,7 @@ function AnimatedNumber({
     onAnimationStart,
     onAnimationComplete
 }: AnimatedNumberProps & { ref: React.RefObject<HTMLSpanElement | null> }) {
+    const reducedMotion = useReducedMotion()
     const spring = useSpring(value, { mass, stiffness, damping })
     const display: MotionValue<string> = useTransform(spring, (current) =>
         format(current ? Number.parseFloat(current.toFixed(precision)) : 0)
@@ -71,6 +78,14 @@ function AnimatedNumber({
         })
         return () => unsubscribe()
     }, [spring, value, onAnimationStart, onAnimationComplete])
+
+    if (reducedMotion) {
+        return (
+            <span ref={ref} className={className}>
+                {format(value)}
+            </span>
+        )
+    }
 
     return (
         <motion.span ref={ref} className={className}>

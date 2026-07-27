@@ -8,83 +8,91 @@ const pathname = Astro.url.pathname
 const visible = links.filter((l) => !l.hidden)
 const subLinksOf = (l: (typeof visible)[number]) =>
     (l.subLinks ?? []).filter((s) => !s.hidden)
+const paneId = (href: string) => `nav-pane${href.replaceAll("/", "-")}`
+const isCurrent = (href: string) => pathname === href
+const isSection = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`)
 ---
 
-<nav class="v1f-nav" aria-label="Principale">
-    {visible.map((l) => {
-            const active = pathname.startsWith(l.href)
-            const subLinks = subLinksOf(l)
-            const hasSub = subLinks.length > 0
-
-            return (
-                <div
-                    class:list={["v1f-item", { "has-sub": hasSub }]}
-                    data-active={active ? "true" : undefined}
-                >
-                    <a
-                        href={l.href}
-                        class="v1f-link"
-                        aria-current={active ? "page" : undefined}
-                        aria-haspopup={hasSub ? "true" : undefined}
-                    >
-                        {l.title}
-                        {hasSub && (
-                            <ChevronDownIcon
-                                className="v1f-caret"
-                                size={14}
-                                aria-hidden="true"
-                            />
-                        )}
-                    </a>
-                    {hasSub && (
-                        <div class="v1f-pop" role="menu">
-                            {subLinks.map((s) => (
-                                <a
-                                    href={s.href}
-                                    class="v1f-suba"
-                                    role="menuitem"
-                                    data-active={
-                                        pathname === s.href ? "true" : undefined
-                                    }
-                                >
-                                    <span class="t">{s.title}</span>
-                                    {s.desc && <span class="d">{s.desc}</span>}
-                                </a>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )
-        })}
-    <div class="v1f-rail" aria-hidden="true"></div>
-    <div class="v1f-pop-shared" role="presentation">
+<nav class="v1f-nav" aria-label="Navigation principale" data-nav-root>
+    <ul class="v1f-list">
         {visible.map((l, i) => {
                 const subLinks = subLinksOf(l)
-                if (subLinks.length === 0) return null
+                const hasSub = subLinks.length > 0
+
                 return (
-                    <div
-                        class="v1f-pane"
-                        data-i={i}
-                        role="menu"
-                        aria-label={l.title}
+                    <li
+                        class:list={["v1f-item", { "has-sub": hasSub }]}
+                        data-active={isSection(l.href) ? "true" : undefined}
+                        style={hasSub ? `anchor-name: --nav-t${i}` : undefined}
                     >
-                        {subLinks.map((s) => (
+                        {hasSub ? (
+                            <button
+                                type="button"
+                                class="v1f-link"
+                                popovertarget={paneId(l.href)}
+                                data-nav-trigger
+                            >
+                                {l.title}
+                                <ChevronDownIcon
+                                    className="v1f-caret"
+                                    size={14}
+                                    aria-hidden="true"
+                                />
+                            </button>
+                        ) : (
                             <a
-                                href={s.href}
-                                class="v1f-suba"
-                                role="menuitem"
-                                data-active={
-                                    pathname === s.href ? "true" : undefined
+                                href={l.href}
+                                class="v1f-link"
+                                aria-current={
+                                    isCurrent(l.href) ? "page" : undefined
                                 }
                             >
-                                <span class="t">{s.title}</span>
-                                {s.desc && <span class="d">{s.desc}</span>}
+                                {l.title}
                             </a>
-                        ))}
-                    </div>
+                        )}
+                        {hasSub && (
+                            <div
+                                id={paneId(l.href)}
+                                class="v1f-pane"
+                                popover="auto"
+                                data-nav-pane
+                                style={`position-anchor: --nav-t${i}`}
+                            >
+                                <ul>
+                                    {subLinks.map((s) => (
+                                        <li>
+                                            <a
+                                                href={s.href}
+                                                class="v1f-suba"
+                                                aria-current={
+                                                    isCurrent(s.href)
+                                                        ? "page"
+                                                        : undefined
+                                                }
+                                                data-active={
+                                                    isCurrent(s.href)
+                                                        ? "true"
+                                                        : undefined
+                                                }
+                                            >
+                                                <span class="t">{s.title}</span>
+                                                {s.desc && (
+                                                    <span class="d">
+                                                        {s.desc}
+                                                    </span>
+                                                )}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </li>
                 )
             })}
-    </div>
+    </ul>
+    <div class="v1f-rail" aria-hidden="true"></div>
 </nav>
 
 <button
@@ -92,11 +100,12 @@ const subLinksOf = (l: (typeof visible)[number]) =>
     type="button"
     popovertarget={MOBILE_MENU_ID}
     aria-label="Ouvrir le menu"
+    data-burger
 >
     <MenuIcon aria-hidden="true" />
 </button>
 
-<div id={MOBILE_MENU_ID} class="m1-drawer" popover="auto">
+<div id={MOBILE_MENU_ID} class="m1-drawer" popover="auto" data-drawer>
     <div class="m1-head">
         <button
             class="m1-close"
@@ -108,48 +117,147 @@ const subLinksOf = (l: (typeof visible)[number]) =>
             <XIcon aria-hidden="true" />
         </button>
     </div>
-    <nav class="m1-nav" aria-label="Mobile">
-        {visible.map((l) => {
-                const subLinks = subLinksOf(l)
-                if (subLinks.length > 0) {
+    <nav class="m1-nav" aria-label="Navigation principale">
+        <ul>
+            {visible.map((l) => {
+                    const subLinks = subLinksOf(l)
+                    if (subLinks.length > 0) {
+                        return (
+                            <li>
+                                <details class="m-acc" open={isSection(l.href)}>
+                                    <summary>
+                                        <span>{l.title}</span>
+                                        <ChevronDownIcon
+                                            className="chev"
+                                            aria-hidden="true"
+                                        />
+                                    </summary>
+                                    <ul class="m-sub">
+                                        {subLinks.map((s) => (
+                                            <li>
+                                                <a
+                                                    href={s.href}
+                                                    aria-current={
+                                                        isCurrent(s.href)
+                                                            ? "page"
+                                                            : undefined
+                                                    }
+                                                    data-active={
+                                                        isCurrent(s.href)
+                                                            ? "true"
+                                                            : "false"
+                                                    }
+                                                >
+                                                    {s.title}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </details>
+                            </li>
+                        )
+                    }
                     return (
-                        <details
-                            class="m-acc"
-                            open={pathname.startsWith(l.href)}
-                        >
-                            <summary>
-                                <span>{l.title}</span>
-                                <ChevronDownIcon
-                                    className="chev"
-                                    aria-hidden="true"
-                                />
-                            </summary>
-                            <div class="m-sub">
-                                {subLinks.map((s) => (
-                                    <a
-                                        href={s.href}
-                                        data-active={
-                                            pathname === s.href
-                                                ? "true"
-                                                : "false"
-                                        }
-                                    >
-                                        {s.title}
-                                    </a>
-                                ))}
-                            </div>
-                        </details>
+                        <li>
+                            <a
+                                href={l.href}
+                                class="m-link"
+                                aria-current={
+                                    isCurrent(l.href) ? "page" : undefined
+                                }
+                                data-active={
+                                    isCurrent(l.href) ? "true" : "false"
+                                }
+                            >
+                                {l.title}
+                            </a>
+                        </li>
                     )
-                }
-                return (
-                    <a
-                        href={l.href}
-                        class="m-link"
-                        data-active={pathname === l.href ? "true" : "false"}
-                    >
-                        {l.title}
-                    </a>
-                )
-            })}
+                })}
+        </ul>
     </nav>
 </div>
+
+<script is:inline>
+;(() => {
+    const nav = document.querySelector("[data-nav-root]")
+    if (nav) {
+        const items = nav.querySelectorAll(".v1f-item.has-sub")
+        const finePointer = matchMedia("(hover: hover) and (pointer: fine)")
+        const anchorSupport = CSS.supports("anchor-name: --x")
+        let closeTimer
+        for (const item of items) {
+            const btn = item.querySelector("[data-nav-trigger]")
+            const pane = item.querySelector("[data-nav-pane]")
+            let hoverOpened = false
+            btn.setAttribute("aria-expanded", "false")
+            pane.addEventListener("toggle", (e) => {
+                const open = e.newState === "open"
+                btn.setAttribute("aria-expanded", String(open))
+                if (!open) hoverOpened = false
+                // without CSS anchor positioning, place the pane under its
+                // trigger instead of the static fallback position
+                if (open && !anchorSupport) {
+                    const r = btn.getBoundingClientRect()
+                    pane.style.top = `${r.bottom + 10}px`
+                    pane.style.right = `${window.innerWidth - r.right}px`
+                }
+            })
+            // a hover-opened pane must not be closed by the click that
+            // follows (the invoker click would otherwise toggle it shut)
+            btn.addEventListener("click", (e) => {
+                if (hoverOpened && pane.matches(":popover-open")) {
+                    e.preventDefault()
+                    hoverOpened = false
+                }
+            })
+            item.addEventListener("mouseenter", () => {
+                if (!finePointer.matches) return
+                clearTimeout(closeTimer)
+                if (!pane.matches(":popover-open")) {
+                    hoverOpened = true
+                    pane.showPopover()
+                }
+            })
+            item.addEventListener("mouseleave", () => {
+                if (!finePointer.matches) return
+                closeTimer = setTimeout(() => {
+                    if (pane.matches(":popover-open")) pane.hidePopover()
+                }, 150)
+            })
+            item.addEventListener("focusout", (e) => {
+                if (
+                    !item.contains(e.relatedTarget) &&
+                    pane.matches(":popover-open")
+                ) {
+                    pane.hidePopover()
+                }
+            })
+        }
+        nav.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return
+            const open = nav.querySelector("[data-nav-pane]:popover-open")
+            if (open) {
+                open.closest(".v1f-item")
+                    .querySelector("[data-nav-trigger]")
+                    .focus()
+            }
+        })
+    }
+
+    const burger = document.querySelector("[data-burger]")
+    const drawer = document.querySelector("[data-drawer]")
+    if (burger && drawer) {
+        burger.setAttribute("aria-expanded", "false")
+        drawer.addEventListener("toggle", (e) => {
+            const open = e.newState === "open"
+            burger.setAttribute("aria-expanded", String(open))
+            if (open) {
+                drawer.querySelector(".m1-close")?.focus()
+            } else if (drawer.contains(document.activeElement)) {
+                burger.focus()
+            }
+        })
+    }
+})()
+</script>

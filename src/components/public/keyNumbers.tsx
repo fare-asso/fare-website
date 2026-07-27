@@ -9,11 +9,10 @@ function Stat({ title, value }: { value: number; title: string }) {
                 <span aria-hidden="true" className="invisible">
                     {formatNumber(value)}
                 </span>
-                <AutoAnimatedNumber
-                    className="absolute inset-0"
-                    value={value}
-                    format={formatNumber}
-                />
+                <span aria-hidden="true" className="absolute inset-0">
+                    <AutoAnimatedNumber value={value} format={formatNumber} />
+                </span>
+                <span className="sr-only">{formatNumber(value)}</span>
             </span>
             <span className="max-w-44 text-sm text-balance text-white/85">
                 {title}

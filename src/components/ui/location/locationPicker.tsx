@@ -171,8 +171,14 @@ export default function LocationPicker({
                             className="pl-10"
                             autoComplete="off"
                             role="combobox"
+                            aria-autocomplete="list"
+                            aria-haspopup="listbox"
                             aria-expanded={open}
-                            aria-controls={listboxId}
+                            aria-controls={
+                                open && !loading && suggestions.length > 0
+                                    ? listboxId
+                                    : undefined
+                            }
                             aria-activedescendant={
                                 active >= 0 ? optionId(active) : undefined
                             }
@@ -203,17 +209,23 @@ export default function LocationPicker({
                     }}
                     className="w-(--radix-popover-trigger-width) p-1"
                 >
-                    <div id={listboxId} role="listbox">
-                        {loading ? (
-                            <p className="text-muted-foreground px-2 py-1.5 text-sm">
-                                Recherche…
-                            </p>
-                        ) : suggestions.length === 0 ? (
-                            <p className="text-muted-foreground px-2 py-1.5 text-sm">
-                                Aucun résultat
-                            </p>
-                        ) : (
-                            suggestions.map((suggestion, i) => (
+                    {loading ? (
+                        <p
+                            role="status"
+                            className="text-muted-foreground px-2 py-1.5 text-sm"
+                        >
+                            Recherche…
+                        </p>
+                    ) : suggestions.length === 0 ? (
+                        <p
+                            role="status"
+                            className="text-muted-foreground px-2 py-1.5 text-sm"
+                        >
+                            Aucun résultat
+                        </p>
+                    ) : (
+                        <div id={listboxId} role="listbox">
+                            {suggestions.map((suggestion, i) => (
                                 <div
                                     key={`${suggestion.lat},${suggestion.lon},${suggestion.label}`}
                                     id={optionId(i)}
@@ -233,9 +245,9 @@ export default function LocationPicker({
                                 >
                                     {suggestion.label}
                                 </div>
-                            ))
-                        )}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </PopoverContent>
             </div>
         </Popover>

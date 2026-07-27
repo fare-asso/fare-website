@@ -48,7 +48,7 @@ export const prerender = true
                 href="#beneficiaire"
                 class={cn(
                     buttonVariants({ size: "lg" }),
-                    "bg-agorae hover:bg-agorae/90 text-white"
+                    "bg-agorae-deep hover:bg-agorae-deep/90 text-white"
                 )}
             >
                 Devenir bénéficiaire
@@ -122,7 +122,7 @@ export const prerender = true
             <ol class="mb-14 grid grid-cols-1 gap-8 md:grid-cols-3">
                 <li class="flex flex-col items-center text-center">
                     <span
-                        class="bg-agorae mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
+                        class="bg-agorae-deep mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
                     >
                         1
                     </span>
@@ -136,7 +136,7 @@ export const prerender = true
                 </li>
                 <li class="flex flex-col items-center text-center">
                     <span
-                        class="bg-agorae mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
+                        class="bg-agorae-deep mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
                     >
                         2
                     </span>
@@ -156,7 +156,7 @@ export const prerender = true
                 </li>
                 <li class="flex flex-col items-center text-center">
                     <span
-                        class="bg-agorae mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
+                        class="bg-agorae-deep mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
                     >
                         3
                     </span>
@@ -181,18 +181,22 @@ export const prerender = true
                     class="flex flex-wrap items-center justify-center gap-2 font-semibold"
                 >
                     <span class="text-2xl">(</span>
-                    <span class="bg-agorae rounded-lg px-3 py-2 text-white">
+                    <span
+                        class="bg-agorae-deep rounded-lg px-3 py-2 text-white"
+                    >
                         Recettes par mois
                     </span>
                     <span class="text-xl">−</span>
-                    <span class="bg-agorae rounded-lg px-3 py-2 text-white">
+                    <span
+                        class="bg-agorae-deep rounded-lg px-3 py-2 text-white"
+                    >
                         Dépenses par mois
                     </span>
                     <span class="text-2xl">)</span>
                 </div>
                 <div class="border-foreground w-full max-w-md border-t-2"></div>
                 <p class="font-semibold">30 jours</p>
-                <p class="text-agorae font-bold">= ton RAV quotidien</p>
+                <p class="text-agorae-deep font-bold">= ton RAV quotidien</p>
             </div>
 
             <p class="mb-6 text-center">
@@ -204,7 +208,7 @@ export const prerender = true
                 class="mx-auto mb-14 w-full max-w-2xl overflow-x-auto rounded-xl"
             >
                 <table class="w-full text-center text-sm sm:text-base">
-                    <thead class="bg-agorae text-white">
+                    <thead class="bg-agorae-deep text-white">
                         <tr>
                             <th class="px-4 py-3 font-semibold">
                                 RAV quotidien
@@ -320,7 +324,7 @@ export const prerender = true
                         href={rapportActiviteUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="text-foreground hover:text-agorae truncate font-medium transition-colors hover:underline"
+                        class="text-foreground hover:text-agorae-deep truncate font-medium transition-colors hover:underline"
                     >
                         Rapport d'activité AGORAé 2025-2026
                     </a>
@@ -340,7 +344,7 @@ export const prerender = true
                     <a
                         href={rapportActiviteUrl}
                         download="Rapport_activite_AGORAe_2025-2026.pdf"
-                        class="bg-agorae hover:bg-agorae/90 inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm text-white shadow-xs transition-colors"
+                        class="bg-agorae-deep hover:bg-agorae-deep/90 inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm text-white shadow-xs transition-colors"
                     >
                         <FiDownload size={16} />
                         <span class="sr-only md:not-sr-only">Télécharger</span>
