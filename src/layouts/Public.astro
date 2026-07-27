@@ -18,7 +18,7 @@ const hasHero = Astro.slots.has("hero")
 <Base title={fullTitle} description={description}>
     <a href="#contenu" class="skip-link">Aller au contenu principal</a>
     <div
-        class="public-radius grid min-h-svh grid-rows-[auto_1fr_auto] items-center"
+        class="public-radius grid min-h-svh grid-cols-[minmax(0,1fr)] grid-rows-[auto_1fr_auto] items-center"
     >
         <Header />
         <main id="contenu" tabindex="-1" class="w-full outline-none">

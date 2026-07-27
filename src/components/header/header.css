@@ -30,6 +30,7 @@
 }
 /* logo stays left; pushes the nav (or the burger) to the right */
 .v1f-logo {
+    display: flex;
     margin-right: auto;
 }
 .v1f-logo img {

@@ -29,7 +29,7 @@ function determinerPanier(rav: number): Panier {
         return {
             montantPanier: "jusqu'à 240€",
             prixPaye: "jusqu'à 24€",
-            ravClasse: "text-orange-500"
+            ravClasse: "text-orange-600"
         }
     }
     return {

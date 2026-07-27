@@ -11,10 +11,13 @@
     --color-fare-cream: #f0e9e2;
     --color-bagad-wood: #8a5a33;
     --color-agorae: #14a994;
+    /* AA-contrast variants of brand colours for text or white-on-colour */
+    --color-agorae-deep: #0f766e;
     --color-btp-gold: #d4993f;
     --color-btp-navy: #2d384e;
     --color-btp-blue: #355a99;
     --color-fage: #00a0d0;
+    --color-fage-deep: #00779c;
     --color-fedeb: #fcb017;
     --color-border: hsl(var(--border));
     --color-input: hsl(var(--input));
@@ -240,7 +243,7 @@
     }
 
     .link {
-        @apply text-blue-600 hover:underline;
+        @apply text-blue-600 underline;
     }
 
     /* Public pages use a larger radius than the dashboard. The derived
