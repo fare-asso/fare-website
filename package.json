@@ -95,6 +95,7 @@
         "@typescript/native-preview": "7.0.0-dev.20260630.1",
         "@vitejs/plugin-react": "^6.0.4",
         "@vitest/browser-playwright": "^4.1.10",
+        "axe-core": "^4.12.1",
         "babel-plugin-react-compiler": "^1.0.0",
         "knip": "^6.29.0",
         "msw": "^2.15.0",

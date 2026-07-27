@@ -15,6 +15,8 @@ vi.mock("@/components/captcha", () => ({
     )
 }))
 
+import { expectNoA11yViolations } from "@/test/a11y"
+
 import ContactForm from "../contactForm"
 
 beforeEach(() => {
@@ -29,6 +31,7 @@ describe("<ContactForm />", () => {
         await expect
             .element(screen.getByRole("button", { name: "Envoyer" }))
             .toBeVisible()
+        await expectNoA11yViolations()
     })
 
     it("blocks an empty submit client-side and does not call the action", async () => {
