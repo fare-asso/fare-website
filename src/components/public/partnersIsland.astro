@@ -1,19 +1,42 @@
 ---
+import { Image, inferRemoteSize } from "astro:assets"
+
 import prisma from "@/helpers/db"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
 import { tryCatch } from "@/lib/utils"
 
 const storage = new StorageUtils()
 
+// 2x the 96px display height, for crisp logos on retina screens
+const LOGO_HEIGHT = 192
+
+// Probing remote dimensions costs a request; cache widths across renders.
+const g = globalThis as { partnerLogoWidths?: Map<string, number> }
+const widthCache = (g.partnerLogoWidths ??= new Map<string, number>())
+
 const partenaires = await tryCatch(
     prisma.partenaire.findMany({ orderBy: { name: "asc" } })
 )
 const partners = partenaires.success
-    ? partenaires.value.map((p) => ({
-          id: p.id,
-          name: p.name,
-          logoUrl: storage.from("partner-pictures").getPublicUrl(p.logoPath)
-      }))
+    ? await Promise.all(
+          partenaires.value.map(async (p) => {
+              const logoUrl = storage
+                  .from("partner-pictures")
+                  .getPublicUrl(p.logoPath)
+              let width = widthCache.get(logoUrl)
+              if (width === undefined) {
+                  // best-effort: on failure the logo renders unoptimised
+                  const size = await tryCatch(inferRemoteSize(logoUrl))
+                  if (size.success) {
+                      width = Math.round(
+                          (LOGO_HEIGHT * size.value.width) / size.value.height
+                      )
+                      widthCache.set(logoUrl, width)
+                  }
+              }
+              return { id: p.id, name: p.name, logoUrl, width }
+          })
+      )
     : []
 ---
 
@@ -26,13 +49,23 @@ const partners = partenaires.success
                         href="/a-propos/partenaires"
                         class="flex h-24 w-60 items-center justify-center"
                     >
-                        <img
-                            src={partner.logoUrl}
-                            alt={"Logo de " + partner.name}
-                            width={160}
-                            height={80}
-                            class="h-full w-full object-contain"
-                        />
+                        {partner.width ? (
+                            <Image
+                                src={partner.logoUrl}
+                                alt={"Logo de " + partner.name}
+                                width={partner.width}
+                                height={LOGO_HEIGHT}
+                                class="h-full w-full object-contain"
+                            />
+                        ) : (
+                            <img
+                                src={partner.logoUrl}
+                                alt={"Logo de " + partner.name}
+                                width={160}
+                                height={80}
+                                class="h-full w-full object-contain"
+                            />
+                        )}
                     </a>
                 ))}
             </div>
