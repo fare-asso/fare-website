@@ -62,7 +62,6 @@
         "filepond-plugin-image-preview": "^4.6.12",
         "jiti": "^2.7.0",
         "lucide-react": "^1.27.0",
-        "motion": "^12.42.2",
         "nodemailer": "^9.0.3",
         "pdf-lib": "^1.17.1",
         "radix-ui": "^1.6.7",
