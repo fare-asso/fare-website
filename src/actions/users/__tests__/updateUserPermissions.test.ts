@@ -16,14 +16,13 @@ type Tx = {
     }
 }
 const transaction = vi.hoisted(() =>
-    vi.fn(
-        <T>(cb: (tx: Tx) => Promise<T>): Promise<T> =>
-            cb({
-                userPermission: {
-                    deleteMany: h.deleteMany,
-                    createMany: h.createMany
-                }
-            })
+    vi.fn(<T>(cb: (tx: Tx) => Promise<T>): Promise<T> =>
+        cb({
+            userPermission: {
+                deleteMany: h.deleteMany,
+                createMany: h.createMany
+            }
+        })
     )
 )
 
