@@ -1,7 +1,7 @@
 /// <reference types="astro/client" />
 
 import type { ImportMetaEnvAugmented } from "@arkenv/vite-plugin"
-import type { RowData } from "@tanstack/react-table"
+import type { CellData, RowData, TableFeatures } from "@tanstack/react-table"
 
 import type { EnvSchema } from "./env-schema"
 import type { UserWithPermissions } from "./helpers/supabase/auth"
@@ -20,7 +20,11 @@ declare global {
 }
 
 declare module "@tanstack/react-table" {
-    interface ColumnMeta<TData extends RowData, TValue> {
+    interface ColumnMeta<
+        in out TFeatures extends TableFeatures,
+        in out TData extends RowData,
+        TValue extends CellData = CellData
+    > {
         className?: string
     }
 }

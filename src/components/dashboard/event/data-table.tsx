@@ -1,9 +1,6 @@
-import {
-    flexRender,
-    getCoreRowModel,
-    useReactTable
-} from "@tanstack/react-table"
+import { flexRender, useTable } from "@tanstack/react-table"
 
+import { dashboardTableFeatures } from "@/components/dashboard/tableFeatures"
 import {
     Table,
     TableBody,
@@ -24,10 +21,10 @@ interface DataTableProps<TData> {
 export function DataTable({ data, canEdit, canDelete }: DataTableProps<Event>) {
     const columns = getColumns(canEdit, canDelete)
 
-    const table = useReactTable({
+    const table = useTable({
+        features: dashboardTableFeatures,
         data,
-        columns,
-        getCoreRowModel: getCoreRowModel()
+        columns
     })
 
     return (

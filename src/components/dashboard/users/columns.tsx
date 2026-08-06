@@ -3,6 +3,7 @@ import { format } from "date-fns"
 import { MoreHorizontal } from "lucide-react"
 
 import type { UserWithPermissionsRow } from "@/actions/users/listUsersAction"
+import type { DashboardTableFeatures } from "@/components/dashboard/tableFeatures"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,7 +17,10 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 
-export const columns: ColumnDef<UserWithPermissionsRow>[] = [
+export const columns: ColumnDef<
+    DashboardTableFeatures,
+    UserWithPermissionsRow
+>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -38,7 +42,6 @@ export const columns: ColumnDef<UserWithPermissionsRow>[] = [
                 aria-label="Selectionner la ligne"
             />
         ),
-        enableSorting: false,
         enableHiding: false
     },
     {

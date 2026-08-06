@@ -1,7 +1,8 @@
-import type { Table } from "@tanstack/react-table"
+import type { RowData, Table } from "@tanstack/react-table"
 import { RotateCcw, Trash2, X } from "lucide-react"
 import { useState } from "react"
 
+import type { DashboardTableFeatures } from "@/components/dashboard/tableFeatures"
 import { Button } from "@/components/ui/button"
 
 import { BulkDeleteDialog } from "./bulkDeleteDialog"
@@ -12,14 +13,14 @@ type UserRow = {
     deletedAt: Date | null
 }
 
-type Props<TData extends UserRow> = {
-    table: Table<TData>
+type Props<TData extends RowData & UserRow> = {
+    table: Table<DashboardTableFeatures, TData>
     showDeleted: boolean
     canEdit: boolean
     canDelete: boolean
 }
 
-export function BulkActionsBar<TData extends UserRow>({
+export function BulkActionsBar<TData extends RowData & UserRow>({
     table,
     showDeleted,
     canEdit,

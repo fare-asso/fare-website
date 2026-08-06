@@ -1,11 +1,14 @@
 import {
     type ColumnDef,
     flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    useReactTable
+    type RowData,
+    useTable
 } from "@tanstack/react-table"
 
+import {
+    type DashboardTableFeatures,
+    dashboardTableFeatures
+} from "@/components/dashboard/tableFeatures"
 import {
     Table,
     TableBody,
@@ -17,8 +20,8 @@ import {
 
 import { BulkActionsBar } from "./bulkActionsBar"
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
+interface DataTableProps<TData extends RowData> {
+    columns: ColumnDef<DashboardTableFeatures, TData>[]
     data: TData[]
     showDeleted: boolean
     canEdit: boolean
@@ -26,20 +29,12 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<
-    TData extends { id: string; deletedAt: Date | null },
-    TValue
->({
-    columns,
-    data,
-    showDeleted,
-    canEdit,
-    canDelete
-}: DataTableProps<TData, TValue>) {
-    const table = useReactTable({
+    TData extends RowData & { id: string; deletedAt: Date | null }
+>({ columns, data, showDeleted, canEdit, canDelete }: DataTableProps<TData>) {
+    const table = useTable({
+        features: dashboardTableFeatures,
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
         enableRowSelection: true
     })
 

@@ -1,11 +1,11 @@
 import {
     flexRender,
-    getCoreRowModel,
     type RowSelectionState,
-    useReactTable
+    useTable
 } from "@tanstack/react-table"
 import { useState } from "react"
 
+import { dashboardTableFeatures } from "@/components/dashboard/tableFeatures"
 import {
     Table,
     TableBody,
@@ -27,12 +27,12 @@ export default function CandidaturesTable({
     archived?: boolean
 }) {
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-    const table = useReactTable({
+    const table = useTable({
+        features: dashboardTableFeatures,
         data,
         columns,
         state: { rowSelection },
         onRowSelectionChange: setRowSelection,
-        getCoreRowModel: getCoreRowModel(),
         enableRowSelection: true,
         getRowId: (row) => String(row.id)
     })

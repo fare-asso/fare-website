@@ -8,6 +8,7 @@ import { toast } from "sonner"
 
 import type { EventWithImage } from "@/actions/events/listEventsAction"
 import EditEventButtonClient from "@/components/dashboard/event/editEventButton"
+import type { DashboardTableFeatures } from "@/components/dashboard/tableFeatures"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -81,8 +82,8 @@ function DeleteEventButton({ event }: { event: Event }) {
 export function getColumns(
     canEdit: boolean,
     canDelete: boolean
-): ColumnDef<Event>[] {
-    const baseColumns: ColumnDef<Event>[] = [
+): ColumnDef<DashboardTableFeatures, Event>[] {
+    const baseColumns: ColumnDef<DashboardTableFeatures, Event>[] = [
         {
             accessorKey: "id",
             header: "ID"
