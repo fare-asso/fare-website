@@ -13,7 +13,7 @@ import {
     LightbulbIcon
 } from "lucide-react"
 import type { ReactNode } from "react"
-import { FaPen, FaRegCalendarAlt } from "react-icons/fa" // Articles
+import { FaRegCalendarAlt } from "react-icons/fa"
 import { FaHandcuffs, FaPeopleGroup, FaUsers } from "react-icons/fa6" // Bouge Ta Prison
 // Link icons
 import { LuHandshake, LuNetwork, LuPartyPopper, LuUser } from "react-icons/lu" // Bagad'Asso
@@ -102,14 +102,6 @@ export default function SideBarApp({
                             icon: <LucideLandmark />
                         }
                     ]
-                },
-                {
-                    href: "/dashboard/articles",
-                    title: "Articles",
-                    icon: <FaPen />,
-                    hidden: !permissions?.find(
-                        (p) => p.name === "access:articles"
-                    )
                 },
                 {
                     href: "/dashboard/communiques-de-presse",

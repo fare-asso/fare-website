@@ -15,16 +15,16 @@ import { UserPermissionsForm } from "../userPermissionForm"
 const perms: Permission[] = [
     {
         id: 1,
-        name: "create:article",
-        title: "Créer article",
-        category: "Articles",
+        name: "create:member",
+        title: "Créer membre",
+        category: "Membres",
         description: null
     },
     {
         id: 2,
-        name: "delete:article",
-        title: "Supprimer article",
-        category: "Articles",
+        name: "delete:member",
+        title: "Supprimer membre",
+        category: "Membres",
         description: null
     }
 ]
@@ -43,10 +43,10 @@ describe("<UserPermissionsForm />", () => {
             />
         )
         await expect
-            .element(screen.getByRole("button", { name: /Créer article/ }))
+            .element(screen.getByRole("button", { name: /Créer membre/ }))
             .toBeVisible()
         await expect
-            .element(screen.getByRole("button", { name: /Supprimer article/ }))
+            .element(screen.getByRole("button", { name: /Supprimer membre/ }))
             .toBeVisible()
     })
 
@@ -58,7 +58,7 @@ describe("<UserPermissionsForm />", () => {
                 allPermissions={perms}
             />
         )
-        await screen.getByRole("button", { name: /Créer article/ }).click()
+        await screen.getByRole("button", { name: /Créer membre/ }).click()
 
         await vi.waitFor(() => expect(h.action).toHaveBeenCalled())
         expect(h.action).toHaveBeenCalledWith({

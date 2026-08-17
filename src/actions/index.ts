@@ -9,11 +9,6 @@ import { downloadFolderAction } from "./adhesion/downloadFolderAction"
 import { listAdhesionsAction } from "./adhesion/listAdhesionsAction"
 import { processAdhesion } from "./adhesion/processAdhesionAction"
 import { unarchiveAdhesionAction } from "./adhesion/unarchiveAdhesionAction"
-import { createArticleAction } from "./articles/createArticleAction"
-import { deleteArticleAction } from "./articles/deleteArticleAction"
-import { editArticleAction } from "./articles/editArticleAction"
-import { listArticlesAction } from "./articles/listArticlesAction"
-import { switchVisibilityAction } from "./articles/switchVisibilityAction"
 import { processAssistance } from "./assistance/processAssistanceAction"
 import { addAssociationAction } from "./associations/addAssociationAction"
 import { approveAssociationAction } from "./associations/approveAssociationAction"
@@ -134,13 +129,6 @@ function filePayloadAction<I, O>(
 export const server = {
     contact: {
         submitContactFormAction: jsonAction(submitContactFormAction)
-    },
-    articles: {
-        listArticlesAction: jsonAction(listArticlesAction),
-        createArticleAction: formAction(createArticleAction),
-        editArticleAction: formAction(editArticleAction),
-        deleteArticleAction: jsonAction(deleteArticleAction),
-        switchVisibilityAction: jsonAction(switchVisibilityAction)
     },
     cdp: {
         listCDPAction: jsonAction(listCDPAction),
