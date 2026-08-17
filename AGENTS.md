@@ -164,10 +164,10 @@ async function someActionImpl(
 ): Promise<{ success: true } | { success: false; error: string }> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
-    if (!hasPermission(user, "create:article")) {
+    if (!hasPermission(user, "create:member")) {
         return {
             success: false,
-            error: "Vous n'avez pas la permission de créer des articles"
+            error: "Vous n'avez pas la permission de créer des membres"
         }
     }
     // …proceed
@@ -183,14 +183,14 @@ export const someAction = wrapAction("someAction", someActionImpl)
 - `getUserWithPermissions(context)` — authenticated user + permissions (used inside actions).
 - Dashboard **pages** read `Astro.locals.user` (populated by the middleware) — no second `getUser`.
 
-**UI visibility** (island): hide sidebar items by permission, e.g. `hidden: !permissions?.find((p) => p.name === "access:articles")`. See `PERMISSIONS.md` for the full list + seeding.
+**UI visibility** (island): hide sidebar items by permission, e.g. `hidden: !permissions?.find((p) => p.name === "access:members")`. See `PERMISSIONS.md` for the full list + seeding.
 
 **Schema:**
 
 ```prisma
 model User { permissions UserPermission[] }
 model Permission {
-  name String @unique  // "create:article", "access:presse"
+  name String @unique  // "create:member", "access:presse"
   title String
   category String
   description String?

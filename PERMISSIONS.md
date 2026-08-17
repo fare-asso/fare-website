@@ -4,14 +4,6 @@ This document lists all permissions required for the FARE Website application. T
 
 ## Permission Categories
 
-### Articles
-
-- `access:articles` - View articles dashboard page
-- `create:article` - Create new articles
-- `edit:article` - Edit existing articles
-- `delete:article` - Delete articles
-- `publish:article` - Publish/unpublish articles (toggle visibility)
-
 ### Presse / Communiqués de Presse (CDP)
 
 - `access:presse` - View presse/communiques de presse dashboard page
@@ -107,7 +99,7 @@ Permissions follow the pattern: `<action>:<resource>`
 
 **Resources:**
 
-- Singular form (e.g., `article`, `member`, `event`)
+- Singular form (e.g., `member`, `event`)
 - Hyphenated compound names (e.g., `bagad-equipment`, `user-permissions`)
 
 ## Database Seeding
@@ -128,13 +120,6 @@ Alternatively, you can add these permissions directly to your database using SQL
 
 ```sql
 INSERT INTO "Permission" (name, title, category, description) VALUES
--- Articles
-('access:articles', 'Accès Articles', 'Articles', 'Voir la page de gestion des articles'),
-('create:article', 'Créer Article', 'Articles', 'Créer de nouveaux articles'),
-('edit:article', 'Modifier Article', 'Articles', 'Modifier des articles existants'),
-('delete:article', 'Supprimer Article', 'Articles', 'Supprimer des articles'),
-('publish:article', 'Publier Article', 'Articles', 'Publier/dépublier des articles'),
-
 -- Presse
 ('access:presse', 'Accès Presse', 'Presse', 'Voir la page de gestion de la presse'),
 ('create:cdp', 'Créer CDP', 'Presse', 'Ajouter des communiqués/dossiers de presse'),
@@ -206,12 +191,6 @@ ON CONFLICT (name) DO NOTHING;
 ### ADMIN Role
 
 Admins should have ALL permissions by default.
-
-### MEMBER Role
-
-Limited read-only access:
-
-- `access:articles` (view only, for content review)
 
 ### ASSO_OWNER Role
 
