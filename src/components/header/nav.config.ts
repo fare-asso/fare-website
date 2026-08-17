@@ -41,11 +41,6 @@ export const links: NavLink[] = [
         ]
     },
     {
-        title: "Actualités",
-        href: "/actualites",
-        hidden: true
-    },
-    {
         title: "Presse",
         href: "/presse",
         subLinks: [

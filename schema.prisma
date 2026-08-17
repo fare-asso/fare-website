@@ -36,10 +36,8 @@ model User {
   deletedAt         DateTime?
   role              Role             @default(ADMIN)
   calendarToken     String?          @unique
-  writtenArticles   Article[]
   association       Association?
   createdEvents     Event[]
-  validatedArticles Article[]        @relation("ValidatedArticles")
   permissions       UserPermission[]
 }
 
@@ -149,25 +147,6 @@ model Category {
   id     Int     @id @default(autoincrement())
   name   String  @unique
   events Event[]
-}
-
-model Article {
-  id         Int      @id @default(autoincrement())
-  title      String
-  authorId   String
-  writtenOn  DateTime @default(now())
-  content    Json
-  imagesPath String[]
-  published  Boolean  @default(false)
-  author     User     @relation(fields: [authorId], references: [id])
-
-  status        ArticleStatus @default(DRAFT)
-  validatedById String?
-  validatedBy   User?         @relation("ValidatedArticles", fields: [validatedById], references: [id])
-  validatedAt   DateTime?
-
-  @@index([authorId])
-  @@index([validatedById])
 }
 
 model CommuniqueDePresse {
@@ -315,11 +294,4 @@ enum Role {
 enum PresseType {
   CDP
   DDP
-}
-
-enum ArticleStatus {
-  DRAFT
-  PENDING
-  VALIDATED
-  REJECTED
 }

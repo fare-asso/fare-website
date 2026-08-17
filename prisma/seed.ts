@@ -17,38 +17,6 @@ async function main() {
     console.log("🌱 Seeding permissions...")
 
     const permissions = [
-        // Articles
-        {
-            name: "access:articles",
-            title: "Accès Articles",
-            category: "Articles",
-            description: "Voir la page de gestion des articles"
-        },
-        {
-            name: "create:article",
-            title: "Créer Article",
-            category: "Articles",
-            description: "Créer de nouveaux articles"
-        },
-        {
-            name: "edit:article",
-            title: "Modifier Article",
-            category: "Articles",
-            description: "Modifier des articles existants"
-        },
-        {
-            name: "delete:article",
-            title: "Supprimer Article",
-            category: "Articles",
-            description: "Supprimer des articles"
-        },
-        {
-            name: "publish:article",
-            title: "Publier Article",
-            category: "Articles",
-            description: "Publier/dépublier des articles"
-        },
-
         // Presse
         {
             name: "access:presse",
