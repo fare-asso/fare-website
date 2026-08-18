@@ -66,16 +66,21 @@ export default function AdhesionCard({
                                 </Badge>
                             )}
                         </div>
-                        <CardTitle className="text-lg">
-                            {adhesion.nomComplet || adhesion.association}
-                        </CardTitle>
-                        {adhesion.sigle &&
-                            adhesion.nomComplet &&
-                            adhesion.sigle !== adhesion.nomComplet && (
-                                <CardDescription className="font-medium">
+                        {adhesion.sigle ? (
+                            <>
+                                <CardTitle className="text-lg">
                                     {adhesion.sigle}
+                                </CardTitle>
+                                <CardDescription className="font-medium">
+                                    {adhesion.nomComplet ||
+                                        adhesion.association}
                                 </CardDescription>
-                            )}
+                            </>
+                        ) : (
+                            <CardTitle className="text-lg">
+                                {adhesion.nomComplet || adhesion.association}
+                            </CardTitle>
+                        )}
                     </div>
 
                     {canEdit || canDownload ? (
