@@ -1,10 +1,169 @@
 ---
 import HomePage from "@/components/dashboard/homePage"
+import prisma from "@/helpers/db"
+import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
 const user = Astro.locals.user!
+const now = new Date()
+const canAccessEvents = hasPermission(user, "access:events")
+const canAccessMembers = hasPermission(user, "access:members")
+const canAccessPartners = hasPermission(user, "access:partner")
+const canAccessElus = hasPermission(user, "access:elus")
+const canAccessPresse = hasPermission(user, "access:presse")
+const canAccessLinks = hasPermission(user, "access:liens")
+const canAccessBagad = hasPermission(user, "access:bagad-asso")
+const canAccessBtp = hasPermission(user, "access:btp")
+const canAccessAdhesions = hasPermission(user, "access:adhesions")
+const canAccessUsers = hasPermission(user, "access:users")
+
+const [
+    associations,
+    pendingAssociations,
+    events,
+    members,
+    partners,
+    elus,
+    pressReleases,
+    links,
+    bagadTickets,
+    bagadSuggestions,
+    btpApplications,
+    btpQuestions,
+    adhesions,
+    users
+] = await Promise.all([
+    prisma.association.count(),
+    hasPermission(user, "approve:association")
+        ? prisma.association.count({ where: { approved: null } })
+        : Promise.resolve(null),
+    canAccessEvents
+        ? prisma.event.findMany({
+              where: { startTime: { gte: now } },
+              orderBy: { startTime: "asc" },
+              take: 3,
+              select: { id: true, name: true, startTime: true, location: true }
+          })
+        : Promise.resolve([]),
+    canAccessMembers ? prisma.member.count() : Promise.resolve(null),
+    canAccessPartners ? prisma.partenaire.count() : Promise.resolve(null),
+    canAccessElus
+        ? prisma.elu.count({ where: { deletedAt: null } })
+        : Promise.resolve(null),
+    canAccessPresse ? prisma.communiqueDePresse.count() : Promise.resolve(null),
+    canAccessLinks ? prisma.linkItem.count() : Promise.resolve(null),
+    canAccessBagad
+        ? prisma.bagadAssoTicket.count({
+              where: { deleted: null, validated: null }
+          })
+        : Promise.resolve(null),
+    canAccessBagad
+        ? prisma.bagadAssoSuggestion.count({ where: { archived: null } })
+        : Promise.resolve(null),
+    canAccessBtp
+        ? prisma.bTPTutorApplication.count({
+              where: { archived: null, approved: false }
+          })
+        : Promise.resolve(null),
+    canAccessBtp
+        ? prisma.bTPTutorQuestion.count({
+              where: { archived: null, read: false }
+          })
+        : Promise.resolve(null),
+    canAccessAdhesions
+        ? prisma.adhesion.count({ where: { archived: null } })
+        : Promise.resolve(null),
+    canAccessUsers
+        ? prisma.user.count({ where: { deletedAt: null } })
+        : Promise.resolve(null)
+])
+
+const items = [
+    {
+        href: "/dashboard/associations",
+        label: "Associations",
+        value: associations
+    },
+    canAccessEvents && {
+        href: "/dashboard/events",
+        label: "Évènements à venir",
+        value: events.length
+    },
+    canAccessMembers && {
+        href: "/dashboard/membres",
+        label: "Membres du bureau",
+        value: members!
+    },
+    canAccessPartners && {
+        href: "/dashboard/partenaires",
+        label: "Partenaires",
+        value: partners!
+    },
+    canAccessElus && {
+        href: "/dashboard/elus",
+        label: "Représentant·e·s",
+        value: elus!
+    },
+    canAccessPresse && {
+        href: "/dashboard/communiques-de-presse",
+        label: "Publications presse",
+        value: pressReleases!
+    },
+    canAccessLinks && {
+        href: "/dashboard/liens",
+        label: "Liens",
+        value: links!
+    },
+    canAccessUsers && {
+        href: "/dashboard/users",
+        label: "Utilisateurs actifs",
+        value: users!
+    }
+].filter((item): item is { href: string; label: string; value: number } =>
+    Boolean(item)
+)
+
+const pendingItems = [
+    pendingAssociations && {
+        href: "/dashboard/associations",
+        label: "Associations en attente",
+        value: pendingAssociations
+    },
+    bagadTickets && {
+        href: "/dashboard/bagadAsso/tickets",
+        label: "Demandes Bagad'Asso à valider",
+        value: bagadTickets
+    },
+    bagadSuggestions && {
+        href: "/dashboard/bagadAsso/suggestions",
+        label: "Suggestions Bagad'Asso",
+        value: bagadSuggestions
+    },
+    btpApplications && {
+        href: "/dashboard/bouge-ta-prison",
+        label: "Candidatures BTP à examiner",
+        value: btpApplications
+    },
+    btpQuestions && {
+        href: "/dashboard/bouge-ta-prison/questions",
+        label: "Questions BTP non lues",
+        value: btpQuestions
+    },
+    adhesions && {
+        href: "/dashboard/adhesions",
+        label: "Adhésions à traiter",
+        value: adhesions
+    }
+].filter((item): item is { href: string; label: string; value: number } =>
+    Boolean(item)
+)
 ---
 
 <Dashboard>
-    <HomePage client:load userName={user.name} />
+    <HomePage
+        userName={user.name}
+        items={items}
+        pendingItems={pendingItems}
+        upcomingEvents={events}
+    />
 </Dashboard>
