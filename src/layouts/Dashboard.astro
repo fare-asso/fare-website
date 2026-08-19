@@ -77,6 +77,33 @@ if (!Astro.locals.user) {
 const mobileQuery = window.matchMedia("(max-width: 47.999rem)")
 let hasInitialized = false
 
+const closeMobileSidebar = (): void => {
+    if (!mobileQuery.matches) return
+
+    const sidebar = document.querySelector<HTMLElement>("[data-sidebar-open]")
+    const sidebarToggle = document.querySelector("[data-sidebar-toggle]")
+
+    if (!sidebar || !sidebarToggle) return
+
+    sidebar.dataset.sidebarOpen = "false"
+    sidebarToggle.setAttribute("aria-expanded", "false")
+}
+
+document.addEventListener(
+    "click",
+    (event) => {
+        if (
+            event.target instanceof Element &&
+            event.target.closest("[data-sidebar-link]")
+        ) {
+            closeMobileSidebar()
+        }
+    },
+    { capture: true }
+)
+
+document.addEventListener("astro:before-preparation", closeMobileSidebar)
+
 document.addEventListener("astro:page-load", () => {
     const sidebar = document.querySelector<HTMLElement>("[data-sidebar-open]")
     const sidebarToggle = document.querySelector("[data-sidebar-toggle]")
