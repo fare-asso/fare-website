@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -19,8 +19,6 @@ import TabSwitcher from "./tickets/tabSwitcher"
 import ValidatedTickets from "./tickets/validatedTickets"
 
 interface TicketsPageProps {
-    user: ShellUser
-    pathname: string
     initialTickets: BagadAssoTicket[]
     canManage: boolean
     calendarToken: string | null
@@ -30,7 +28,7 @@ function TicketsContent({
     initialTickets,
     canManage,
     calendarToken
-}: Omit<TicketsPageProps, "user" | "pathname">) {
+}: TicketsPageProps) {
     const { data: tickets } = useQuery({
         queryKey: ["bagadTickets"],
         queryFn: async () => {
@@ -66,13 +64,9 @@ function TicketsContent({
     )
 }
 
-export default function TicketsPage({
-    user,
-    pathname,
-    ...rest
-}: TicketsPageProps) {
+export default function TicketsPage({ ...rest }: TicketsPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <TicketsContent {...rest} />
         </DashboardShell>
     )

@@ -1,5 +1,4 @@
 ---
-import { toShellUser } from "@/components/dashboard/shell"
 import UserDetailPage from "@/components/dashboard/users/userDetailPage"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
@@ -29,8 +28,6 @@ const allPermissions = await prisma.permission.findMany()
 <Dashboard title={`Utilisateur ${id}`}>
     <UserDetailPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         targetUser={targetUser}
         userPermissionIds={targetUser.permissions.map((p) => p.permission.id)}
         allPermissions={allPermissions}

@@ -7,7 +7,7 @@ import {
 } from "lucide-react"
 import { FaCaretLeft, FaEnvelope } from "react-icons/fa"
 
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,14 +23,10 @@ import type { BTPTutorQuestion } from "@/generated/prisma/client"
 import QuestionActions from "./questionActions"
 
 interface QuestionDetailPageProps {
-    user: ShellUser
-    pathname: string
     question: BTPTutorQuestion
 }
 
-function QuestionDetailContent({
-    question
-}: Omit<QuestionDetailPageProps, "user" | "pathname">) {
+function QuestionDetailContent({ question }: QuestionDetailPageProps) {
     return (
         <div className="h-full w-full px-2 md:px-4">
             {/* Header */}
@@ -158,12 +154,10 @@ function QuestionDetailContent({
 }
 
 export default function QuestionDetailPage({
-    user,
-    pathname,
     ...rest
 }: QuestionDetailPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <QuestionDetailContent {...rest} />
         </DashboardShell>
     )

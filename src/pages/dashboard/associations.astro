@@ -1,7 +1,6 @@
 ---
 import { fetchAssociations } from "@/actions/associations/listAssociationsAction"
 import AssociationsPage from "@/components/dashboard/associations/associationsPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
@@ -12,8 +11,6 @@ const associations = (await fetchAssociations()) ?? []
 <Dashboard title="Associations">
     <AssociationsPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         initialData={associations}
         canCreate={hasPermission(user, "create:association")}
         canEdit={hasPermission(user, "edit:association")}

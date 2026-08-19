@@ -2,7 +2,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { AlertTriangle } from "lucide-react"
 
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import type { Permission, User } from "@/generated/prisma/client"
@@ -13,8 +13,6 @@ import { UserInfoForm } from "./userInfoForm"
 import { UserPermissionsForm } from "./userPermissionForm"
 
 interface UserDetailPageProps {
-    user: ShellUser
-    pathname: string
     targetUser: User
     userPermissionIds: number[]
     allPermissions: Permission[]
@@ -30,7 +28,7 @@ function UserDetailContent({
     canEdit,
     canDelete,
     canEditPermissions
-}: Omit<UserDetailPageProps, "user" | "pathname">) {
+}: UserDetailPageProps) {
     const isDeleted = targetUser.deletedAt !== null
 
     return (
@@ -96,13 +94,9 @@ function UserDetailContent({
     )
 }
 
-export default function UserDetailPage({
-    user,
-    pathname,
-    ...rest
-}: UserDetailPageProps) {
+export default function UserDetailPage({ ...rest }: UserDetailPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <UserDetailContent {...rest} />
         </DashboardShell>
     )

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
 import type { MemberWithPicture } from "@/actions/members/listMembersAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -16,8 +16,6 @@ import AddMemberButton from "./addMemberButton"
 import SortableMemberList from "./sortableMemberList"
 
 interface MembersPageProps {
-    user: ShellUser
-    pathname: string
     initialMembers: MemberWithPicture[]
     canCreate: boolean
     canEdit: boolean
@@ -29,7 +27,7 @@ function MembersContent({
     canCreate,
     canEdit,
     canDelete
-}: Omit<MembersPageProps, "user" | "pathname">) {
+}: MembersPageProps) {
     const { data: members } = useQuery({
         queryKey: ["members"],
         queryFn: async () => {
@@ -66,13 +64,9 @@ function MembersContent({
     )
 }
 
-export default function MembersPage({
-    user,
-    pathname,
-    ...rest
-}: MembersPageProps) {
+export default function MembersPage({ ...rest }: MembersPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <MembersContent {...rest} />
         </DashboardShell>
     )

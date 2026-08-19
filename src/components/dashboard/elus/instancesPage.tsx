@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
 import type { InstanceWithLogo } from "@/actions/instances/listInstancesAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -14,8 +14,6 @@ import {
 import InstanceList from "./instanceList"
 
 interface InstancesPageProps {
-    user: ShellUser
-    pathname: string
     initialInstances: InstanceWithLogo[]
     canCreate: boolean
     canEdit: boolean
@@ -27,7 +25,7 @@ function InstancesContent({
     canCreate,
     canEdit,
     canDelete
-}: Omit<InstancesPageProps, "user" | "pathname">) {
+}: InstancesPageProps) {
     const { data: instances } = useQuery<InstanceWithLogo[]>({
         queryKey: ["instances"],
         queryFn: async () => {
@@ -61,13 +59,9 @@ function InstancesContent({
     )
 }
 
-export default function InstancesPage({
-    user,
-    pathname,
-    ...rest
-}: InstancesPageProps) {
+export default function InstancesPage({ ...rest }: InstancesPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <InstancesContent {...rest} />
         </DashboardShell>
     )

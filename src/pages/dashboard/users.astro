@@ -1,6 +1,5 @@
 ---
 import { fetchUsers } from "@/actions/users/listUsersAction"
-import { toShellUser } from "@/components/dashboard/shell"
 import UsersPage from "@/components/dashboard/users/usersPage"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
@@ -13,8 +12,6 @@ const users = (await fetchUsers(showDeleted)) ?? []
 <Dashboard title="Utilisateurs">
     <UsersPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         initialData={users}
         canEdit={hasPermission(user, "edit:user")}
         canDelete={hasPermission(user, "delete:user")}

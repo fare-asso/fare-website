@@ -1,6 +1,5 @@
 ---
 import QuestionDetailPage from "@/components/dashboard/bougeTaPrison/questionDetailPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
@@ -24,10 +23,5 @@ if (!question) {
 ---
 
 <Dashboard title={`Question ${question.id}`}>
-    <QuestionDetailPage
-        client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
-        question={question}
-    />
+    <QuestionDetailPage client:load question={question} />
 </Dashboard>

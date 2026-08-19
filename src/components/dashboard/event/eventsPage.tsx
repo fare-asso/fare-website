@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
 import type { EventWithImage } from "@/actions/events/listEventsAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -16,8 +16,6 @@ import CreateEventButton from "./createEventButton"
 import { DataTable } from "./data-table"
 
 interface EventsPageProps {
-    user: ShellUser
-    pathname: string
     initialData: EventWithImage[]
     canCreate: boolean
     canEdit: boolean
@@ -29,7 +27,7 @@ function EventsContent({
     canCreate,
     canEdit,
     canDelete
-}: Omit<EventsPageProps, "user" | "pathname">) {
+}: EventsPageProps) {
     const { data: events } = useQuery({
         queryKey: ["events"],
         queryFn: async () => {
@@ -66,13 +64,9 @@ function EventsContent({
     )
 }
 
-export default function EventsPage({
-    user,
-    pathname,
-    ...rest
-}: EventsPageProps) {
+export default function EventsPage({ ...rest }: EventsPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <EventsContent {...rest} />
         </DashboardShell>
     )

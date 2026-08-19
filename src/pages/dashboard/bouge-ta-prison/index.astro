@@ -1,7 +1,6 @@
 ---
 import { fetchTutorApplications } from "@/actions/bouge-ta-prison/listTutorApplicationsAction"
 import CandidaturesPage from "@/components/dashboard/bougeTaPrison/candidaturesPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
@@ -13,10 +12,5 @@ const applications = (await fetchTutorApplications()) ?? []
 ---
 
 <Dashboard title="Bouge Ta Prison">
-    <CandidaturesPage
-        client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
-        initialData={applications}
-    />
+    <CandidaturesPage client:load initialData={applications} />
 </Dashboard>

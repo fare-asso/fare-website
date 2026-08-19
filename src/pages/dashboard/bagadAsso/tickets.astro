@@ -1,7 +1,6 @@
 ---
 import { fetchTickets } from "@/actions/bagadAsso/listTicketsAction"
 import TicketsPage from "@/components/dashboard/bagadAsso/ticketsPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
@@ -12,8 +11,6 @@ const tickets = (await fetchTickets()) ?? []
 <Dashboard title="Bagad'Asso — Tickets">
     <TicketsPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         initialTickets={tickets}
         canManage={hasPermission(user, "access:bagad-asso")}
         calendarToken={user.calendarToken}

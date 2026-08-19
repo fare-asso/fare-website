@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
 import type { PartenaireWithLogo } from "@/actions/partenaires/listPartenairesAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -16,8 +16,6 @@ import AddPartenaireButton from "./addPartenaireButton"
 import PartenaireList from "./partenaireList"
 
 interface PartenairesPageProps {
-    user: ShellUser
-    pathname: string
     initialData: PartenaireWithLogo[]
     canCreate: boolean
     canEdit: boolean
@@ -29,7 +27,7 @@ function PartenairesContent({
     canCreate,
     canEdit,
     canDelete
-}: Omit<PartenairesPageProps, "user" | "pathname">) {
+}: PartenairesPageProps) {
     const { data: partenaires } = useQuery({
         queryKey: ["partenaires"],
         queryFn: async () => {
@@ -67,13 +65,9 @@ function PartenairesContent({
     )
 }
 
-export default function PartenairesPage({
-    user,
-    pathname,
-    ...rest
-}: PartenairesPageProps) {
+export default function PartenairesPage({ ...rest }: PartenairesPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <PartenairesContent {...rest} />
         </DashboardShell>
     )

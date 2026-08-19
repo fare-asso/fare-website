@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
-import { DashboardShells } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -26,7 +26,7 @@ function AdhesionsContent({
     initialData,
     canEdit,
     canDownload
-}: Omit<AdhesionsPageProps, "user" | "pathname">) {
+}: AdhesionsPageProps) {
     const { data } = useQuery({
         queryKey: ["adhesions"],
         queryFn: async () => {
@@ -71,8 +71,8 @@ function AdhesionsContent({
 
 export default function AdhesionsPage(rest: AdhesionsPageProps) {
     return (
-        <DashboardShells>
+        <DashboardShell>
             <AdhesionsContent {...rest} />
-        </DashboardShells>
+        </DashboardShell>
     )
 }

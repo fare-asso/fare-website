@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -16,8 +16,6 @@ import ArchivedSuggestions from "./suggestions/archivedSuggestions"
 import TabSwitcher from "./suggestions/tabSwitcher"
 
 interface SuggestionsPageProps {
-    user: ShellUser
-    pathname: string
     initialSuggestions: BagadAssoSuggestion[]
 }
 
@@ -58,13 +56,9 @@ function SuggestionsContent({
     )
 }
 
-export default function SuggestionsPage({
-    user,
-    pathname,
-    ...rest
-}: SuggestionsPageProps) {
+export default function SuggestionsPage({ ...rest }: SuggestionsPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <SuggestionsContent {...rest} />
         </DashboardShell>
     )

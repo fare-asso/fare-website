@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
 import type { LinksData } from "@/actions/links/listLinksAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -15,8 +15,6 @@ import AddLinkCategoryButton from "./addLinkCategoryButton"
 import LinksManager from "./linksManager"
 
 interface LinksPageProps {
-    user: ShellUser
-    pathname: string
     initialData: LinksData
     canCreate: boolean
     canEdit: boolean
@@ -28,7 +26,7 @@ function LinksContent({
     canCreate,
     canEdit,
     canDelete
-}: Omit<LinksPageProps, "user" | "pathname">) {
+}: LinksPageProps) {
     const { data } = useQuery({
         queryKey: ["links"],
         queryFn: async () => {
@@ -65,9 +63,9 @@ function LinksContent({
     )
 }
 
-export default function LinksPage({ user, pathname, ...rest }: LinksPageProps) {
+export default function LinksPage({ ...rest }: LinksPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <LinksContent {...rest} />
         </DashboardShell>
     )

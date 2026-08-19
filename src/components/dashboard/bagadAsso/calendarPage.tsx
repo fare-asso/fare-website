@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
 import { ServerSearchContext } from "@/hooks/useSearchParam"
@@ -9,8 +9,6 @@ import { ServerSearchContext } from "@/hooks/useSearchParam"
 import Calendar from "./calendar"
 
 interface CalendarPageProps {
-    user: ShellUser
-    pathname: string
     initialTickets: BagadAssoTicket[]
     initialSearch: string
 }
@@ -77,14 +75,12 @@ function CalendarContent({
 }
 
 export default function CalendarPage({
-    user,
-    pathname,
     initialTickets,
     initialSearch
 }: CalendarPageProps) {
     return (
         <ServerSearchContext.Provider value={initialSearch}>
-            <DashboardShell user={user} pathname={pathname}>
+            <DashboardShell>
                 <CalendarContent initialTickets={initialTickets} />
             </DashboardShell>
         </ServerSearchContext.Provider>
