@@ -1,7 +1,6 @@
 ---
 import { fetchMembersWithPictures } from "@/actions/members/listMembersAction"
 import MembersPage from "@/components/dashboard/members/membersPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
@@ -12,8 +11,6 @@ const members = (await fetchMembersWithPictures()) ?? []
 <Dashboard title="Membres">
     <MembersPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         initialMembers={members}
         canCreate={hasPermission(user, "create:member")}
         canEdit={hasPermission(user, "edit:member")}

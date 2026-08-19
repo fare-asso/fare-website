@@ -3,7 +3,7 @@ import { actions } from "astro:actions"
 import { PackageIcon } from "lucide-react"
 
 import type { EquipmentWithDetails } from "@/actions/bagadAsso/listEquipmentsAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -16,8 +16,6 @@ import AddEquipmentButton from "./equipments/addEquipmentButton"
 import EquipmentCard from "./equipments/equipmentCard"
 
 interface EquipmentsPageProps {
-    user: ShellUser
-    pathname: string
     initialEquipments: EquipmentWithDetails[]
     canCreate: boolean
     canEdit: boolean
@@ -29,7 +27,7 @@ function EquipmentsContent({
     canCreate,
     canEdit,
     canDelete
-}: Omit<EquipmentsPageProps, "user" | "pathname">) {
+}: EquipmentsPageProps) {
     const { data: equipments } = useQuery({
         queryKey: ["bagadEquipments"],
         queryFn: async () => {
@@ -91,13 +89,9 @@ function EquipmentsContent({
     )
 }
 
-export default function EquipmentsPage({
-    user,
-    pathname,
-    ...rest
-}: EquipmentsPageProps) {
+export default function EquipmentsPage({ ...rest }: EquipmentsPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <EquipmentsContent {...rest} />
         </DashboardShell>
     )

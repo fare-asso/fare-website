@@ -16,7 +16,7 @@ import {
     FaUsers
 } from "react-icons/fa"
 
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -42,8 +42,6 @@ interface EquipmentLine {
 }
 
 interface TicketDetailPageProps {
-    user: ShellUser
-    pathname: string
     ticket: BagadAssoTicket
     allEquipments: EquipmentLine[]
     totalDeposit: number
@@ -57,7 +55,7 @@ function TicketDetailContent({
     totalDeposit,
     canEditTicket,
     canDeleteTicket
-}: Omit<TicketDetailPageProps, "user" | "pathname">) {
+}: TicketDetailPageProps) {
     const eventAddrLabel = locationDisplayName(ticket.eventAddr)
     const parsedEventAddr = parseLocation(ticket.eventAddr)
     const mapsHref = parsedEventAddr.success
@@ -297,13 +295,9 @@ function TicketDetailContent({
     )
 }
 
-export default function TicketDetailPage({
-    user,
-    pathname,
-    ...rest
-}: TicketDetailPageProps) {
+export default function TicketDetailPage({ ...rest }: TicketDetailPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <TicketDetailContent {...rest} />
         </DashboardShell>
     )

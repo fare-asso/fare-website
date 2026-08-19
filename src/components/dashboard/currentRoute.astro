@@ -1,5 +1,4 @@
-import React from "react"
-
+---
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -9,13 +8,13 @@ import {
     BreadcrumbSeparator
 } from "../ui/breadcrumb"
 
-export default function CurrentRoute({ path }: { path: string }) {
-    const pathArray = path.split("/").filter((p) => p !== "")
+const pathArray = Astro.url.pathname.split("/").filter((p) => p !== "")
+---
 
-    return (
-        <Breadcrumb className="ml-2">
-            <BreadcrumbList>
-                {pathArray.map((p, index) => {
+<div class="flex flex-col items-start gap-2">
+    <Breadcrumb>
+        <BreadcrumbList>
+            {pathArray.map((p, index) => {
                     const href = `/${pathArray.slice(0, index + 1).join("/")}`
                     if (index === pathArray.length - 1) {
                         return (
@@ -27,20 +26,19 @@ export default function CurrentRoute({ path }: { path: string }) {
                         )
                     } else {
                         return (
-                            <React.Fragment key={index}>
+                            <>
                                 <BreadcrumbItem>
                                     <BreadcrumbLink asChild>
-                                        <a href={href} className="capitalize">
+                                        <a href={href} class="capitalize">
                                             {p}
                                         </a>
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
-                            </React.Fragment>
+                            </>
                         )
                     }
                 })}
-            </BreadcrumbList>
-        </Breadcrumb>
-    )
-}
+        </BreadcrumbList>
+    </Breadcrumb>
+</div>

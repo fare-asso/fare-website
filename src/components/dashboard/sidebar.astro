@@ -1,0 +1,264 @@
+---
+import {
+    BoxIcon,
+    Calendar1Icon,
+    CalendarDaysIcon,
+    FileUserIcon,
+    HandshakeIcon,
+    LandmarkIcon,
+    LightbulbIcon,
+    LinkIcon,
+    MegaphoneIcon,
+    MessageCircleQuestionMarkIcon,
+    NetworkIcon,
+    NewspaperIcon,
+    PartyPopperIcon,
+    ShieldIcon,
+    TicketIcon,
+    UserIcon,
+    UserPlusIcon,
+    UsersIcon
+} from "lucide-react"
+import { FaHandcuffs, FaPeopleGroup } from "react-icons/fa6"
+import LogoFARE from "@/assets/logo_fare.png"
+
+import AccountButton from "./AccountButton.tsx"
+import SidebarLink from "./sidebarLink.astro"
+
+const user = Astro.locals.user!
+
+type SidebarLink = {
+    href: string
+    title: string
+    icon?: any
+    hidden?: boolean
+    children?: SidebarLink[]
+}
+
+const menuGroups: { title?: string; links: SidebarLink[] }[] = [
+    {
+        title: "Contenu",
+        links: [
+            {
+                href: "/dashboard/associations",
+                title: "Associations",
+                icon: NetworkIcon
+            },
+            {
+                href: "/dashboard/partenaires",
+                title: "Partenaires",
+                icon: HandshakeIcon,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:partner"
+                )
+            },
+            {
+                href: "/dashboard/membres",
+                title: "Membres",
+                icon: FaPeopleGroup,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:members"
+                )
+            },
+            {
+                href: "/dashboard/elus",
+                title: "Représentants",
+                icon: MegaphoneIcon,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:elus"
+                ),
+                children: [
+                    {
+                        href: "/dashboard/elus",
+                        title: "Liste des élu·e·s",
+                        icon: UsersIcon
+                    },
+                    {
+                        href: "/dashboard/elus/instances",
+                        title: "Instances",
+                        icon: LandmarkIcon
+                    }
+                ]
+            },
+            {
+                href: "/dashboard/communiques-de-presse",
+                title: "Presse",
+                icon: NewspaperIcon,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:presse"
+                )
+            },
+            {
+                href: "/dashboard/events",
+                title: "Evènements",
+                icon: CalendarDaysIcon,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:events"
+                )
+            },
+            {
+                href: "/dashboard/liens",
+                title: "Liens",
+                icon: LinkIcon,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:liens"
+                )
+            }
+        ]
+    },
+    {
+        title: "Projets",
+        links: [
+            {
+                href: "/dashboard/bagadAsso",
+                title: "Bagad'Asso",
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:bagad-asso"
+                ),
+                icon: PartyPopperIcon,
+                children: [
+                    {
+                        href: "/dashboard/bagadAsso",
+                        title: "Calendrier",
+                        icon: Calendar1Icon
+                    },
+                    {
+                        href: "/dashboard/bagadAsso/tickets",
+                        title: "Tickets",
+                        icon: TicketIcon
+                    },
+                    {
+                        href: "/dashboard/bagadAsso/equipments",
+                        title: "Matériel",
+                        icon: BoxIcon
+                    },
+                    {
+                        href: "/dashboard/bagadAsso/suggestions",
+                        title: "Suggestions",
+                        icon: LightbulbIcon
+                    }
+                ]
+            },
+            {
+                href: "/dashboard/bouge-ta-prison",
+                title: "Bouge Ta Prison",
+                icon: FaHandcuffs,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:btp"
+                ),
+                children: [
+                    {
+                        href: "/dashboard/bouge-ta-prison",
+                        title: "Candidatures",
+                        icon: FileUserIcon
+                    },
+                    {
+                        href: "/dashboard/bouge-ta-prison/questions",
+                        title: "Questions",
+                        icon: MessageCircleQuestionMarkIcon
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        title: "Gestion",
+        links: [
+            {
+                href: "/dashboard/adhesions",
+                title: "Adhésions",
+                icon: UserPlusIcon,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:adhesions"
+                )
+            },
+
+            {
+                href: "/dashboard/defense-des-droits",
+                title: "Défense des droits",
+                icon: ShieldIcon,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:defense-droits"
+                )
+            },
+            {
+                href: "/dashboard/users",
+                title: "Utilisateurs",
+                icon: UserIcon,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:users"
+                )
+            }
+        ]
+    }
+]
+---
+
+<div class="flex flex-row items-center justify-start gap-6 mx-2 mt-2">
+    <a href="/dashboard" class="flex items-center gap-2">
+        <img src={LogoFARE.src} alt="Logo de la FARE" class="w-16 opacity-85">
+    </a>
+    <h1 class="text-left text-base m-0">
+        Dashboard <br>
+        Fédéral
+    </h1>
+</div>
+<div class="overflow-auto flex flex-col gap-4 min-h-0 flex-1">
+    {menuGroups.map((group) => {
+        if (group.links.some((link) => !link.hidden))
+            return (
+                <section>
+                    <h3 class="text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden focus-visible:ring-2">{group.title}</h3>
+                    <ul class="flex flex-col gap-1">
+                        {group.links.map((link) => {
+                            if (!link.hidden) {
+                                if (link.children)
+                                    return (
+                                        <>
+                                            <SidebarLink href={link.href} title={link.title} icon={link.icon} />
+                                            <ul class="flex flex-col gap-1 ml-4 pl-2 border-l-2 border-sidebar-border">
+                                                {link.children.map((child) => (
+                                                    <SidebarLink href={child.href} title={child.title} icon={child.icon} />
+                                                ))}
+                                            </ul>
+                                        </>
+                                    )
+
+                                return (
+                                    <SidebarLink href={link.href} title={link.title} icon={link.icon} />
+                                )
+                            }
+                        })}
+                    </ul>
+                </section>
+            )
+        return undefined
+    })}
+</div>
+<footer>
+    <AccountButton
+        client:load
+        name={user.name}
+        email={user.email}
+        image={user.image}
+    />
+</footer>
+
+<script>
+document.addEventListener("astro:page-load", () => {
+    const pathname = window.location.pathname
+
+    const links = document.querySelectorAll<HTMLAnchorElement>(
+        "[data-sidebar-link]"
+    )
+
+    for (const link of links) {
+        const isActive = link.pathname === pathname
+        link.classList.toggle("bg-sidebar-accent", isActive)
+        link.classList.toggle("text-sidebar-accent-foreground", isActive)
+
+        if (isActive) link.setAttribute("aria-current", "page")
+        else link.removeAttribute("aria-current")
+    }
+})
+</script>

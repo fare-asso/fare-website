@@ -1,7 +1,6 @@
 ---
 import { fetchAdhesions } from "@/actions/adhesion/listAdhesionsAction"
 import AdhesionsPage from "@/components/dashboard/adhesions/adhesionsPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
@@ -15,8 +14,6 @@ const adhesions = (await fetchAdhesions()) ?? []
 <Dashboard title="Adhésions">
     <AdhesionsPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         initialData={adhesions}
         canEdit={hasPermission(user, "edit:adhesion")}
         canDownload={hasPermission(user, "download:adhesion-folder")}

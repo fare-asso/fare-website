@@ -33,6 +33,7 @@ const favicon = await getImage({
         <meta name="description" content={description}>
         <Font cssVariable="--font-ovo" preload />
         <Font cssVariable="--font-valley-sans" preload />
+        <slot name="head" />
     </head>
     <body>
         <slot />

@@ -1,7 +1,6 @@
 ---
 import { fetchCDP } from "@/actions/CDP/listCDPAction"
 import CDPPage from "@/components/dashboard/CDP/cdpPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
@@ -12,8 +11,6 @@ const communiques = (await fetchCDP()) ?? []
 <Dashboard title="Communiques de presse">
     <CDPPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         initialData={communiques}
         canCreate={hasPermission(user, "create:cdp")}
         canDelete={hasPermission(user, "delete:cdp")}

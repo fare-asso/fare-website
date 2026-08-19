@@ -3,7 +3,7 @@ import { actions } from "astro:actions"
 import { FaRegFilePdf } from "react-icons/fa"
 
 import type { CDPWithUrls } from "@/actions/CDP/listCDPAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -17,18 +17,12 @@ import AddNewCDPButton from "./addCDPButton"
 import CdpCard from "./CDPCard"
 
 interface CDPPageProps {
-    user: ShellUser
-    pathname: string
     initialData: CDPWithUrls[]
     canCreate: boolean
     canDelete: boolean
 }
 
-function CDPContent({
-    initialData,
-    canCreate,
-    canDelete
-}: Omit<CDPPageProps, "user" | "pathname">) {
+function CDPContent({ initialData, canCreate, canDelete }: CDPPageProps) {
     const { data: communiques } = useQuery({
         queryKey: ["cdp"],
         queryFn: async () => {
@@ -89,9 +83,9 @@ function CDPContent({
     )
 }
 
-export default function CDPPage({ user, pathname, ...rest }: CDPPageProps) {
+export default function CDPPage({ ...rest }: CDPPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <CDPContent {...rest} />
         </DashboardShell>
     )

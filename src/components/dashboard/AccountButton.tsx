@@ -4,6 +4,7 @@ import { useTransition } from "react"
 import { toast } from "sonner"
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Button } from "../ui/button"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,7 +13,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "../ui/dropdown-menu"
-import { SidebarMenuButton } from "../ui/sidebar"
 
 interface AccountButtonProps {
     name?: string | null
@@ -55,7 +55,10 @@ export default function AccountButton({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="hover:bg-sidebar-accent h-auto w-full justify-start gap-2 px-2 py-2">
+                <Button
+                    variant="ghost"
+                    className="hover:bg-sidebar-accent h-auto w-full justify-start gap-2 px-2 py-2"
+                >
                     <Avatar className="h-8 w-8">
                         <AvatarImage
                             src={image || undefined}
@@ -71,9 +74,9 @@ export default function AccountButton({
                             {email}
                         </span>
                     </div>
-                </SidebarMenuButton>
+                </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

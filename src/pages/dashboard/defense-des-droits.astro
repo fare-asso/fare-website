@@ -1,6 +1,5 @@
 ---
 import DefenseDroitsPage from "@/components/dashboard/defenseDesDroits/defenseDroitsPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { getAssistanceConfig } from "@/helpers/assistanceConfig"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
@@ -15,8 +14,6 @@ const config = await getAssistanceConfig()
 <Dashboard title="Défense des droits">
     <DefenseDroitsPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         recipientEmail={config.recipientEmail}
         delay={config.delay}
     />

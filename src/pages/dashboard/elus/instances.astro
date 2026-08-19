@@ -1,7 +1,6 @@
 ---
 import { fetchInstances } from "@/actions/instances/listInstancesAction"
 import InstancesPage from "@/components/dashboard/elus/instancesPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
@@ -15,8 +14,6 @@ const instances = (await fetchInstances()) ?? []
 <Dashboard title="Instances">
     <InstancesPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         initialInstances={instances}
         canCreate={hasPermission(user, "create:instance")}
         canEdit={hasPermission(user, "edit:instance")}

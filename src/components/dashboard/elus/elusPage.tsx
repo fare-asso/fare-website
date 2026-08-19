@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
 import type { InstanceTree } from "@/actions/elus/listElusAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -15,8 +15,6 @@ import BulkImportElusButton from "./bulkImportElusButton"
 import EluList from "./eluList"
 
 interface ElusPageProps {
-    user: ShellUser
-    pathname: string
     initialInstances: InstanceTree[]
     canCreateElu: boolean
     canEditElu: boolean
@@ -34,7 +32,7 @@ function ElusContent({
     canCreateConseil,
     canEditConseil,
     canDeleteConseil
-}: Omit<ElusPageProps, "user" | "pathname">) {
+}: ElusPageProps) {
     const { data: instances } = useQuery<InstanceTree[]>({
         queryKey: ["elus"],
         queryFn: async () => {
@@ -83,9 +81,9 @@ function ElusContent({
     )
 }
 
-export default function ElusPage({ user, pathname, ...rest }: ElusPageProps) {
+export default function ElusPage({ ...rest }: ElusPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <ElusContent {...rest} />
         </DashboardShell>
     )

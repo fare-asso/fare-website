@@ -1,6 +1,5 @@
 ---
 import CandidatureDetailPage from "@/components/dashboard/bougeTaPrison/candidatureDetailPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient } from "@/helpers/supabase/astro"
@@ -35,8 +34,6 @@ const { data: lmSignedUrlData } = await supabase.storage
 <Dashboard title={`Candidature ${application.id}`}>
     <CandidatureDetailPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         application={application}
         cvUrl={cvSignedUrlData?.signedUrl ?? null}
         lmUrl={lmSignedUrlData?.signedUrl ?? null}

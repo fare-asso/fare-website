@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -16,14 +16,10 @@ import ArchivedQuestions from "./archivedQuestions"
 import QuestionsTabSwitcher from "./questionsTabSwitcher"
 
 interface QuestionsPageProps {
-    user: ShellUser
-    pathname: string
     initialData: BTPTutorQuestion[]
 }
 
-function QuestionsContent({
-    initialData
-}: Omit<QuestionsPageProps, "user" | "pathname">) {
+function QuestionsContent({ initialData }: QuestionsPageProps) {
     const { data } = useQuery({
         queryKey: ["tutorQuestions"],
         queryFn: async () => {
@@ -58,13 +54,9 @@ function QuestionsContent({
     )
 }
 
-export default function QuestionsPage({
-    user,
-    pathname,
-    ...rest
-}: QuestionsPageProps) {
+export default function QuestionsPage({ ...rest }: QuestionsPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <QuestionsContent {...rest} />
         </DashboardShell>
     )

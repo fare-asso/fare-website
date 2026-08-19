@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
 import type { UserWithPermissionsRow } from "@/actions/users/listUsersAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -18,18 +18,12 @@ import { DataTable } from "./data-table"
 import { ShowDeletedToggle } from "./showDeletedToggle"
 
 interface UsersPageProps {
-    user: ShellUser
-    pathname: string
     initialData: UserWithPermissionsRow[]
     canEdit: boolean
     canDelete: boolean
 }
 
-function UsersContent({
-    initialData,
-    canEdit,
-    canDelete
-}: Omit<UsersPageProps, "user" | "pathname">) {
+function UsersContent({ initialData, canEdit, canDelete }: UsersPageProps) {
     const [showDeletedParam] = useSearchParam("showDeleted", "false")
     const showDeleted = showDeletedParam === "true"
 
@@ -72,9 +66,9 @@ function UsersContent({
     )
 }
 
-export default function UsersPage({ user, pathname, ...rest }: UsersPageProps) {
+export default function UsersPage({ ...rest }: UsersPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <UsersContent {...rest} />
         </DashboardShell>
     )

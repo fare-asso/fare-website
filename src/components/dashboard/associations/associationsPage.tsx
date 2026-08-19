@@ -3,7 +3,7 @@ import { actions } from "astro:actions"
 import { BuildingIcon } from "lucide-react"
 
 import type { AssociationWithLogo } from "@/actions/associations/listAssociationsAction"
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -17,8 +17,6 @@ import AddAssociationButton from "./addAssociationButton"
 import AssociationCard from "./associationCard"
 
 interface AssociationsPageProps {
-    user: ShellUser
-    pathname: string
     initialData: AssociationWithLogo[]
     canCreate: boolean
     canEdit: boolean
@@ -32,7 +30,7 @@ function AssociationsContent({
     canEdit,
     canDelete,
     canApprove
-}: Omit<AssociationsPageProps, "user" | "pathname">) {
+}: AssociationsPageProps) {
     const { data: associations } = useQuery({
         queryKey: ["associations"],
         queryFn: async () => {
@@ -95,13 +93,9 @@ function AssociationsContent({
     )
 }
 
-export default function AssociationsPage({
-    user,
-    pathname,
-    ...rest
-}: AssociationsPageProps) {
+export default function AssociationsPage({ ...rest }: AssociationsPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <AssociationsContent {...rest} />
         </DashboardShell>
     )

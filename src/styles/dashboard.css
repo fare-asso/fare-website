@@ -1,3 +1,7 @@
 html {
     overflow: hidden;
 }
+
+::view-transition-group(dashboard-content) {
+    overflow: clip;
+}

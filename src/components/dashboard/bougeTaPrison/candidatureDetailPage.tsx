@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { FaCaretLeft, FaEnvelope } from "react-icons/fa"
 
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,8 +25,6 @@ import type { BTPTutorApplication } from "@/generated/prisma/client"
 import SendApprovalButton from "./sendApprovalButton"
 
 interface CandidatureDetailPageProps {
-    user: ShellUser
-    pathname: string
     application: BTPTutorApplication
     cvUrl: string | null
     lmUrl: string | null
@@ -36,7 +34,7 @@ function CandidatureDetailContent({
     application,
     cvUrl,
     lmUrl
-}: Omit<CandidatureDetailPageProps, "user" | "pathname">) {
+}: CandidatureDetailPageProps) {
     return (
         <div className="h-full w-full px-2 md:px-4">
             {/* Header */}
@@ -260,12 +258,10 @@ function CandidatureDetailContent({
 }
 
 export default function CandidatureDetailPage({
-    user,
-    pathname,
     ...rest
 }: CandidatureDetailPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <CandidatureDetailContent {...rest} />
         </DashboardShell>
     )

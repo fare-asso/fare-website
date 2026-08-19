@@ -1,6 +1,5 @@
 ---
 import TicketDetailPage from "@/components/dashboard/bagadAsso/ticketDetailPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import {
     computeTotalDeposit,
     joinTicketAndEquipment
@@ -39,8 +38,6 @@ const allEquipments: {
 <Dashboard title={`Bagad'Asso - Ticket ${ticket.id}`}>
     <TicketDetailPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         ticket={ticket}
         allEquipments={allEquipments}
         totalDeposit={totalDeposit}

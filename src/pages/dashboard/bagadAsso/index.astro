@@ -1,7 +1,6 @@
 ---
 import { fetchBagadCalendar } from "@/actions/bagadAsso/listCalendarAction"
 import CalendarPage from "@/components/dashboard/bagadAsso/calendarPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
@@ -15,8 +14,6 @@ const tickets = (await fetchBagadCalendar()) ?? []
 <Dashboard title="Bagad'Asso">
     <CalendarPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         initialTickets={tickets}
         initialSearch={Astro.url.search}
     />

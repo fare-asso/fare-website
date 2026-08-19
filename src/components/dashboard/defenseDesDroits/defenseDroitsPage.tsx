@@ -1,4 +1,4 @@
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShell } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -10,20 +10,16 @@ import {
 import ConfigForm from "./configForm"
 
 interface DefenseDroitsPageProps {
-    user: ShellUser
-    pathname: string
     recipientEmail: string
     delay: string
 }
 
 export default function DefenseDroitsPage({
-    user,
-    pathname,
     recipientEmail,
     delay
 }: DefenseDroitsPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShell>
             <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
                 <CardHeader className="p-0">
                     <CardTitle>Défense des droits</CardTitle>

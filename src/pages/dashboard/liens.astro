@@ -1,7 +1,6 @@
 ---
 import { fetchLinks } from "@/actions/links/listLinksAction"
 import LinksPage from "@/components/dashboard/links/linksPage"
-import { toShellUser } from "@/components/dashboard/shell"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
@@ -15,8 +14,6 @@ const data = (await fetchLinks()) ?? { categories: [], files: {} }
 <Dashboard title="Liens">
     <LinksPage
         client:load
-        user={toShellUser(user)}
-        pathname={Astro.url.pathname}
         initialData={data}
         canCreate={hasPermission(user, "create:lien")}
         canEdit={hasPermission(user, "edit:lien")}
