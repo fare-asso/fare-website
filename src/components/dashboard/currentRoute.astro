@@ -7,7 +7,6 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "../ui/breadcrumb"
-import { Separator } from "../ui/separator"
 
 const pathArray = Astro.url.pathname.split("/").filter((p) => p !== "")
 ---
@@ -42,6 +41,4 @@ const pathArray = Astro.url.pathname.split("/").filter((p) => p !== "")
                 })}
         </BreadcrumbList>
     </Breadcrumb>
-
-    <Separator />
 </div>

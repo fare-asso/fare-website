@@ -1,8 +1,11 @@
 ---
 import { ClientRouter } from "astro:transitions"
+import { PanelLeftIcon } from "lucide-react"
 import Base from "./Base.astro"
 import Sidebar from "@/components/dashboard/sidebar.astro"
 import CurrentRoute from "@/components/dashboard/currentRoute.astro"
+import { Button } from "@/components/ui/button.tsx"
+import { Separator } from "@/components/ui/separator.tsx"
 
 import "@/styles/dashboard.css"
 
@@ -24,15 +27,24 @@ if (!Astro.locals.user) {
         <ClientRouter />
     </Fragment>
 
-    <div class="grid grid-cols-[auto_1fr] gap-4 h-svh ">
+    <div data-container class="grid gap-4 h-svh">
         <aside
             transition:persist
-            class="z-10 grid grid-rows-[auto_1fr_auto] gap-2 overflow-y-scroll bg-sidebar outline-fare-accent/15 outline m-2 rounded-lg px-2 py-2"
+            data-sidebar-open="true"
+            class="z-10 grid min-w-0 grid-rows-[auto_1fr_auto] gap-2 overflow-x-hidden overflow-y-auto bg-sidebar outline-fare-accent/15 outline m-2 rounded-lg px-2 py-2"
         >
             <Sidebar />
         </aside>
-        <div class="grid grid-rows-[auto_1fr] px-2 py-4 gap-4 h-svh">
-            <CurrentRoute />
+        <div class="grid grid-rows-[auto_auto_1fr] px-2 py-4 gap-4 h-svh">
+            <div class="flex items-center gap-2 -my-2">
+                <Button data-sidebar-toggle variant="ghost" size="icon">
+                    <PanelLeftIcon />
+                    <span class="sr-only">Toggle Sidebar</span>
+                </Button>
+                <Separator orientation="vertical" className="mx-2 h-8" />
+                <CurrentRoute />
+            </div>
+            <Separator />
             <main
                 class="@container z-5 overflow-x-hidden overflow-y-scroll"
                 transition:name="dashboard-content"
@@ -42,3 +54,70 @@ if (!Astro.locals.user) {
         </div>
     </div>
 </Base>
+
+<script>
+document.addEventListener("astro:page-load", () => {
+    const sidebar = document.querySelector<HTMLElement>("[data-sidebar-open]")
+    const sidebarToggle = document.querySelector("[data-sidebar-toggle]")
+    const container = document.querySelector<HTMLElement>("[data-container]")
+
+    if (!sidebar || !sidebarToggle || !container) {
+        console.warn("Dashboard sidebar layout elements not found")
+        return
+    }
+
+    const setSidebarWidth = (): void => {
+        const [width] =
+            getComputedStyle(container).gridTemplateColumns.split(" ")
+        if (width) {
+            document.documentElement.style.setProperty(
+                "--dashboard-sidebar-width",
+                width
+            )
+        }
+    }
+
+    if (sidebar.dataset.sidebarOpen === "true") setSidebarWidth()
+
+    sidebarToggle.addEventListener("click", () => {
+        const isOpen = sidebar.dataset.sidebarOpen === "true"
+        if (isOpen) setSidebarWidth()
+
+        sidebar.dataset.sidebarOpen = String(!isOpen)
+    })
+})
+</script>
+
+<style>
+[data-container] {
+    grid-template-columns: var(
+            --sidebar-target-width,
+            var(--dashboard-sidebar-width, max-content)
+        ) minmax(0, 1fr);
+    transition: grid-template-columns 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-sidebar-open] {
+    transition:
+        margin-inline 300ms cubic-bezier(0.22, 1, 0.36, 1),
+        padding-inline 300ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 180ms ease-out;
+}
+
+[data-container]:has([data-sidebar-open="false"]) {
+    --sidebar-target-width: 0;
+
+    [data-sidebar-open] {
+        margin-inline: 0;
+        padding-inline: 0;
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-container],
+    [data-sidebar-open] {
+        transition: none;
+    }
+}
+</style>
