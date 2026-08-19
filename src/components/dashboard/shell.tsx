@@ -7,7 +7,6 @@ import { queryClient } from "@/lib/queryClient"
 import { Separator } from "../ui/separator"
 import { SidebarProvider, SidebarTrigger } from "../ui/sidebar"
 import { Toaster } from "../ui/sonner"
-import CurrentRoute from "./currentRoute"
 import SideBarApp from "./sideBarApp"
 
 export interface ShellUser {
@@ -54,7 +53,7 @@ export default function DashboardShell({
                                 orientation="vertical"
                                 className="mx-2 h-8"
                             />
-                            <CurrentRoute path={pathname} />
+                            {/*<CurrentRoute path={pathname} />*/}
                         </header>
 
                         <main className="@container mx-4 mt-12 mb-4 flex-1 overflow-y-auto rounded-lg border bg-white p-4 shadow-md">
@@ -65,6 +64,15 @@ export default function DashboardShell({
 
                 <Toaster />
             </SidebarProvider>
+        </QueryClientProvider>
+    )
+}
+
+export function DashboardShells({ children }: { children: React.ReactNode }) {
+    return (
+        <QueryClientProvider client={queryClient}>
+            {children}
+            <Toaster />
         </QueryClientProvider>
     )
 }

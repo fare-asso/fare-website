@@ -1,3 +1,4 @@
+import { Image } from "astro:assets"
 import {
     FileUserIcon,
     LinkIcon,
@@ -214,10 +215,12 @@ export default function SideBarApp({
         <Sidebar variant="inset" collapsible="offcanvas">
             <SidebarHeader className="flex flex-row items-center justify-start gap-6 py-4">
                 <a href="/dashboard" className="flex items-center gap-2">
-                    <img
-                        src={LogoFARE.src}
+                    <Image
+                        src={LogoFARE}
                         alt="Logo de la FARE"
-                        className="w-16 opacity-85"
+                        class="w-16 opacity-85"
+                        width={16}
+                        height={16}
                     />
                 </a>
                 <b className="text-left">

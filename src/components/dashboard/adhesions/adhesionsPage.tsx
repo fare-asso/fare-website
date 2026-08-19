@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { actions } from "astro:actions"
 
-import DashboardShell, { type ShellUser } from "@/components/dashboard/shell"
+import { DashboardShells } from "@/components/dashboard/shell"
 import {
     Card,
     CardContent,
@@ -17,8 +17,6 @@ import ArchivedAdhesions from "./archivedAdhesions"
 import AdhesionTabSwitcher from "./tabSwitcher"
 
 interface AdhesionsPageProps {
-    user: ShellUser
-    pathname: string
     initialData: Adhesion[]
     canEdit: boolean
     canDownload: boolean
@@ -71,14 +69,10 @@ function AdhesionsContent({
     )
 }
 
-export default function AdhesionsPage({
-    user,
-    pathname,
-    ...rest
-}: AdhesionsPageProps) {
+export default function AdhesionsPage(rest: AdhesionsPageProps) {
     return (
-        <DashboardShell user={user} pathname={pathname}>
+        <DashboardShells>
             <AdhesionsContent {...rest} />
-        </DashboardShell>
+        </DashboardShells>
     )
 }

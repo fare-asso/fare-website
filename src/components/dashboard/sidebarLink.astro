@@ -1,0 +1,23 @@
+---
+interface Props {
+    href: string
+    title: string
+    icon: any
+}
+
+const isActive = Astro.props.href === Astro.url.pathname
+---
+
+<li>
+    <a
+        href={Astro.props.href}
+        class:list={[
+            'flex h-8 shrink-0 items-center rounded-md px-2 text-sm font-medium outline-hidden',
+            'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground focus-visible:ring-2',
+            {'bg-sidebar-accent text-sidebar-accent-foreground': isActive}
+        ]}
+    >
+        <Astro.props.icon className="mr-2 h-4 w-4" size={16} />
+        {Astro.props.title}
+    </a>
+</li>
