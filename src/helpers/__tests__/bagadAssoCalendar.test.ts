@@ -22,7 +22,19 @@ describe("buildBagadAssoCalendar", () => {
         expect(ics).toContain("UID:bagad-asso-7@fare-asso.fr")
         expect(ics).toContain("UID:bagad-asso-8@fare-asso.fr")
         expect(ics).toContain("DTSTART;VALUE=DATE:20260901")
+        expect(ics).toContain("DTEND;VALUE=DATE:20260903")
         expect(ics).toContain("DTSTAMP:20260101T000000Z")
+    })
+
+    it("uses the day after a single-day event as its exclusive end date", () => {
+        const ics = buildBagadAssoCalendar([
+            bagadAssoTicketRecord({
+                eventDate: new Date("2026-09-01T00:00:00Z"),
+                eventEndDate: null
+            })
+        ])
+
+        expect(ics).toContain("DTEND;VALUE=DATE:20260902")
     })
 
     it("includes contact details in the description", () => {

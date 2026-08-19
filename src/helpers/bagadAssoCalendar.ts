@@ -24,6 +24,12 @@ function toUtcStamp(date: Date): string {
     return `${toUtcDate(date)}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`
 }
 
+function nextUtcDate(date: Date): Date {
+    const next = new Date(date)
+    next.setUTCDate(next.getUTCDate() + 1)
+    return next
+}
+
 function foldLine(line: string): string {
     const encoder = new TextEncoder()
     let result = ""
@@ -64,6 +70,7 @@ function buildEvent(ticket: BagadAssoTicket): string[] {
         `UID:bagad-asso-${ticket.id}@fare-asso.fr`,
         `DTSTAMP:${toUtcStamp(ticket.creationDate)}`,
         `DTSTART;VALUE=DATE:${toUtcDate(ticket.eventDate)}`,
+        `DTEND;VALUE=DATE:${toUtcDate(nextUtcDate(ticket.eventEndDate ?? ticket.eventDate))}`,
         `SUMMARY:${escapeText(`${ticket.eventName} (${ticket.association})`)}`,
         `LOCATION:${escapeText(locationDisplayName(ticket.eventAddr))}`,
         `DESCRIPTION:${escapeText(description)}`,

@@ -1,5 +1,12 @@
 import { useHotkey } from "@tanstack/react-hotkeys"
-import { isSameDay, isSameMonth, isToday } from "date-fns"
+import {
+    endOfDay,
+    isSameDay,
+    isSameMonth,
+    isToday,
+    isWithinInterval,
+    startOfDay
+} from "date-fns"
 import {
     ChevronLeft,
     ChevronRight,
@@ -20,6 +27,7 @@ import {
     PopoverTrigger
 } from "@/components/ui/popover"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { isEventPast } from "@/helpers/eventDate"
 import { locationDisplayName } from "@/helpers/location"
 import { useSearchParam } from "@/hooks/useSearchParam"
 import { cn } from "@/lib/utils"
@@ -50,6 +58,7 @@ type Event = Pick<
     | "id"
     | "eventName"
     | "eventDate"
+    | "eventEndDate"
     | "association"
     | "eventAddr"
     | "firstName"
@@ -137,7 +146,12 @@ export default function Calendar({ events }: { events?: Event[] }) {
                     {grid.map((day) => {
                         const dayEvents =
                             events?.filter((e) =>
-                                isSameDay(new Date(e.eventDate), day)
+                                isWithinInterval(day, {
+                                    start: startOfDay(new Date(e.eventDate)),
+                                    end: endOfDay(
+                                        new Date(e.eventEndDate ?? e.eventDate)
+                                    )
+                                })
                             ) ?? []
                         const inMonth = isSameMonth(day, month)
                         const isCurrentDay = isToday(day)
@@ -166,6 +180,7 @@ export default function Calendar({ events }: { events?: Event[] }) {
                                         .map((event, i) => (
                                             <Event
                                                 key={`${day.toISOString()}-${i}`}
+                                                day={day}
                                                 event={event}
                                             />
                                         ))}
@@ -187,16 +202,32 @@ export default function Calendar({ events }: { events?: Event[] }) {
     )
 }
 
-function Event({ event }: { event: Event }) {
+function Event({ day, event }: { day: Date; event: Event }) {
     const isArchived = event.deleted !== null
-    const isPast = !isArchived && new Date(event.eventDate) < new Date()
+    const isPast =
+        !isArchived && isEventPast(event.eventDate, event.eventEndDate)
+    const isStart = isSameDay(day, new Date(event.eventDate))
+    const isEnd = isSameDay(
+        day,
+        new Date(event.eventEndDate ?? event.eventDate)
+    )
+    const startsWeek = day.getDay() === 1
+    const endsWeek = day.getDay() === 0
     return (
         <Popover>
-            <PopoverTrigger>
-                <div
+            <PopoverTrigger asChild>
+                <button
+                    aria-label={event.eventName}
                     title={event.eventName}
                     className={cn(
-                        "truncate rounded-md px-1.5 py-0.5 text-start text-sm font-medium",
+                        "-mx-1.5 w-[calc(100%+0.75rem)] px-3 py-0.5 text-start text-sm font-medium",
+                        isStart && !isEnd
+                            ? "relative z-10 overflow-visible whitespace-nowrap"
+                            : "truncate",
+                        isStart || startsWeek
+                            ? "rounded-l-md"
+                            : "rounded-l-none",
+                        isEnd || endsWeek ? "rounded-r-md" : "rounded-r-none",
                         isArchived
                             ? "bg-muted/60 text-muted-foreground/70 line-through"
                             : isPast
@@ -204,9 +235,16 @@ function Event({ event }: { event: Event }) {
                               : "bg-fare-accent/10 text-fare-accent"
                     )}
                 >
-                    {event.eventName} -{" "}
-                    <span className="font-bold">{event.association}</span>
-                </div>
+                    {isStart && (
+                        <>
+                            {event.eventName} -{" "}
+                            <span className="font-bold">
+                                {event.association}
+                            </span>
+                        </>
+                    )}
+                    {!isStart && <span className="invisible">.</span>}
+                </button>
             </PopoverTrigger>
             <PopoverContent className="slide-in-bottom">
                 <PopoverHeader className="space-y-2">
