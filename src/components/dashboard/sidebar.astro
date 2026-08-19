@@ -211,7 +211,7 @@ const menuGroups: { title?: string; links: SidebarLink[] }[] = [
                     <h3 class="text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden focus-visible:ring-2">{group.title}</h3>
                     <ul class="flex flex-col gap-1">
                         {group.links.map((link) => {
-                            if (!link.hidden)
+                            if (!link.hidden) {
                                 if (link.children)
                                     return (
                                         <>
@@ -227,6 +227,7 @@ const menuGroups: { title?: string; links: SidebarLink[] }[] = [
                                 return (
                                     <SidebarLink href={link.href} title={link.title} icon={link.icon} />
                                 )
+                            }
                         })}
                     </ul>
                 </section>
@@ -242,3 +243,22 @@ const menuGroups: { title?: string; links: SidebarLink[] }[] = [
         image={user.image}
     />
 </footer>
+
+<script>
+document.addEventListener("astro:page-load", () => {
+    const pathname = window.location.pathname
+
+    const links = document.querySelectorAll<HTMLAnchorElement>(
+        "[data-sidebar-link]"
+    )
+
+    for (const link of links) {
+        const isActive = link.pathname === pathname
+        link.classList.toggle("bg-sidebar-accent", isActive)
+        link.classList.toggle("text-sidebar-accent-foreground", isActive)
+
+        if (isActive) link.setAttribute("aria-current", "page")
+        else link.removeAttribute("aria-current")
+    }
+})
+</script>

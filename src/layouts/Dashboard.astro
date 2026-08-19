@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from "astro:transitions"
 import Base from "./Base.astro"
 import Sidebar from "@/components/dashboard/sidebar.astro"
 import CurrentRoute from "@/components/dashboard/currentRoute.astro"
@@ -19,15 +20,23 @@ if (!Astro.locals.user) {
 ---
 
 <Base title={fullTitle}>
+    <Fragment slot="head">
+        <ClientRouter />
+    </Fragment>
+
     <div class="grid grid-cols-[auto_1fr] gap-4 h-svh ">
         <aside
-            class="grid grid-rows-[auto_1fr_auto] gap-2 overflow-y-scroll bg-sidebar outline-fare-accent/15 outline m-2 rounded-lg px-2 py-2"
+            transition:persist
+            class="z-10 grid grid-rows-[auto_1fr_auto] gap-2 overflow-y-scroll bg-sidebar outline-fare-accent/15 outline m-2 rounded-lg px-2 py-2"
         >
             <Sidebar />
         </aside>
         <div class="grid grid-rows-[auto_1fr] px-2 py-4 gap-4 h-svh">
             <CurrentRoute />
-            <main class="overflow-y-scroll">
+            <main
+                class="z-5 overflow-x-hidden overflow-y-scroll"
+                transition:name="dashboard-content"
+            >
                 <slot />
             </main>
         </div>
