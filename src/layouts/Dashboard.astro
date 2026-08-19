@@ -27,17 +27,35 @@ if (!Astro.locals.user) {
         <ClientRouter />
     </Fragment>
 
-    <div data-container class="grid gap-4 h-svh">
+    <div data-container class="grid gap-4 h-svh w-svw">
         <aside
             transition:persist
+            id="dashboard-sidebar"
             data-sidebar-open="true"
-            class="z-10 grid min-w-0 grid-rows-[auto_1fr_auto] gap-2 overflow-x-hidden overflow-y-auto bg-sidebar outline-fare-accent/15 outline m-2 rounded-lg px-2 py-2"
+            class:list={[
+                "absolute md:relative",
+                "z-10 grid min-w-0 grid-rows-[auto_1fr_auto] gap-2 overflow-x-hidden overflow-y-auto m-2 px-2 py-2",
+                "bg-sidebar outline-fare-accent/15 outline rounded-lg"
+            ]}
         >
             <Sidebar />
         </aside>
+        <button
+            data-sidebar-dismiss
+            type="button"
+            aria-label="Fermer le menu"
+            class="fixed inset-0 z-40 border-0 bg-transparent"
+        />
         <div class="grid grid-rows-[auto_auto_1fr] px-2 py-4 gap-4 h-svh">
             <div class="flex items-center gap-2 -my-2">
-                <Button data-sidebar-toggle variant="ghost" size="icon">
+                <Button
+                    data-sidebar-toggle
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-controls="dashboard-sidebar"
+                    aria-expanded="true"
+                >
                     <PanelLeftIcon />
                     <span class="sr-only">Toggle Sidebar</span>
                 </Button>
@@ -56,12 +74,16 @@ if (!Astro.locals.user) {
 </Base>
 
 <script>
+const mobileQuery = window.matchMedia("(max-width: 47.999rem)")
+let hasInitialized = false
+
 document.addEventListener("astro:page-load", () => {
     const sidebar = document.querySelector<HTMLElement>("[data-sidebar-open]")
     const sidebarToggle = document.querySelector("[data-sidebar-toggle]")
+    const sidebarDismiss = document.querySelector("[data-sidebar-dismiss]")
     const container = document.querySelector<HTMLElement>("[data-container]")
 
-    if (!sidebar || !sidebarToggle || !container) {
+    if (!sidebar || !sidebarToggle || !sidebarDismiss || !container) {
         console.warn("Dashboard sidebar layout elements not found")
         return
     }
@@ -77,13 +99,27 @@ document.addEventListener("astro:page-load", () => {
         }
     }
 
-    if (sidebar.dataset.sidebarOpen === "true") setSidebarWidth()
+    const setSidebarOpen = (isOpen: boolean): void => {
+        sidebar.dataset.sidebarOpen = String(isOpen)
+        sidebarToggle.setAttribute("aria-expanded", String(isOpen))
+    }
+
+    if (!hasInitialized && mobileQuery.matches) setSidebarOpen(false)
+    hasInitialized = true
+
+    const isOpen = sidebar.dataset.sidebarOpen === "true"
+    sidebarToggle.setAttribute("aria-expanded", String(isOpen))
+    if (isOpen && !mobileQuery.matches) setSidebarWidth()
 
     sidebarToggle.addEventListener("click", () => {
         const isOpen = sidebar.dataset.sidebarOpen === "true"
-        if (isOpen) setSidebarWidth()
+        if (isOpen && !mobileQuery.matches) setSidebarWidth()
 
-        sidebar.dataset.sidebarOpen = String(!isOpen)
+        setSidebarOpen(!isOpen)
+    })
+
+    sidebarDismiss.addEventListener("click", () => {
+        setSidebarOpen(false)
     })
 })
 </script>
@@ -104,6 +140,10 @@ document.addEventListener("astro:page-load", () => {
         opacity 180ms ease-out;
 }
 
+[data-sidebar-dismiss] {
+    display: none;
+}
+
 [data-container]:has([data-sidebar-open="false"]) {
     --sidebar-target-width: 0;
 
@@ -111,6 +151,47 @@ document.addEventListener("astro:page-load", () => {
         margin-inline: 0;
         padding-inline: 0;
         opacity: 0;
+    }
+}
+
+@media (width < 48rem) {
+    [data-container] {
+        grid-template-columns: minmax(0, 1fr);
+        transition: none;
+    }
+
+    [data-sidebar-open] {
+        position: fixed;
+        inset-block: 0.5rem;
+        inset-inline-start: 0.5rem;
+        z-index: 50;
+        max-inline-size: calc(100vw - 3rem);
+        margin: 0;
+        padding: 0.5rem;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(calc(-100% - 0.5rem));
+        transition:
+            transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 180ms ease-out;
+    }
+
+    [data-sidebar-dismiss] {
+        display: block;
+        background: color-mix(in srgb, black 30%, transparent);
+        visibility: hidden;
+    }
+
+    [data-container]:has([data-sidebar-open="true"]) {
+        [data-sidebar-open] {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        [data-sidebar-dismiss] {
+            visibility: visible;
+        }
     }
 }
 
