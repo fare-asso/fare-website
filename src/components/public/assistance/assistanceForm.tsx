@@ -174,9 +174,9 @@ export function AssistanceForm(): React.ReactNode {
                     </CardHeader>
                     <CardDescription className="w-full px-4">
                         <p>
-                            Merci, votre demande a été transmise aux éluEs
-                            étudiantEs de la FARE. Vous allez recevoir un e-mail
-                            de confirmation. Nous reviendrons vers vous
+                            Merci, votre demande a été transmise aux élus·es
+                            étudiants·es de la FARE. Vous allez recevoir un
+                            e-mail de confirmation. Nous reviendrons vers vous
                             rapidement.
                         </p>
                     </CardDescription>
@@ -188,7 +188,7 @@ export function AssistanceForm(): React.ReactNode {
     return (
         <Card className="w-full sm:max-w-3xl" variant="ghost">
             <CardHeader>
-                <CardTitle>Contactez vos éluEs étudiantEs</CardTitle>
+                <CardTitle>Contactez vos élus·es étudiant·es</CardTitle>
                 <CardDescription>
                     Expliquez votre situation le plus clairement possible. Vos
                     informations restent confidentielles et ne servent qu'à
@@ -381,7 +381,7 @@ export function AssistanceForm(): React.ReactNode {
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
-                                                    UFR / FAC / Composante{" "}
+                                                    UFR / Fac / Composante{" "}
                                                     <span className="text-muted-foreground">
                                                         (optionnel)
                                                     </span>
@@ -565,7 +565,7 @@ export function AssistanceForm(): React.ReactNode {
                         {/* ===== Recontact ===== */}
                         <FieldSet>
                             <FieldLegend>
-                                Comment souhaitez-vous être recontactéE ?
+                                Comment souhaitez-vous être recontacté·e ?
                             </FieldLegend>
                             <FieldGroup>
                                 <div className="grid gap-4 sm:grid-cols-2">
