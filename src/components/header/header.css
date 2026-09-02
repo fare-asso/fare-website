@@ -39,6 +39,37 @@
     display: block;
 }
 
+/* "Défense des droits" CTA — always visible. Compact pill next to the
+   nav on desktop; its own centred row on very narrow screens. */
+.v1f-cta {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 20px;
+    text-decoration: none;
+}
+.v1f-cta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border: 1.5px dashed var(--color-fare-accent);
+    border-radius: 999px;
+    color: var(--color-fare-accent);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.15;
+    white-space: nowrap;
+    transition: background 0.15s var(--hdr-easing);
+}
+.v1f-cta:hover .v1f-cta-pill {
+    background: rgba(0, 74, 173, 0.08);
+}
+.v1f-cta-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
 .v1f-nav {
     position: relative;
     display: none;
@@ -402,7 +433,18 @@
     }
 }
 
-@media (min-width: 768px) {
+/* Only when logo + CTA + burger can't share a line does the CTA
+   drop to its own full-width, centred row under the bar. */
+@media (max-width: 440px) {
+    .v1f-cta {
+        order: 10;
+        flex-basis: 100%;
+        justify-content: center;
+        margin: 14px 0 0;
+    }
+}
+
+@media (min-width: 900px) {
     .v1f-nav {
         display: flex;
     }
