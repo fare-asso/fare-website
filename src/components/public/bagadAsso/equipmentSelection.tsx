@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useEffectEvent, useRef, useState } from "react"
 
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
 
@@ -16,11 +16,8 @@ export default function EquipmentSelection({
     const [selectedEquipment, setSelectedEquipment] = useState<{
         [key: number]: number
     }>({})
-    const [totalGuarantee, setTotalGuarantee] = useState<number>(0)
     const isInitialMount = useRef(true)
-    // Store onChange in a ref to avoid triggering useEffect when it changes
-    const onChangeRef = useRef(onChange)
-    onChangeRef.current = onChange
+    const notifyChange = useEffectEvent((value: string) => onChange?.(value))
 
     const handleQuantityChange = (id: number, quantity: number) => {
         setSelectedEquipment((prev) => ({
@@ -37,30 +34,23 @@ export default function EquipmentSelection({
             }))
             .filter((item) => item.quantity > 0)
     )
+    const totalGuarantee = Object.entries(selectedEquipment).reduce(
+        (total, [id, quantity]) => {
+            const equipment = equipmentList.find(
+                (item) => item.id === Number.parseInt(id, 10)
+            )
+            return total + (equipment ? equipment.deposit * quantity : 0)
+        },
+        0
+    )
 
     useEffect(() => {
-        // Calculate the total guarantee whenever selected equipment changes
-        const total = Object.entries(selectedEquipment).reduce(
-            (acc, [id, quantity]) => {
-                const equipment = equipmentList.find(
-                    (eq) => eq.id === Number.parseInt(id, 10)
-                )
-                return acc + (equipment ? equipment.deposit * quantity : 0)
-            },
-            0
-        )
-        setTotalGuarantee(total)
-
-        // Call onChange callback if provided (for TanStack Form integration)
-        // Skip on initial mount to avoid marking the field as touched
-        if (onChangeRef.current) {
-            if (isInitialMount.current) {
-                isInitialMount.current = false
-            } else {
-                onChangeRef.current(selectedEquipmentJson)
-            }
+        if (isInitialMount.current) {
+            isInitialMount.current = false
+            return
         }
-    }, [selectedEquipment, equipmentList, selectedEquipmentJson])
+        notifyChange(selectedEquipmentJson)
+    }, [selectedEquipmentJson])
 
     return (
         <div className="container mx-auto rounded-xl border border-gray-300 p-4">

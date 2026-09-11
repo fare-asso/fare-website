@@ -20,12 +20,14 @@ interface AdhesionsPageProps {
     initialData: Adhesion[]
     canEdit: boolean
     canDownload: boolean
+    thirtyDaysAgo: Date
 }
 
 function AdhesionsContent({
     initialData,
     canEdit,
-    canDownload
+    canDownload,
+    thirtyDaysAgo
 }: AdhesionsPageProps) {
     const { data } = useQuery({
         queryKey: ["adhesions"],
@@ -51,7 +53,10 @@ function AdhesionsContent({
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 space-y-6 overflow-y-auto p-0">
-                <AdhesionSummary adhesions={data} />
+                <AdhesionSummary
+                    adhesions={data}
+                    thirtyDaysAgo={thirtyDaysAgo}
+                />
                 <AdhesionTabSwitcher>
                     <ActiveAdhesions
                         data={active}

@@ -51,7 +51,7 @@ export function DataTable<
             target.closest("[role='menuitem']")
 
         if (!isInteractive) {
-            window.location.href = `/dashboard/users/${userId}`
+            window.location.assign(`/dashboard/users/${userId}`)
         }
     }
 

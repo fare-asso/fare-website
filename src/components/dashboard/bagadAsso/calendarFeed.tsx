@@ -6,7 +6,7 @@ import {
     RefreshCwIcon,
     Trash2Icon
 } from "lucide-react"
-import { useEffect, useState, useTransition } from "react"
+import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -24,12 +24,8 @@ interface CalendarFeedProps {
 
 export default function CalendarFeed({ token }: CalendarFeedProps) {
     const [currentToken, setCurrentToken] = useState(token)
-    const [origin, setOrigin] = useState("")
     const [isPending, startTransition] = useTransition()
-
-    useEffect(() => {
-        setOrigin(window.location.origin)
-    }, [])
+    const origin = typeof window === "undefined" ? "" : window.location.origin
 
     const feedUrl = currentToken
         ? `${origin}/api/bagad-asso/calendar.ics?token=${currentToken}`

@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Adhesion } from "@/generated/prisma/client"
 
 export default function AdhesionSummary({
-    adhesions
+    adhesions,
+    thirtyDaysAgo
 }: {
     adhesions: Adhesion[]
+    thirtyDaysAgo: Date
 }) {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-
     const total = adhesions.length
     const activeCount = adhesions.filter((a) => a.archived === null).length
     const archivedCount = adhesions.filter((a) => a.archived !== null).length

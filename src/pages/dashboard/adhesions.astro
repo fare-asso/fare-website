@@ -17,5 +17,6 @@ const adhesions = (await fetchAdhesions()) ?? []
         initialData={adhesions}
         canEdit={hasPermission(user, "edit:adhesion")}
         canDownload={hasPermission(user, "download:adhesion-folder")}
+        thirtyDaysAgo={new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)}
     />
 </Dashboard>
