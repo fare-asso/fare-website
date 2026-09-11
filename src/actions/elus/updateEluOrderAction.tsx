@@ -21,7 +21,7 @@ async function updateEluOrderActionImpl(
     if (!hasPermission(user, "edit:elu")) {
         return {
             success: false,
-            error: "Vous n'avez pas la permission de modifier des élu·e·s"
+            error: "Vous n'avez pas la permission de modifier des élu·es"
         }
     }
 
@@ -48,7 +48,7 @@ async function updateEluOrderActionImpl(
         captureActionError(result.error)
         return {
             success: false,
-            error: "La mise à jour de l'ordre des élu·e·s a échoué. Veuillez réessayer."
+            error: "La mise à jour de l'ordre des élu·es a échoué. Veuillez réessayer."
         }
     }
 

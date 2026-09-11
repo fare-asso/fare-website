@@ -51,7 +51,7 @@ export default function EluList({
                 </p>
                 <p className="text-muted-foreground/70 text-sm">
                     Créez d'abord une instance pour pouvoir ajouter des conseils
-                    et des élu·e·s.
+                    et des élu·es.
                 </p>
                 <Button asChild variant="outline">
                     <a href="/dashboard/elus/instances">Gérer les instances</a>

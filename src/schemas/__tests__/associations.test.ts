@@ -13,7 +13,7 @@ const validAssociation = (
 ): Record<string, unknown> => ({
     name: "AAEMR",
     major: "Médecine",
-    description: "Association des étudiant·e·s en médecine.",
+    description: "Association des étudiant·es en médecine.",
     logo: new File([new Uint8Array([1, 2, 3])], "logo.png", {
         type: "image/png"
     }),

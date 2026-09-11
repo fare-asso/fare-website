@@ -38,7 +38,7 @@ function ElusContent({
         queryFn: async () => {
             const { data, error } = await actions.elus.listElusAction()
             if (error || !data.success) {
-                throw new Error("Échec du chargement des élu·e·s.")
+                throw new Error("Échec du chargement des élu·es.")
             }
             return data.value
         },
@@ -58,9 +58,9 @@ function ElusContent({
         <Card className="flex h-full w-full flex-1 flex-col border-none p-0 shadow-none">
             <CardHeader className="flex justify-between p-0">
                 <div>
-                    <CardTitle>Élu·e·s</CardTitle>
+                    <CardTitle>Élu·es</CardTitle>
                     <CardDescription>
-                        Espace de gestion des élu·e·s de la Fédération
+                        Espace de gestion des élu·es de la Fédération
                     </CardDescription>
                 </div>
                 <BulkImportElusButton instances={instanceOptions} />

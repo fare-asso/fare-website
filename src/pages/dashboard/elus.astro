@@ -11,7 +11,7 @@ if (!hasPermission(user, "access:elus")) {
 const instances = (await fetchElus()) ?? []
 ---
 
-<Dashboard title="Élu·e·s">
+<Dashboard title="Élu·es">
     <ElusPage
         client:load
         initialInstances={instances}

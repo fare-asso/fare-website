@@ -34,9 +34,9 @@ export default function KeyNumbers({
             title: "Associations étudiantes",
             value: associationCount ?? 20
         },
-        { title: "Étudiant·e·s", value: 88000 },
+        { title: "Étudiant·es", value: 88000 },
         {
-            title: "Élu·e·s universitaires & CROUS",
+            title: "Élu·es universitaires & CROUS",
             value: eluesCount ?? 57
         }
     ]

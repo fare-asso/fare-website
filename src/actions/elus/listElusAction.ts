@@ -48,7 +48,7 @@ async function listElusActionImpl(
 
     const instances = await fetchElus()
     if (!instances) {
-        return { success: false, error: "Échec du chargement des élu·e·s." }
+        return { success: false, error: "Échec du chargement des élu·es." }
     }
     return { success: true, value: instances }
 }

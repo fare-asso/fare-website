@@ -174,8 +174,8 @@ export function AssistanceForm(): React.ReactNode {
                     </CardHeader>
                     <CardDescription className="w-full px-4">
                         <p>
-                            Merci, votre demande a été transmise aux élus·es
-                            étudiants·es de la FARE. Vous allez recevoir un
+                            Merci, votre demande a été transmise aux élu·es
+                            étudiant·es de la FARE. Vous allez recevoir un
                             e-mail de confirmation. Nous reviendrons vers vous
                             rapidement.
                         </p>
@@ -188,7 +188,7 @@ export function AssistanceForm(): React.ReactNode {
     return (
         <Card className="w-full sm:max-w-3xl" variant="ghost">
             <CardHeader>
-                <CardTitle>Contactez vos élus·es étudiant·es</CardTitle>
+                <CardTitle>Contactez vos élu·es étudiant·es</CardTitle>
                 <CardDescription>
                     Expliquez votre situation le plus clairement possible. Vos
                     informations restent confidentielles et ne servent qu'à
@@ -801,9 +801,8 @@ export function AssistanceForm(): React.ReactNode {
                             Confirmer l'envoi de votre demande ?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Votre demande sera transmise aux élu·e·s
-                            étudiant·e·s de la FARE. Vous recevrez un e-mail de
-                            confirmation.
+                            Votre demande sera transmise aux élu·es étudiant·es
+                            de la FARE. Vous recevrez un e-mail de confirmation.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

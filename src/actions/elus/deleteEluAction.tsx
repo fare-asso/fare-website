@@ -18,7 +18,7 @@ async function deleteEluActionImpl(
     if (!hasPermission(user, "delete:elu")) {
         return {
             success: false,
-            error: "Vous n'avez pas la permission de supprimer des élu·e·s"
+            error: "Vous n'avez pas la permission de supprimer des élu·es"
         }
     }
 

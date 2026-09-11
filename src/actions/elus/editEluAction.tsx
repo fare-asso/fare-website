@@ -18,7 +18,7 @@ async function editEluActionImpl(
     if (!hasPermission(user, "edit:elu")) {
         return {
             success: false,
-            error: "Vous n'avez pas la permission de modifier des élu·e·s"
+            error: "Vous n'avez pas la permission de modifier des élu·es"
         }
     }
 

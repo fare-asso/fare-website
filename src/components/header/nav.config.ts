@@ -66,7 +66,7 @@ export const links: NavLink[] = [
         href: "/representation",
         subLinks: [
             {
-                title: "Nos élu·e·s",
+                title: "Nos élu·es",
                 href: "/representation/nos-elues",
                 desc: "Conseils & instances"
             },

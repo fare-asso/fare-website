@@ -18,7 +18,7 @@ async function addEluActionImpl(
     if (!hasPermission(user, "create:elu")) {
         return {
             success: false,
-            error: "Vous n'avez pas la permission de créer des élu·e·s"
+            error: "Vous n'avez pas la permission de créer des élu·es"
         }
     }
 

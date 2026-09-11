@@ -54,7 +54,7 @@ const association: Association = {
     id: 7,
     name: "AAEMR",
     major: "Médecine",
-    desc: "Association des étudiant·e·s en médecine.",
+    desc: "Association des étudiant·es en médecine.",
     location: "6 Cours des Alliés, 35000 Rennes",
     discord: null,
     facebook: null,
