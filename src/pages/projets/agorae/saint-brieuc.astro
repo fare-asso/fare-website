@@ -20,6 +20,19 @@ export const prerender = true
 
 <Public title="AGORAé">
     <div class="flex w-full flex-col items-center justify-start">
+        <aside
+            class:list={[
+            "flex items-center justify-center gap-2 mb-10 w-full py-2 px-4 text-center",
+            "text-base rounded-sm bg-agorae/30 hover:bg-agorae/40 transition-all duration-150"
+        ]}
+        >
+            <span>
+                <strong class="inline text-bold">FERMETURE :</strong>{" "}
+                L'AGORAé de Saint-Brieuc a fermé définitivement ses portes le 10
+                septembre 2026
+            </span>
+        </aside>
+
         <Image
             src={logoAgoraE}
             alt="Logo de l'AGORAé"
