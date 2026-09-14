@@ -8,6 +8,8 @@ import stand from "@/assets/AGORAe/stand.jpeg"
 import closeup from "@/assets/AGORAe/closeup.jpg"
 import logoUR2 from "@/assets/univ/Logo_univ-rennes2-2016.png"
 import logoUR from "@/assets/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
+import logoRennesMetropole from "@/assets/rennes-ville-metropole_noir.svg"
+import logoRegionBretagne from "@/assets/logo_RB.png"
 import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
 import { cn } from "@/lib/utils"
@@ -237,6 +239,18 @@ export const prerender = true
                 <Image
                     src={logoUR2}
                     alt="Logo de l'Université Rennes 2"
+                    class="h-16 w-auto object-contain"
+                    width={175}
+                />
+                <Image
+                    src={logoRennesMetropole}
+                    alt="Logo de Rennes Métropole"
+                    class="h-14 w-auto object-contain"
+                    width={175}
+                />
+                <Image
+                    src={logoRegionBretagne}
+                    alt="Logo de la Région Bretagne"
                     class="h-16 w-auto object-contain"
                     width={175}
                 />
