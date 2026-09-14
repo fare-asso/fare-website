@@ -53,11 +53,6 @@ export const links: NavLink[] = [
                 title: "Communiqués de presse",
                 href: "/presse/communiques-de-presse",
                 desc: "Prises de position"
-            },
-            {
-                title: "Conférence de presse",
-                href: "/presse/conference-de-presse",
-                hidden: true
             }
         ]
     },
@@ -71,16 +66,6 @@ export const links: NavLink[] = [
                 desc: "Conseils & instances"
             },
             {
-                title: "Haute-Bretagne",
-                href: "/representation/haute-bretagne",
-                hidden: true
-            },
-            {
-                title: "Jeunesse & étudiant.e.s",
-                href: "/representation/jeunesse-et-etudiants",
-                hidden: true
-            },
-            {
                 title: "FAGE",
                 href: "/representation/fage",
                 desc: "Fédération nationale"
@@ -92,9 +77,9 @@ export const links: NavLink[] = [
         href: "/projets",
         subLinks: [
             {
-                title: "AGORAé",
+                title: "AGORATour",
                 href: "/projets/agorae",
-                desc: "Épicerie solidaire étudiante"
+                desc: "Distibutions alimentaires sur les campus"
             },
             {
                 title: "Bouge Ta Prison",
@@ -133,26 +118,5 @@ export const links: NavLink[] = [
                 href: "/formation/demande-de-formation"
             }
         ]
-    },
-    {
-        title: "Défense des droits",
-        href: "defense-des-droits",
-        hidden: true,
-        subLinks: [
-            {
-                title: "Vos droits",
-                href: "/defense-des-droits/vos-droits",
-                hidden: true
-            },
-            {
-                title: "Nous contacter",
-                href: "/defense-des-droits/contact"
-            }
-        ]
-    },
-    {
-        title: "Agenda",
-        href: "/agenda",
-        hidden: true
     }
 ]

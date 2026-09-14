@@ -3,15 +3,17 @@ import { Image } from "astro:assets"
 import { FaInstagram, FaRegFilePdf } from "react-icons/fa6"
 import { FiDownload, FiExternalLink } from "react-icons/fi"
 
-import food from "@/assets/AGORAe/food.jpg"
-import logoAgoraE from "@/assets/AGORAe/logo_AgoraE.png"
-import salle from "@/assets/AGORAe/salle.jpg"
+import logoAgoratour from "@/assets/AGORAe/logo_AGORATour.png"
+import stand from "@/assets/AGORAe/stand.jpeg"
+import closeup from "@/assets/AGORAe/closeup.jpg"
 import logoUR2 from "@/assets/univ/Logo_univ-rennes2-2016.png"
 import logoUR from "@/assets/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
-import CalculateurBeneficiaire from "@/components/public/agorae/calculateurBeneficiaire"
+import logoRennesMetropole from "@/assets/rennes-ville-metropole_noir.svg"
+import logoRegionBretagne from "@/assets/logo_RB.png"
 import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
 import { cn } from "@/lib/utils"
+import { ArrowRightIcon } from "lucide-react"
 
 const rapportActiviteUrl = "/documents/Rapport_activite_AGORAe_2025-2026.pdf"
 
@@ -20,9 +22,27 @@ export const prerender = true
 
 <Public title="AGORAé">
     <div class="flex w-full flex-col items-center justify-start">
+        <a
+            href="/projets/agorae/saint-brieuc"
+            class:list={[
+                "flex items-center justify-center gap-2 mb-10 w-full py-2 px-4 text-center",
+                "text-base rounded-sm bg-agorae/30 hover:bg-agorae/40 transition-all duration-150"
+            ]}
+        >
+            <span>
+                <strong class="inline text-bold">FERMETURE :</strong>{" "}
+                L'AGORAé de Saint-Brieuc a fermé définitivement ses portes le 10
+                septembre 2026
+            </span>
+            <ArrowRightIcon
+                className="inline-block size-8 sm:size-4"
+                size={18}
+            />
+        </a>
+
         <Image
-            src={logoAgoraE}
-            alt="Logo de l'AGORAé"
+            src={logoAgoratour}
+            alt="Logo de l'AGORATour"
             class="mb-10 w-full max-w-sm"
             priority
             height={750}
@@ -32,19 +52,21 @@ export const prerender = true
             class="mb-16 flex w-full max-w-3xl flex-col items-center text-center"
         >
             <h1 class="mb-4 text-3xl font-extrabold sm:text-4xl">
-                L'épicerie{" "}
-                <span class="highlight before:bg-agorae/30"> solidaire </span>
+                Les{" "}
+                <span class="highlight before:bg-agorae/30 before:-rotate-1!">
+                    distributions alimentaires
+                </span>
                 {" "}
-                des étudiant·es de Saint-Brieuc
+                pour les étudiant·es de Haute-Bretagne
             </h1>
             <p class="mb-8 text-lg">
-                Des produits alimentaires, d'hygiène et d'entretien à{" "}
-                <strong>10% de leur valeur en grande surface</strong>, ou
-                distribués <strong>gratuitement</strong>. Une épicerie créée par
-                les étudiant·es et pour les étudiant·es, au Ty-Maz' sur le
-                campus Mazier.
+                Des produits alimentaires, d'hygiène et d'entretien dans un
+                panier <strong>à 1€</strong>, ou distribués{" "}
+                <strong>gratuitement</strong>. Des distributions créées par les
+                étudiant·es et pour les étudiant·es, impulsées par la FARE et
+                organisées avec les associations.
             </p>
-            <a
+            <!-- <a
                 href="#beneficiaire"
                 class={cn(
                     buttonVariants({ size: "lg" }),
@@ -52,16 +74,16 @@ export const prerender = true
                 )}
             >
                 Devenir bénéficiaire
-            </a>
+            </a> -->
             <p class="text-muted-foreground mt-4 text-sm">
                 Suis-nous sur Instagram&nbsp;:{" "}
                 <a
-                    href="https://www.instagram.com/agorae.saint.brieuc"
+                    href="https://www.instagram.com/fare_hautebretagne"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link"
                 >
-                    @agorae.saint.brieuc
+                    @fare_hautebretagne
                 </a>
             </p>
         </div>
@@ -70,18 +92,18 @@ export const prerender = true
             class="mb-12 grid w-full max-w-4xl grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-10"
         >
             <Image
-                src={food}
-                alt="Nourriture proposée à l'AGORAé"
+                src={closeup}
+                alt="Nourriture proposée aux AGORATour"
                 class="w-full rounded-2xl object-cover"
                 width={600}
+                height={450}
             />
             <div>
-                <h2>Une épicerie accessible sur critères sociaux</h2>
+                <h2>Ouvert à tous·tes</h2>
                 <p>
                     L'objectif&nbsp;: permettre aux étudiant·es en situation de
                     précarité financière de réduire leurs dépenses quotidiennes.
-                    L'accès à l'épicerie et le montant du panier mensuel
-                    dépendent du Reste à Vivre de chacun·e.
+                    L'accès aux distributions est sans conditions de ressources.
                 </p>
             </div>
         </section>
@@ -90,18 +112,19 @@ export const prerender = true
             class="mb-12 grid w-full max-w-4xl grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-10"
         >
             <Image
-                src={salle}
-                alt="Cantine de l'AGORAé"
+                src={stand}
+                alt="Un stand AGORATour"
                 class="w-full rounded-2xl object-cover md:order-2"
                 width={600}
+                height={450}
             />
             <div>
-                <h2>Un espace de convivialité</h2>
+                <h2>Sur tous les campus</h2>
                 <p>
-                    Le Ty-Maz', qui accueille l'épicerie, est un lieu de vie
-                    ouvert à tous·tes&nbsp;: on s'y retrouve pour se rencontrer,
-                    échanger, et participer aux actions organisées contre
-                    l'isolement social des étudiant·es du territoire.
+                    Les distributions AGORATour sont organisées sur tous les
+                    campus de Haute-Bretagne. Nous avons manqué le votre ?{" "}
+                    <a href="/contact" class="link">Envoyez-nous un message</a>,
+                    nous ferons de notre mieux pour venir sur vore campus !
                 </p>
             </div>
         </section>
@@ -109,156 +132,11 @@ export const prerender = true
         <p class="text-muted-foreground mb-16 w-full max-w-2xl text-center">
             L'AGORAé est un projet national créé par la{" "}
             <a href="/representation/fage" class="link">FAGE</a>
-            {" "}et porté à Saint-Brieuc par la{" "}
+            {" "}et porté en Haute-Bretagne par la{" "}
             <a href="/a-propos" class="link">FARE</a>&nbsp;: des lieux
             non-stigmatisants, gérés par des jeunes pour des jeunes, qui œuvrent
             pour l'égalité des chances dans l'enseignement supérieur.
         </p>
-
-        <section id="beneficiaire" class="mb-16 w-full max-w-4xl scroll-mt-24">
-            <h2 class="mb-8 text-center text-2xl font-bold">
-                Comment devenir bénéficiaire&nbsp;?
-            </h2>
-            <ol class="mb-14 grid grid-cols-1 gap-8 md:grid-cols-3">
-                <li class="flex flex-col items-center text-center">
-                    <span
-                        class="bg-agorae-deep mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
-                    >
-                        1
-                    </span>
-                    <h3 class="mb-2 font-semibold">
-                        Calcule ton Reste à Vivre
-                    </h3>
-                    <p class="text-muted-foreground text-sm">
-                        Avec le calculateur ci-dessous, estime en quelques
-                        secondes le panier auquel tu as droit.
-                    </p>
-                </li>
-                <li class="flex flex-col items-center text-center">
-                    <span
-                        class="bg-agorae-deep mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
-                    >
-                        2
-                    </span>
-                    <h3 class="mb-2 font-semibold">Inscris-toi en ligne</h3>
-                    <p class="text-muted-foreground text-sm">
-                        Sur{" "}
-                        <a
-                            href="https://mon-compte.fage.org/creation-compte"
-                            title="Inscription AGORAé"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="link"
-                        >
-                            mon-compte.fage.org
-                        </a>, la démarche ne prend que quelques minutes.
-                    </p>
-                </li>
-                <li class="flex flex-col items-center text-center">
-                    <span
-                        class="bg-agorae-deep mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
-                    >
-                        3
-                    </span>
-                    <h3 class="mb-2 font-semibold">Viens faire tes courses</h3>
-                    <p class="text-muted-foreground text-sm">
-                        Au Ty-Maz' sur le campus Mazier, pendant les permanences
-                        de l'épicerie.
-                    </p>
-                </li>
-            </ol>
-
-            <h3 class="mb-4 text-center text-xl font-semibold">
-                Le Reste à Vivre (RAV), c'est quoi&nbsp;?
-            </h3>
-            <p class="mb-8 text-center">
-                C'est la somme qu'il te reste chaque jour pour te nourrir, une
-                fois les charges courantes payées&nbsp;:
-            </p>
-
-            <div class="mb-14 flex flex-col items-center gap-3">
-                <div
-                    class="flex flex-wrap items-center justify-center gap-2 font-semibold"
-                >
-                    <span class="text-2xl">(</span>
-                    <span
-                        class="bg-agorae-deep rounded-lg px-3 py-2 text-white"
-                    >
-                        Recettes par mois
-                    </span>
-                    <span class="text-xl">−</span>
-                    <span
-                        class="bg-agorae-deep rounded-lg px-3 py-2 text-white"
-                    >
-                        Dépenses par mois
-                    </span>
-                    <span class="text-2xl">)</span>
-                </div>
-                <div class="border-foreground w-full max-w-md border-t-2"></div>
-                <p class="font-semibold">30 jours</p>
-                <p class="text-agorae-deep font-bold">= ton RAV quotidien</p>
-            </div>
-
-            <p class="mb-6 text-center">
-                Ce RAV détermine ensuite le panier mensuel proposé à chaque
-                étudiant·e&nbsp;:
-            </p>
-
-            <div
-                class="mx-auto mb-14 w-full max-w-2xl overflow-x-auto rounded-xl"
-            >
-                <table class="w-full text-center text-sm sm:text-base">
-                    <thead class="bg-agorae-deep text-white">
-                        <tr>
-                            <th class="px-4 py-3 font-semibold">
-                                RAV quotidien
-                            </th>
-                            <th class="px-4 py-3 font-semibold">
-                                Denrées en valeur marchande
-                            </th>
-                            <th class="px-4 py-3 font-semibold">
-                                Prix payé à l'AGORAé
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-border divide-y">
-                        <tr>
-                            <td class="px-4 py-3 font-medium">
-                                Moins de 0,70€
-                            </td>
-                            <td class="px-4 py-3">Selon le besoin</td>
-                            <td class="px-4 py-3 font-semibold">0€</td>
-                        </tr>
-                        <tr class="bg-agorae/5">
-                            <td class="px-4 py-3 font-medium">
-                                Entre 0,70€ et 7,50€
-                            </td>
-                            <td class="px-4 py-3">Jusqu'à 240€</td>
-                            <td class="px-4 py-3 font-semibold">Jusqu'à 24€</td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-3 font-medium">Plus de 7,50€</td>
-                            <td class="px-4 py-3">10€</td>
-                            <td class="px-4 py-3 font-semibold">1€</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mb-10">
-                <CalculateurBeneficiaire client:visible />
-            </div>
-
-            <p class="text-muted-foreground text-center text-balance text-sm">
-                En difficulté pour compléter la démarche d'inscription&nbsp;?
-                Écris-nous à{" "}
-                <a href="mailto:agorae@fare-asso.fr" class="link text-nowrap">
-                    agorae@fare-asso.fr
-                </a>
-                {" "}ou viens nous rencontrer pendant les permanences de
-                l'épicerie.
-            </p>
-        </section>
 
         <section
             id="benevolat"
@@ -269,30 +147,22 @@ export const prerender = true
                     Envie de participer&nbsp;?
                 </h2>
                 <p class="text-muted-foreground mb-4 text-sm">
-                    Quelques heures ou quelques jours de disponibles&nbsp;?
-                    Accueil, gestion des stocks, communication&nbsp;: tout
-                    engagement est le bienvenu.
+                    Toute aide lors des distributions est bienvenue&nbsp;!
+                    N'hésitez pas à nous envoyer un message, nous reviendrons
+                    vers vous lors des distributions sur votre campus.
                 </p>
-                <a
-                    href="https://forms.gle/DHoMDL7N3QRHTL1w7"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class={cn(buttonVariants(), "mt-auto")}
-                >
+                <a href="/contact" class={cn(buttonVariants(), "mt-auto")}>
                     Devenir bénévole
                 </a>
             </div>
             <div class="flex flex-col items-center text-center">
                 <h2 class="mb-2 text-xl font-bold">Quand venir&nbsp;?</h2>
                 <p class="text-muted-foreground mb-4 text-sm">
-                    Les horaires d'ouverture sont publiés sur Instagram. Un
-                    imprévu&nbsp;? Contacte-nous à{" "}
-                    <a href="mailto:agorae@fare-asso.fr" class="link">
-                        agorae@fare-asso.fr
-                    </a>.
+                    Les jours et horaires de distributions sont publiés sur
+                    Instagram.
                 </p>
                 <a
-                    href="https://www.instagram.com/agorae.saint.brieuc"
+                    href="https://www.instagram.com/fare_hautebretagne"
                     target="_blank"
                     rel="noopener noreferrer"
                     class={cn(
@@ -301,7 +171,7 @@ export const prerender = true
                     )}
                 >
                     <FaInstagram size={18} />
-                    @agorae.saint.brieuc
+                    @fare_hautebretagne
                 </a>
             </div>
         </section>
@@ -351,19 +221,6 @@ export const prerender = true
                     </a>
                 </div>
             </div>
-
-            <p class="mt-6 text-center text-sm">
-                Retrouvez aussi l'AGORAé Saint-Brieuc sur{" "}
-                <a
-                    href="https://soliguide.fr/fr/fiche/agorae-saint-brieuc-37414"
-                    title="Lien vers soliguide"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="link"
-                >
-                    Soliguide
-                </a>.
-            </p>
         </section>
 
         <section class="mt-16 w-full max-w-3xl text-center">
@@ -382,6 +239,18 @@ export const prerender = true
                 <Image
                     src={logoUR2}
                     alt="Logo de l'Université Rennes 2"
+                    class="h-16 w-auto object-contain"
+                    width={175}
+                />
+                <Image
+                    src={logoRennesMetropole}
+                    alt="Logo de Rennes Métropole"
+                    class="h-14 w-auto object-contain"
+                    width={175}
+                />
+                <Image
+                    src={logoRegionBretagne}
+                    alt="Logo de la Région Bretagne"
                     class="h-16 w-auto object-contain"
                     width={175}
                 />
