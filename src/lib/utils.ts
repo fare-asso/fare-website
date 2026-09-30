@@ -30,7 +30,7 @@ export type Prettify<T> = {
     [K in keyof T]: T[K]
 } & {}
 
-type SyncResult<T, E> =
+export type SyncResult<T, E> =
     | { success: true; value: T; error: null }
     | { success: false; value: null; error: E }
 

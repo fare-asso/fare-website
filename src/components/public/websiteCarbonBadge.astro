@@ -1,7 +1,7 @@
 ---
 import { LeafIcon } from "lucide-react"
 import { isDevelopment } from "std-env"
-import { tryCatch } from "@/lib/utils"
+import { type SyncResult } from "@/lib/utils"
 
 interface CarbonResult {
     c: number
@@ -23,13 +23,25 @@ if (isDevelopment) url.host = "fare-asso.fr"
 
 let entry = cache.get(url.href)
 if (!entry || Date.now() - entry.t > THREE_DAYS) {
-    const result = await tryCatch(async () => {
+    let result: SyncResult<CarbonResult, Error | null> = {
+        success: false,
+        error: null,
+        value: null
+    }
+    // oxlint-disable-next-line local/no-try-catch
+    try {
         const res = await fetch(
             `https://api.websitecarbon.com/b?url=${encodeURIComponent(url.href)}`
         )
-        if (!res.ok) throw new Error(`Website Carbon API: ${res.status}`)
-        return (await res.json()) as CarbonResult
-    })
+        if (!res.ok) throw new Error(res.statusText)
+        result = {
+            success: true,
+            error: null,
+            value: (await res.json()) as CarbonResult
+        }
+    } catch (error) {
+        result = { success: false, error: error as Error, value: null }
+    }
     if (result.success) {
         entry = { data: result.value, t: Date.now() }
         cache.set(url.href, entry)
