@@ -131,7 +131,11 @@ async function sendContractActionImpl(
     // send email
     const email = await sendEmail({
         to: ticket.associationEmail,
-        bcc: ticket.representativeEmail,
+        cc: [
+            ticket.representativeEmail,
+            "Évènements FARE <evenements@fare-asso.fr>"
+        ],
+        replyTo: "Évènements FARE <evenements@fare-asso.fr>",
         subject: `[FARE] Contrat Bagad asso ${ticket.association} #${ticket.id}`,
         html: await render(
             <BagadAssoContractEmail
@@ -144,7 +148,7 @@ async function sendContractActionImpl(
         ),
         attachments: [
             {
-                filename: `[FARE] Contrat Bagad-Asso ${ticket.id}.pdf`,
+                filename: `[FARE] Contrat Bagad'Asso #${ticket.id}.pdf`,
                 content: pdf.value,
                 contentType: "application/pdf"
             }
