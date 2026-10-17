@@ -26,6 +26,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# local database backups (may contain personal data)
+*.dump
+
 # local env files
 .env*.local
 .env

@@ -4,6 +4,8 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient } from "@/helpers/supabase/astro"
 
+import type { Permission } from "../prisma/seed"
+
 const permissionProtectedRoutes: {
     pathIncludes: string
     requiredPermission: string
@@ -61,7 +63,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
         context.url.pathname.includes(route.pathIncludes)
     )
 
-    if (matchedRoute && !hasPermission(user, matchedRoute.requiredPermission)) {
+    if (
+        matchedRoute &&
+        !hasPermission(user, matchedRoute.requiredPermission as Permission)
+    ) {
         return context.redirect("/dashboard/unauthorized")
     }
 

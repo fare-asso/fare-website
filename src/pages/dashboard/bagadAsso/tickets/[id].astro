@@ -1,9 +1,10 @@
 ---
 import TicketDetailPage from "@/components/dashboard/bagadAsso/ticketDetailPage"
+import { computeTotalDeposit } from "@/helpers/bagadAsso"
 import {
-    computeTotalDeposit,
-    joinTicketAndEquipment
-} from "@/helpers/bagadAsso"
+    mapTicketEquipment,
+    ticketEquipmentInclude
+} from "@/helpers/bagadAsso/ticketEquipment"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
@@ -17,31 +18,40 @@ if (Number.isNaN(ticketId)) {
 }
 
 const ticket = await prisma.bagadAssoTicket.findUnique({
-    where: { id: ticketId }
+    where: { id: ticketId },
+    include: ticketEquipmentInclude
 })
 
 if (!ticket) {
     return Astro.rewrite("/404")
 }
 
-const totalDeposit = await computeTotalDeposit(ticket)
-const joined = await joinTicketAndEquipment(ticket)
-const allEquipments: {
-    id: number
-    quantity: number
-    deposit: number
-    name: string
-    imagePath: string | undefined
-}[] = JSON.parse(JSON.stringify(joined.equipments))
+const migrationPending = ticket.equipmentMigratedAt === null
+const totalDeposit = computeTotalDeposit(ticket)
+const allEquipments = mapTicketEquipment(ticket)
 ---
 
 <Dashboard title={`Bagad'Asso - Ticket ${ticket.id}`}>
-    <TicketDetailPage
-        client:load
-        ticket={ticket}
-        allEquipments={allEquipments}
-        totalDeposit={totalDeposit}
-        canEditTicket={hasPermission(user, "edit:bagad-ticket")}
-        canDeleteTicket={hasPermission(user, "delete:bagad-ticket")}
-    />
+    {migrationPending ? (
+            <section role="alert" class="space-y-3 p-6">
+                <h1 class="text-xl font-bold">Ticket #{ticket.id} — migration requise</h1>
+                <p>
+                    Le matériel de cette demande n'a pas encore été migré.
+                    Contactez un administrateur pour effectuer la migration avant
+                    de consulter ou modifier ce ticket.
+                </p>
+                <a href="/dashboard/bagadAsso/tickets" class="underline">
+                    Retour aux tickets
+                </a>
+            </section>
+        ) : (
+            <TicketDetailPage
+                client:load
+                ticket={ticket}
+                allEquipments={allEquipments}
+                totalDeposit={totalDeposit}
+                canEditTicket={hasPermission(user, "edit:bagad-ticket")}
+                canDeleteTicket={hasPermission(user, "delete:bagad-ticket")}
+            />
+        )}
 </Dashboard>

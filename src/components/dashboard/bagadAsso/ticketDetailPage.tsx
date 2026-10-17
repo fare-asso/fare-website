@@ -2,7 +2,6 @@ import { format } from "date-fns"
 import {
     BalloonIcon,
     HandCoinsIcon,
-    ShapesIcon,
     SquareUserRoundIcon,
     UsersIcon
 } from "lucide-react"
@@ -19,43 +18,20 @@ import {
 import { DashboardShell } from "@/components/dashboard/shell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import type { BagadAssoTicket } from "@/generated/prisma/client"
 import { formatEventDateRange } from "@/helpers/eventDate"
 import { locationDisplayName, parseLocation } from "@/helpers/location"
 
-import TicketActions from "./tickets/ticketActions"
+import {
+    type TicketDetails,
+    TicketProvider,
+    useTicketContext
+} from "./tickets/ticketContext"
+import { TicketEquipment } from "./tickets/ticketEquipment"
 
-interface EquipmentLine {
-    id: number
-    quantity: number
-    deposit: number
-    name: string
-    imagePath: string | undefined
-}
-
-interface TicketDetailPageProps {
-    ticket: BagadAssoTicket
-    allEquipments: EquipmentLine[]
-    totalDeposit: number
-    canEditTicket: boolean
-    canDeleteTicket: boolean
-}
-
-function TicketDetailContent({
-    ticket,
-    allEquipments,
-    totalDeposit,
-    canEditTicket,
-    canDeleteTicket
-}: TicketDetailPageProps) {
+function TicketDetailContent() {
+    const { ticket, totalDeposit } = useTicketContext()
     const eventAddrLabel = locationDisplayName(ticket.eventAddr)
     const parsedEventAddr = parseLocation(ticket.eventAddr)
     const mapsHref = parsedEventAddr.success
@@ -69,7 +45,7 @@ function TicketDetailContent({
     return (
         <div className="h-full w-full px-2 md:px-4">
             {/* Header */}
-            <div className="mb-6">
+            <div className="mb-4">
                 <Button
                     asChild
                     variant="ghost"
@@ -97,9 +73,9 @@ function TicketDetailContent({
             </div>
 
             {/* Main Content Grid */}
-            <div className="grid gap-6 pb-8 lg:grid-cols-2">
+            <div className="grid gap-6 pb-6 lg:grid-cols-2">
                 {/* Left Column */}
-                <div className="space-y-6">
+                <div className="flex h-full flex-col gap-6">
                     {/* Contact Information Card */}
                     <Card>
                         <CardHeader>
@@ -125,7 +101,7 @@ function TicketDetailContent({
                             <div className="grid gap-3">
                                 <a
                                     href={`mailto:${ticket.representativeEmail}`}
-                                    className="hover:text-primary flex items-center gap-2 text-sm transition-colors"
+                                    className="hover:text-primary flex w-fit items-center gap-2 text-sm transition-colors"
                                 >
                                     <FaEnvelope className="text-muted-foreground" />
                                     {ticket.representativeEmail}
@@ -133,7 +109,7 @@ function TicketDetailContent({
                                 {ticket.phoneNumber && (
                                     <a
                                         href={`tel:${ticket.phoneNumber}`}
-                                        className="hover:text-primary flex items-center gap-2 text-sm transition-colors"
+                                        className="hover:text-primary flex w-fit items-center gap-2 text-sm transition-colors"
                                     >
                                         <FaPhone className="text-muted-foreground" />
                                         {ticket.phoneNumber}
@@ -144,7 +120,7 @@ function TicketDetailContent({
                     </Card>
 
                     {/* Association Card */}
-                    <Card>
+                    <Card className="flex-1">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <UsersIcon className="size-4" />
@@ -157,33 +133,33 @@ function TicketDetailContent({
                             </p>
                             <a
                                 href={`mailto:${ticket.associationEmail}`}
-                                className="hover:text-primary flex items-center gap-2 text-sm transition-colors"
+                                className="hover:text-primary flex w-fit items-center gap-2 text-sm transition-colors"
                             >
                                 <FaEnvelope className="text-muted-foreground" />
                                 {ticket.associationEmail}
                             </a>
                         </CardContent>
                     </Card>
+                </div>
 
+                {/* Right Column */}
+                <div className="space-y-6">
                     {/* Event Card */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <BalloonIcon className="size-4" />
                                 <span>Évènement</span>
-                            </CardTitle>
-                            <CardDescription>
-                                Détails de l'évènement prévu
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <p className="text-lg font-semibold">
-                                    {ticket.eventName}
-                                </p>
                                 <Badge variant="outline" className="mt-1">
                                     {ticket.eventType}
                                 </Badge>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <p className="text-lg font-semibold first-letter:capitalize">
+                                    {ticket.eventName}
+                                </p>
                             </div>
 
                             <Separator />
@@ -217,49 +193,6 @@ function TicketDetailContent({
                             </div>
                         </CardContent>
                     </Card>
-                </div>
-
-                {/* Right Column */}
-                <div className="space-y-6">
-                    {/* Equipment Card */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <ShapesIcon className="size-4" />
-                                Matériels demandés
-                            </CardTitle>
-                            <CardDescription>
-                                {allEquipments.length} type(s) de matériel
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="divide-y rounded-lg border">
-                                {allEquipments.map((equipment) => (
-                                    <div
-                                        key={equipment.id}
-                                        className="flex items-center justify-between p-3"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <Badge
-                                                variant="secondary"
-                                                className="font-mono"
-                                            >
-                                                {equipment.quantity}×
-                                            </Badge>
-                                            <span className="font-medium">
-                                                {equipment.name}
-                                            </span>
-                                        </div>
-                                        <span className="text-muted-foreground text-sm">
-                                            {equipment.quantity *
-                                                equipment.deposit}
-                                            €
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
 
                     {/* Deposit Summary Card */}
                     <Card className="border-primary/20 bg-primary/5">
@@ -278,27 +211,20 @@ function TicketDetailContent({
                             </p>
                         </CardContent>
                     </Card>
-
-                    {/* Ticket Actions */}
-                    {canEditTicket || canDeleteTicket ? (
-                        <TicketActions
-                            ticketId={ticket.id}
-                            ticketName={ticket.association}
-                            isArchived={ticket.deleted !== null}
-                            canEdit={canEditTicket}
-                            canDelete={canDeleteTicket}
-                        />
-                    ) : null}
                 </div>
             </div>
+
+            <TicketEquipment />
         </div>
     )
 }
 
-export default function TicketDetailPage({ ...rest }: TicketDetailPageProps) {
+export default function TicketDetailPage({ ...rest }: TicketDetails) {
     return (
         <DashboardShell>
-            <TicketDetailContent {...rest} />
+            <TicketProvider {...rest}>
+                <TicketDetailContent />
+            </TicketProvider>
         </DashboardShell>
     )
 }

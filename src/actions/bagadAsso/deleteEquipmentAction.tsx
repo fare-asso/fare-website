@@ -23,16 +23,17 @@ async function deleteEquipmentActionImpl(
         }
     }
 
-    // create supabase client
-    const supabase = createClient(context)
-
-    // fetch association to delete
-    const equipment = await prisma.bagadAssoEquipment.findUnique({
-        where: {
-            id: equipmentId
+    const equipmentResult = await tryCatch(
+        prisma.bagadAssoEquipment.findUnique({ where: { id: equipmentId } })
+    )
+    if (!equipmentResult.success) {
+        captureActionError(equipmentResult.error)
+        return {
+            success: false,
+            error: "Echec de la suppression de l'équipement"
         }
-    })
-
+    }
+    const equipment = equipmentResult.value
     if (equipment == null) {
         return {
             success: false,
@@ -40,14 +41,37 @@ async function deleteEquipmentActionImpl(
         }
     }
 
+    const ticketLine = await tryCatch(
+        prisma.bagadAssoTicketEquipment.findFirst({
+            where: { equipmentId },
+            select: { ticketId: true }
+        })
+    )
+    if (!ticketLine.success) {
+        captureActionError(ticketLine.error)
+        return {
+            success: false,
+            error: "Echec de la vérification des réservations de l'équipement"
+        }
+    }
+    if (ticketLine.value) {
+        return {
+            success: false,
+            error: "Ce matériel est lié à des tickets et ne peut pas être supprimé."
+        }
+    }
+
+    const supabase = createClient(context)
     /* Remove pictures from storage if there is some */
     if (equipment.imagePath) {
-        const { error } = await supabase.storage
-            .from("equipment-pictures")
-            .remove([equipment.imagePath])
+        const removed = await tryCatch(
+            supabase.storage
+                .from("equipment-pictures")
+                .remove([equipment.imagePath])
+        )
 
-        if (error) {
-            console.log(error.message)
+        if (!removed.success) {
+            captureActionError(removed.error)
             return {
                 success: false,
                 error: "Echec de la suppression des images dans la base de données"

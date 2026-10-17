@@ -31,11 +31,13 @@ import { listCalendarAction } from "./bagadAsso/listCalendarAction"
 import { listEquipmentsAction } from "./bagadAsso/listEquipmentsAction"
 import { listSuggestionsAction } from "./bagadAsso/listSuggestionsAction"
 import { listTicketsAction } from "./bagadAsso/listTicketsAction"
+import { sendContractAction } from "./bagadAsso/sendContractAction"
 import { setTicketValidatedAction } from "./bagadAsso/setTicketValidatedAction"
 import { submitBagadAssoFormAction } from "./bagadAsso/submitBagadAssoFormAction"
 import { submitSuggestionAction } from "./bagadAsso/submitSuggestionAction"
 import { unarchiveSuggestionAction } from "./bagadAsso/unarchiveSuggestionAction"
 import { unarchiveBagadAssoTicketAction } from "./bagadAsso/unarchiveTicketAction"
+import { updateTicketEquipmentQuantityAction } from "./bagadAsso/updateTicketEquipmentQuantityAction"
 import { archiveTutorApplication } from "./bouge-ta-prison/archiveTutorApplication"
 import { archiveTutorQuestion } from "./bouge-ta-prison/archiveTutorQuestion"
 import { bulkArchiveTutorApplicationsAction } from "./bouge-ta-prison/bulkArchiveTutorApplicationsAction"
@@ -230,6 +232,10 @@ export const server = {
             unarchiveBagadAssoTicketAction
         ),
         setTicketValidatedAction: jsonAction(setTicketValidatedAction),
+        sendContractAction: jsonAction(sendContractAction),
+        updateTicketEquipmentQuantityAction: jsonAction(
+            updateTicketEquipmentQuantityAction
+        ),
         hardDeleteBagadAssoTicketAction: jsonAction(
             hardDeleteBagadAssoTicketAction
         ),
