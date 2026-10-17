@@ -167,9 +167,14 @@ describe("sendContractAction", () => {
         expect(h.sendEmail).toHaveBeenCalledWith(
             expect.objectContaining({
                 to: "asso@example.com",
-                bcc: "lea@example.com",
+                cc: [
+                    "lea@example.com",
+                    "Évènements FARE <evenements@fare-asso.fr>"
+                ],
+                replyTo: "Évènements FARE <evenements@fare-asso.fr>",
                 attachments: [
                     expect.objectContaining({
+                        filename: "[FARE] Contrat Bagad'Asso #1.pdf",
                         contentType: "application/pdf",
                         content: Buffer.from("%PDF-1.7")
                     })

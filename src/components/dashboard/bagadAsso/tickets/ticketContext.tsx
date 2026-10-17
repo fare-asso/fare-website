@@ -3,7 +3,7 @@ import type { Dispatch, ReactNode } from "react"
 
 import type { BagadAssoTicket } from "@/generated/prisma/client"
 
-export interface EquipmentLine {
+interface EquipmentLine {
     id: number
     quantity: number
     deposit: number
@@ -56,9 +56,7 @@ export function ticketReducer(
     }
 }
 
-export const TicketContext = createContext<TicketContextValue | undefined>(
-    undefined
-)
+const TicketContext = createContext<TicketContextValue | undefined>(undefined)
 
 export function TicketProvider({
     children,
