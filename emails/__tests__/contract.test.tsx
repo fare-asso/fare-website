@@ -5,7 +5,8 @@ import BagadAssoContract from "../bagadasso/contract"
 
 const data = {
     eventDate: new Date("2026-10-17T00:00:00Z"),
-    eventEndDate: new Date("2026-10-18T00:00:00Z")
+    eventEndDate: new Date("2026-10-18T00:00:00Z"),
+    id: 67
 }
 
 describe("BagadAssoContract email", () => {
@@ -28,18 +29,12 @@ describe("BagadAssoContract email", () => {
         expect(html).not.toContain("Du samedi 17 octobre 2026")
     })
 
-    it("links to placeholder resources until final URLs are supplied", async () => {
+    it("includes the supplied ticket number and resource links", async () => {
         const html = await render(<BagadAssoContract data={data} />)
 
-        for (const label of [
-            "contrat",
-            "kit d&#x27;utilisation du Bagad&#x27;Asso",
-            "kit de communication",
-            "https://example.com"
-        ]) {
-            expect(html).toMatch(
-                new RegExp(`href="https://example.com"[^>]*>${label}<`)
-            )
-        }
+        expect(html).toContain("Contrat Bagad&#x27;Asso #<!-- -->67")
+        expect(html).toContain("kit d&#x27;utilisation du Bagad&#x27;Asso")
+        expect(html).toContain("kit de communication")
+        expect(html).toContain('href="https://canva.link/ge625su919wtyjz"')
     })
 })
