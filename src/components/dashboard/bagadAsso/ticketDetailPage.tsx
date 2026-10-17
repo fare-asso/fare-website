@@ -18,13 +18,7 @@ import {
 import { DashboardShell } from "@/components/dashboard/shell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { formatEventDateRange } from "@/helpers/eventDate"
 import { locationDisplayName, parseLocation } from "@/helpers/location"
@@ -156,19 +150,16 @@ function TicketDetailContent() {
                             <CardTitle className="flex items-center gap-2">
                                 <BalloonIcon className="size-4" />
                                 <span>Évènement</span>
-                            </CardTitle>
-                            <CardDescription>
-                                Détails de l'évènement prévu
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <p className="text-lg font-semibold">
-                                    {ticket.eventName}
-                                </p>
                                 <Badge variant="outline" className="mt-1">
                                     {ticket.eventType}
                                 </Badge>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <p className="text-lg font-semibold first-letter:capitalize">
+                                    {ticket.eventName}
+                                </p>
                             </div>
 
                             <Separator />
