@@ -28,8 +28,7 @@ import { useTicketContext } from "./ticketContext"
 export default function TicketActions() {
     const { ticket, allEquipments, canDeleteTicket, canEditTicket, dispatch } =
         useTicketContext()
-    const [isArchiveLoading, setIsArchiveLoading] = useState(false)
-    const [isDeleteLoading, setIsDeleteLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const isArchived = ticket.deleted !== null
 
     const onSendContract = async () => {
@@ -37,7 +36,7 @@ export default function TicketActions() {
     }
 
     const onArchive = async () => {
-        setIsArchiveLoading(true)
+        setIsLoading(true)
 
         const { data, error } =
             await actions.bagadAsso.deleteBagadAssoTicketAction(ticket.id)
@@ -52,11 +51,11 @@ export default function TicketActions() {
             toast.success("Le ticket a été archivé.")
             dispatch({ type: "setArchived", deleted: new Date() })
         }
-        setIsArchiveLoading(false)
+        setIsLoading(false)
     }
 
     const onUnarchive = async () => {
-        setIsArchiveLoading(true)
+        setIsLoading(true)
 
         const { data, error } =
             await actions.bagadAsso.unarchiveBagadAssoTicketAction(ticket.id)
@@ -71,11 +70,11 @@ export default function TicketActions() {
             toast.success("Le ticket a été désarchivé.")
             dispatch({ type: "setArchived", deleted: null })
         }
-        setIsArchiveLoading(false)
+        setIsLoading(false)
     }
 
     const onHardDelete = async () => {
-        setIsDeleteLoading(true)
+        setIsLoading(true)
 
         const { data, error } =
             await actions.bagadAsso.hardDeleteBagadAssoTicketAction(ticket.id)
@@ -86,7 +85,7 @@ export default function TicketActions() {
                     ? data.error
                     : "Une erreur est survenue. Veuillez réessayer."
             )
-            setIsDeleteLoading(false)
+            setIsLoading(false)
         } else {
             toast.success("Le ticket a été supprimé définitivement.")
             window.location.href = "/dashboard/bagadAsso"
@@ -113,10 +112,10 @@ export default function TicketActions() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled={isArchiveLoading}
+                                        disabled={isLoading}
                                         className="gap-2"
                                     >
-                                        {isArchiveLoading ? (
+                                        {isLoading ? (
                                             <LoadingRing className="m-0!" />
                                         ) : (
                                             <MailIcon className="h-4 w-4" />
@@ -191,10 +190,10 @@ export default function TicketActions() {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    disabled={isArchiveLoading}
+                                    disabled={isLoading}
                                     className="gap-2"
                                 >
-                                    {isArchiveLoading ? (
+                                    {isLoading ? (
                                         <LoadingRing className="m-0!" />
                                     ) : isArchived ? (
                                         <ArchiveRestoreIcon className="h-4 w-4" />
@@ -265,10 +264,10 @@ export default function TicketActions() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                disabled={isDeleteLoading}
+                                disabled={isLoading}
                                 className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive gap-2"
                             >
-                                {isDeleteLoading ? (
+                                {isLoading ? (
                                     <LoadingRing className="m-0!" />
                                 ) : (
                                     <Trash2Icon className="h-4 w-4" />
