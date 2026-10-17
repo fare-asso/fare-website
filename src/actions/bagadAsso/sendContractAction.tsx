@@ -1,9 +1,12 @@
+import { type } from "arktype"
 import type { ActionAPIContext } from "astro:actions"
 import { render } from "react-email"
 
 import BagadAssoContractEmail from "@/../emails/bagadasso/contract"
-import type { EquipmentLine } from "@/components/dashboard/bagadAsso/tickets/ticketContext"
-import type { BagadAssoTicket } from "@/generated/prisma/client"
+import type {
+    BagadAssoEquipment,
+    BagadAssoTicket
+} from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { hasPermission } from "@/helpers/permissions"
@@ -12,14 +15,22 @@ import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
+const SendContractSchema = type({
+    ticketId: "number.integer > 0",
+    equipmentIds: type("number.integer > 0").array()
+})
+
+const TicketEquipmentsSchema = type({
+    id: "number.integer > 0",
+    quantity: "number.integer > 0"
+}).array()
+
+type ContractEquipment = Pick<BagadAssoEquipment, "id" | "name" | "deposit"> & {
+    quantity: number
+}
+
 async function sendContractActionImpl(
-    {
-        ticket,
-        equipments
-    }: {
-        equipments: EquipmentLine[]
-        ticket: BagadAssoTicket
-    },
+    input: typeof SendContractSchema.infer,
     context: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
@@ -31,11 +42,88 @@ async function sendContractActionImpl(
         }
     }
 
+    const data = SendContractSchema(input)
+    if (
+        data instanceof type.errors ||
+        new Set(data.equipmentIds).size !== data.equipmentIds.length
+    ) {
+        return {
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        }
+    }
+
+    const found = await tryCatch(
+        prisma.bagadAssoTicket.findUnique({ where: { id: data.ticketId } })
+    )
+    if (!found.success) {
+        captureActionError(found.error)
+        return { success: false, error: "Echec de la récupération du ticket" }
+    }
+    const ticket = found.value
+    if (!ticket || ticket.deleted || ticket.validated) {
+        return {
+            success: false,
+            error: "Ce ticket ne peut pas recevoir de contrat"
+        }
+    }
+
+    const storedEquipments = tryCatch(() =>
+        typeof ticket.equipments === "string"
+            ? JSON.parse(ticket.equipments)
+            : ticket.equipments
+    )
+    if (!storedEquipments.success) {
+        captureActionError(storedEquipments.error)
+        return { success: false, error: "Matériel du ticket invalide" }
+    }
+    const requested = TicketEquipmentsSchema(storedEquipments.value)
+    if (requested instanceof type.errors) {
+        return { success: false, error: "Matériel du ticket invalide" }
+    }
+    const quantities = new Map(
+        requested.map((item) => [item.id, item.quantity])
+    )
+    if (data.equipmentIds.some((id) => !quantities.has(id))) {
+        return { success: false, error: "Matériel sélectionné invalide" }
+    }
+
+    const foundEquipments = await tryCatch(
+        prisma.bagadAssoEquipment.findMany({
+            where: { id: { in: data.equipmentIds } },
+            select: { id: true, name: true, deposit: true }
+        })
+    )
+    if (!foundEquipments.success) {
+        captureActionError(foundEquipments.error)
+        return { success: false, error: "Echec de la récupération du matériel" }
+    }
+    if (foundEquipments.value.length !== data.equipmentIds.length) {
+        return { success: false, error: "Matériel sélectionné introuvable" }
+    }
+    const equipmentById = new Map(
+        foundEquipments.value.map((item) => [item.id, item])
+    )
+    const equipments: ContractEquipment[] = data.equipmentIds.flatMap((id) => {
+        const equipment = equipmentById.get(id)
+        const quantity = quantities.get(id)
+        return equipment && quantity ? [{ ...equipment, quantity }] : []
+    })
+    if (equipments.length !== data.equipmentIds.length) {
+        return { success: false, error: "Matériel sélectionné invalide" }
+    }
+
     // generate pdf contract
-    const pdf = generateContractPdf()
+    const pdf = generateContractPdf(ticket, equipments)
+    if (pdf.length === 0) {
+        return {
+            success: false,
+            error: "Le contrat PDF n'est pas encore disponible"
+        }
+    }
 
     // send email
-    await sendEmail({
+    const email = await sendEmail({
         to: ticket.associationEmail,
         bcc: ticket.representativeEmail,
         subject: `[FARE] Contrat Bagad asso ${ticket.association} #${ticket.id}`,
@@ -57,6 +145,10 @@ async function sendContractActionImpl(
         ]
     })
 
+    if (!email.success) {
+        return { success: false, error: "Echec de l'envoi du contrat" }
+    }
+
     const saved = await tryCatch(
         prisma.bagadAssoTicket.update({
             where: {
@@ -71,7 +163,7 @@ async function sendContractActionImpl(
         captureActionError(saved.error)
         return {
             success: false,
-            error: "Echec de l'ajout de l'équipement. Veuillez réessayer."
+            error: "Le contrat a été envoyé, mais le ticket n'a pas pu être mis à jour."
         }
     }
 
@@ -83,6 +175,9 @@ export const sendContractAction = wrapAction(
     sendContractActionImpl
 )
 
-function generateContractPdf(): Buffer {
+function generateContractPdf(
+    _ticket: BagadAssoTicket,
+    _equipments: ContractEquipment[]
+): Buffer {
     return Buffer.from("")
 }
