@@ -79,6 +79,46 @@ async function submitBagadAssoFormActionImpl(
         }
     }
 
+    const selectedEquipment = await tryCatch(() =>
+        prisma.bagadAssoEquipment.findMany({
+            where: {
+                id: { in: equipmentInput.data.map(({ id }) => id) },
+                deletedAt: null,
+                quantity: { gt: 0 }
+            },
+            select: { id: true, quantity: true }
+        })
+    )
+    if (!selectedEquipment.success) {
+        captureActionError(selectedEquipment.error)
+        return {
+            success: false,
+            error: "Le matériel sélectionné est indisponible. Veuillez réessayer."
+        }
+    }
+    const stockById = new Map(
+        selectedEquipment.value.map((equipment) => [
+            equipment.id,
+            equipment.quantity
+        ])
+    )
+    if (
+        stockById.size !== equipmentInput.data.length ||
+        equipmentInput.data.some(
+            ({ id, quantity }) => quantity > (stockById.get(id) ?? 0)
+        )
+    ) {
+        return {
+            success: false,
+            error: "Le matériel sélectionné est indisponible. Veuillez réessayer.",
+            fieldErrors: {
+                equipment: [
+                    "Un ou plusieurs matériels ne sont plus disponibles."
+                ]
+            }
+        }
+    }
+
     // Create the ticket in the database
     const ticket = await tryCatch(
         prisma.bagadAssoTicket.create({
@@ -96,10 +136,10 @@ async function submitBagadAssoFormActionImpl(
                 eventEndDate: validatedData.eventEndDate,
                 eventAddr: validatedData.eventAddress,
                 estimatedParticipants: validatedData.eventParticipants,
-                equipmentMigratedAt: new Date(),
+
                 equipments: {
                     create: equipmentInput.data.map(({ id, quantity }) => ({
-                        equipment: { connect: { id } },
+                        equipment: { connect: { id, deletedAt: null } },
                         requestedQuantity: quantity,
                         allocatedQuantity: quantity,
                         includedInContract: false

@@ -166,7 +166,9 @@ export function TicketEquipment(): ReactNode {
                                     id={`item-${equipment.id}`}
                                     checked={equipment.checked}
                                     disabled={
-                                        !canEditQuantity || isEquipmentBusy
+                                        !canEditQuantity ||
+                                        isEquipmentBusy ||
+                                        Boolean(equipment.deletedAt)
                                     }
                                     onCheckedChange={(checked) =>
                                         dispatch({
@@ -237,7 +239,8 @@ export function TicketEquipment(): ReactNode {
                                                     </p>
                                                 ) : null}
                                             </div>
-                                        ) : canEditQuantity ? (
+                                        ) : canEditQuantity &&
+                                          !equipment.deletedAt ? (
                                             <Badge
                                                 variant="secondary"
                                                 className="font-mono"
@@ -286,15 +289,6 @@ export function TicketEquipment(): ReactNode {
                                         >
                                             {equipment.name}
                                         </FieldLabel>
-
-                                        {ticket.validated &&
-                                            equipment.includedInContract ===
-                                                null && (
-                                                <span className="text-muted-foreground text-xs">
-                                                    Inclusion dans le contrat
-                                                    historique inconnue
-                                                </span>
-                                            )}
                                     </div>
                                     <span className="text-muted-foreground text-sm">
                                         {equipment.allocatedQuantity *

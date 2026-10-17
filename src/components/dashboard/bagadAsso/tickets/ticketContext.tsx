@@ -75,7 +75,12 @@ export function ticketReducer(
                 allEquipments: state.allEquipments.map(
                     (equipment): TicketEquipmentLine => ({
                         ...equipment,
-                        includedInContract: Boolean(equipment.checked)
+                        includedInContract: Boolean(
+                            equipment.checked && !equipment.deletedAt
+                        ),
+                        checked: Boolean(
+                            equipment.checked && !equipment.deletedAt
+                        )
                     })
                 )
             }

@@ -56,16 +56,14 @@ async function updateTicketEquipmentQuantityActionImpl(
     if (ticket.deleted || ticket.validated) {
         return { success: false, error: "Ce ticket ne peut plus être modifié" }
     }
-    if (!ticket.equipmentMigratedAt) {
-        return {
-            success: false,
-            error: "Le matériel de ce ticket doit être migré avant modification"
-        }
-    }
+
     const line = ticket.equipments.find(
         (item) => item.equipmentId === data.equipmentId
     )
     if (!line) return { success: false, error: "Matériel absent du ticket" }
+    if (line.equipment.deletedAt) {
+        return { success: false, error: "Ce matériel a été supprimé" }
+    }
     if (data.quantity > line.equipment.quantity) {
         return {
             success: false,

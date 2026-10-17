@@ -19,6 +19,7 @@ export type TicketEquipmentLine = {
     deposit: number
     name: string
     imagePath: string | undefined
+    deletedAt?: Date | null
     checked?: boolean
 }
 
@@ -33,6 +34,9 @@ export function mapTicketEquipment(
         deposit: line.equipment.deposit,
         name: line.equipment.name,
         imagePath: line.equipment.imagePath ?? undefined,
-        checked: line.includedInContract === true
+        deletedAt: line.equipment.deletedAt,
+        checked:
+            line.includedInContract === true &&
+            (ticket.validated !== null || line.equipment.deletedAt === null)
     }))
 }

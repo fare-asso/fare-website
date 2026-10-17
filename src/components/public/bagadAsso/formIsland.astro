@@ -4,7 +4,11 @@ import { tryCatch } from "@/lib/utils"
 
 import BagadAssoForm from "./form"
 
-const equipment = await tryCatch(prisma.bagadAssoEquipment.findMany())
+const equipment = await tryCatch(
+    prisma.bagadAssoEquipment.findMany({
+        where: { deletedAt: null, quantity: { gt: 0 } }
+    })
+)
 const equipmentList = equipment.success ? equipment.value : []
 ---
 

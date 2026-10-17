@@ -33,7 +33,7 @@ async function renderEquipment(
         canEditTicket?: boolean
         archived?: boolean
         validated?: boolean
-        historicalUnknown?: boolean
+        equipmentDeleted?: boolean
     } = {}
 ): Promise<Awaited<ReturnType<typeof render>>> {
     return render(
@@ -48,12 +48,11 @@ async function renderEquipment(
                     name: "Barnum",
                     requestedQuantity: 5,
                     allocatedQuantity: 2,
-                    includedInContract: overrides.historicalUnknown
-                        ? null
-                        : false,
+                    includedInContract: false,
+                    deletedAt: overrides.equipmentDeleted ? new Date() : null,
                     deposit: 50,
                     imagePath: undefined,
-                    checked: !overrides.historicalUnknown
+                    checked: true
                 },
                 {
                     id: 2,
@@ -86,21 +85,21 @@ beforeEach((): void => {
 })
 
 describe("<TicketEquipment /> quantity editing", (): void => {
-    it("labels unknown historical contract selections without allowing them to be changed", async () => {
-        const screen = await renderEquipment({
-            validated: true,
-            historicalUnknown: true
-        })
+    it("preserves deleted equipment on existing tickets without allowing new allocations", async () => {
+        const screen = await renderEquipment({ equipmentDeleted: true })
         await expect
-            .element(
-                screen.getByText(
-                    "Inclusion dans le contrat historique inconnue"
-                )
-            )
+            .element(screen.getByText("Barnum", { exact: true }))
             .toBeVisible()
         await expect
             .element(screen.getByRole("checkbox", { name: "Barnum" }))
             .toBeDisabled()
+        await expect
+            .element(
+                screen.getByRole("button", {
+                    name: "Modifier la quantité pour Barnum"
+                })
+            )
+            .not.toBeInTheDocument()
     })
     it("renders badges and selection, focuses/selects one editor and cancels with Escape", async (): Promise<void> => {
         const screen = await renderEquipment()

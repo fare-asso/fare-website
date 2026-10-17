@@ -120,13 +120,13 @@ describe("updateTicketEquipmentQuantityAction", () => {
         }
     )
 
-    it("blocks tickets whose legacy data has not been migrated", async () => {
-        h.findTicket.mockResolvedValueOnce(
-            bagadAssoTicketWithEquipmentsRecord({ equipmentMigratedAt: null })
-        )
+    it("rejects allocations of soft-deleted equipment without modifying the ticket", async () => {
+        const ticket = bagadAssoTicketWithEquipmentsRecord()
+        ticket.equipments[0].equipment.deletedAt = new Date()
+        h.findTicket.mockResolvedValueOnce(ticket)
         expect(await updateTicketEquipmentQuantityAction(input)).toEqual({
             success: false,
-            error: "Le matériel de ce ticket doit être migré avant modification"
+            error: "Ce matériel a été supprimé"
         })
         expect(h.transaction).not.toHaveBeenCalled()
     })

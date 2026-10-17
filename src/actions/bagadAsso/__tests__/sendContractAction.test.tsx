@@ -113,15 +113,16 @@ describe("sendContractAction", () => {
         expect(h.sendEmail).not.toHaveBeenCalled()
     })
 
-    it("blocks legacy tickets until backfill completion", async () => {
-        h.findTicket.mockResolvedValueOnce(
-            bagadAssoTicketWithEquipmentsRecord({ equipmentMigratedAt: null })
-        )
+    it("rejects soft-deleted equipment in a new contract", async () => {
+        const ticket = bagadAssoTicketWithEquipmentsRecord()
+        ticket.equipments[0].equipment.deletedAt = new Date()
+        h.findTicket.mockResolvedValueOnce(ticket)
         expect(await sendContractAction(input)).toEqual({
             success: false,
-            error: "Le matériel de ce ticket doit être migré avant l'envoi du contrat"
+            error: "Matériel sélectionné invalide"
         })
         expect(h.generatePdf).not.toHaveBeenCalled()
+        expect(h.sendEmail).not.toHaveBeenCalled()
     })
 
     it("rejects equipment absent from the ticket", async () => {

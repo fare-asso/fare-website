@@ -70,8 +70,8 @@ export default function DeleteEquipmentButton({
                         Voulez-vous vraiment supprimer cet équipement ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Cette action est permanente et les données ne peuvent
-                        être récupérées.
+                        Cet équipement sera masqué du catalogue. Les tickets
+                        existants et leurs données seront conservés.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

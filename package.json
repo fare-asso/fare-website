@@ -14,8 +14,6 @@
         "test:node": "vitest run --project node",
         "test:browser": "vitest run --project browser",
         "test:watch": "vitest",
-        "test:bagad-migration": "BAGAD_MIGRATION_INTEGRATION=1 vitest run --project node src/helpers/bagadAsso/__tests__/backfillTicketEquipment.integration.test.ts",
-        "backfill:bagad-equipment": "jiti prisma/backfillBagadTicketEquipment.ts",
         "lint": "oxlint --fix && biome lint --write .",
         "check": "upm run check:types && upm run check:lint && upm run check:format && upm run test",
         "check:lint": "biome lint . && oxlint --deny-warnings",

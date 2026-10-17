@@ -65,18 +65,12 @@ async function sendContractActionImpl(
         }
     }
 
-    if (!ticket.equipmentMigratedAt) {
-        return {
-            success: false,
-            error: "Le matériel de ce ticket doit être migré avant l'envoi du contrat"
-        }
-    }
     const equipmentById = new Map(
         ticket.equipments.map((line) => [line.equipmentId, line])
     )
     const equipments: ContractEquipment[] = data.equipmentIds.flatMap((id) => {
         const line = equipmentById.get(id)
-        return line && line.allocatedQuantity > 0
+        return line && !line.equipment.deletedAt && line.allocatedQuantity > 0
             ? [
                   {
                       id,

@@ -45,6 +45,7 @@ vi.mock("@/components/ui/filepond", () => ({
 import EditEquipmentDialog from "../editEquipmentDialog"
 
 const equipment: BagadAssoEquipment = {
+    deletedAt: null,
     id: 7,
     name: "Barnum 3×6m",
     imagePath: "barnum.png",

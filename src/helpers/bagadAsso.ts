@@ -38,7 +38,7 @@ export async function getNextBookingsByEquipment(): Promise<
     const bookings = new Map<number, EquipmentNextBooking>()
     for (const ticket of tickets) {
         for (const line of ticket.equipments) {
-            // Null preserves the historical allocation for legacy validated tickets.
+            // An unrecorded inclusion is not an explicit exclusion.
             if (ticket.validated && line.includedInContract === false) continue
             const quantity = ticket.validated
                 ? line.allocatedQuantity

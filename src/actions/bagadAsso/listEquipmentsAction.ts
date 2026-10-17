@@ -23,7 +23,10 @@ export async function fetchEquipments(): Promise<
     const storage = new StorageUtils()
     const result = await tryCatch(
         Promise.all([
-            prisma.bagadAssoEquipment.findMany({ orderBy: { name: "asc" } }),
+            prisma.bagadAssoEquipment.findMany({
+                where: { deletedAt: null },
+                orderBy: { name: "asc" }
+            }),
             getNextBookingsByEquipment()
         ])
     )

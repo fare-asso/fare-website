@@ -165,7 +165,7 @@ model BagadAssoEquipment {
   deposit   Float                      @default(0)
   quantity  Int                        @default(1)
   tickets   BagadAssoTicketEquipment[]
-
+  deletedAt DateTime?
 }
 
 model BagadAssoTicket {
@@ -182,9 +182,7 @@ model BagadAssoTicket {
   eventAddr             String
   estimatedParticipants Int                        @default(0)
   creationDate          DateTime                   @default(now())
-  // Temporary archive for the explicit, dry-run-first relational backfill.
-  legacyEquipments      Json?                      @map("equipments")
-  equipmentMigratedAt   DateTime?
+
   equipmentRevision     Int                        @default(0)
   equipments            BagadAssoTicketEquipment[]
   associationEmail      String
@@ -198,7 +196,7 @@ model BagadAssoTicketEquipment {
   equipmentId        Int
   requestedQuantity  Int
   allocatedQuantity  Int
-  // Null only for historical contracts whose selected items were never recorded.
+
   includedInContract Boolean?           @default(false)
   ticket             BagadAssoTicket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   equipment          BagadAssoEquipment @relation(fields: [equipmentId], references: [id], onDelete: Restrict)

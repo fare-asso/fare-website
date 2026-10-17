@@ -16,6 +16,7 @@ import {
 const stdenv = vi.hoisted(() => ({ isDevelopment: false }))
 const h = vi.hoisted(() => ({
     create: vi.fn(),
+    findAvailableEquipments: vi.fn(),
 
     sendEmail: vi.fn(),
     render: vi.fn(
@@ -33,7 +34,8 @@ vi.mock("std-env", () => stdEnvModule(stdenv))
 vi.mock("@/helpers/captcha/verify", () => captchaModule(h.verifyCaptcha))
 vi.mock("@/helpers/db", () =>
     dbModule({
-        bagadAssoTicket: { create: h.create }
+        bagadAssoTicket: { create: h.create },
+        bagadAssoEquipment: { findMany: h.findAvailableEquipments }
     })
 )
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
@@ -46,6 +48,7 @@ beforeEach(() => {
     stdenv.isDevelopment = false
     h.verifyCaptcha.mockResolvedValue(true)
     h.create.mockResolvedValue(bagadAssoTicketWithEquipmentsRecord())
+    h.findAvailableEquipments.mockResolvedValue([{ id: 1, quantity: 2 }])
     h.render.mockResolvedValue("<html></html>")
     h.sendEmail.mockResolvedValue({ success: true })
 })
@@ -98,6 +101,38 @@ describe("submitBagadAssoFormAction", () => {
         expect(res).toEqual({ success: true })
     })
 
+    it("rejects unavailable or excessive equipment before creating the ticket", async () => {
+        h.findAvailableEquipments.mockResolvedValueOnce([])
+        expect(
+            await submitBagadAssoFormAction(validBagadAssoForm())
+        ).toMatchObject({
+            success: false,
+            error: "Le matériel sélectionné est indisponible. Veuillez réessayer."
+        })
+        expect(h.create).not.toHaveBeenCalled()
+
+        h.findAvailableEquipments.mockResolvedValueOnce([
+            { id: 1, quantity: 1 }
+        ])
+        expect(
+            await submitBagadAssoFormAction(validBagadAssoForm())
+        ).toMatchObject({
+            success: false,
+            error: "Le matériel sélectionné est indisponible. Veuillez réessayer."
+        })
+        expect(h.create).not.toHaveBeenCalled()
+    })
+
+    it("captures availability lookup failures", async () => {
+        h.findAvailableEquipments.mockRejectedValueOnce(new Error("db down"))
+        expect(await submitBagadAssoFormAction(validBagadAssoForm())).toEqual({
+            success: false,
+            error: "Le matériel sélectionné est indisponible. Veuillez réessayer."
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
+        expect(h.create).not.toHaveBeenCalled()
+    })
+
     it("fails when the captcha is invalid", async () => {
         h.verifyCaptcha.mockResolvedValue(false)
         const res = await submitBagadAssoFormAction(validBagadAssoForm())
@@ -139,6 +174,10 @@ describe("submitBagadAssoFormAction", () => {
     it("persists and notifies both the team and the association on the happy path", async () => {
         const res = await submitBagadAssoFormAction(validBagadAssoForm())
         expect(res).toEqual({ success: true })
+        expect(h.findAvailableEquipments).toHaveBeenCalledWith({
+            where: { id: { in: [1] }, deletedAt: null, quantity: { gt: 0 } },
+            select: { id: true, quantity: true }
+        })
         expect(h.create).toHaveBeenCalledWith({
             data: {
                 association: "Asso Test",
@@ -154,11 +193,11 @@ describe("submitBagadAssoFormAction", () => {
                 estimatedParticipants: 120,
                 eventDate: new Date("2026-09-01T00:00:00Z"),
                 eventEndDate: new Date("2026-09-02T00:00:00Z"),
-                equipmentMigratedAt: expect.any(Date),
+
                 equipments: {
                     create: [
                         {
-                            equipment: { connect: { id: 1 } },
+                            equipment: { connect: { id: 1, deletedAt: null } },
                             requestedQuantity: 2,
                             allocatedQuantity: 2,
                             includedInContract: false
@@ -173,9 +212,7 @@ describe("submitBagadAssoFormAction", () => {
                 }
             }
         })
-        expect(h.create.mock.calls[0]?.[0].data).not.toHaveProperty(
-            "legacyEquipments"
-        )
+
         expect(h.sendEmail).toHaveBeenCalledTimes(2)
         expect(h.sendEmail).toHaveBeenNthCalledWith(
             1,
@@ -194,6 +231,10 @@ describe("submitBagadAssoFormAction", () => {
     })
 
     it("creates multiple requested lines in one nested atomic insert", async () => {
+        h.findAvailableEquipments.mockResolvedValueOnce([
+            { id: 7, quantity: 3 },
+            { id: 2, quantity: 1 }
+        ])
         await submitBagadAssoFormAction(
             validBagadAssoForm({
                 equipment: '[{"id":7,"quantity":3},{"id":2,"quantity":1}]'
@@ -203,13 +244,13 @@ describe("submitBagadAssoFormAction", () => {
         expect(h.create.mock.calls[0]?.[0].data.equipments).toEqual({
             create: [
                 {
-                    equipment: { connect: { id: 7 } },
+                    equipment: { connect: { id: 7, deletedAt: null } },
                     requestedQuantity: 3,
                     allocatedQuantity: 3,
                     includedInContract: false
                 },
                 {
-                    equipment: { connect: { id: 2 } },
+                    equipment: { connect: { id: 2, deletedAt: null } },
                     requestedQuantity: 1,
                     allocatedQuantity: 1,
                     includedInContract: false

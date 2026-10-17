@@ -107,8 +107,16 @@ describe("ticketReducer", () => {
         expect(next.ticket.validated).toEqual(validated)
         expect(details.ticket.validated).toBeNull()
         expect(next.allEquipments).toEqual([
-            { ...selected.allEquipments[0], includedInContract: true },
-            { ...selected.allEquipments[1], includedInContract: false }
+            {
+                ...selected.allEquipments[0],
+                includedInContract: true,
+                checked: true
+            },
+            {
+                ...selected.allEquipments[1],
+                includedInContract: false,
+                checked: false
+            }
         ])
         expect(details.allEquipments[0].includedInContract).toBeNull()
         expect(selected.allEquipments[0].includedInContract).toBeNull()

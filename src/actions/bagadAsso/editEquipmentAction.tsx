@@ -40,7 +40,7 @@ async function editEquipmentActionImpl(
 
     const current = await tryCatch(
         prisma.bagadAssoEquipment.findUnique({
-            where: { id: data.id },
+            where: { id: data.id, deletedAt: null },
             select: { imagePath: true }
         })
     )
@@ -81,7 +81,7 @@ async function editEquipmentActionImpl(
 
     const updated = await tryCatch(
         prisma.bagadAssoEquipment.update({
-            where: { id: data.id },
+            where: { id: data.id, deletedAt: null },
             data: {
                 name: data.name,
                 deposit: data.deposit,

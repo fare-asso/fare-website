@@ -81,6 +81,7 @@ export function bagadAssoEquipmentRecord(
         id: 1,
         name: "Barnum",
         imagePath: "old.png",
+        deletedAt: null,
         deposit: 50,
         quantity: 2,
         ...overrides
@@ -104,8 +105,7 @@ export function bagadAssoTicketRecord(
         eventAddr: "1 rue de la Paix, 35000 Rennes",
         estimatedParticipants: 120,
         creationDate: new Date("2026-01-01T00:00:00Z"),
-        legacyEquipments: null,
-        equipmentMigratedAt: new Date("2026-01-01T00:00:00Z"),
+
         equipmentRevision: 0,
         associationEmail: "asso@example.com",
         representativeEmail: "lea@example.com",

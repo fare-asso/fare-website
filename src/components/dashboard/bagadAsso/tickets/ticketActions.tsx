@@ -50,7 +50,9 @@ export default function TicketActions() {
             response: await actions.bagadAsso.sendContractAction({
                 ticketId: ticket.id,
                 equipmentIds: allEquipments
-                    .filter((equipment) => equipment.checked)
+                    .filter(
+                        (equipment) => equipment.checked && !equipment.deletedAt
+                    )
                     .map((equipment) => equipment.id),
                 includeCommunication
             })
@@ -210,7 +212,9 @@ export default function TicketActions() {
                                                 avec les équipements suivants :
                                                 <ul className="my-2">
                                                     {allEquipments.filter(
-                                                        (eq) => eq.checked
+                                                        (eq) =>
+                                                            eq.checked &&
+                                                            !eq.deletedAt
                                                     ).length === 0 && (
                                                         <li className="text-muted-foreground p-3 text-sm">
                                                             Sélectionnez au
@@ -220,7 +224,9 @@ export default function TicketActions() {
                                                     )}
                                                     {allEquipments
                                                         .filter(
-                                                            (eq) => eq.checked
+                                                            (eq) =>
+                                                                eq.checked &&
+                                                                !eq.deletedAt
                                                         )
                                                         .map((equipment) => (
                                                             <li
@@ -276,7 +282,8 @@ export default function TicketActions() {
                                                 isEquipmentBusy ||
                                                 !allEquipments.some(
                                                     (equipment) =>
-                                                        equipment.checked
+                                                        equipment.checked &&
+                                                        !equipment.deletedAt
                                                 )
                                             }
                                             onClick={onSendContract}

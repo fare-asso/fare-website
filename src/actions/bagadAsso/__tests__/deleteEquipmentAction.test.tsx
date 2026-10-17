@@ -4,25 +4,23 @@ import { mockUser } from "@/test/factories/user"
 import { dbModule, sentryModule, supabaseAstroModule } from "@/test/mocks"
 
 const h = vi.hoisted(() => ({
-    findUnique: vi.fn(),
-    findTicketLine: vi.fn(),
-    deleteFn: vi.fn(),
-    getUser: vi.fn(),
+    updateMany: vi.fn(),
+    hardDelete: vi.fn(),
     remove: vi.fn(),
+    getUser: vi.fn(),
     captureActionError: vi.fn()
 }))
-const from = vi.hoisted(() => vi.fn(() => ({ remove: h.remove })))
-
 vi.mock("@/helpers/db", () =>
     dbModule({
-        bagadAssoEquipment: { findUnique: h.findUnique, delete: h.deleteFn },
-        bagadAssoTicketEquipment: { findFirst: h.findTicketLine }
+        bagadAssoEquipment: { updateMany: h.updateMany, delete: h.hardDelete }
     })
 )
 vi.mock("@/helpers/supabase/astro", () =>
     supabaseAstroModule({
-        storage: { from },
-        getUserWithPermissions: h.getUser
+        getUserWithPermissions: h.getUser,
+        storage: {
+            from: (): { remove: typeof h.remove } => ({ remove: h.remove })
+        }
     })
 )
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
@@ -31,116 +29,65 @@ import { deleteEquipmentAction } from "../deleteEquipmentAction"
 
 beforeEach(() => {
     h.getUser.mockResolvedValue(mockUser(["delete:bagad-equipment"]))
-    h.findUnique.mockResolvedValue({ id: 1, imagePath: "equip.png" })
-    h.findTicketLine.mockResolvedValue(null)
-    h.deleteFn.mockResolvedValue({ id: 1 })
-    h.remove.mockResolvedValue({ data: [], error: null })
+    h.updateMany.mockResolvedValue({ count: 1 })
 })
 
 describe("deleteEquipmentAction", () => {
     it("requires authentication", async () => {
-        h.getUser.mockResolvedValue(null)
+        h.getUser.mockResolvedValueOnce(null)
         expect(await deleteEquipmentAction(1)).toEqual({
             success: false,
             error: "Authentification requise"
         })
-        expect(h.deleteFn).not.toHaveBeenCalled()
+        expect(h.updateMany).not.toHaveBeenCalled()
     })
 
-    it("requires the delete:bagad-equipment permission", async () => {
-        h.getUser.mockResolvedValue(mockUser([]))
-        const res = await deleteEquipmentAction(1)
-        if (!res.success) expect(res.error).toMatch(/permission/)
-        expect(h.deleteFn).not.toHaveBeenCalled()
-    })
-
-    it("errors when the equipment does not exist", async () => {
-        h.findUnique.mockResolvedValue(null)
+    it("requires permission", async () => {
+        h.getUser.mockResolvedValueOnce(mockUser([]))
         expect(await deleteEquipmentAction(1)).toEqual({
             success: false,
-            error: "Echec de la suppression de l'équipement"
+            error: expect.stringMatching(/permission/)
         })
+        expect(h.updateMany).not.toHaveBeenCalled()
     })
 
-    it("captures a failed equipment lookup without deleting storage", async () => {
-        const error = new Error("lookup failed")
-        h.findUnique.mockRejectedValue(error)
-        expect((await deleteEquipmentAction(1)).success).toBe(false)
-        expect(h.captureActionError).toHaveBeenCalledWith(error)
-        expect(h.findTicketLine).not.toHaveBeenCalled()
+    it.each([0, -1, 1.5, Number.NaN, 2147483648])(
+        "rejects invalid id %s",
+        async (id) => {
+            expect(await deleteEquipmentAction(id)).toEqual({
+                success: false,
+                error: "Identifiant de matériel invalide"
+            })
+            expect(h.updateMany).not.toHaveBeenCalled()
+        }
+    )
+
+    it("soft-deletes without removing the row, image or ticket references", async () => {
+        expect(await deleteEquipmentAction(4)).toEqual({ success: true })
+        expect(h.updateMany).toHaveBeenCalledWith({
+            where: { id: 4, deletedAt: null },
+            data: { deletedAt: expect.any(Date) }
+        })
+        expect(h.hardDelete).not.toHaveBeenCalled()
         expect(h.remove).not.toHaveBeenCalled()
-        expect(h.deleteFn).not.toHaveBeenCalled()
     })
 
-    it("denies deletion of referenced equipment before touching storage", async () => {
-        h.findTicketLine.mockResolvedValue({ ticketId: 99 })
+    it("returns an expected error for missing or already deleted equipment", async () => {
+        h.updateMany.mockResolvedValueOnce({ count: 0 })
         expect(await deleteEquipmentAction(1)).toEqual({
             success: false,
-            error: "Ce matériel est lié à des tickets et ne peut pas être supprimé."
+            error: "Équipement introuvable ou déjà supprimé."
         })
-        expect(h.findTicketLine).toHaveBeenCalledWith({
-            where: { equipmentId: 1 },
-            select: { ticketId: true }
-        })
-        expect(from).not.toHaveBeenCalled()
-        expect(h.remove).not.toHaveBeenCalled()
-        expect(h.deleteFn).not.toHaveBeenCalled()
         expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
-    it("captures a failed reference lookup without deleting storage", async () => {
-        const error = new Error("reference lookup failed")
-        h.findTicketLine.mockRejectedValue(error)
-        expect(await deleteEquipmentAction(1)).toEqual({
-            success: false,
-            error: "Echec de la vérification des réservations de l'équipement"
-        })
-        expect(h.captureActionError).toHaveBeenCalledWith(error)
-        expect(h.remove).not.toHaveBeenCalled()
-        expect(h.deleteFn).not.toHaveBeenCalled()
-    })
-
-    it("captures a thrown storage error and stops deletion", async () => {
-        const error = new Error("storage failed")
-        h.remove.mockRejectedValue(error)
-        expect((await deleteEquipmentAction(1)).success).toBe(false)
-        expect(h.captureActionError).toHaveBeenCalledWith(error)
-        expect(h.deleteFn).not.toHaveBeenCalled()
-    })
-
-    it("does not access storage for equipment without a picture", async () => {
-        h.findUnique.mockResolvedValue({ id: 1, imagePath: null })
-        expect(await deleteEquipmentAction(1)).toEqual({ success: true })
-        expect(h.remove).not.toHaveBeenCalled()
-        expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 1 } })
-    })
-
-    it("errors when the image removal fails", async () => {
-        h.remove.mockResolvedValue({ data: null, error: { message: "boom" } })
-        expect(await deleteEquipmentAction(1)).toEqual({
-            success: false,
-            error: "Echec de la suppression des images dans la base de données"
-        })
-        expect(h.deleteFn).not.toHaveBeenCalled()
-    })
-
-    it("captures and fails when the delete throws", async () => {
-        h.deleteFn.mockRejectedValue(new Error("db down"))
+    it("captures database failures", async () => {
+        const error = new Error("db down")
+        h.updateMany.mockRejectedValueOnce(error)
         expect(await deleteEquipmentAction(1)).toEqual({
             success: false,
             error: "Echec de la suppression de l'équipement"
         })
-        expect(h.captureActionError).toHaveBeenCalledOnce()
-    })
-
-    it("deletes the equipment on the happy path", async () => {
-        const res = await deleteEquipmentAction(4)
-        expect(res).toEqual({ success: true })
-        expect(h.deleteFn).toHaveBeenCalledWith({ where: { id: 4 } })
-        expect(h.findUnique).toHaveBeenCalledWith({ where: { id: 4 } })
-        expect(h.remove).toHaveBeenCalledWith(["equip.png"])
-        expect(h.findTicketLine.mock.invocationCallOrder[0]).toBeLessThan(
-            h.remove.mock.invocationCallOrder[0]!
-        )
+        expect(h.captureActionError).toHaveBeenCalledWith(error)
     })
 })

@@ -62,9 +62,25 @@ describe("ticket equipment projection", () => {
                     deposit: 50,
                     name: "Barnum",
                     imagePath: undefined,
+                    deletedAt: null,
                     checked: includedInContract === true
                 }
             ])
+        }
+    )
+
+    it.each([false, true])(
+        "keeps deleted equipment history but selects it only for finalized tickets (finalized=%s)",
+        (finalized) => {
+            const ticket = bagadAssoTicketWithEquipmentsRecord({
+                validated: finalized ? new Date() : null
+            })
+            ticket.equipments[0].equipment.deletedAt = new Date()
+            ticket.equipments[0].includedInContract = true
+            const [line] = mapTicketEquipment(ticket)
+            expect(line.name).toBe("Barnum")
+            expect(line.deletedAt).toBeInstanceOf(Date)
+            expect(line.checked).toBe(finalized)
         }
     )
 
@@ -163,7 +179,7 @@ describe("getNextBookingsByEquipment", () => {
         expect(bookings.has(99)).toBe(false)
     })
 
-    it("uses validated allocations, skips exclusions and preserves unknown legacy inclusion", async () => {
+    it("uses validated allocations and distinguishes exclusions from unrecorded inclusion", async () => {
         h.findMany.mockResolvedValue([
             bagadAssoTicketWithEquipmentsRecord({
                 validated: new Date(),

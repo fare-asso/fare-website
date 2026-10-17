@@ -10,10 +10,9 @@ import { hasPermission } from "@/helpers/permissions"
 import Dashboard from "@/layouts/Dashboard.astro"
 
 const user = Astro.locals.user!
-const id = Astro.params.id!
-const ticketId = Number(id)
+const ticketId = Number(Astro.params.id)
 
-if (Number.isNaN(ticketId)) {
+if (!Number.isInteger(ticketId) || ticketId < 1) {
     return Astro.rewrite("/404")
 }
 
@@ -26,32 +25,17 @@ if (!ticket) {
     return Astro.rewrite("/404")
 }
 
-const migrationPending = ticket.equipmentMigratedAt === null
 const totalDeposit = computeTotalDeposit(ticket)
 const allEquipments = mapTicketEquipment(ticket)
 ---
 
 <Dashboard title={`Bagad'Asso - Ticket ${ticket.id}`}>
-    {migrationPending ? (
-            <section role="alert" class="space-y-3 p-6">
-                <h1 class="text-xl font-bold">Ticket #{ticket.id} — migration requise</h1>
-                <p>
-                    Le matériel de cette demande n'a pas encore été migré.
-                    Contactez un administrateur pour effectuer la migration avant
-                    de consulter ou modifier ce ticket.
-                </p>
-                <a href="/dashboard/bagadAsso/tickets" class="underline">
-                    Retour aux tickets
-                </a>
-            </section>
-        ) : (
-            <TicketDetailPage
-                client:load
-                ticket={ticket}
-                allEquipments={allEquipments}
-                totalDeposit={totalDeposit}
-                canEditTicket={hasPermission(user, "edit:bagad-ticket")}
-                canDeleteTicket={hasPermission(user, "delete:bagad-ticket")}
-            />
-        )}
+    <TicketDetailPage
+        client:load
+        ticket={ticket}
+        allEquipments={allEquipments}
+        totalDeposit={totalDeposit}
+        canEditTicket={hasPermission(user, "edit:bagad-ticket")}
+        canDeleteTicket={hasPermission(user, "delete:bagad-ticket")}
+    />
 </Dashboard>

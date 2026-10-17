@@ -112,7 +112,7 @@ describe("editEquipmentAction", () => {
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.remove).not.toHaveBeenCalled()
         expect(h.update).toHaveBeenCalledWith({
-            where: { id: 1 },
+            where: { id: 1, deletedAt: null },
             data: {
                 name: "Barnum",
                 deposit: 50,
@@ -130,7 +130,7 @@ describe("editEquipmentAction", () => {
         expect(h.upload).toHaveBeenCalledOnce()
         expect(h.remove).toHaveBeenCalledWith(["old.png"])
         expect(h.update).toHaveBeenCalledWith({
-            where: { id: 1 },
+            where: { id: 1, deletedAt: null },
             data: expect.objectContaining({ imagePath: "new.png" })
         })
     })
@@ -143,7 +143,7 @@ describe("editEquipmentAction", () => {
         expect(h.upload).not.toHaveBeenCalled()
         expect(h.remove).toHaveBeenCalledWith(["old.png"])
         expect(h.update).toHaveBeenCalledWith({
-            where: { id: 1 },
+            where: { id: 1, deletedAt: null },
             data: expect.objectContaining({ imagePath: null })
         })
     })
