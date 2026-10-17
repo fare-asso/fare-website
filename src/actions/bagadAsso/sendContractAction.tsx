@@ -3,10 +3,10 @@ import type { ActionAPIContext } from "astro:actions"
 import { render } from "react-email"
 
 import BagadAssoContractEmail from "@/../emails/bagadasso/contract"
-import type {
-    BagadAssoEquipment,
-    BagadAssoTicket
-} from "@/generated/prisma/client"
+import {
+    generateContractPdf,
+    type ContractEquipment
+} from "@/helpers/bagadAsso/generateContractPdf"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { hasPermission } from "@/helpers/permissions"
@@ -25,10 +25,6 @@ const TicketEquipmentsSchema = type({
     quantity: "number.integer > 0"
 }).array()
 
-type ContractEquipment = Pick<BagadAssoEquipment, "id" | "name" | "deposit"> & {
-    quantity: number
-}
-
 async function sendContractActionImpl(
     input: typeof SendContractSchema.infer,
     context: ActionAPIContext
@@ -45,6 +41,7 @@ async function sendContractActionImpl(
     const data = SendContractSchema(input)
     if (
         data instanceof type.errors ||
+        data.equipmentIds.length === 0 ||
         new Set(data.equipmentIds).size !== data.equipmentIds.length
     ) {
         return {
@@ -107,18 +104,27 @@ async function sendContractActionImpl(
     const equipments: ContractEquipment[] = data.equipmentIds.flatMap((id) => {
         const equipment = equipmentById.get(id)
         const quantity = quantities.get(id)
-        return equipment && quantity ? [{ ...equipment, quantity }] : []
+        return equipment && quantity
+            ? [
+                  {
+                      id: equipment.id,
+                      name: equipment.name,
+                      deposit: equipment.deposit,
+                      quantity
+                  }
+              ]
+            : []
     })
     if (equipments.length !== data.equipmentIds.length) {
         return { success: false, error: "Matériel sélectionné invalide" }
     }
 
-    // generate pdf contract
-    const pdf = generateContractPdf(ticket, equipments)
-    if (pdf.length === 0) {
+    const pdf = await tryCatch(() => generateContractPdf(ticket, equipments))
+    if (!pdf.success) {
+        captureActionError(pdf.error)
         return {
             success: false,
-            error: "Le contrat PDF n'est pas encore disponible"
+            error: "Echec de la génération du contrat PDF"
         }
     }
 
@@ -139,7 +145,7 @@ async function sendContractActionImpl(
         attachments: [
             {
                 filename: `[FARE] Contrat Bagad-Asso ${ticket.id}.pdf`,
-                content: pdf,
+                content: pdf.value,
                 contentType: "application/pdf"
             }
         ]
@@ -174,10 +180,3 @@ export const sendContractAction = wrapAction(
     "sendContractAction",
     sendContractActionImpl
 )
-
-function generateContractPdf(
-    _ticket: BagadAssoTicket,
-    _equipments: ContractEquipment[]
-): Buffer {
-    return Buffer.from("")
-}

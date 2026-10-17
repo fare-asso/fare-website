@@ -18,6 +18,7 @@ const h = vi.hoisted(() => ({
     findEquipments: vi.fn(),
     update: vi.fn(),
     sendEmail: vi.fn(),
+    generatePdf: vi.fn(),
     captureActionError: vi.fn()
 }))
 
@@ -31,6 +32,9 @@ vi.mock("@/helpers/supabase/astro", () =>
     supabaseAstroModule({ getUserWithPermissions: h.getUser })
 )
 vi.mock("@/helpers/email", () => emailModule(h.sendEmail))
+vi.mock("@/helpers/bagadAsso/generateContractPdf", () => ({
+    generateContractPdf: h.generatePdf
+}))
 vi.mock("@/lib/sentry", () => sentryModule(h.captureActionError))
 
 import { sendContractAction } from "../sendContractAction"
@@ -42,6 +46,7 @@ beforeEach(() => {
     h.findTicket.mockResolvedValue(bagadAssoTicketRecord())
     h.findEquipments.mockResolvedValue([bagadAssoEquipmentRecord()])
     h.sendEmail.mockResolvedValue({ success: true })
+    h.generatePdf.mockResolvedValue(Buffer.from("%PDF-1.7"))
     h.update.mockResolvedValue({ id: 1 })
 })
 
@@ -65,6 +70,7 @@ describe("sendContractAction", () => {
             [
                 { ticketId: -1, equipmentIds: [1] },
                 { ticketId: 1, equipmentIds: [-1] },
+                { ticketId: 1, equipmentIds: [] },
                 { ticketId: 1, equipmentIds: [1, 1] }
             ].map((value) => sendContractAction(value))
         )
@@ -144,17 +150,63 @@ describe("sendContractAction", () => {
         expect(h.sendEmail).not.toHaveBeenCalled()
     })
 
-    it("loads server-side details but never sends the unfinished PDF", async () => {
-        expect(await sendContractAction(input)).toEqual({
-            success: false,
-            error: "Le contrat PDF n'est pas encore disponible"
-        })
+    it("builds the PDF from server-side ticket and equipment details", async () => {
+        expect(await sendContractAction(input)).toEqual({ success: true })
         expect(h.findTicket).toHaveBeenCalledWith({ where: { id: 1 } })
         expect(h.findEquipments).toHaveBeenCalledWith({
             where: { id: { in: [1] } },
             select: { id: true, name: true, deposit: true }
         })
+        expect(h.generatePdf).toHaveBeenCalledWith(
+            expect.objectContaining({
+                id: 1,
+                associationEmail: "asso@example.com"
+            }),
+            [{ id: 1, name: "Barnum", deposit: 50, quantity: 2 }]
+        )
+        expect(h.sendEmail).toHaveBeenCalledWith(
+            expect.objectContaining({
+                to: "asso@example.com",
+                bcc: "lea@example.com",
+                attachments: [
+                    expect.objectContaining({
+                        contentType: "application/pdf",
+                        content: Buffer.from("%PDF-1.7")
+                    })
+                ]
+            })
+        )
+        expect(h.update).toHaveBeenCalledWith({
+            where: { id: 1 },
+            data: { validated: expect.any(Date) }
+        })
+    })
+
+    it("captures PDF generation failures without sending", async () => {
+        h.generatePdf.mockRejectedValueOnce(new Error("pdf down"))
+        expect(await sendContractAction(input)).toEqual({
+            success: false,
+            error: "Echec de la génération du contrat PDF"
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
         expect(h.sendEmail).not.toHaveBeenCalled()
+    })
+
+    it("does not mark the ticket as sent when the email fails", async () => {
+        h.sendEmail.mockResolvedValueOnce({ success: false })
+        expect(await sendContractAction(input)).toEqual({
+            success: false,
+            error: "Echec de l'envoi du contrat"
+        })
         expect(h.update).not.toHaveBeenCalled()
+    })
+
+    it("reports when the email succeeded but the ticket update failed", async () => {
+        h.update.mockRejectedValueOnce(new Error("db down"))
+        expect(await sendContractAction(input)).toEqual({
+            success: false,
+            error: "Le contrat a été envoyé, mais le ticket n'a pas pu être mis à jour."
+        })
+        expect(h.captureActionError).toHaveBeenCalledOnce()
     })
 })

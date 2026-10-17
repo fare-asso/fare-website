@@ -67,6 +67,7 @@ RUN adduser --system --uid 1001 runner
 COPY --from=builder --chown=runner:runner /app/node_modules ./node_modules
 COPY --from=builder --chown=runner:runner /app/dist ./dist
 COPY --from=builder --chown=runner:runner /app/public ./public
+COPY --from=builder --chown=runner:runner /app/src/assets/logo_fare.png ./src/assets/logo_fare.png
 COPY --from=builder --chown=runner:runner /app/package.json ./package.json
 
 USER runner

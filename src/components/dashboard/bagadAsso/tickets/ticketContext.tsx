@@ -23,6 +23,7 @@ export interface TicketDetails {
 type TicketAction =
     | { type: "setEquipmentChecked"; id: number; checked: boolean }
     | { type: "setArchived"; deleted: Date | null }
+    | { type: "setValidated"; validated: Date }
 
 export interface TicketContextValue extends TicketDetails {
     dispatch: Dispatch<TicketAction>
@@ -46,6 +47,11 @@ export function ticketReducer(
             return {
                 ...state,
                 ticket: { ...state.ticket, deleted: action.deleted }
+            }
+        case "setValidated":
+            return {
+                ...state,
+                ticket: { ...state.ticket, validated: action.validated }
             }
     }
 }

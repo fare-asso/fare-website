@@ -12,7 +12,6 @@ import { toast } from "sonner"
 import LoadingRing from "@/components/dashboard/loadingRing"
 import {
     AlertDialog,
-    AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
@@ -22,6 +21,7 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { tryCatch } from "@/lib/utils"
 
 import { useTicketContext } from "./ticketContext"
 
@@ -29,19 +29,53 @@ export default function TicketActions() {
     const { ticket, allEquipments, canDeleteTicket, canEditTicket, dispatch } =
         useTicketContext()
     const [isLoading, setIsLoading] = useState(false)
+    const [openDialog, setOpenDialog] = useState<
+        "contract" | "archive" | "delete" | null
+    >(null)
     const isArchived = ticket.deleted !== null
 
-    const onSendContract = async () => {
-        console.log(ticket)
+    const onSendContract = async (): Promise<void> => {
+        if (isLoading) return
+        setIsLoading(true)
+        const result = await tryCatch(async () => ({
+            response: await actions.bagadAsso.sendContractAction({
+                ticketId: ticket.id,
+                equipmentIds: allEquipments
+                    .filter((equipment) => equipment.checked)
+                    .map((equipment) => equipment.id)
+            })
+        }))
+        const { data, error } = result.success
+            ? result.value.response
+            : { data: undefined, error: result.error }
+        if (error || !data?.success) {
+            toast.error(
+                data && !data.success
+                    ? data.error
+                    : "Une erreur est survenue. Veuillez réessayer."
+            )
+        } else {
+            toast.success("Le contrat a été envoyé.")
+            dispatch({ type: "setValidated", validated: new Date() })
+        }
+        setIsLoading(false)
+        setOpenDialog(null)
     }
 
-    const onArchive = async () => {
+    const onArchive = async (): Promise<void> => {
+        if (isLoading) return
         setIsLoading(true)
 
-        const { data, error } =
-            await actions.bagadAsso.deleteBagadAssoTicketAction(ticket.id)
+        const result = await tryCatch(async () => ({
+            response: await actions.bagadAsso.deleteBagadAssoTicketAction(
+                ticket.id
+            )
+        }))
+        const { data, error } = result.success
+            ? result.value.response
+            : { data: undefined, error: result.error }
 
-        if (error || !data.success) {
+        if (error || !data?.success) {
             toast.error(
                 data && !data.success
                     ? data.error
@@ -52,15 +86,23 @@ export default function TicketActions() {
             dispatch({ type: "setArchived", deleted: new Date() })
         }
         setIsLoading(false)
+        setOpenDialog(null)
     }
 
-    const onUnarchive = async () => {
+    const onUnarchive = async (): Promise<void> => {
+        if (isLoading) return
         setIsLoading(true)
 
-        const { data, error } =
-            await actions.bagadAsso.unarchiveBagadAssoTicketAction(ticket.id)
+        const result = await tryCatch(async () => ({
+            response: await actions.bagadAsso.unarchiveBagadAssoTicketAction(
+                ticket.id
+            )
+        }))
+        const { data, error } = result.success
+            ? result.value.response
+            : { data: undefined, error: result.error }
 
-        if (error || !data.success) {
+        if (error || !data?.success) {
             toast.error(
                 data && !data.success
                     ? data.error
@@ -71,21 +113,30 @@ export default function TicketActions() {
             dispatch({ type: "setArchived", deleted: null })
         }
         setIsLoading(false)
+        setOpenDialog(null)
     }
 
-    const onHardDelete = async () => {
+    const onHardDelete = async (): Promise<void> => {
+        if (isLoading) return
         setIsLoading(true)
 
-        const { data, error } =
-            await actions.bagadAsso.hardDeleteBagadAssoTicketAction(ticket.id)
+        const result = await tryCatch(async () => ({
+            response: await actions.bagadAsso.hardDeleteBagadAssoTicketAction(
+                ticket.id
+            )
+        }))
+        const { data, error } = result.success
+            ? result.value.response
+            : { data: undefined, error: result.error }
+        setIsLoading(false)
+        setOpenDialog(null)
 
-        if (error || !data.success) {
+        if (error || !data?.success) {
             toast.error(
                 data && !data.success
                     ? data.error
                     : "Une erreur est survenue. Veuillez réessayer."
             )
-            setIsLoading(false)
         } else {
             toast.success("Le ticket a été supprimé définitivement.")
             window.location.href = "/dashboard/bagadAsso"
@@ -107,19 +158,21 @@ export default function TicketActions() {
                                 Contrat envoyé
                             </div>
                         ) : (
-                            <AlertDialog>
+                            <AlertDialog
+                                open={openDialog === "contract"}
+                                onOpenChange={(open): void => {
+                                    if (!isLoading)
+                                        setOpenDialog(open ? "contract" : null)
+                                }}
+                            >
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled={isLoading}
+                                        disabled={isLoading || isArchived}
                                         className="gap-2"
                                     >
-                                        {isLoading ? (
-                                            <LoadingRing className="m-0!" />
-                                        ) : (
-                                            <MailIcon className="h-4 w-4" />
-                                        )}
+                                        <MailIcon className="h-4 w-4" />
                                         Envoyer le contrat
                                     </Button>
                                 </AlertDialogTrigger>
@@ -136,17 +189,20 @@ export default function TicketActions() {
                                                 </b>{" "}
                                                 sera envoyé à{" "}
                                                 <b className="text-accent-foreground">
-                                                    {ticket.representativeEmail}
+                                                    {ticket.associationEmail}
                                                 </b>{" "}
+                                                (copie à{" "}
+                                                {ticket.representativeEmail})
                                                 avec les équipements suivants :
                                                 <ul className="my-2">
                                                     {allEquipments.filter(
                                                         (eq) => eq.checked
                                                     ).length === 0 && (
-                                                        <div className="text-muted-foreground p-3 text-sm">
-                                                            Aucun matériel
-                                                            demandé
-                                                        </div>
+                                                        <li className="text-muted-foreground p-3 text-sm">
+                                                            Sélectionnez au
+                                                            moins un équipement
+                                                            avant l'envoi.
+                                                        </li>
                                                     )}
                                                     {allEquipments
                                                         .filter(
@@ -173,19 +229,36 @@ export default function TicketActions() {
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                        <AlertDialogCancel>
+                                        <AlertDialogCancel disabled={isLoading}>
                                             Annuler
                                         </AlertDialogCancel>
-                                        <AlertDialogAction
+                                        <Button
+                                            aria-busy={isLoading}
+                                            disabled={
+                                                isLoading ||
+                                                !allEquipments.some(
+                                                    (equipment) =>
+                                                        equipment.checked
+                                                )
+                                            }
                                             onClick={onSendContract}
                                         >
+                                            {isLoading && (
+                                                <LoadingRing className="m-0!" />
+                                            )}
                                             Envoyer
-                                        </AlertDialogAction>
+                                        </Button>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
                         )}
-                        <AlertDialog>
+                        <AlertDialog
+                            open={openDialog === "archive"}
+                            onOpenChange={(open): void => {
+                                if (!isLoading)
+                                    setOpenDialog(open ? "archive" : null)
+                            }}
+                        >
                             <AlertDialogTrigger asChild>
                                 <Button
                                     variant="outline"
@@ -193,9 +266,7 @@ export default function TicketActions() {
                                     disabled={isLoading}
                                     className="gap-2"
                                 >
-                                    {isLoading ? (
-                                        <LoadingRing className="m-0!" />
-                                    ) : isArchived ? (
+                                    {isArchived ? (
                                         <ArchiveRestoreIcon className="h-4 w-4" />
                                     ) : (
                                         <ArchiveIcon className="h-4 w-4" />
@@ -239,18 +310,23 @@ export default function TicketActions() {
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>
+                                    <AlertDialogCancel disabled={isLoading}>
                                         Annuler
                                     </AlertDialogCancel>
-                                    <AlertDialogAction
+                                    <Button
+                                        disabled={isLoading}
+                                        aria-busy={isLoading}
                                         onClick={
                                             isArchived ? onUnarchive : onArchive
                                         }
                                     >
+                                        {isLoading && (
+                                            <LoadingRing className="m-0!" />
+                                        )}
                                         {isArchived
                                             ? "Désarchiver"
                                             : "Archiver"}
-                                    </AlertDialogAction>
+                                    </Button>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
@@ -259,7 +335,13 @@ export default function TicketActions() {
 
                 {/* Hard Delete Button */}
                 {canDeleteTicket ? (
-                    <AlertDialog>
+                    <AlertDialog
+                        open={openDialog === "delete"}
+                        onOpenChange={(open): void => {
+                            if (!isLoading)
+                                setOpenDialog(open ? "delete" : null)
+                        }}
+                    >
                         <AlertDialogTrigger asChild>
                             <Button
                                 variant="outline"
@@ -267,11 +349,7 @@ export default function TicketActions() {
                                 disabled={isLoading}
                                 className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive gap-2"
                             >
-                                {isLoading ? (
-                                    <LoadingRing className="m-0!" />
-                                ) : (
-                                    <Trash2Icon className="h-4 w-4" />
-                                )}
+                                <Trash2Icon className="h-4 w-4" />
                                 Supprimer définitivement
                             </Button>
                         </AlertDialogTrigger>
@@ -304,13 +382,20 @@ export default function TicketActions() {
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                <AlertDialogAction
+                                <AlertDialogCancel disabled={isLoading}>
+                                    Annuler
+                                </AlertDialogCancel>
+                                <Button
+                                    disabled={isLoading}
+                                    aria-busy={isLoading}
                                     onClick={onHardDelete}
                                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 >
+                                    {isLoading && (
+                                        <LoadingRing className="m-0!" />
+                                    )}
                                     Supprimer définitivement
-                                </AlertDialogAction>
+                                </Button>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>

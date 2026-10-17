@@ -22,6 +22,13 @@ const details: TicketDetails = {
 }
 
 describe("ticketReducer", () => {
+    it("marks the contract as sent without mutating the original ticket", () => {
+        const validated = new Date("2026-10-17T12:00:00Z")
+        const next = ticketReducer(details, { type: "setValidated", validated })
+        expect(next.ticket.validated).toEqual(validated)
+        expect(details.ticket.validated).toBeNull()
+        expect(next.allEquipments).toBe(details.allEquipments)
+    })
     it("checks only the selected equipment without mutating the previous state", () => {
         const next = ticketReducer(details, {
             type: "setEquipmentChecked",
