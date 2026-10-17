@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { renderWithClient as render } from "@/test/browser"
@@ -25,7 +26,19 @@ vi.mock("astro:actions", () => ({
 vi.mock("sonner", () => ({ toast: { success: h.success, error: h.error } }))
 
 import TicketActions from "../ticketActions"
-import { TicketProvider } from "../ticketContext"
+import { TicketProvider, useTicketContext } from "../ticketContext"
+
+function EquipmentBusyControl(): ReactNode {
+    const { isEquipmentBusy, setIsEquipmentBusy } = useTicketContext()
+    return (
+        <button
+            type="button"
+            onClick={(): void => setIsEquipmentBusy(!isEquipmentBusy)}
+        >
+            Toggle quantity editing
+        </button>
+    )
+}
 
 async function renderActions(
     checked = true,
@@ -60,6 +73,7 @@ async function renderActions(
             canDeleteTicket={canDelete}
         >
             <TicketActions />
+            <EquipmentBusyControl />
         </TicketProvider>
     )
 }
@@ -75,6 +89,48 @@ beforeEach(() => {
 })
 
 describe("<TicketActions /> contract sending", () => {
+    it("lets the sender disable communication in the contract and email", async () => {
+        const screen = await renderActions()
+        await screen.getByRole("button", { name: "Envoyer le contrat" }).click()
+        await expect
+            .element(
+                screen.getByRole("checkbox", {
+                    name: "Inclure la clause de communication"
+                })
+            )
+            .toBeChecked()
+        await screen
+            .getByRole("checkbox", {
+                name: "Inclure la clause de communication"
+            })
+            .click()
+        await screen
+            .getByRole("button", { name: "Envoyer", exact: true })
+            .click()
+        await vi.waitFor(() =>
+            expect(h.send).toHaveBeenCalledWith({
+                ticketId: 1,
+                equipmentIds: [1],
+                includeCommunication: false
+            })
+        )
+    })
+
+    it("blocks sending while equipment quantities are being edited or saved", async () => {
+        const screen = await renderActions()
+        await screen
+            .getByRole("button", { name: "Toggle quantity editing" })
+            .click()
+        await expect
+            .element(screen.getByRole("button", { name: "Envoyer le contrat" }))
+            .toBeDisabled()
+        await screen
+            .getByRole("button", { name: "Toggle quantity editing" })
+            .click()
+        await expect
+            .element(screen.getByRole("button", { name: "Envoyer le contrat" }))
+            .toBeEnabled()
+    })
     it.each(["archive", "unarchive", "remove"] as const)(
         "keeps the %s dialog open until its footer action completes",
         async (action) => {
@@ -198,7 +254,8 @@ describe("<TicketActions /> contract sending", () => {
         await vi.waitFor(() =>
             expect(h.send).toHaveBeenCalledWith({
                 ticketId: 1,
-                equipmentIds: [1]
+                equipmentIds: [1],
+                includeCommunication: true
             })
         )
         await expect

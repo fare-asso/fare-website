@@ -37,6 +37,7 @@ import { submitBagadAssoFormAction } from "./bagadAsso/submitBagadAssoFormAction
 import { submitSuggestionAction } from "./bagadAsso/submitSuggestionAction"
 import { unarchiveSuggestionAction } from "./bagadAsso/unarchiveSuggestionAction"
 import { unarchiveBagadAssoTicketAction } from "./bagadAsso/unarchiveTicketAction"
+import { updateTicketEquipmentQuantityAction } from "./bagadAsso/updateTicketEquipmentQuantityAction"
 import { archiveTutorApplication } from "./bouge-ta-prison/archiveTutorApplication"
 import { archiveTutorQuestion } from "./bouge-ta-prison/archiveTutorQuestion"
 import { bulkArchiveTutorApplicationsAction } from "./bouge-ta-prison/bulkArchiveTutorApplicationsAction"
@@ -232,6 +233,9 @@ export const server = {
         ),
         setTicketValidatedAction: jsonAction(setTicketValidatedAction),
         sendContractAction: jsonAction(sendContractAction),
+        updateTicketEquipmentQuantityAction: jsonAction(
+            updateTicketEquipmentQuantityAction
+        ),
         hardDeleteBagadAssoTicketAction: jsonAction(
             hardDeleteBagadAssoTicketAction
         ),

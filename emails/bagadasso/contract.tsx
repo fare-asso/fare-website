@@ -9,11 +9,12 @@ interface BagadAssoContractProps {
         eventDate: Date
         eventEndDate: Date | null
         id: number
+        includeCommunication?: boolean
     }
 }
 
 export function BagadAssoContract({
-    data: { eventDate, eventEndDate, id }
+    data: { eventDate, eventEndDate, id, includeCommunication = true }
 }: BagadAssoContractProps) {
     return (
         <BaseTemplate>
@@ -56,34 +57,41 @@ export function BagadAssoContract({
                     , qui présente le projet ainsi que le matériel mis à
                     disposition.
                 </Text>
-                <Text className="m-0 mt-3 text-sm text-stone-700">
-                    • Le{" "}
-                    <Link
-                        href="https://drive.google.com/file/d/1dKGEMJq4Ds112bUn4CXyFrANxo2wstkq/view?usp=sharing"
-                        className="text-blue-600 underline"
-                    >
-                        kit de communication
-                    </Link>
-                    , qui recense les règles à respecter pour communiquer autour
-                    du projet, conformément au contrat.
-                </Text>
+                {includeCommunication && (
+                    <Text className="m-0 mt-3 text-sm text-stone-700">
+                        • Le{" "}
+                        <Link
+                            href="https://drive.google.com/file/d/1dKGEMJq4Ds112bUn4CXyFrANxo2wstkq/view?usp=sharing"
+                            className="text-blue-600 underline"
+                        >
+                            kit de communication
+                        </Link>
+                        , qui recense les règles à respecter pour communiquer
+                        autour du projet, conformément au contrat.
+                    </Text>
+                )}
             </Section>
 
             <Section className="mt-6 text-sm text-stone-700">
-                <Text className="m-0">
-                    Afin de vous faire gagner du temps, j'ai également créé des
-                    modèles de communication sur Canva. Il vous suffit d'ajouter
-                    votre photo ou votre vidéo pour que votre story soit prête !
-                </Text>
-                <Text className="m-0 my-4">
-                    Lien Canva :{" "}
-                    <Link
-                        href="https://canva.link/ge625su919wtyjz"
-                        className="text-blue-600 underline"
-                    >
-                        https://canva.link/ge625su919wtyjz
-                    </Link>
-                </Text>
+                {includeCommunication && (
+                    <>
+                        <Text className="m-0">
+                            Afin de vous faire gagner du temps, j'ai également
+                            créé des modèles de communication sur Canva. Il vous
+                            suffit d'ajouter votre photo ou votre vidéo pour que
+                            votre story soit prête !
+                        </Text>
+                        <Text className="m-0 my-4">
+                            Lien Canva :{" "}
+                            <Link
+                                href="https://canva.link/ge625su919wtyjz"
+                                className="text-blue-600 underline"
+                            >
+                                https://canva.link/ge625su919wtyjz
+                            </Link>
+                        </Text>
+                    </>
+                )}
                 <Text className="m-0 text-sm text-stone-700">
                     En règle générale, le matériel est remis un à deux jours
                     avant l'événement. N'hésitez pas à me communiquer le jour et

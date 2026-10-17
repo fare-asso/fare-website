@@ -10,6 +10,20 @@ const data = {
 }
 
 describe("BagadAssoContract email", () => {
+    it("omits communication resources and Canva but retains practical information when disabled", async () => {
+        const html = await render(
+            <BagadAssoContract
+                data={{ ...data, includeCommunication: false }}
+            />
+        )
+        expect(html).not.toContain("kit de communication")
+        expect(html).not.toContain("canva.link")
+        expect(html).not.toContain("modèles de communication")
+        expect(html).not.toContain("conformément au contrat")
+        expect(html).toContain("kit d&#x27;utilisation du Bagad&#x27;Asso")
+        expect(html).toContain("campus de Beaulieu")
+        expect(html).toContain("chèque de caution")
+    })
     it("renders the event dates and contract instructions", async () => {
         const html = await render(<BagadAssoContract data={data} />)
 

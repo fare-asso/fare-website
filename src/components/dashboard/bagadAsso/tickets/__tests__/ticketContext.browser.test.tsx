@@ -7,12 +7,27 @@ import { bagadAssoTicketRecord } from "@/test/factories/bagadAsso"
 import { TicketProvider, useTicketContext } from "../ticketContext"
 
 function TicketConsumer(): ReactNode {
-    const { allEquipments, ticket, dispatch } = useTicketContext()
+    const {
+        allEquipments,
+        ticket,
+        dispatch,
+        isEquipmentBusy,
+        setIsEquipmentBusy
+    } = useTicketContext()
 
     return (
         <>
             <p>Checked: {String(allEquipments[0].checked)}</p>
             <p>Archived: {String(ticket.deleted !== null)}</p>
+            <p>Busy: {String(isEquipmentBusy)}</p>
+            <button
+                type="button"
+                onClick={(): void =>
+                    setIsEquipmentBusy((busy): boolean => !busy)
+                }
+            >
+                Toggle equipment busy
+            </button>
             <button
                 type="button"
                 onClick={() =>
@@ -66,5 +81,14 @@ describe("<TicketProvider />", () => {
         await expect.element(screen.getByText("Checked: true")).toBeVisible()
         await screen.getByRole("button", { name: "Archive ticket" }).click()
         await expect.element(screen.getByText("Archived: true")).toBeVisible()
+        await expect.element(screen.getByText("Busy: false")).toBeVisible()
+        await screen
+            .getByRole("button", { name: "Toggle equipment busy" })
+            .click()
+        await expect.element(screen.getByText("Busy: true")).toBeVisible()
+        await screen
+            .getByRole("button", { name: "Toggle equipment busy" })
+            .click()
+        await expect.element(screen.getByText("Busy: false")).toBeVisible()
     })
 })

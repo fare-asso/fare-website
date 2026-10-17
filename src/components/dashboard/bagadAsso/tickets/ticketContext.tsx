@@ -1,7 +1,9 @@
-import { createContext, useContext, useReducer } from "react"
-import type { Dispatch, ReactNode } from "react"
+import { type } from "arktype"
+import { createContext, useContext, useReducer, useState } from "react"
+import type { Dispatch, ReactNode, SetStateAction } from "react"
 
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { tryCatch } from "@/lib/utils"
 
 interface EquipmentLine {
     id: number
@@ -22,11 +24,33 @@ export interface TicketDetails {
 
 type TicketAction =
     | { type: "setEquipmentChecked"; id: number; checked: boolean }
+    | { type: "setEquipmentQuantity"; id: number; quantity: number }
     | { type: "setArchived"; deleted: Date | null }
     | { type: "setValidated"; validated: Date }
 
 export interface TicketContextValue extends TicketDetails {
     dispatch: Dispatch<TicketAction>
+    isEquipmentBusy: boolean
+    setIsEquipmentBusy: Dispatch<SetStateAction<boolean>>
+}
+
+const StoredEquipments = type({ id: "number", quantity: "number" }).array()
+
+function updateStoredQuantity(
+    equipments: BagadAssoTicket["equipments"],
+    id: number,
+    quantity: number
+): BagadAssoTicket["equipments"] {
+    const parsed = tryCatch((): unknown =>
+        typeof equipments === "string" ? JSON.parse(equipments) : equipments
+    )
+    if (!parsed.success) return equipments
+    const stored = StoredEquipments(parsed.value)
+    if (stored instanceof type.errors) return equipments
+    const updated = stored.map((equipment): typeof equipment =>
+        equipment.id === id ? { ...equipment, quantity } : equipment
+    )
+    return typeof equipments === "string" ? JSON.stringify(updated) : updated
 }
 
 export function ticketReducer(
@@ -34,6 +58,39 @@ export function ticketReducer(
     action: TicketAction
 ): TicketDetails {
     switch (action.type) {
+        case "setEquipmentQuantity": {
+            if (
+                !Number.isSafeInteger(action.quantity) ||
+                action.quantity < 1 ||
+                !state.allEquipments.some(
+                    (equipment): boolean => equipment.id === action.id
+                )
+            )
+                return state
+            const allEquipments = state.allEquipments.map(
+                (equipment): EquipmentLine =>
+                    equipment.id === action.id
+                        ? { ...equipment, quantity: action.quantity }
+                        : equipment
+            )
+            return {
+                ...state,
+                allEquipments,
+                totalDeposit: allEquipments.reduce(
+                    (total, equipment): number =>
+                        total + equipment.quantity * equipment.deposit,
+                    0
+                ),
+                ticket: {
+                    ...state.ticket,
+                    equipments: updateStoredQuantity(
+                        state.ticket.equipments,
+                        action.id,
+                        action.quantity
+                    )
+                }
+            }
+        }
         case "setEquipmentChecked":
             return {
                 ...state,
@@ -67,8 +124,17 @@ export function TicketProvider({
         initialTicketDetails
     )
 
+    const [isEquipmentBusy, setIsEquipmentBusy] = useState(false)
+
     return (
-        <TicketContext.Provider value={{ ...ticketDetails, dispatch }}>
+        <TicketContext.Provider
+            value={{
+                ...ticketDetails,
+                dispatch,
+                isEquipmentBusy,
+                setIsEquipmentBusy
+            }}
+        >
             {children}
         </TicketContext.Provider>
     )

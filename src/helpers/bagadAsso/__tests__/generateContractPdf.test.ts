@@ -48,11 +48,28 @@ function hasText(operators: string, value: string): boolean {
 }
 
 describe("generateContractPdf", () => {
+    it("omits the communication clause and renumbers following articles when disabled", async () => {
+        const pdf = await generateContractPdf(
+            bagadAssoTicketRecord(),
+            equipments,
+            { today, includeCommunication: false }
+        )
+        const doc = await PDFDocument.load(pdf)
+        const operators = pageTextOperators(doc)
+        expect(hasText(operators, "Communication du projet")).toBe(false)
+        expect(hasText(operators, "communication")).toBe(false)
+        expect(hasText(operators, "Article 8 : Litiges")).toBe(true)
+        expect(hasText(operators, "Article 9 : Dispositions diverses")).toBe(
+            true
+        )
+        expect(hasText(operators, "Article 10 :")).toBe(false)
+        expect(doc.getForm().getSignature("signature_emprunteur")).toBeDefined()
+    })
     it("produces an A4 PDF with all ten articles, dynamic data and a borrower signature field", async () => {
         const pdf = await generateContractPdf(
             bagadAssoTicketRecord(),
             equipments,
-            today
+            { today }
         )
         expect(pdf.subarray(0, 4).toString()).toBe("%PDF")
 
@@ -98,7 +115,7 @@ describe("generateContractPdf", () => {
                 quantity: 2,
                 deposit: 30
             })),
-            today
+            { today }
         )
         const doc = await PDFDocument.load(pdf)
         expect(doc.getPageCount()).toBeGreaterThanOrEqual(4)

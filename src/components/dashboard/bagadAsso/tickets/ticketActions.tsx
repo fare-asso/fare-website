@@ -21,28 +21,38 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { FieldLabel } from "@/components/ui/field"
 import { tryCatch } from "@/lib/utils"
 
 import { useTicketContext } from "./ticketContext"
 
 export default function TicketActions() {
-    const { ticket, allEquipments, canDeleteTicket, canEditTicket, dispatch } =
-        useTicketContext()
+    const {
+        ticket,
+        allEquipments,
+        canDeleteTicket,
+        canEditTicket,
+        dispatch,
+        isEquipmentBusy
+    } = useTicketContext()
     const [isLoading, setIsLoading] = useState(false)
+    const [includeCommunication, setIncludeCommunication] = useState(true)
     const [openDialog, setOpenDialog] = useState<
         "contract" | "archive" | "delete" | null
     >(null)
     const isArchived = ticket.deleted !== null
 
     const onSendContract = async (): Promise<void> => {
-        if (isLoading) return
+        if (isLoading || isEquipmentBusy) return
         setIsLoading(true)
         const result = await tryCatch(async () => ({
             response: await actions.bagadAsso.sendContractAction({
                 ticketId: ticket.id,
                 equipmentIds: allEquipments
                     .filter((equipment) => equipment.checked)
-                    .map((equipment) => equipment.id)
+                    .map((equipment) => equipment.id),
+                includeCommunication
             })
         }))
         const { data, error } = result.success
@@ -63,7 +73,7 @@ export default function TicketActions() {
     }
 
     const onArchive = async (): Promise<void> => {
-        if (isLoading) return
+        if (isLoading || isEquipmentBusy) return
         setIsLoading(true)
 
         const result = await tryCatch(async () => ({
@@ -90,7 +100,7 @@ export default function TicketActions() {
     }
 
     const onUnarchive = async (): Promise<void> => {
-        if (isLoading) return
+        if (isLoading || isEquipmentBusy) return
         setIsLoading(true)
 
         const result = await tryCatch(async () => ({
@@ -117,7 +127,7 @@ export default function TicketActions() {
     }
 
     const onHardDelete = async (): Promise<void> => {
-        if (isLoading) return
+        if (isLoading || isEquipmentBusy) return
         setIsLoading(true)
 
         const result = await tryCatch(async () => ({
@@ -169,7 +179,11 @@ export default function TicketActions() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled={isLoading || isArchived}
+                                        disabled={
+                                            isLoading ||
+                                            isArchived ||
+                                            isEquipmentBusy
+                                        }
                                         className="gap-2"
                                     >
                                         <MailIcon className="h-4 w-4" />
@@ -228,6 +242,29 @@ export default function TicketActions() {
                                             </div>
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
+                                    <div className="flex items-start gap-3">
+                                        <Checkbox
+                                            id="contract-communication"
+                                            checked={includeCommunication}
+                                            disabled={isLoading}
+                                            onCheckedChange={(checked): void =>
+                                                setIncludeCommunication(
+                                                    checked === true
+                                                )
+                                            }
+                                        />
+                                        <div className="space-y-1">
+                                            <FieldLabel htmlFor="contract-communication">
+                                                Inclure la clause de
+                                                communication
+                                            </FieldLabel>
+                                            <p className="text-muted-foreground text-sm">
+                                                Inclut le kit de communication
+                                                et les modèles Canva dans
+                                                l'email.
+                                            </p>
+                                        </div>
+                                    </div>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel disabled={isLoading}>
                                             Annuler
@@ -236,6 +273,7 @@ export default function TicketActions() {
                                             aria-busy={isLoading}
                                             disabled={
                                                 isLoading ||
+                                                isEquipmentBusy ||
                                                 !allEquipments.some(
                                                     (equipment) =>
                                                         equipment.checked
@@ -263,7 +301,7 @@ export default function TicketActions() {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    disabled={isLoading}
+                                    disabled={isLoading || isEquipmentBusy}
                                     className="gap-2"
                                 >
                                     {isArchived ? (
@@ -346,7 +384,7 @@ export default function TicketActions() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                disabled={isLoading}
+                                disabled={isLoading || isEquipmentBusy}
                                 className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive gap-2"
                             >
                                 <Trash2Icon className="h-4 w-4" />

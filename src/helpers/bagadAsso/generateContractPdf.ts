@@ -23,6 +23,12 @@ export interface ContractEquipment {
 interface ContractSection {
     title: string
     paragraphs: string[]
+    communication?: boolean
+}
+
+interface ContractPdfOptions {
+    today?: Date
+    includeCommunication?: boolean
 }
 
 const WIDTH = 595.28
@@ -52,7 +58,8 @@ function formatMoney(amount: number): string {
 function contractText(
     ticket: BagadAssoTicket,
     equipments: ContractEquipment[],
-    today: Date
+    today: Date,
+    includeCommunication: boolean
 ): { introduction: string[]; sections: ContractSection[]; closing: string[] } {
     const deposit =
         equipments.reduce(
@@ -145,6 +152,7 @@ function contractText(
         },
         {
             title: "Article 8 : Communication du projet",
+            communication: true,
             paragraphs: [
                 "L’Emprunteur s’engage à réaliser au moins une communication sur ses réseaux sociaux lors de l’utilisation du Bagad’Asso, à l’aide du kit de communication fourni avec ledit contrat."
             ]
@@ -168,10 +176,12 @@ function contractText(
     ]
     return {
         introduction: introduction.map(fill),
-        sections: sections.map(({ title, paragraphs }) => ({
-            title,
-            paragraphs: paragraphs.map(fill)
-        })),
+        sections: sections
+            .filter((section) => includeCommunication || !section.communication)
+            .map(({ title, paragraphs }, index) => ({
+                title: title.replace(/^Article \d+/, `Article ${index + 1}`),
+                paragraphs: paragraphs.map(fill)
+            })),
         closing: closing.map(fill)
     }
 }
@@ -214,7 +224,7 @@ function wrapLines(
 export async function generateContractPdf(
     ticket: BagadAssoTicket,
     equipments: ContractEquipment[],
-    today = new Date()
+    { today = new Date(), includeCommunication = true }: ContractPdfOptions = {}
 ): Promise<Buffer> {
     const doc = await PDFDocument.create()
     const font = await doc.embedFont(StandardFonts.Helvetica)
@@ -222,7 +232,7 @@ export async function generateContractPdf(
     const logo = await doc.embedPng(
         await readFile(path.join(process.cwd(), "src/assets/logo_fare.png"))
     )
-    const text = contractText(ticket, equipments, today)
+    const text = contractText(ticket, equipments, today, includeCommunication)
     let page: PDFPage = doc.addPage([WIDTH, HEIGHT])
     let y = HEIGHT - 121
 

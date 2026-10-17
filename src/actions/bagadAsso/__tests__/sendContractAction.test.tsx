@@ -24,7 +24,7 @@ const h = vi.hoisted(() => ({
 
 vi.mock("@/helpers/db", () =>
     dbModule({
-        bagadAssoTicket: { findUnique: h.findTicket, update: h.update },
+        bagadAssoTicket: { findUnique: h.findTicket, updateMany: h.update },
         bagadAssoEquipment: { findMany: h.findEquipments }
     })
 )
@@ -47,10 +47,50 @@ beforeEach(() => {
     h.findEquipments.mockResolvedValue([bagadAssoEquipmentRecord()])
     h.sendEmail.mockResolvedValue({ success: true })
     h.generatePdf.mockResolvedValue(Buffer.from("%PDF-1.7"))
-    h.update.mockResolvedValue({ id: 1 })
+    h.update.mockResolvedValue({ count: 1 })
 })
 
 describe("sendContractAction", () => {
+    it.each([true, false])(
+        "passes the communication choice consistently to PDF and email (enabled=%s)",
+        async (includeCommunication) => {
+            expect(
+                await sendContractAction({ ...input, includeCommunication })
+            ).toEqual({ success: true })
+            expect(h.generatePdf).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.anything(),
+                { includeCommunication }
+            )
+            expect(h.sendEmail).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    html: includeCommunication
+                        ? expect.stringContaining("kit de communication")
+                        : expect.not.stringContaining("kit de communication")
+                })
+            )
+            expect(h.sendEmail).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    html: includeCommunication
+                        ? expect.stringContaining("canva.link")
+                        : expect.not.stringContaining("canva.link")
+                })
+            )
+        }
+    )
+
+    it("rejects an invalid communication flag", async () => {
+        expect(
+            await sendContractAction({
+                ...input,
+                includeCommunication: "non" as never
+            })
+        ).toEqual({
+            success: false,
+            error: "Un ou plusieurs champs sont invalides."
+        })
+        expect(h.findTicket).not.toHaveBeenCalled()
+    })
     it("requires authentication and the edit permission", async () => {
         h.getUser.mockResolvedValueOnce(null)
         expect(await sendContractAction(input)).toEqual({
@@ -162,7 +202,8 @@ describe("sendContractAction", () => {
                 id: 1,
                 associationEmail: "asso@example.com"
             }),
-            [{ id: 1, name: "Barnum", deposit: 50, quantity: 2 }]
+            [{ id: 1, name: "Barnum", deposit: 50, quantity: 2 }],
+            { includeCommunication: true }
         )
         expect(h.sendEmail).toHaveBeenCalledWith(
             expect.objectContaining({
@@ -182,9 +223,24 @@ describe("sendContractAction", () => {
             })
         )
         expect(h.update).toHaveBeenCalledWith({
-            where: { id: 1 },
+            where: {
+                id: 1,
+                deleted: null,
+                validated: null,
+                equipments: { equals: JSON.stringify([{ id: 1, quantity: 2 }]) }
+            },
             data: { validated: expect.any(Date) }
         })
+    })
+
+    it("does not mark a changed ticket as validated after sending", async () => {
+        h.update.mockResolvedValueOnce({ count: 0 })
+        expect(await sendContractAction(input)).toEqual({
+            success: false,
+            error: "Le contrat a été envoyé, mais le ticket a été modifié entre-temps. Vérifiez les informations avant un nouvel envoi."
+        })
+        expect(h.sendEmail).toHaveBeenCalledOnce()
+        expect(h.captureActionError).not.toHaveBeenCalled()
     })
 
     it("captures PDF generation failures without sending", async () => {

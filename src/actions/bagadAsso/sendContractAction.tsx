@@ -17,7 +17,8 @@ import { tryCatch } from "@/lib/utils"
 
 const SendContractSchema = type({
     ticketId: "number.integer > 0",
-    equipmentIds: type("number.integer > 0").array()
+    equipmentIds: type("number.integer > 0").array(),
+    "includeCommunication?": "boolean"
 })
 
 const TicketEquipmentsSchema = type({
@@ -65,10 +66,14 @@ async function sendContractActionImpl(
         }
     }
 
+    const originalEquipments = ticket.equipments
+    if (originalEquipments === null) {
+        return { success: false, error: "Matériel du ticket invalide" }
+    }
     const storedEquipments = tryCatch(() =>
-        typeof ticket.equipments === "string"
-            ? JSON.parse(ticket.equipments)
-            : ticket.equipments
+        typeof originalEquipments === "string"
+            ? JSON.parse(originalEquipments)
+            : originalEquipments
     )
     if (!storedEquipments.success) {
         captureActionError(storedEquipments.error)
@@ -119,7 +124,10 @@ async function sendContractActionImpl(
         return { success: false, error: "Matériel sélectionné invalide" }
     }
 
-    const pdf = await tryCatch(() => generateContractPdf(ticket, equipments))
+    const includeCommunication = data.includeCommunication ?? true
+    const pdf = await tryCatch(() =>
+        generateContractPdf(ticket, equipments, { includeCommunication })
+    )
     if (!pdf.success) {
         captureActionError(pdf.error)
         return {
@@ -142,7 +150,8 @@ async function sendContractActionImpl(
                 data={{
                     eventDate: ticket.eventDate,
                     eventEndDate: ticket.eventEndDate,
-                    id: ticket.id
+                    id: ticket.id,
+                    includeCommunication
                 }}
             />
         ),
@@ -160,9 +169,12 @@ async function sendContractActionImpl(
     }
 
     const saved = await tryCatch(
-        prisma.bagadAssoTicket.update({
+        prisma.bagadAssoTicket.updateMany({
             where: {
-                id: ticket.id
+                id: ticket.id,
+                deleted: null,
+                validated: null,
+                equipments: { equals: originalEquipments }
             },
             data: {
                 validated: new Date()
@@ -174,6 +186,13 @@ async function sendContractActionImpl(
         return {
             success: false,
             error: "Le contrat a été envoyé, mais le ticket n'a pas pu être mis à jour."
+        }
+    }
+
+    if (saved.value.count === 0) {
+        return {
+            success: false,
+            error: "Le contrat a été envoyé, mais le ticket a été modifié entre-temps. Vérifiez les informations avant un nouvel envoi."
         }
     }
 
