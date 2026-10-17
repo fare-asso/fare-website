@@ -14,6 +14,7 @@ interface EmailAttachment {
 
 interface EmailPayload {
     to: MailOptions["to"]
+    bcc?: MailOptions["bcc"]
     subject: string
     html: string
     attachments?: EmailAttachment[]
@@ -41,12 +42,13 @@ const transporter = nodemailer.createTransport({
 export async function sendEmail(
     payload: EmailPayload
 ): Promise<{ success: true } | { success: false }> {
-    const { to, subject, html, attachments } = payload
+    const { to, bcc, subject, html, attachments } = payload
 
     const result = await tryCatch(
         transporter.sendMail({
             from: `FARE <${env.SMTP_FROM_EMAIL}>`,
             to: isProduction ? to : "outils-numeriques@fare-asso.fr",
+            bcc: isProduction ? bcc : undefined,
             subject: isProduction ? subject : `TEST - ${subject}`,
             html,
             attachments
