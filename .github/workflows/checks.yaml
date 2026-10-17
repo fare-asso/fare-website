@@ -31,37 +31,40 @@ jobs:
               with:
                   persist-credentials: false
 
-            - uses: pnpm/action-setup@v4
-              name: Install pnpm
-              with:
-                  run_install: false
-
             - name: Install Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: 24
-                  cache: "pnpm"
+
+            - name: Install UPM
+              run: npm install --global upm@1.4.0
+
+            - name: Cache UPM store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.upm/store
+                  key: upm-${{ runner.os }}-${{ hashFiles('upm.lock') }}
 
             - name: Install dependencies
-              run: pnpm install
+              run: upm install --frozen-lockfile
 
             - name: Generate Prisma Client
-              run: pnpm exec prisma generate
+              run: upm exec prisma generate
 
             - name: Sync Astro
-              run: pnpm exec astro sync
+              run: upm exec astro sync
 
             - name: Check linting
-              run: pnpm run check:lint --format=github
+              run: upm run check:lint --format=github
 
             - name: Check types
-              run: pnpm run check:types
+              run: upm run check:types
 
             - name: Check formatting
-              run: pnpm run check:format
+              run: upm run check:format
 
             - name: Knip project
-              run: pnpm run knip
+              run: upm run knip
 
     test:
         runs-on: ubuntu-latest
@@ -73,28 +76,31 @@ jobs:
               with:
                   persist-credentials: false
 
-            - uses: pnpm/action-setup@v4
-              name: Install pnpm
-              with:
-                  run_install: false
-
             - name: Install Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: 24
-                  cache: "pnpm"
+
+            - name: Install UPM
+              run: npm install --global upm@1.4.0
+
+            - name: Cache UPM store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.upm/store
+                  key: upm-${{ runner.os }}-${{ hashFiles('upm.lock') }}
 
             - name: Install dependencies
-              run: pnpm install
+              run: upm install --frozen-lockfile
 
             - name: Generate Prisma Client
-              run: pnpm exec prisma generate
+              run: upm exec prisma generate
 
             - name: Run node tests
-              run: pnpm run test:node
+              run: upm run test:node
 
             - name: Install Playwright Chromium
-              run: pnpm exec playwright install --with-deps chromium
+              run: upm exec playwright install --with-deps chromium
 
             - name: Run browser tests
-              run: pnpm run test:browser
+              run: upm run test:browser

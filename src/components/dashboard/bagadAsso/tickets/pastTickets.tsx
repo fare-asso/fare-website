@@ -4,11 +4,12 @@ import { isEventPast } from "@/helpers/eventDate"
 import TicketList from "./ticketList"
 
 export default function PastTickets({
-    tickets
+    tickets,
+    now
 }: {
     tickets: BagadAssoTicket[]
+    now: Date
 }) {
-    const now = new Date()
     const past = tickets
         .filter(
             (t) => !t.deleted && isEventPast(t.eventDate, t.eventEndDate, now)

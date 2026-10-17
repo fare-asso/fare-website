@@ -23,6 +23,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip"
 import type { Association } from "@/generated/prisma/client"
+import { useInitialNow } from "@/hooks/useInitialNow"
 import {
     ASSOCIATION_SOCIAL_KEYS,
     EditAssociationSchema,
@@ -44,6 +45,7 @@ export default function EditAssociationButton({
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const now = useInitialNow()
     const queryClient = useQueryClient()
 
     const form = useForm({
@@ -226,7 +228,7 @@ export default function EditAssociationButton({
                         error="La date de naissance est requise."
                         captionLayout="dropdown"
                         startMonth={new Date(1950, 0)}
-                        endMonth={new Date(new Date().getFullYear() + 1, 11)}
+                        endMonth={new Date(now.getFullYear() + 1, 11)}
                     />
                 )}
             />

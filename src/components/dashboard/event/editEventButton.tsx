@@ -19,6 +19,7 @@ import DatePicker from "@/components/ui/input/datePicker"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { useInitialNow } from "@/hooks/useInitialNow"
 
 import CategorySelect from "../../ui/category/categorySelect"
 import TimePicker from "../../ui/input/timePicker"
@@ -37,6 +38,7 @@ export default function EditEventButtonClient({
         eventInfo.visibility
     )
     const [imageUrl, setImageUrl] = useState<string>(eventInfo.imageUrl)
+    const currentYear = useInitialNow().getFullYear()
     const queryClient = useQueryClient()
 
     const handleOpenChange = useCallback((open: boolean) => {
@@ -168,8 +170,8 @@ export default function EditEventButtonClient({
                             <DatePicker
                                 name="startDate"
                                 defaultValue={eventInfo.startTime}
-                                fromYear={new Date().getFullYear() - 10}
-                                toYear={new Date().getFullYear() + 10}
+                                fromYear={currentYear - 10}
+                                toYear={currentYear + 10}
                             />
                         </div>
 
@@ -193,8 +195,8 @@ export default function EditEventButtonClient({
                             <DatePicker
                                 name="endDate"
                                 defaultValue={eventInfo.endTime}
-                                fromYear={new Date().getFullYear() - 10}
-                                toYear={new Date().getFullYear() + 10}
+                                fromYear={currentYear - 10}
+                                toYear={currentYear + 10}
                             />
                         </div>
 

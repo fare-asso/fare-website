@@ -2,11 +2,13 @@
     "$schema": "https://unpkg.com/knip@6/schema.json",
     "entry": [
         "taze.config.ts",
+        "prisma/seed.ts",
         "src/**/*.test.{ts,tsx}",
         "src/test/**",
         "emails/**/*.test.tsx"
     ],
-    "ignoreDependencies": ["@prisma/client"],
+    "ignoreDependencies": ["@prisma/client", "jiti"],
+    "ignoreBinaries": ["upm"],
     "ignoreIssues": {
         "src/components/ui/**": [
             "exports",

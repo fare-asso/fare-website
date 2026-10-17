@@ -11,7 +11,7 @@ Make sure the `.env` file has all the correct values.
 Run the development server:
 
 ```bash
-pnpm dev
+upm dev
 ```
 
 ## Data retention (external cron)

@@ -4,6 +4,7 @@ import { actions } from "astro:actions"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { useInitialNow } from "@/hooks/useInitialNow"
 import { ServerSearchContext } from "@/hooks/useSearchParam"
 
 import Calendar from "./calendar"
@@ -30,7 +31,7 @@ function CalendarContent({
         initialData: initialTickets
     })
 
-    const now = new Date()
+    const now = useInitialNow()
     // most recent 1st September (start of the academic year)
     const academicYearStart = new Date(
         now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1,
@@ -68,7 +69,7 @@ function CalendarContent({
                         </Card>
                     ))}
                 </section>
-                <Calendar events={tickets} />
+                <Calendar events={tickets} today={now} />
             </CardContent>
         </Card>
     )

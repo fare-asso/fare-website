@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/select"
 import type { BagadAssoEquipment } from "@/generated/prisma/client"
 import { toUtcMidnight } from "@/helpers/eventDate"
+import { useInitialNow } from "@/hooks/useInitialNow"
 import { cn } from "@/lib/utils"
 
 import EquipmentSelection from "./equipmentSelection"
@@ -75,6 +76,7 @@ function CaptchaValidation({
 export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
     const [formState, setFormState] = useState<FormState | undefined>(undefined)
     const [pending, setPending] = useState(false)
+    const now = useInitialNow()
 
     const form = useForm({
         defaultValues: {
@@ -623,12 +625,9 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                                 field.handleBlur()
                                                             }}
                                                             disabled={(date) =>
-                                                                date <
-                                                                new Date()
+                                                                date < now
                                                             }
-                                                            startMonth={
-                                                                new Date()
-                                                            }
+                                                            startMonth={now}
                                                         />
                                                     </PopoverContent>
                                                 </Popover>
@@ -731,11 +730,10 @@ export default function BagadAssoForm({ equipmentList }: BagadAssoFormProps) {
                                                             disabled={(date) =>
                                                                 date <
                                                                 (startDate ??
-                                                                    new Date())
+                                                                    now)
                                                             }
                                                             startMonth={
-                                                                startDate ??
-                                                                new Date()
+                                                                startDate ?? now
                                                             }
                                                         />
                                                     </PopoverContent>

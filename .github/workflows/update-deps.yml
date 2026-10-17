@@ -29,41 +29,44 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v4
-              with:
-                  run_install: false
-
             - name: Setup Node.js
               uses: actions/setup-node@v6
               with:
                   node-version: 24
-                  cache: "pnpm"
+
+            - name: Install UPM
+              run: npm install --global upm@1.4.0
+
+            - name: Cache UPM store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.upm/store
+                  key: upm-${{ runner.os }}-${{ hashFiles('upm.lock') }}
 
             - name: Update dependencies using taze
-              run: pnpm dlx taze@latest
+              run: upm exec -p taze@latest taze
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile=false # Allow lockfile updates
+              run: upm install
 
             - name: Generate prisma client
-              run: pnpm prisma generate
+              run: upm exec prisma generate
 
             - name: Format package.json
-              run: pnpm format
+              run: upm run format
 
             # Run essential checks
             - name: Run check types
-              run: pnpm run check:types
+              run: upm run check:types
 
             - name: Run Lint Checks
-              run: pnpm run check:lint
+              run: upm run check:lint
 
             - name: Install Playwright Chromium
-              run: pnpm exec playwright install --with-deps chromium
+              run: upm exec playwright install --with-deps chromium
 
             - name: Run tests
-              run: pnpm run test
+              run: upm run test
 
             - name: Create Pull Request if changes exist
               uses: peter-evans/create-pull-request@v8

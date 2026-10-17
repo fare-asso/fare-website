@@ -3,11 +3,12 @@ import type { BagadAssoTicket } from "@/generated/prisma/client"
 import TicketList from "./ticketList"
 
 export default function ValidatedTickets({
-    tickets
+    tickets,
+    now
 }: {
     tickets: BagadAssoTicket[]
+    now: Date
 }) {
-    const now = new Date()
     const validated = tickets
         .filter(
             (t) =>

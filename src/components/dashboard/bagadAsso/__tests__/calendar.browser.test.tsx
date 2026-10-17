@@ -13,6 +13,7 @@ describe("<Calendar />", () => {
         const screen = await render(
             <ServerSearchContext.Provider value="month=2026-09-15">
                 <Calendar
+                    today={new Date("2026-09-15T12:00:00Z")}
                     events={[
                         bagadAssoTicketRecord({
                             eventName: "Forum étudiant",
