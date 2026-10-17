@@ -1,112 +1,214 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { bagadAssoTicketRecord } from "@/test/factories/bagadAsso"
+import {
+    mapTicketEquipment,
+    ticketEquipmentInclude
+} from "@/helpers/bagadAsso/ticketEquipment"
+import {
+    bagadAssoEquipmentRecord,
+    bagadAssoTicketEquipmentRecord,
+    bagadAssoTicketWithEquipmentsRecord
+} from "@/test/factories/bagadAsso"
 import { dbModule } from "@/test/mocks"
 
-const h = vi.hoisted(() => ({
-    findMany: vi.fn()
-}))
+const h = vi.hoisted(() => ({ findMany: vi.fn() }))
 
 vi.mock("@/helpers/db", () =>
     dbModule({ bagadAssoTicket: { findMany: h.findMany } })
 )
 
-import { getNextBookingsByEquipment } from "../bagadAsso"
+import { computeTotalDeposit, getNextBookingsByEquipment } from "../bagadAsso"
 
 beforeEach(() => {
     h.findMany.mockReset()
 })
 
-describe("getNextBookingsByEquipment", () => {
-    it("queries only upcoming, non-archived tickets in event-date order", async () => {
-        h.findMany.mockResolvedValue([])
-
-        await getNextBookingsByEquipment()
-
-        const arg = h.findMany.mock.calls[0][0]
-        expect(arg.where.deleted).toBeNull()
-        expect(arg.where.eventDate.gte).toBeInstanceOf(Date)
-        expect(arg.orderBy).toEqual({ eventDate: "asc" })
+describe("ticket equipment projection", () => {
+    it("includes catalogue details in a stable catalogue-id order", () => {
+        expect(ticketEquipmentInclude).toEqual({
+            equipments: {
+                orderBy: { equipmentId: "asc" },
+                include: { equipment: true }
+            }
+        })
     })
 
-    it("maps each equipment to its soonest booking", async () => {
+    it.each([true, false, null])(
+        "preserves inclusion %s and maps catalogue ids",
+        (includedInContract) => {
+            const ticket = bagadAssoTicketWithEquipmentsRecord({
+                equipments: [
+                    {
+                        ...bagadAssoTicketEquipmentRecord({
+                            ticketId: 99,
+                            equipmentId: 7,
+                            requestedQuantity: 5,
+                            allocatedQuantity: 3,
+                            includedInContract
+                        }),
+                        equipment: bagadAssoEquipmentRecord({
+                            id: 7,
+                            imagePath: null
+                        })
+                    }
+                ]
+            })
+            expect(mapTicketEquipment(ticket)).toEqual([
+                {
+                    id: 7,
+                    requestedQuantity: 5,
+                    allocatedQuantity: 3,
+                    includedInContract,
+                    deposit: 50,
+                    name: "Barnum",
+                    imagePath: undefined,
+                    checked: includedInContract === true
+                }
+            ])
+        }
+    )
+
+    it("preserves an image path", () => {
+        expect(
+            mapTicketEquipment(bagadAssoTicketWithEquipmentsRecord())[0]
+                ?.imagePath
+        ).toBe("old.png")
+    })
+
+    it("computes the allocated deposit synchronously without a catalogue query", () => {
+        const ticket = bagadAssoTicketWithEquipmentsRecord({
+            equipments: [
+                {
+                    ...bagadAssoTicketEquipmentRecord({
+                        requestedQuantity: 10,
+                        allocatedQuantity: 3
+                    }),
+                    equipment: bagadAssoEquipmentRecord({ deposit: 50 })
+                },
+                {
+                    ...bagadAssoTicketEquipmentRecord({
+                        equipmentId: 2,
+                        allocatedQuantity: 2
+                    }),
+                    equipment: bagadAssoEquipmentRecord({
+                        id: 2,
+                        deposit: 12.5
+                    })
+                }
+            ]
+        })
+        expect(computeTotalDeposit(ticket)).toBe(175)
+        expect(h.findMany).not.toHaveBeenCalled()
+        expect(
+            computeTotalDeposit(
+                bagadAssoTicketWithEquipmentsRecord({ equipments: [] })
+            )
+        ).toBe(0)
+    })
+})
+
+describe("getNextBookingsByEquipment", () => {
+    it("queries upcoming, non-archived tickets and relational quantities in date order", async () => {
+        h.findMany.mockResolvedValue([])
+        expect((await getNextBookingsByEquipment()).size).toBe(0)
+        expect(h.findMany).toHaveBeenCalledWith({
+            where: { deleted: null, eventDate: { gte: expect.any(Date) } },
+            orderBy: { eventDate: "asc" },
+            select: {
+                id: true,
+                association: true,
+                eventName: true,
+                eventDate: true,
+                validated: true,
+                equipments: {
+                    select: {
+                        equipmentId: true,
+                        requestedQuantity: true,
+                        allocatedQuantity: true,
+                        includedInContract: true
+                    }
+                }
+            }
+        })
+    })
+
+    it("keeps the soonest booking and uses requested quantities before validation", async () => {
         h.findMany.mockResolvedValue([
-            bagadAssoTicketRecord({
+            bagadAssoTicketWithEquipmentsRecord({
                 id: 10,
                 association: "Soonest",
-                eventDate: new Date("2026-07-01T00:00:00Z"),
-                equipments: JSON.stringify([
-                    { id: 1, quantity: 2 },
-                    { id: 2, quantity: 1 }
-                ])
+                equipments: [
+                    {
+                        ...bagadAssoTicketEquipmentRecord({
+                            requestedQuantity: 5,
+                            allocatedQuantity: 1
+                        }),
+                        equipment: bagadAssoEquipmentRecord()
+                    }
+                ]
             }),
-            bagadAssoTicketRecord({
+            bagadAssoTicketWithEquipmentsRecord({
                 id: 11,
-                association: "Later",
-                eventDate: new Date("2026-08-01T00:00:00Z"),
-                equipments: JSON.stringify([
-                    { id: 1, quantity: 5 },
-                    { id: 3, quantity: 1 }
-                ])
+                association: "Later"
             })
         ])
-
         const bookings = await getNextBookingsByEquipment()
-
-        // equipment 1 appears in both → keeps the earlier ticket's data
         expect(bookings.get(1)).toEqual({
             ticketId: 10,
             association: "Soonest",
             eventName: "Gala annuel",
-            eventDate: new Date("2026-07-01T00:00:00Z"),
-            quantity: 2
+            eventDate: new Date("2026-09-01T00:00:00Z"),
+            quantity: 5
         })
-        expect(bookings.get(2)?.ticketId).toBe(10)
-        expect(bookings.get(3)?.ticketId).toBe(11)
-    })
-
-    it("omits equipments without any upcoming booking", async () => {
-        h.findMany.mockResolvedValue([
-            bagadAssoTicketRecord({
-                equipments: JSON.stringify([{ id: 1, quantity: 1 }])
-            })
-        ])
-
-        const bookings = await getNextBookingsByEquipment()
-
-        expect(bookings.has(1)).toBe(true)
         expect(bookings.has(99)).toBe(false)
     })
 
-    it("tolerates malformed equipment payloads", async () => {
+    it("uses validated allocations, skips exclusions and preserves unknown legacy inclusion", async () => {
         h.findMany.mockResolvedValue([
-            bagadAssoTicketRecord({ id: 1, equipments: "not json" }),
-            bagadAssoTicketRecord({
+            bagadAssoTicketWithEquipmentsRecord({
+                validated: new Date(),
+                equipments: [true, false, null].map(
+                    (includedInContract, index) => ({
+                        ...bagadAssoTicketEquipmentRecord({
+                            equipmentId: index + 1,
+                            requestedQuantity: 10,
+                            allocatedQuantity: 3,
+                            includedInContract
+                        }),
+                        equipment: bagadAssoEquipmentRecord({ id: index + 1 })
+                    })
+                )
+            }),
+            bagadAssoTicketWithEquipmentsRecord({
                 id: 2,
-                equipments: JSON.stringify([{ id: 7, quantity: 3 }])
+                equipments: [
+                    {
+                        ...bagadAssoTicketEquipmentRecord({ equipmentId: 2 }),
+                        equipment: bagadAssoEquipmentRecord({ id: 2 })
+                    }
+                ]
             })
         ])
-
         const bookings = await getNextBookingsByEquipment()
-
-        expect(bookings.size).toBe(1)
-        expect(bookings.get(7)?.quantity).toBe(3)
+        expect(bookings.get(1)?.quantity).toBe(3)
+        expect(bookings.get(2)?.ticketId).toBe(2)
+        expect(bookings.get(3)?.quantity).toBe(3)
     })
 
-    it("skips entries with a malformed shape", async () => {
+    it("does not reserve zero allocations or hide a later booking", async () => {
+        const ticket = bagadAssoTicketWithEquipmentsRecord()
         h.findMany.mockResolvedValue([
-            bagadAssoTicketRecord({
-                equipments: JSON.stringify([
-                    { quantity: 2 }, // missing id
-                    { id: 5 }, // missing quantity
-                    { id: 8, quantity: 1 } // valid
-                ])
-            })
+            {
+                ...ticket,
+                validated: new Date(),
+                equipments: ticket.equipments.map((line) => ({
+                    ...line,
+                    allocatedQuantity: 0,
+                    includedInContract: true
+                }))
+            },
+            { ...ticket, id: 2 }
         ])
-
-        const bookings = await getNextBookingsByEquipment()
-
-        expect(bookings.size).toBe(1)
-        expect(bookings.get(8)?.quantity).toBe(1)
+        expect((await getNextBookingsByEquipment()).get(1)?.ticketId).toBe(2)
     })
 })

@@ -14,6 +14,12 @@ Run the development server:
 upm dev
 ```
 
+## Bagad'Asso equipment data migration
+
+The relational ticket-equipment rollout requires an explicit, dry-run-first
+backfill. See [the migration runbook](docs/bagadasso-equipment-migration.md)
+for production ordering, safety checks and the disposable PostgreSQL rehearsal.
+
 ## Data retention (external cron)
 
 Retention/anonymisation of form data is enforced by `POST /api/cron/purge`, but

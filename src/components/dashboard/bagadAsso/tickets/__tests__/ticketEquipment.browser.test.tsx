@@ -17,12 +17,12 @@ import { TicketProvider, useTicketContext } from "../ticketContext"
 import { TicketEquipment } from "../ticketEquipment"
 
 function TicketSummary(): ReactNode {
-    const { totalDeposit, isEquipmentBusy, ticket } = useTicketContext()
+    const { totalDeposit, isEquipmentBusy } = useTicketContext()
     return (
         <>
             <p>Total: {totalDeposit}€</p>
             <p>Busy: {String(isEquipmentBusy)}</p>
-            <p>Stored: {JSON.stringify(ticket.equipments)}</p>
+
             <button type="button">Outside editor</button>
         </>
     )
@@ -33,6 +33,7 @@ async function renderEquipment(
         canEditTicket?: boolean
         archived?: boolean
         validated?: boolean
+        historicalUnknown?: boolean
     } = {}
 ): Promise<Awaited<ReturnType<typeof render>>> {
     return render(
@@ -45,15 +46,21 @@ async function renderEquipment(
                 {
                     id: 1,
                     name: "Barnum",
-                    quantity: 2,
+                    requestedQuantity: 5,
+                    allocatedQuantity: 2,
+                    includedInContract: overrides.historicalUnknown
+                        ? null
+                        : false,
                     deposit: 50,
                     imagePath: undefined,
-                    checked: true
+                    checked: !overrides.historicalUnknown
                 },
                 {
                     id: 2,
                     name: "Table",
-                    quantity: 1,
+                    requestedQuantity: 3,
+                    allocatedQuantity: 1,
+                    includedInContract: false,
                     deposit: 25,
                     imagePath: undefined,
                     checked: false
@@ -79,9 +86,28 @@ beforeEach((): void => {
 })
 
 describe("<TicketEquipment /> quantity editing", (): void => {
+    it("labels unknown historical contract selections without allowing them to be changed", async () => {
+        const screen = await renderEquipment({
+            validated: true,
+            historicalUnknown: true
+        })
+        await expect
+            .element(
+                screen.getByText(
+                    "Inclusion dans le contrat historique inconnue"
+                )
+            )
+            .toBeVisible()
+        await expect
+            .element(screen.getByRole("checkbox", { name: "Barnum" }))
+            .toBeDisabled()
+    })
     it("renders badges and selection, focuses/selects one editor and cancels with Escape", async (): Promise<void> => {
         const screen = await renderEquipment()
         await expect.element(screen.getByText("2×")).toBeVisible()
+        await expect
+            .element(screen.getByText(/Demandé initialement/))
+            .not.toBeInTheDocument()
         await expect
             .element(screen.getByRole("checkbox", { name: "Barnum" }))
             .toBeChecked()
@@ -139,6 +165,9 @@ describe("<TicketEquipment /> quantity editing", (): void => {
                     .getByRole("button", { name: "Outside editor" })
                     .click()
             await expect.element(screen.getByText("4×")).toBeVisible()
+            await expect
+                .element(screen.getByText(/Demandé initialement/))
+                .not.toBeInTheDocument()
             await expect
                 .element(
                     screen.getByRole("button", {
@@ -319,7 +348,7 @@ describe("<TicketEquipment /> quantity editing", (): void => {
         { archived: true },
         { validated: true }
     ])(
-        "keeps quantities read-only for %j",
+        "keeps quantities and contract selection read-only for %j",
         async (overrides): Promise<void> => {
             const screen = await renderEquipment(overrides)
             await expect.element(screen.getByText("2×")).toBeVisible()
@@ -328,10 +357,12 @@ describe("<TicketEquipment /> quantity editing", (): void => {
                     screen.getByRole("button", { name: /Modifier la quantité/ })
                 )
                 .not.toBeInTheDocument()
-            await screen.getByRole("checkbox", { name: "Table" }).click()
             await expect
                 .element(screen.getByRole("checkbox", { name: "Table" }))
-                .toBeChecked()
+                .toBeDisabled()
+            await expect
+                .element(screen.getByRole("checkbox", { name: "Table" }))
+                .not.toBeChecked()
             expect(h.update).not.toHaveBeenCalled()
         }
     )

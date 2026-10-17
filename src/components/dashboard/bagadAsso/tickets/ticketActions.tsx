@@ -231,7 +231,7 @@ export default function TicketActions() {
                                                             >
                                                                 <b className="text-accent-foreground font-medium">
                                                                     {
-                                                                        equipment.quantity
+                                                                        equipment.allocatedQuantity
                                                                     }
                                                                     x
                                                                 </b>{" "}

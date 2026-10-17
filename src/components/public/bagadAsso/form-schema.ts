@@ -13,6 +13,32 @@ export const eventTypes = [
     { value: "other", label: "Autre" }
 ] as const
 
+const positivePgInt = z.number().int().min(1).max(2147483647)
+
+const equipmentSelectionSchema = z
+    .array(z.object({ id: positivePgInt, quantity: positivePgInt }))
+    .min(1, "Veuillez sélectionner au moins un matériel.")
+    .refine(
+        (entries) =>
+            new Set(entries.map((entry) => entry.id)).size === entries.length,
+        "Un matériel ne peut être sélectionné qu'une seule fois."
+    )
+
+export const BagadAssoEquipmentInputSchema = z
+    .string()
+    .transform((value, context): unknown => {
+        const parsed = tryCatch(() => JSON.parse(value) as unknown)
+        if (!parsed.success) {
+            context.addIssue({
+                code: "custom",
+                message: "La sélection de matériel est invalide."
+            })
+            return z.NEVER
+        }
+        return parsed.value
+    })
+    .pipe(equipmentSelectionSchema)
+
 // Base schema fields (shared between client and server)
 const baseFields = {
     associationName: z.string().min(1, "Le nom de l'association est requis."),
@@ -45,17 +71,9 @@ const baseFields = {
         .min(1, "Le nombre de participants doit être au moins 1."),
     equipment: z
         .string()
-        .min(1, "Veuillez sélectionner au moins un matériel.")
         .refine(
-            (val) => {
-                const parsed = tryCatch(() => JSON.parse(val) as unknown)
-                return (
-                    parsed.success &&
-                    Array.isArray(parsed.value) &&
-                    parsed.value.length > 0
-                )
-            },
-            { message: "Veuillez sélectionner au moins un matériel." }
+            (value) => BagadAssoEquipmentInputSchema.safeParse(value).success,
+            { message: "La sélection de matériel est invalide." }
         ),
     termsAccepted: z.literal(true, {
         error: "Vous devez accepter les termes et conditions."

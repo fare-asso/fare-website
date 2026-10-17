@@ -1,22 +1,12 @@
-import { type } from "arktype"
 import { createContext, useContext, useReducer, useState } from "react"
 import type { Dispatch, ReactNode, SetStateAction } from "react"
 
 import type { BagadAssoTicket } from "@/generated/prisma/client"
-import { tryCatch } from "@/lib/utils"
-
-interface EquipmentLine {
-    id: number
-    quantity: number
-    deposit: number
-    name: string
-    imagePath: string | undefined
-    checked?: boolean | undefined
-}
+import type { TicketEquipmentLine } from "@/helpers/bagadAsso/ticketEquipment"
 
 export interface TicketDetails {
     ticket: BagadAssoTicket
-    allEquipments: EquipmentLine[]
+    allEquipments: TicketEquipmentLine[]
     totalDeposit: number
     canEditTicket: boolean
     canDeleteTicket: boolean
@@ -34,25 +24,6 @@ export interface TicketContextValue extends TicketDetails {
     setIsEquipmentBusy: Dispatch<SetStateAction<boolean>>
 }
 
-const StoredEquipments = type({ id: "number", quantity: "number" }).array()
-
-function updateStoredQuantity(
-    equipments: BagadAssoTicket["equipments"],
-    id: number,
-    quantity: number
-): BagadAssoTicket["equipments"] {
-    const parsed = tryCatch((): unknown =>
-        typeof equipments === "string" ? JSON.parse(equipments) : equipments
-    )
-    if (!parsed.success) return equipments
-    const stored = StoredEquipments(parsed.value)
-    if (stored instanceof type.errors) return equipments
-    const updated = stored.map((equipment): typeof equipment =>
-        equipment.id === id ? { ...equipment, quantity } : equipment
-    )
-    return typeof equipments === "string" ? JSON.stringify(updated) : updated
-}
-
 export function ticketReducer(
     state: TicketDetails,
     action: TicketAction
@@ -68,9 +39,9 @@ export function ticketReducer(
             )
                 return state
             const allEquipments = state.allEquipments.map(
-                (equipment): EquipmentLine =>
+                (equipment): TicketEquipmentLine =>
                     equipment.id === action.id
-                        ? { ...equipment, quantity: action.quantity }
+                        ? { ...equipment, allocatedQuantity: action.quantity }
                         : equipment
             )
             return {
@@ -78,17 +49,9 @@ export function ticketReducer(
                 allEquipments,
                 totalDeposit: allEquipments.reduce(
                     (total, equipment): number =>
-                        total + equipment.quantity * equipment.deposit,
+                        total + equipment.allocatedQuantity * equipment.deposit,
                     0
-                ),
-                ticket: {
-                    ...state.ticket,
-                    equipments: updateStoredQuantity(
-                        state.ticket.equipments,
-                        action.id,
-                        action.quantity
-                    )
-                }
+                )
             }
         }
         case "setEquipmentChecked":
@@ -108,7 +71,13 @@ export function ticketReducer(
         case "setValidated":
             return {
                 ...state,
-                ticket: { ...state.ticket, validated: action.validated }
+                ticket: { ...state.ticket, validated: action.validated },
+                allEquipments: state.allEquipments.map(
+                    (equipment): TicketEquipmentLine => ({
+                        ...equipment,
+                        includedInContract: Boolean(equipment.checked)
+                    })
+                )
             }
     }
 }

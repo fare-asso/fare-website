@@ -28,17 +28,17 @@ model UserPermission {
 }
 
 model User {
-  id                String           @id @default(uuid())
-  name              String?
-  email             String
-  image             String?
-  createdAt         DateTime         @default(now())
-  deletedAt         DateTime?
-  role              Role             @default(ADMIN)
-  calendarToken     String?          @unique
-  association       Association?
-  createdEvents     Event[]
-  permissions       UserPermission[]
+  id            String           @id @default(uuid())
+  name          String?
+  email         String
+  image         String?
+  createdAt     DateTime         @default(now())
+  deletedAt     DateTime?
+  role          Role             @default(ADMIN)
+  calendarToken String?          @unique
+  association   Association?
+  createdEvents Event[]
+  permissions   UserPermission[]
 }
 
 model Member {
@@ -77,14 +77,14 @@ model Conseil {
 }
 
 model Elu {
-  id          Int     @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   position    String
   description String?
-  order       Int     @default(0)
+  order       Int       @default(0)
   deletedAt   DateTime?
   conseilId   Int
-  conseil     Conseil @relation(fields: [conseilId], references: [id], onDelete: Cascade)
+  conseil     Conseil   @relation(fields: [conseilId], references: [id], onDelete: Cascade)
 
   @@index([conseilId])
 }
@@ -159,32 +159,52 @@ model CommuniqueDePresse {
 }
 
 model BagadAssoEquipment {
-  id        Int     @id @default(autoincrement())
+  id        Int                        @id @default(autoincrement())
   name      String
   imagePath String?
-  deposit   Float   @default(0)
-  quantity  Int     @default(1)
+  deposit   Float                      @default(0)
+  quantity  Int                        @default(1)
+  tickets   BagadAssoTicketEquipment[]
+
 }
 
 model BagadAssoTicket {
-  id                    Int       @id @default(autoincrement())
-  association            String
+  id                    Int                        @id @default(autoincrement())
+  association           String
   firstName             String
   lastName              String
-  position              String    @default("")
+  position              String                     @default("")
   phoneNumber           String?
   eventName             String
   eventType             String
   eventDate             DateTime
   eventEndDate          DateTime?
   eventAddr             String
-  estimatedParticipants Int       @default(0)
-  creationDate          DateTime  @default(now())
-  equipments            Json
+  estimatedParticipants Int                        @default(0)
+  creationDate          DateTime                   @default(now())
+  // Temporary archive for the explicit, dry-run-first relational backfill.
+  legacyEquipments      Json?                      @map("equipments")
+  equipmentMigratedAt   DateTime?
+  equipmentRevision     Int                        @default(0)
+  equipments            BagadAssoTicketEquipment[]
   associationEmail      String
   representativeEmail   String
   deleted               DateTime?
   validated             DateTime?
+}
+
+model BagadAssoTicketEquipment {
+  ticketId           Int
+  equipmentId        Int
+  requestedQuantity  Int
+  allocatedQuantity  Int
+  // Null only for historical contracts whose selected items were never recorded.
+  includedInContract Boolean?           @default(false)
+  ticket             BagadAssoTicket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  equipment          BagadAssoEquipment @relation(fields: [equipmentId], references: [id], onDelete: Restrict)
+
+  @@id([ticketId, equipmentId])
+  @@index([equipmentId])
 }
 
 model BagadAssoSuggestion {
@@ -270,19 +290,19 @@ model LocationCache {
 }
 
 model LinkCategory {
-  id  Int @id @default(autoincrement())
+  id    Int        @id @default(autoincrement())
   name  String
-  order Int @default(0)
+  order Int        @default(0)
   liens LinkItem[]
 }
 
 model LinkItem {
-  id  Int @id @default(autoincrement())
-  label String
-  url String
-  order Int @default(0)
-  categoryId  Int
-  category  LinkCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  id         Int          @id @default(autoincrement())
+  label      String
+  url        String
+  order      Int          @default(0)
+  categoryId Int
+  category   LinkCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@index([categoryId])
 }

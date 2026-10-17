@@ -29,14 +29,25 @@ import TicketActions from "../ticketActions"
 import { TicketProvider, useTicketContext } from "../ticketContext"
 
 function EquipmentBusyControl(): ReactNode {
-    const { isEquipmentBusy, setIsEquipmentBusy } = useTicketContext()
+    const { isEquipmentBusy, setIsEquipmentBusy, allEquipments } =
+        useTicketContext()
     return (
-        <button
-            type="button"
-            onClick={(): void => setIsEquipmentBusy(!isEquipmentBusy)}
-        >
-            Toggle quantity editing
-        </button>
+        <>
+            <button
+                type="button"
+                onClick={(): void => setIsEquipmentBusy(!isEquipmentBusy)}
+            >
+                Toggle quantity editing
+            </button>
+            <p>
+                Contract selection:{" "}
+                {JSON.stringify(
+                    allEquipments.map(
+                        (equipment) => equipment.includedInContract
+                    )
+                )}
+            </p>
+        </>
     )
 }
 
@@ -54,7 +65,9 @@ async function renderActions(
                 {
                     id: 1,
                     name: "Barnum",
-                    quantity: 2,
+                    requestedQuantity: 5,
+                    allocatedQuantity: 2,
+                    includedInContract: false,
                     deposit: 50,
                     imagePath: undefined,
                     checked
@@ -62,7 +75,9 @@ async function renderActions(
                 {
                     id: 2,
                     name: "Table",
-                    quantity: 1,
+                    requestedQuantity: 3,
+                    allocatedQuantity: 1,
+                    includedInContract: false,
                     deposit: 25,
                     imagePath: undefined,
                     checked: false
@@ -247,6 +262,12 @@ describe("<TicketActions /> contract sending", () => {
     it("submits only the ticket id and checked equipment ids, then shows the sent state", async () => {
         const screen = await renderActions()
         await screen.getByRole("button", { name: "Envoyer le contrat" }).click()
+        await expect
+            .element(screen.getByRole("alertdialog").getByText("2x"))
+            .toBeVisible()
+        await expect
+            .element(screen.getByRole("alertdialog").getByText("5x"))
+            .not.toBeInTheDocument()
         await screen
             .getByRole("button", { name: "Envoyer", exact: true })
             .click()
@@ -262,6 +283,9 @@ describe("<TicketActions /> contract sending", () => {
             .element(screen.getByText("Contrat envoyé", { exact: true }))
             .toBeVisible()
         expect(h.success).toHaveBeenCalledWith("Le contrat a été envoyé.")
+        await expect
+            .element(screen.getByText("Contract selection: [true,false]"))
+            .toBeVisible()
     })
 
     it("prevents submission without selected equipment", async () => {
@@ -298,5 +322,8 @@ describe("<TicketActions /> contract sending", () => {
             .element(screen.getByRole("button", { name: "Envoyer le contrat" }))
             .toBeVisible()
         expect(h.success).not.toHaveBeenCalled()
+        await expect
+            .element(screen.getByText("Contract selection: [false,false]"))
+            .toBeVisible()
     })
 })

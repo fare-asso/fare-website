@@ -10,11 +10,21 @@ const details: TicketDetails = {
         {
             id: 1,
             name: "Barnum",
-            quantity: 1,
+            requestedQuantity: 5,
+            allocatedQuantity: 1,
+            includedInContract: null,
             deposit: 50,
             imagePath: undefined
         },
-        { id: 2, name: "Table", quantity: 2, deposit: 10, imagePath: undefined }
+        {
+            id: 2,
+            name: "Table",
+            requestedQuantity: 4,
+            allocatedQuantity: 2,
+            includedInContract: false,
+            deposit: 10,
+            imagePath: undefined
+        }
     ],
     totalDeposit: 70,
     canEditTicket: true,
@@ -22,61 +32,39 @@ const details: TicketDetails = {
 }
 
 describe("ticketReducer", () => {
-    it.each(["string", "array"])(
-        "updates quantities, deposits and stored %s equipment without losing selection",
-        (format): void => {
-            const equipments = [
-                { id: 1, quantity: 1, note: "Keep me" },
-                { id: 2, quantity: 2 },
-                { id: 99, quantity: 4 }
-            ]
-            const original: TicketDetails = {
-                ...details,
-                ticket: {
-                    ...details.ticket,
-                    equipments:
-                        format === "string"
-                            ? JSON.stringify(equipments)
-                            : equipments
-                },
-                allEquipments: details.allEquipments.map(
-                    (equipment): typeof equipment => ({
-                        ...equipment,
-                        checked: equipment.id === 1
-                    })
-                )
-            }
-            const next = ticketReducer(original, {
+    it("updates only allocated quantity and deposit without changing the request or selection", (): void => {
+        const original: TicketDetails = {
+            ...details,
+            allEquipments: details.allEquipments.map(
+                (equipment): typeof equipment => ({
+                    ...equipment,
+                    checked: equipment.id === 1
+                })
+            )
+        }
+        const next = ticketReducer(original, {
+            type: "setEquipmentQuantity",
+            id: 1,
+            quantity: 3
+        })
+        expect(next.allEquipments[0]).toEqual({
+            ...original.allEquipments[0],
+            allocatedQuantity: 3
+        })
+        expect(next.allEquipments[0].requestedQuantity).toBe(5)
+        expect(next.allEquipments[1]).toBe(original.allEquipments[1])
+        expect(next.totalDeposit).toBe(170)
+        expect(next.ticket).toBe(original.ticket)
+        expect(original.allEquipments[0].allocatedQuantity).toBe(1)
+        expect(original.totalDeposit).toBe(70)
+        expect(
+            ticketReducer(next, {
                 type: "setEquipmentQuantity",
                 id: 1,
-                quantity: 3
-            })
-            expect(next.allEquipments[0]).toEqual({
-                ...original.allEquipments[0],
-                quantity: 3
-            })
-            expect(next.allEquipments[1]).toBe(original.allEquipments[1])
-            expect(next.totalDeposit).toBe(170)
-            const updated = [
-                { ...equipments[0], quantity: 3 },
-                equipments[1],
-                equipments[2]
-            ]
-            expect(next.ticket.equipments).toEqual(
-                format === "string" ? JSON.stringify(updated) : updated
-            )
-            expect(original.allEquipments[0].quantity).toBe(1)
-            expect(original.totalDeposit).toBe(70)
-            expect(equipments[0].quantity).toBe(1)
-            expect(
-                ticketReducer(next, {
-                    type: "setEquipmentQuantity",
-                    id: 1,
-                    quantity: 2
-                }).totalDeposit
-            ).toBe(120)
-        }
-    )
+                quantity: 2
+            }).totalDeposit
+        ).toBe(120)
+    })
 
     it.each([
         0,
@@ -95,7 +83,7 @@ describe("ticketReducer", () => {
         ).toBe(details)
     })
 
-    it("ignores absent equipment and tolerates malformed stored JSON", (): void => {
+    it("ignores absent equipment", (): void => {
         expect(
             ticketReducer(details, {
                 type: "setEquipmentQuantity",
@@ -103,26 +91,51 @@ describe("ticketReducer", () => {
                 quantity: 3
             })
         ).toBe(details)
-        const original = {
-            ...details,
-            ticket: { ...details.ticket, equipments: "invalid JSON" }
-        }
-        const next = ticketReducer(original, {
-            type: "setEquipmentQuantity",
-            id: 1,
-            quantity: 3
-        })
-        expect(next.totalDeposit).toBe(170)
-        expect(next.ticket.equipments).toBe("invalid JSON")
     })
-    it("marks the contract as sent without mutating the original ticket", () => {
+
+    it("marks the contract as sent and persists the current selection locally", (): void => {
         const validated = new Date("2026-10-17T12:00:00Z")
-        const next = ticketReducer(details, { type: "setValidated", validated })
+        const selected = ticketReducer(details, {
+            type: "setEquipmentChecked",
+            id: 1,
+            checked: true
+        })
+        const next = ticketReducer(selected, {
+            type: "setValidated",
+            validated
+        })
         expect(next.ticket.validated).toEqual(validated)
         expect(details.ticket.validated).toBeNull()
-        expect(next.allEquipments).toBe(details.allEquipments)
+        expect(next.allEquipments).toEqual([
+            { ...selected.allEquipments[0], includedInContract: true },
+            { ...selected.allEquipments[1], includedInContract: false }
+        ])
+        expect(details.allEquipments[0].includedInContract).toBeNull()
+        expect(selected.allEquipments[0].includedInContract).toBeNull()
     })
-    it("checks only the selected equipment without mutating the previous state", () => {
+
+    it("replaces saved contract flags with Boolean values of the current selection", (): void => {
+        const original: TicketDetails = {
+            ...details,
+            allEquipments: details.allEquipments.map(
+                (equipment): typeof equipment => ({
+                    ...equipment,
+                    includedInContract: true,
+                    checked: false
+                })
+            )
+        }
+        const next = ticketReducer(original, {
+            type: "setValidated",
+            validated: new Date()
+        })
+        expect(
+            next.allEquipments.map((equipment) => equipment.includedInContract)
+        ).toEqual([false, false])
+        expect(original.allEquipments[0].includedInContract).toBe(true)
+    })
+
+    it("checks only the selected equipment without mutating the previous state", (): void => {
         const next = ticketReducer(details, {
             type: "setEquipmentChecked",
             id: 1,
@@ -130,6 +143,7 @@ describe("ticketReducer", () => {
         })
 
         expect(next.allEquipments[0].checked).toBe(true)
+        expect(next.allEquipments[0].includedInContract).toBeNull()
         expect(next.allEquipments[1]).toBe(details.allEquipments[1])
         expect(details.allEquipments[0].checked).toBeUndefined()
         expect(
@@ -141,7 +155,7 @@ describe("ticketReducer", () => {
         ).toBe(false)
     })
 
-    it("archives and unarchives the ticket without changing the equipment", () => {
+    it("archives and unarchives the ticket without changing the equipment", (): void => {
         const deleted = new Date("2026-01-02T00:00:00Z")
         const archived = ticketReducer(details, {
             type: "setArchived",

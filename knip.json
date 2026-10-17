@@ -3,11 +3,13 @@
     "entry": [
         "taze.config.ts",
         "prisma/seed.ts",
+        "prisma/backfillBagadTicketEquipment.ts",
         "src/**/*.test.{ts,tsx}",
         "src/test/**",
         "emails/**/*.test.tsx"
     ],
-    "ignoreDependencies": ["@prisma/client", "jiti"],
+    "ignore": ["src/helpers/bagadAsso/__tests__/fixtures/*.prisma"],
+    "ignoreDependencies": ["@prisma/client"],
     "ignoreBinaries": ["upm"],
     "ignoreIssues": {
         "src/components/ui/**": [

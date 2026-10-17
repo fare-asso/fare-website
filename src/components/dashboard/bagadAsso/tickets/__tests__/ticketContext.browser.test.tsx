@@ -1,8 +1,14 @@
 import type { ReactNode } from "react"
 import { describe, expect, it } from "vitest"
 
+import { mapTicketEquipment } from "@/helpers/bagadAsso/ticketEquipment"
 import { renderWithClient as render } from "@/test/browser"
-import { bagadAssoTicketRecord } from "@/test/factories/bagadAsso"
+import {
+    bagadAssoTicketRecord,
+    bagadAssoTicketEquipmentRecord,
+    bagadAssoEquipmentRecord,
+    bagadAssoTicketWithEquipmentsRecord
+} from "@/test/factories/bagadAsso"
 
 import { TicketProvider, useTicketContext } from "../ticketContext"
 
@@ -53,6 +59,56 @@ function TicketConsumer(): ReactNode {
 }
 
 describe("<TicketProvider />", () => {
+    it.each([true, false, null])(
+        "restores persisted contract selection %s through the relational projection",
+        async (includedInContract): Promise<void> => {
+            const ticket = bagadAssoTicketWithEquipmentsRecord({
+                validated: new Date(),
+                equipments: [
+                    {
+                        ...bagadAssoTicketEquipmentRecord({
+                            includedInContract
+                        }),
+                        equipment: bagadAssoEquipmentRecord()
+                    }
+                ]
+            })
+            const screen = await render(
+                <TicketProvider
+                    ticket={ticket}
+                    allEquipments={mapTicketEquipment(ticket)}
+                    totalDeposit={100}
+                    canEditTicket
+                    canDeleteTicket={false}
+                >
+                    <TicketConsumer />
+                </TicketProvider>
+            )
+            await expect
+                .element(
+                    screen.getByText(
+                        `Checked: ${String(includedInContract === true)}`
+                    )
+                )
+                .toBeVisible()
+        }
+    )
+
+    it("leaves a new ticket unchecked by default", async (): Promise<void> => {
+        const ticket = bagadAssoTicketWithEquipmentsRecord()
+        const screen = await render(
+            <TicketProvider
+                ticket={ticket}
+                allEquipments={mapTicketEquipment(ticket)}
+                totalDeposit={100}
+                canEditTicket
+                canDeleteTicket={false}
+            >
+                <TicketConsumer />
+            </TicketProvider>
+        )
+        await expect.element(screen.getByText("Checked: false")).toBeVisible()
+    })
     it("rerenders consumers when ticket details are updated", async () => {
         const screen = await render(
             <TicketProvider
@@ -61,7 +117,9 @@ describe("<TicketProvider />", () => {
                     {
                         id: 1,
                         name: "Barnum",
-                        quantity: 1,
+                        requestedQuantity: 2,
+                        allocatedQuantity: 1,
+                        includedInContract: false,
                         deposit: 50,
                         imagePath: undefined
                     }

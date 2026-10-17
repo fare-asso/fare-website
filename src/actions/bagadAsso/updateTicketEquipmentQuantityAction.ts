@@ -1,6 +1,7 @@
 import { type } from "arktype"
 import type { ActionAPIContext } from "astro:actions"
 
+import { ticketEquipmentInclude } from "@/helpers/bagadAsso/ticketEquipment"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
@@ -8,16 +9,12 @@ import { wrapAction, type ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-const PositiveSafeInteger = type("0 < number.integer <= 9007199254740991")
+const PositiveInt = type("0 < number.integer <= 2147483647")
 const UpdateTicketEquipmentQuantitySchema = type({
-    ticketId: PositiveSafeInteger,
-    equipmentId: PositiveSafeInteger,
-    quantity: PositiveSafeInteger
+    ticketId: PositiveInt,
+    equipmentId: PositiveInt,
+    quantity: PositiveInt
 })
-const TicketEquipmentsSchema = type({
-    id: PositiveSafeInteger,
-    quantity: PositiveSafeInteger
-}).array()
 
 async function updateTicketEquipmentQuantityActionImpl(
     input: typeof UpdateTicketEquipmentQuantitySchema.infer,
@@ -36,7 +33,6 @@ async function updateTicketEquipmentQuantityActionImpl(
             error: "Vous n'avez pas la permission d'effectuer cette opération"
         }
     }
-
     const data = UpdateTicketEquipmentQuantitySchema(input)
     if (data instanceof type.errors) {
         return {
@@ -46,7 +42,10 @@ async function updateTicketEquipmentQuantityActionImpl(
     }
 
     const found = await tryCatch(() =>
-        prisma.bagadAssoTicket.findUnique({ where: { id: data.ticketId } })
+        prisma.bagadAssoTicket.findUnique({
+            where: { id: data.ticketId },
+            include: ticketEquipmentInclude
+        })
     )
     if (!found.success) {
         captureActionError(found.error)
@@ -55,88 +54,62 @@ async function updateTicketEquipmentQuantityActionImpl(
     const ticket = found.value
     if (!ticket) return { success: false, error: "Ticket introuvable" }
     if (ticket.deleted || ticket.validated) {
+        return { success: false, error: "Ce ticket ne peut plus être modifié" }
+    }
+    if (!ticket.equipmentMigratedAt) {
         return {
             success: false,
-            error: "Ce ticket ne peut plus être modifié"
+            error: "Le matériel de ce ticket doit être migré avant modification"
         }
     }
-
-    const originalJsonValue = ticket.equipments
-    if (originalJsonValue === null) {
-        return { success: false, error: "Matériel du ticket invalide" }
-    }
-    const storedEquipments = tryCatch(() =>
-        typeof originalJsonValue === "string"
-            ? JSON.parse(originalJsonValue)
-            : originalJsonValue
+    const line = ticket.equipments.find(
+        (item) => item.equipmentId === data.equipmentId
     )
-    if (!storedEquipments.success) {
-        captureActionError(storedEquipments.error)
-        return { success: false, error: "Matériel du ticket invalide" }
-    }
-    const equipments = TicketEquipmentsSchema(storedEquipments.value)
-    if (equipments instanceof type.errors) {
-        return { success: false, error: "Matériel du ticket invalide" }
-    }
-    if (!equipments.some((item) => item.id === data.equipmentId)) {
-        return { success: false, error: "Matériel absent du ticket" }
-    }
-
-    const foundEquipment = await tryCatch(() =>
-        prisma.bagadAssoEquipment.findUnique({
-            where: { id: data.equipmentId },
-            select: { quantity: true }
-        })
-    )
-    if (!foundEquipment.success) {
-        captureActionError(foundEquipment.error)
-        return { success: false, error: "Echec de la récupération du matériel" }
-    }
-    const equipment = foundEquipment.value
-    if (!equipment) {
-        return { success: false, error: "Matériel introuvable" }
-    }
-    if (data.quantity > equipment.quantity) {
+    if (!line) return { success: false, error: "Matériel absent du ticket" }
+    if (data.quantity > line.equipment.quantity) {
         return {
             success: false,
             error: "La quantité demandée dépasse le stock disponible"
         }
     }
 
-    const updatedEquipments = equipments.map((item) =>
-        item.id === data.equipmentId
-            ? { ...item, quantity: data.quantity }
-            : item
-    )
     const saved = await tryCatch(() =>
-        prisma.bagadAssoTicket.updateMany({
-            where: {
-                id: ticket.id,
-                deleted: null,
-                validated: null,
-                equipments: { equals: originalJsonValue }
-            },
-            data: {
-                equipments:
-                    typeof originalJsonValue === "string"
-                        ? JSON.stringify(updatedEquipments)
-                        : updatedEquipments
+        prisma.$transaction(
+            async (tx): Promise<ActionResult<{ quantity: number }>> => {
+                // Serialize allocation edits and contract finalization on the parent row.
+                const claim = await tx.bagadAssoTicket.updateMany({
+                    where: {
+                        id: ticket.id,
+                        deleted: null,
+                        validated: null,
+                        equipmentRevision: ticket.equipmentRevision
+                    },
+                    data: { equipmentRevision: { increment: 1 } }
+                })
+                if (claim.count !== 1) {
+                    return {
+                        success: false,
+                        error: "Ce ticket a été modifié entre-temps. Veuillez le recharger."
+                    }
+                }
+                await tx.bagadAssoTicketEquipment.update({
+                    where: {
+                        ticketId_equipmentId: {
+                            ticketId: ticket.id,
+                            equipmentId: data.equipmentId
+                        }
+                    },
+                    data: { allocatedQuantity: data.quantity }
+                })
+                return { success: true, value: { quantity: data.quantity } }
             }
-        })
+        )
     )
     if (!saved.success) {
         captureActionError(saved.error)
         return { success: false, error: "Echec de la mise à jour du ticket" }
     }
-
-    if (saved.value.count === 0) {
-        return {
-            success: false,
-            error: "Ce ticket a été modifié entre-temps. Veuillez le recharger."
-        }
-    }
-
-    return { success: true, value: { quantity: data.quantity } }
+    return saved.value
 }
 
 export const updateTicketEquipmentQuantityAction = wrapAction(

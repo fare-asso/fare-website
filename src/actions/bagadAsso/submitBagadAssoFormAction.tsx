@@ -5,9 +5,10 @@ import NewBagadAssoTicket from "@/../emails/bagadasso/new-ticket"
 import NewBagadAssoTicketAck from "@/../emails/bagadasso/new-ticket-ack"
 import {
     type BagadAssoFormData,
-    BagadAssoFormSchema
+    BagadAssoFormSchema,
+    BagadAssoEquipmentInputSchema
 } from "@/components/public/bagadAsso/form-schema"
-import { joinTicketAndEquipment } from "@/helpers/bagadAsso"
+import { ticketEquipmentInclude } from "@/helpers/bagadAsso/ticketEquipment"
 import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
@@ -50,6 +51,18 @@ async function submitBagadAssoFormActionImpl(
     }
 
     const validatedData = result.data
+    const equipmentInput = BagadAssoEquipmentInputSchema.safeParse(
+        validatedData.equipment
+    )
+    if (!equipmentInput.success) {
+        return {
+            success: false,
+            error: "La sélection de matériel est invalide.",
+            fieldErrors: {
+                equipment: ["La sélection de matériel est invalide."]
+            }
+        }
+    }
 
     // Verify CAPTCHA in production
     if (!isDevelopment) {
@@ -83,8 +96,17 @@ async function submitBagadAssoFormActionImpl(
                 eventEndDate: validatedData.eventEndDate,
                 eventAddr: validatedData.eventAddress,
                 estimatedParticipants: validatedData.eventParticipants,
-                equipments: validatedData.equipment
-            }
+                equipmentMigratedAt: new Date(),
+                equipments: {
+                    create: equipmentInput.data.map(({ id, quantity }) => ({
+                        equipment: { connect: { id } },
+                        requestedQuantity: quantity,
+                        allocatedQuantity: quantity,
+                        includedInContract: false
+                    }))
+                }
+            },
+            include: ticketEquipmentInclude
         })
     )
     if (!ticket.success) {
@@ -96,53 +118,53 @@ async function submitBagadAssoFormActionImpl(
     }
     const ticketRecord = ticket.value
 
-    // The client JSON only holds {id, quantity} — resolve names from the DB
-    // for the acknowledgement email. Best-effort: fall back to an empty list.
-    const joined = await tryCatch(joinTicketAndEquipment(ticketRecord))
-    if (!joined.success) captureActionError(joined.error)
-    const equipments = joined.success
-        ? (
-              joined.value.equipments as unknown as {
-                  name?: string
-                  quantity: number
-              }[]
-          ).map((eq) => ({
-              name: eq.name ?? "Matériel inconnu",
-              quantity: eq.quantity
-          }))
-        : []
+    const equipments = ticketRecord.equipments.map((line) => ({
+        name: line.equipment.name,
+        quantity: line.requestedQuantity
+    }))
 
     // Email is best-effort: the ticket has already been persisted.
-    await Promise.allSettled([
-        sendEmail({
-            to: "evenement@fare-asso.fr",
-            subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
-            html: await render(
-                <NewBagadAssoTicket
-                    data={{
-                        ...ticketRecord,
-                        eventAddr: locationDisplayName(ticketRecord.eventAddr)
-                    }}
-                />
-            )
-        }),
-        sendEmail({
-            to: [
-                ticketRecord.associationEmail,
-                ticketRecord.representativeEmail
-            ],
-            subject: `Votre demande Bagad'Asso #${ticketRecord.id}`,
-            html: await render(
-                <NewBagadAssoTicketAck
-                    data={{
-                        ...ticketRecord,
-                        eventAddr: locationDisplayName(ticketRecord.eventAddr),
-                        equipments
-                    }}
-                />
-            )
-        })
+    const notifications = await Promise.allSettled([
+        (async (): ReturnType<typeof sendEmail> =>
+            sendEmail({
+                to: "evenement@fare-asso.fr",
+                subject: `Nouveau ticket bagad'Asso #${ticketRecord.id}`,
+                html: await render(
+                    <NewBagadAssoTicket
+                        data={{
+                            ...ticketRecord,
+                            eventAddr: locationDisplayName(
+                                ticketRecord.eventAddr
+                            )
+                        }}
+                    />
+                )
+            }))(),
+        (async (): ReturnType<typeof sendEmail> =>
+            sendEmail({
+                to: [
+                    ticketRecord.associationEmail,
+                    ticketRecord.representativeEmail
+                ],
+                subject: `Votre demande Bagad'Asso #${ticketRecord.id}`,
+                html: await render(
+                    <NewBagadAssoTicketAck
+                        data={{
+                            ...ticketRecord,
+                            eventAddr: locationDisplayName(
+                                ticketRecord.eventAddr
+                            ),
+                            equipments
+                        }}
+                    />
+                )
+            }))()
     ])
+    for (const notification of notifications) {
+        if (notification.status === "rejected") {
+            captureActionError(notification.reason)
+        }
+    }
 
     return { success: true }
 }

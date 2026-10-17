@@ -7,6 +7,7 @@ import {
     generateContractPdf,
     type ContractEquipment
 } from "@/helpers/bagadAsso/generateContractPdf"
+import { ticketEquipmentInclude } from "@/helpers/bagadAsso/ticketEquipment"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { hasPermission } from "@/helpers/permissions"
@@ -16,15 +17,10 @@ import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 const SendContractSchema = type({
-    ticketId: "number.integer > 0",
-    equipmentIds: type("number.integer > 0").array(),
+    ticketId: "0 < number.integer <= 2147483647",
+    equipmentIds: type("0 < number.integer <= 2147483647").array(),
     "includeCommunication?": "boolean"
 })
-
-const TicketEquipmentsSchema = type({
-    id: "number.integer > 0",
-    quantity: "number.integer > 0"
-}).array()
 
 async function sendContractActionImpl(
     input: typeof SendContractSchema.infer,
@@ -52,7 +48,10 @@ async function sendContractActionImpl(
     }
 
     const found = await tryCatch(
-        prisma.bagadAssoTicket.findUnique({ where: { id: data.ticketId } })
+        prisma.bagadAssoTicket.findUnique({
+            where: { id: data.ticketId },
+            include: ticketEquipmentInclude
+        })
     )
     if (!found.success) {
         captureActionError(found.error)
@@ -66,56 +65,24 @@ async function sendContractActionImpl(
         }
     }
 
-    const originalEquipments = ticket.equipments
-    if (originalEquipments === null) {
-        return { success: false, error: "Matériel du ticket invalide" }
-    }
-    const storedEquipments = tryCatch(() =>
-        typeof originalEquipments === "string"
-            ? JSON.parse(originalEquipments)
-            : originalEquipments
-    )
-    if (!storedEquipments.success) {
-        captureActionError(storedEquipments.error)
-        return { success: false, error: "Matériel du ticket invalide" }
-    }
-    const requested = TicketEquipmentsSchema(storedEquipments.value)
-    if (requested instanceof type.errors) {
-        return { success: false, error: "Matériel du ticket invalide" }
-    }
-    const quantities = new Map(
-        requested.map((item) => [item.id, item.quantity])
-    )
-    if (data.equipmentIds.some((id) => !quantities.has(id))) {
-        return { success: false, error: "Matériel sélectionné invalide" }
-    }
-
-    const foundEquipments = await tryCatch(
-        prisma.bagadAssoEquipment.findMany({
-            where: { id: { in: data.equipmentIds } },
-            select: { id: true, name: true, deposit: true }
-        })
-    )
-    if (!foundEquipments.success) {
-        captureActionError(foundEquipments.error)
-        return { success: false, error: "Echec de la récupération du matériel" }
-    }
-    if (foundEquipments.value.length !== data.equipmentIds.length) {
-        return { success: false, error: "Matériel sélectionné introuvable" }
+    if (!ticket.equipmentMigratedAt) {
+        return {
+            success: false,
+            error: "Le matériel de ce ticket doit être migré avant l'envoi du contrat"
+        }
     }
     const equipmentById = new Map(
-        foundEquipments.value.map((item) => [item.id, item])
+        ticket.equipments.map((line) => [line.equipmentId, line])
     )
     const equipments: ContractEquipment[] = data.equipmentIds.flatMap((id) => {
-        const equipment = equipmentById.get(id)
-        const quantity = quantities.get(id)
-        return equipment && quantity
+        const line = equipmentById.get(id)
+        return line && line.allocatedQuantity > 0
             ? [
                   {
-                      id: equipment.id,
-                      name: equipment.name,
-                      deposit: equipment.deposit,
-                      quantity
+                      id,
+                      name: line.equipment.name,
+                      deposit: line.equipment.deposit,
+                      quantity: line.allocatedQuantity
                   }
               ]
             : []
@@ -168,17 +135,43 @@ async function sendContractActionImpl(
         return { success: false, error: "Echec de l'envoi du contrat" }
     }
 
-    const saved = await tryCatch(
-        prisma.bagadAssoTicket.updateMany({
-            where: {
-                id: ticket.id,
-                deleted: null,
-                validated: null,
-                equipments: { equals: originalEquipments }
-            },
-            data: {
-                validated: new Date()
+    const saved = await tryCatch(() =>
+        prisma.$transaction(async (tx): Promise<ActionResult> => {
+            const claim = await tx.bagadAssoTicket.updateMany({
+                where: {
+                    id: ticket.id,
+                    deleted: null,
+                    validated: null,
+                    equipmentRevision: ticket.equipmentRevision
+                },
+                data: {
+                    validated: new Date(),
+                    equipmentRevision: { increment: 1 }
+                }
+            })
+            if (claim.count !== 1) {
+                return {
+                    success: false,
+                    error: "Le contrat a été envoyé, mais le ticket a été modifié entre-temps. Vérifiez les informations avant un nouvel envoi."
+                }
             }
+            await tx.bagadAssoTicketEquipment.updateMany({
+                where: { ticketId: ticket.id },
+                data: { includedInContract: false }
+            })
+            const selected = await tx.bagadAssoTicketEquipment.updateMany({
+                where: {
+                    ticketId: ticket.id,
+                    equipmentId: { in: data.equipmentIds }
+                },
+                data: { includedInContract: true }
+            })
+            if (selected.count !== data.equipmentIds.length) {
+                throw new Error(
+                    "Contract equipment changed during finalization"
+                )
+            }
+            return { success: true }
         })
     )
     if (!saved.success) {
@@ -189,14 +182,7 @@ async function sendContractActionImpl(
         }
     }
 
-    if (saved.value.count === 0) {
-        return {
-            success: false,
-            error: "Le contrat a été envoyé, mais le ticket a été modifié entre-temps. Vérifiez les informations avant un nouvel envoi."
-        }
-    }
-
-    return { success: true }
+    return saved.value
 }
 
 export const sendContractAction = wrapAction(

@@ -1,8 +1,10 @@
 import type { BagadAssoFormData } from "@/components/public/bagadAsso/form-schema"
 import type {
     BagadAssoEquipment,
-    BagadAssoTicket
+    BagadAssoTicket,
+    BagadAssoTicketEquipment
 } from "@/generated/prisma/client"
+import type { TicketWithEquipment } from "@/helpers/bagadAsso/ticketEquipment"
 import type { TBagadAssoSuggestion } from "@/schemas/bagadAsso"
 import type { TAddEquipment, TEditEquipment } from "@/schemas/bagadEquipment"
 
@@ -102,11 +104,41 @@ export function bagadAssoTicketRecord(
         eventAddr: "1 rue de la Paix, 35000 Rennes",
         estimatedParticipants: 120,
         creationDate: new Date("2026-01-01T00:00:00Z"),
-        equipments: JSON.stringify([{ id: 1, quantity: 2 }]),
+        legacyEquipments: null,
+        equipmentMigratedAt: new Date("2026-01-01T00:00:00Z"),
+        equipmentRevision: 0,
         associationEmail: "asso@example.com",
         representativeEmail: "lea@example.com",
         deleted: null,
         validated: null,
+        ...overrides
+    }
+}
+
+export function bagadAssoTicketEquipmentRecord(
+    overrides: Partial<BagadAssoTicketEquipment> = {}
+): BagadAssoTicketEquipment {
+    return {
+        ticketId: 1,
+        equipmentId: 1,
+        requestedQuantity: 2,
+        allocatedQuantity: 2,
+        includedInContract: false,
+        ...overrides
+    }
+}
+
+export function bagadAssoTicketWithEquipmentsRecord(
+    overrides: Partial<TicketWithEquipment> = {}
+): TicketWithEquipment {
+    return {
+        ...bagadAssoTicketRecord(),
+        equipments: [
+            {
+                ...bagadAssoTicketEquipmentRecord(),
+                equipment: bagadAssoEquipmentRecord()
+            }
+        ],
         ...overrides
     }
 }

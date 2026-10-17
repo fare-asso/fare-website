@@ -83,7 +83,7 @@ export function TicketEquipment(): ReactNode {
         }
         if (
             allEquipments.find((equipment): boolean => equipment.id === id)
-                ?.quantity === value
+                ?.allocatedQuantity === value
         ) {
             finishEditing()
             return
@@ -165,6 +165,9 @@ export function TicketEquipment(): ReactNode {
                                 <Checkbox
                                     id={`item-${equipment.id}`}
                                     checked={equipment.checked}
+                                    disabled={
+                                        !canEditQuantity || isEquipmentBusy
+                                    }
                                     onCheckedChange={(checked) =>
                                         dispatch({
                                             type: "setEquipmentChecked",
@@ -259,11 +262,14 @@ export function TicketEquipment(): ReactNode {
                                                     onClick={(): void =>
                                                         startEditing(
                                                             equipment.id,
-                                                            equipment.quantity
+                                                            equipment.allocatedQuantity
                                                         )
                                                     }
                                                 >
-                                                    {equipment.quantity}×
+                                                    {
+                                                        equipment.allocatedQuantity
+                                                    }
+                                                    ×
                                                 </button>
                                             </Badge>
                                         ) : (
@@ -271,7 +277,7 @@ export function TicketEquipment(): ReactNode {
                                                 variant="secondary"
                                                 className="font-mono"
                                             >
-                                                {equipment.quantity}×
+                                                {equipment.allocatedQuantity}×
                                             </Badge>
                                         )}
                                         <FieldLabel
@@ -280,9 +286,19 @@ export function TicketEquipment(): ReactNode {
                                         >
                                             {equipment.name}
                                         </FieldLabel>
+
+                                        {ticket.validated &&
+                                            equipment.includedInContract ===
+                                                null && (
+                                                <span className="text-muted-foreground text-xs">
+                                                    Inclusion dans le contrat
+                                                    historique inconnue
+                                                </span>
+                                            )}
                                     </div>
                                     <span className="text-muted-foreground text-sm">
-                                        {equipment.quantity * equipment.deposit}
+                                        {equipment.allocatedQuantity *
+                                            equipment.deposit}
                                         €
                                     </span>
                                 </div>
