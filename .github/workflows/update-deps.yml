@@ -37,6 +37,12 @@ jobs:
             - name: Install UPM
               run: npm install --global upm@1.4.0
 
+            - name: Cache UPM store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.upm/store
+                  key: upm-${{ runner.os }}-${{ hashFiles('upm.lock') }}
+
             - name: Update dependencies using taze
               run: upm exec -p taze@latest taze
 

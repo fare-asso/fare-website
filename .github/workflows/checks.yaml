@@ -37,7 +37,13 @@ jobs:
                   node-version: 24
 
             - name: Install UPM
-              run: npm install --global upm
+              run: npm install --global upm@1.4.0
+
+            - name: Cache UPM store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.upm/store
+                  key: upm-${{ runner.os }}-${{ hashFiles('upm.lock') }}
 
             - name: Install dependencies
               run: upm install --frozen-lockfile
@@ -76,7 +82,13 @@ jobs:
                   node-version: 24
 
             - name: Install UPM
-              run: npm install --global upm
+              run: npm install --global upm@1.4.0
+
+            - name: Cache UPM store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.upm/store
+                  key: upm-${{ runner.os }}-${{ hashFiles('upm.lock') }}
 
             - name: Install dependencies
               run: upm install --frozen-lockfile

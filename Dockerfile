@@ -17,17 +17,16 @@ WORKDIR /app
 #####################
 FROM base AS builder
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g corepack@latest
-RUN corepack enable
+ENV UPM_STORE="/app/.upm-store"
+RUN npm install --global upm@1.4.0
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --frozen-lockfile
+COPY package.json upm.lock pnpm-workspace.yaml ./
+RUN --mount=type=cache,id=upm-store,target=/app/.upm-store \
+    upm install --frozen-lockfile
 
 COPY . .
 
-RUN pnpm exec prisma generate --no-hints
+RUN upm exec prisma generate --no-hints
 
 ARG PUBLIC_SUPABASE_URL
 ENV PUBLIC_SUPABASE_URL=$PUBLIC_SUPABASE_URL
@@ -50,9 +49,11 @@ ENV SUPABASE_POSTGRES_PRISMA_URL="build" \
 
 RUN --mount=type=secret,id=SUPABASE_POSTGRES_PRISMA_DIRECT_URL,env=SUPABASE_POSTGRES_PRISMA_DIRECT_URL \
     --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN \
-    pnpm exec prisma migrate deploy && pnpm exec prisma db seed && pnpm run build
+    --mount=type=cache,id=upm-store,target=/app/.upm-store \
+    upm exec prisma migrate deploy && upm exec prisma db seed && upm run build
 
-RUN pnpm prune --prod
+RUN --mount=type=cache,id=upm-store,target=/app/.upm-store \
+    upm install --production --frozen-lockfile
 
 ####################
 ### RUNNER STAGE ###

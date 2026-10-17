@@ -6,7 +6,7 @@ export default defineConfig({
     schema: "schema.prisma",
     migrations: {
         path: "migrations",
-        seed: "pnpm exec jiti ./prisma/seed.ts"
+        seed: "upm exec jiti ./prisma/seed.ts"
     },
     datasource: {
         // Migrations need a direct (non-pooled) connection — the pooled

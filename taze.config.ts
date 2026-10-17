@@ -7,7 +7,7 @@ export default defineConfig({
     force: false,
     // write to package.json
     write: true,
-    // run `pnpm install` right after bumping
+    // run `upm install` right after bumping
     install: false,
     // ignore paths for looking for package.json in monorepo
     ignorePaths: ["**/node_modules/**", "**/test/**"],

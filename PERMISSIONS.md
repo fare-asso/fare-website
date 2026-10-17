@@ -109,7 +109,7 @@ Permissions follow the pattern: `<action>:<resource>`
 The easiest way to seed all permissions is to use the Prisma seed script:
 
 ```bash
-pnpm prisma db seed
+upm prisma db seed
 ```
 
 This will automatically create or update all permissions defined in `prisma/seed.ts`. The script uses `upsert` to avoid duplicate entries and updates existing permissions if their details have changed.

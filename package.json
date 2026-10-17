@@ -15,7 +15,7 @@
         "test:browser": "vitest run --project browser",
         "test:watch": "vitest",
         "lint": "oxlint --fix && biome lint --write .",
-        "check": "pnpm run check:types && pnpm run check:lint && pnpm run check:format && pnpm run test",
+        "check": "upm run check:types && upm run check:lint && upm run check:format && upm run test",
         "check:lint": "biome lint . && oxlint --deny-warnings",
         "check:types": "tsgo --noEmit && astro check",
         "check:format": "oxfmt --check && biome format .",
@@ -96,5 +96,5 @@
         "vitest": "^4.1.12",
         "vitest-browser-react": "^2.3.0"
     },
-    "packageManager": "pnpm@11.28.6+sha512.55d90390c3b39042f1505a2697789f0256c6d95bb28bdd7cb731af1887c9f2629ef581acb9f4e4ec772024c8203c2aed22a03299b97103fdcf32668e905d0024"
+    "packageManager": "upm@1.4.0"
 }
