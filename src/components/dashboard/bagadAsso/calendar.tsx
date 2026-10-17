@@ -67,8 +67,13 @@ type Event = Pick<
     | "deleted"
 >
 
-export default function Calendar({ events }: { events?: Event[] }) {
-    const today = new Date()
+export default function Calendar({
+    events,
+    today
+}: {
+    events?: Event[]
+    today: Date
+}) {
     const thisMonth = new Date(today.getFullYear(), today.getMonth(), 15)
     const [defaultParam] = useState(() => toParam(thisMonth))
     const [monthParam, setMonthParam] = useSearchParam("month", defaultParam)

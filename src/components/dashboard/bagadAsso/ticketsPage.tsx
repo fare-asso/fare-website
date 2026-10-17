@@ -10,6 +10,7 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import type { BagadAssoTicket } from "@/generated/prisma/client"
+import { useInitialNow } from "@/hooks/useInitialNow"
 
 import CalendarFeed from "./calendarFeed"
 import ActiveTickets from "./tickets/activeTickets"
@@ -29,6 +30,7 @@ function TicketsContent({
     canManage,
     calendarToken
 }: TicketsPageProps) {
+    const now = useInitialNow()
     const { data: tickets } = useQuery({
         queryKey: ["bagadTickets"],
         queryFn: async () => {
@@ -54,9 +56,9 @@ function TicketsContent({
             </CardHeader>
             <CardContent className="h-1/2 flex-1 p-0">
                 <TabSwitcher>
-                    <ActiveTickets tickets={tickets} />
-                    <ValidatedTickets tickets={tickets} />
-                    <PastTickets tickets={tickets} />
+                    <ActiveTickets tickets={tickets} now={now} />
+                    <ValidatedTickets tickets={tickets} now={now} />
+                    <PastTickets tickets={tickets} now={now} />
                     <ArchivedTickets tickets={tickets} />
                 </TabSwitcher>
             </CardContent>

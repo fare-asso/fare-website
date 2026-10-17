@@ -473,8 +473,8 @@ Both must be green to merge.
 
 ## Useful Commands Reference
 
-| Command                | Purpose                                           |
-| ---------------------- | ------------------------------------------------- |
+| Command               | Purpose                                           |
+| --------------------- | ------------------------------------------------- |
 | `upm run dev`         | Astro dev server                                  |
 | `upm run build`       | Production build                                  |
 | `upm run start`       | Run built server (`node ./dist/server/entry.mjs`) |

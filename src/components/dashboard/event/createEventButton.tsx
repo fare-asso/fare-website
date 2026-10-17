@@ -18,6 +18,7 @@ import DatePicker from "@/components/ui/input/datePicker"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { useInitialNow } from "@/hooks/useInitialNow"
 
 import CategorySelect from "../../ui/category/categorySelect"
 import TimePicker from "../../ui/input/timePicker"
@@ -28,6 +29,7 @@ export default function CreateEventButton() {
     const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false)
     const [isPending, startTransition] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const currentYear = useInitialNow().getFullYear()
     const queryClient = useQueryClient()
 
     const handleOpenChange = useCallback((open: boolean) => {
@@ -120,8 +122,8 @@ export default function CreateEventButton() {
                             <Label htmlFor="startDate">Date de début</Label>
                             <DatePicker
                                 name="startDate"
-                                fromYear={new Date().getFullYear() - 10}
-                                toYear={new Date().getFullYear() + 10}
+                                fromYear={currentYear - 10}
+                                toYear={currentYear + 10}
                             />
                         </div>
 
@@ -140,8 +142,8 @@ export default function CreateEventButton() {
                             <Label>Date de fin</Label>
                             <DatePicker
                                 name="endDate"
-                                fromYear={new Date().getFullYear() - 10}
-                                toYear={new Date().getFullYear() + 10}
+                                fromYear={currentYear - 10}
+                                toYear={currentYear + 10}
                             />
                         </div>
 

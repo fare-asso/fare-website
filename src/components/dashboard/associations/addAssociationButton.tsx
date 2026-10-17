@@ -16,6 +16,7 @@ import {
 import { FilePondInput } from "@/components/ui/filepond"
 import LocationPicker from "@/components/ui/location/locationPicker"
 import { TextField } from "@/components/ui/text-field"
+import { useInitialNow } from "@/hooks/useInitialNow"
 import {
     AddAssociationSchema,
     ASSOCIATION_SOCIAL_KEYS,
@@ -46,6 +47,7 @@ export default function AddAssociationButton() {
     const [open, setOpen] = useState(false)
     const [isPending, submit] = useTransition()
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const now = useInitialNow()
     const queryClient = useQueryClient()
 
     const form = useForm({
@@ -193,7 +195,7 @@ export default function AddAssociationButton() {
                         error="La date de naissance est requise."
                         captionLayout="dropdown"
                         startMonth={new Date(1950, 0)}
-                        endMonth={new Date(new Date().getFullYear() + 1, 11)}
+                        endMonth={new Date(now.getFullYear() + 1, 11)}
                     />
                 )}
             />
