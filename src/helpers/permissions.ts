@@ -1,3 +1,4 @@
+import type { Permission } from "@/../prisma/seed"
 import type { Role, User } from "@/generated/prisma/client"
 
 import type { UserWithPermissions } from "./supabase/auth"
@@ -8,7 +9,7 @@ export function hasRole(user: User, role: Role) {
 
 export function hasPermission(
     user: UserWithPermissions | null,
-    permissionName: string
+    permissionName: Permission
 ) {
     return !!user?.permissions?.some(
         (up) => up.permission.name === permissionName
