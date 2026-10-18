@@ -48,6 +48,15 @@ type UnwrapError<T> = [T] extends [{ data: unknown; error: unknown }]
         : never
     : never
 
+function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
+    return (
+        value !== null &&
+        (typeof value === "object" || typeof value === "function") &&
+        "then" in value &&
+        typeof value.then === "function"
+    )
+}
+
 function isResultShape(
     value: unknown
 ): value is { data: unknown; error: unknown } {
@@ -82,7 +91,7 @@ function wrap<T, E>(value: T): SyncResult<UnwrapValue<T>, UnwrapError<T> | E> {
 }
 
 /**
- * Wrap a Promise, sync thunk, or async thunk in a try/catch and return a
+ * Wrap a promise-like value, sync thunk, or async thunk in a try/catch and return a
  * Rust-style discriminated-union Result instead of throwing.
  *
  * The result shape is identical across all input forms:
@@ -100,7 +109,8 @@ function wrap<T, E>(value: T): SyncResult<UnwrapValue<T>, UnwrapError<T> | E> {
  *     caught synchronously. Use anywhere a `try/catch` wrapped a sync
  *     expression (`JSON.parse`, `cookieStore.set`, `localStorage.…`).
  *   - `tryCatch(() => asyncOp())` → `Promise<Result<T>>` — async thunk;
- *     catches synchronous throws inside the thunk too.
+ *     catches synchronous throws inside the thunk too. Non-native thenables
+ *     (e.g. Prisma queries) are resolved using native Promise semantics.
  *
  * @example
  * // supabase — non-throwing { data, error } result is unwrapped
@@ -126,24 +136,38 @@ function wrap<T, E>(value: T): SyncResult<UnwrapValue<T>, UnwrapError<T> | E> {
  * tryCatch(() => cookieStore.set({ name, value, ...options }))
  */
 export function tryCatch<T, E = Error>(
-    input: Promise<T>
+    input: PromiseLike<T>
 ): AsyncResult<UnwrapValue<T>, UnwrapError<T> | E>
 export function tryCatch<T, E = Error>(
-    input: () => Promise<T>
+    input: () => PromiseLike<T>
 ): AsyncResult<UnwrapValue<T>, UnwrapError<T> | E>
 export function tryCatch<T, E = Error>(
     input: () => T
 ): SyncResult<UnwrapValue<T>, UnwrapError<T> | E>
 export function tryCatch<T, E = Error>(
-    input: Promise<T> | (() => T | Promise<T>)
+    input: PromiseLike<T> | (() => T | PromiseLike<T>)
 ):
     | SyncResult<UnwrapValue<T>, UnwrapError<T> | E>
     | AsyncResult<UnwrapValue<T>, UnwrapError<T> | E> {
     if (typeof input === "function") {
-        let produced: T | Promise<T>
         // oxlint-disable-next-line local/no-try-catch
         try {
-            produced = input()
+            const produced = input()
+            // Reading `then` may invoke a getter, so detection belongs inside
+            // the try block. Promise.resolve handles assimilation and rejection.
+            if (isPromiseLike(produced)) {
+                return Promise.resolve(produced).then(
+                    (value) => wrap<T, E>(value),
+                    (
+                        error: unknown
+                    ): SyncResult<UnwrapValue<T>, UnwrapError<T> | E> => ({
+                        success: false,
+                        value: null,
+                        error: error as UnwrapError<T> | E
+                    })
+                )
+            }
+            return wrap<T, E>(produced)
         } catch (error) {
             return {
                 success: false,
@@ -151,21 +175,8 @@ export function tryCatch<T, E = Error>(
                 error: error as UnwrapError<T> | E
             }
         }
-        if (produced instanceof Promise) {
-            return produced.then(
-                (value) => wrap<T, E>(value),
-                (
-                    error: unknown
-                ): SyncResult<UnwrapValue<T>, UnwrapError<T> | E> => ({
-                    success: false,
-                    value: null,
-                    error: error as UnwrapError<T> | E
-                })
-            )
-        }
-        return wrap<T, E>(produced)
     }
-    // Promise.resolve handles both real Promises and non-thenable inputs
+    // Promise.resolve handles native promises, thenables, and non-thenable inputs
     // (e.g. test mocks that return undefined where a Promise was expected).
     return Promise.resolve(input).then(
         (value) => wrap<T, E>(value),
