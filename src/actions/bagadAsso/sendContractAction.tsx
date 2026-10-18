@@ -19,7 +19,8 @@ import { tryCatch } from "@/lib/utils"
 const SendContractSchema = type({
     ticketId: "0 < number.integer <= 2147483647",
     equipmentIds: type("0 < number.integer <= 2147483647").array(),
-    "includeCommunication?": "boolean"
+    "includeCommunication?": "boolean",
+    "additionalParagraph?": "string"
 })
 
 async function sendContractActionImpl(
@@ -105,14 +106,15 @@ async function sendContractActionImpl(
             "Évènements FARE <evenements@fare-asso.fr>"
         ],
         replyTo: "Évènements FARE <evenements@fare-asso.fr>",
-        subject: `[FARE] Contrat Bagad asso ${ticket.association} #${ticket.id}`,
+        subject: `[FARE] Contrat Bagad'Asso ${ticket.association} #${ticket.id}`,
         html: await render(
             <BagadAssoContractEmail
                 data={{
                     eventDate: ticket.eventDate,
                     eventEndDate: ticket.eventEndDate,
                     id: ticket.id,
-                    includeCommunication
+                    includeCommunication,
+                    additionalParagraph: data.additionalParagraph
                 }}
             />
         ),

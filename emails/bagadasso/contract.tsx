@@ -10,11 +10,18 @@ interface BagadAssoContractProps {
         eventEndDate: Date | null
         id: number
         includeCommunication?: boolean
+        additionalParagraph?: string
     }
 }
 
 export function BagadAssoContract({
-    data: { eventDate, eventEndDate, id, includeCommunication = true }
+    data: {
+        eventDate,
+        eventEndDate,
+        id,
+        includeCommunication = true,
+        additionalParagraph
+    }
 }: BagadAssoContractProps) {
     return (
         <BaseTemplate>
@@ -41,6 +48,12 @@ export function BagadAssoContract({
                     .
                 </Text>
             </Section>
+
+            {additionalParagraph ? (
+                <Section className="mt-6 text-sm text-stone-700">
+                    <Text className="m-0">{additionalParagraph}</Text>
+                </Section>
+            ) : undefined}
 
             <Section className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-6">
                 <Text className="m-0 text-sm font-semibold text-stone-800">
@@ -123,7 +136,9 @@ BagadAssoContract.PreviewProps = {
     data: {
         eventDate: new Date("2026-10-17"),
         eventEndDate: new Date("2026-10-18"),
-        id: 67
+        id: 67,
+        additionalParagraph:
+            "This is an additional paragraph containing a bit of testing text to fill in the content gap with some lorem ipsum whatever."
     }
 } satisfies BagadAssoContractProps
 

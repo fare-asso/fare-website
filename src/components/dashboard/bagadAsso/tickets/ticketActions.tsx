@@ -23,6 +23,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { FieldLabel } from "@/components/ui/field"
+import { Separator } from "@/components/ui/separator"
+import { Textarea } from "@/components/ui/textarea"
 import { tryCatch } from "@/lib/utils"
 
 import { useTicketContext } from "./ticketContext"
@@ -38,6 +40,11 @@ export default function TicketActions() {
     } = useTicketContext()
     const [isLoading, setIsLoading] = useState(false)
     const [includeCommunication, setIncludeCommunication] = useState(true)
+    const [showAdditionalParagraph, setShowAdditionalParagraph] =
+        useState(false)
+    const [additionalParagraph, setAdditionalParagraph] = useState<
+        string | undefined
+    >(undefined)
     const [openDialog, setOpenDialog] = useState<
         "contract" | "archive" | "delete" | null
     >(null)
@@ -54,7 +61,8 @@ export default function TicketActions() {
                         (equipment) => equipment.checked && !equipment.deletedAt
                     )
                     .map((equipment) => equipment.id),
-                includeCommunication
+                includeCommunication,
+                additionalParagraph
             })
         }))
         const { data, error } = result.success
@@ -248,6 +256,45 @@ export default function TicketActions() {
                                             </div>
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
+                                    <div className="mb-2 space-y-3">
+                                        <div className="flex items-start justify-start gap-3">
+                                            <Checkbox
+                                                id="additional-paragraph"
+                                                checked={
+                                                    showAdditionalParagraph
+                                                }
+                                                disabled={isLoading}
+                                                onCheckedChange={(
+                                                    checked
+                                                ): void =>
+                                                    setShowAdditionalParagraph(
+                                                        checked === true
+                                                    )
+                                                }
+                                            />
+                                            <FieldLabel htmlFor="additional-paragraph">
+                                                Ajouter un paragraphe à l'email
+                                                de confirmation
+                                            </FieldLabel>
+                                        </div>
+
+                                        {showAdditionalParagraph && (
+                                            <>
+                                                <Textarea
+                                                    value={additionalParagraph}
+                                                    onChange={(e) => {
+                                                        setAdditionalParagraph(
+                                                            e.target.value
+                                                        )
+                                                        console.log(
+                                                            additionalParagraph
+                                                        )
+                                                    }}
+                                                />
+                                                <Separator />
+                                            </>
+                                        )}
+                                    </div>
                                     <div className="flex items-start gap-3">
                                         <Checkbox
                                             id="contract-communication"
