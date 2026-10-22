@@ -19,13 +19,13 @@ export function AssistanceAck({ situationLabel, delay }: AssistanceAckProps) {
                 <strong>{situationLabel}</strong>.
             </Text>
             <Text>
-                UnE éluE étudiantE de la FARE revient vers vous sous environ{" "}
+                Un·e élu·e étudiant·e de la FARE revient vers vous sous environ{" "}
                 <strong>{delay}</strong>. Vos informations restent
                 confidentielles.
             </Text>
             <Text>
                 À bientôt, <br />
-                Les éluEs étudiantEs de la FARE
+                Les élu·es étudiant·es de la FARE
             </Text>
         </BaseTemplate>
     )

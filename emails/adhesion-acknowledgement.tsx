@@ -20,7 +20,7 @@ export function AdhesionAck({ associationName }: AdhesionAckProps) {
             <Text>
                 Nous allons étudier votre dossier et reviendrons vers vous
                 prochainement. Une fois votre demande validée, vous serez
-                invitéEs à régler la cotisation.
+                invité·es à régler la cotisation.
             </Text>
             <Text>
                 Pour toute question, vous pouvez nous écrire à{" "}
