@@ -62,6 +62,53 @@ const emptyBureauMember: BureauMember = {
     adresse: ""
 }
 
+function createDummyFile(name: string, type: string): File {
+    return new File(["Données de test"], name, { type })
+}
+
+function createDummyForm(): typeof emptyForm {
+    return {
+        sigle: "TEST",
+        nomComplet: "Association de test FARE",
+        logo: createDummyFile("logo.png", "image/png"),
+        college: "A",
+        filiere: "Informatique",
+        objetPrincipal: "Représentation des étudiant·es",
+        adresseAdministrative: "6 cours des Alliés, 35000 Rennes",
+        siegeSocial: "",
+        numeroSalle: "101",
+        dateAG: new Date("2026-01-15T00:00:00.000Z"),
+        nombreEtudiantsRepresentes: 120,
+        nombreAdherents: 45,
+        engagementCotisation: true,
+        emailAssociation: "test@association.fr",
+        telephonePortable: "0612345678" as TAdhesionForm["telephonePortable"],
+        telephoneFixe: "",
+        bureau: [
+            {
+                isAdmin: true,
+                poste: "Président·e",
+                nom: "Dupont",
+                prenom: "Camille",
+                filiere: "Informatique",
+                annee: "L3",
+                telephone:
+                    "0612345678" as TAdhesionForm["bureau"][number]["telephone"],
+                email: "camille.dupont@association.fr",
+                adresse: ""
+            }
+        ],
+        statuts: createDummyFile("statuts.pdf", "application/pdf"),
+        recepisse: createDummyFile("recepisse.pdf", "application/pdf"),
+        extraitPV: createDummyFile("extrait-pv.pdf", "application/pdf"),
+        lettreEngagement: undefined as unknown as File,
+        reglementInterieur: undefined as unknown as File,
+        bilanFinancier: undefined as unknown as File,
+        photos: [],
+        captchaToken: "development-captcha-token"
+    }
+}
+
 const emptyForm = {
     sigle: "",
     nomComplet: "",
@@ -135,10 +182,12 @@ export function AdhesionForm(): React.ReactNode {
     function BureauMemberFields({
         index,
         canDelete,
+        adminCount,
         onDelete
     }: {
         index: number
         canDelete: boolean
+        adminCount: number
         onDelete: () => void
     }): React.ReactNode {
         return (
@@ -153,6 +202,10 @@ export function AdhesionForm(): React.ReactNode {
                                     <Checkbox
                                         id={field.name}
                                         checked={field.state.value as boolean}
+                                        disabled={
+                                            !field.state.value &&
+                                            adminCount >= 2
+                                        }
                                         onCheckedChange={(checked) => {
                                             field.handleChange(checked === true)
                                             field.handleBlur()
@@ -415,7 +468,7 @@ export function AdhesionForm(): React.ReactNode {
                             return (
                                 <Field data-invalid={isInvalid}>
                                     <FieldLabel htmlFor={field.name}>
-                                        Adresse postale
+                                        Adresse postale (optionnelle)
                                     </FieldLabel>
                                     <LocationPicker
                                         id={field.name}
@@ -429,7 +482,7 @@ export function AdhesionForm(): React.ReactNode {
                                     />
                                     {isInvalid && (
                                         <FieldError>
-                                            L'adresse postale est requise.
+                                            L'adresse postale n'est pas valide.
                                         </FieldError>
                                     )}
                                 </Field>
@@ -484,6 +537,19 @@ export function AdhesionForm(): React.ReactNode {
                     </a>
                     . Tous les champs sont obligatoires sauf mention contraire.
                 </CardDescription>
+                {import.meta.env.DEV && (
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="w-fit"
+                        onClick={() => {
+                            form.reset(createDummyForm())
+                            setSubmitError(null)
+                        }}
+                    >
+                        Remplir avec des données de test
+                    </Button>
+                )}
             </CardHeader>
             <CardContent>
                 <form
@@ -1528,47 +1594,79 @@ export function AdhesionForm(): React.ReactNode {
                         {/* ===== Section: Bureau de l'association ===== */}
                         <FieldSet>
                             <FieldLegend>Bureau de l'association</FieldLegend>
-                            <form.Field name="bureau" mode="array">
-                                {(field) => (
-                                    <div className="space-y-4">
-                                        {field.state.value.map((_, index) => (
-                                            <BureauMemberFields
-                                                key={`bureau-member-${index}`}
-                                                index={index}
-                                                canDelete={
-                                                    field.state.value.length > 1
-                                                }
-                                                onDelete={() =>
-                                                    field.removeValue(index)
-                                                }
-                                            />
-                                        ))}
+                            <form.Subscribe
+                                selector={(state) => state.values.bureau}
+                            >
+                                {(bureau) => {
+                                    const adminCount = bureau.filter(
+                                        (member) => member.isAdmin
+                                    ).length
+                                    return (
+                                        <div className="space-y-4">
+                                            {bureau.map((_, index) => (
+                                                <BureauMemberFields
+                                                    key={`bureau-member-${index}`}
+                                                    index={index}
+                                                    canDelete={
+                                                        bureau.length > 1
+                                                    }
+                                                    adminCount={adminCount}
+                                                    onDelete={() =>
+                                                        form.setFieldValue(
+                                                            "bureau",
+                                                            (members) =>
+                                                                members.filter(
+                                                                    (
+                                                                        _,
+                                                                        memberIndex
+                                                                    ) =>
+                                                                        memberIndex !==
+                                                                        index
+                                                                )
+                                                        )
+                                                    }
+                                                />
+                                            ))}
 
-                                        {field.state.meta.isTouched &&
-                                            !field.state.meta.isValid && (
-                                                <FieldError>
-                                                    Au moins un membre du bureau
-                                                    est requis.
-                                                </FieldError>
-                                            )}
-
-                                        <div className="flex justify-end">
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    field.pushValue({
-                                                        ...emptyBureauMember
-                                                    })
+                                            <form.Field name="bureau">
+                                                {(field) =>
+                                                    field.state.meta
+                                                        .isTouched &&
+                                                    !field.state.meta
+                                                        .isValid ? (
+                                                        <FieldError>
+                                                            Veuillez désigner un
+                                                            ou deux
+                                                            administrateurices.
+                                                        </FieldError>
+                                                    ) : null
                                                 }
-                                            >
-                                                <UserPlus className="mr-2 h-4 w-4" />
-                                                Ajouter un membre
-                                            </Button>
+                                            </form.Field>
+
+                                            <div className="flex justify-end">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    onClick={() =>
+                                                        form.setFieldValue(
+                                                            "bureau",
+                                                            (members) => [
+                                                                ...members,
+                                                                {
+                                                                    ...emptyBureauMember
+                                                                }
+                                                            ]
+                                                        )
+                                                    }
+                                                >
+                                                    <UserPlus className="mr-2 h-4 w-4" />
+                                                    Ajouter un membre
+                                                </Button>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                            </form.Field>
+                                    )
+                                }}
+                            </form.Subscribe>
                         </FieldSet>
 
                         <FieldSeparator />

@@ -9,6 +9,10 @@ import type { Adhesion } from "@/generated/prisma/client"
 import { locationDisplayName } from "@/helpers/location"
 import { type BureauMember, bureauMemberSchema } from "@/schemas/adhesion"
 
+const WIDTH = 595.28
+const HEIGHT = 841.89
+const HEADER_BLUE = rgb(0.09, 0.22, 0.48)
+
 interface AdhesionPdfData {
     dateAdhesion: Date
     sigle: string
@@ -40,29 +44,40 @@ export async function generateAdhesionPdf(
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
 
     const logoBytes = await readFile(
-        path.join(process.cwd(), "public", "logo_fare.png")
+        path.join(process.cwd(), "src", "assets", "logo_fare.png")
     )
     const logoImage = await pdfDoc.embedPng(logoBytes)
 
     // Track vertical position across pages
     let yPosition = 0
 
-    const addCornerLabel = (page: PDFPage) => {
-        const logoDims = logoImage.scale(0.075)
-        const { height } = page.getSize()
+    const addHeader = (page: PDFPage): void => {
+        page.drawRectangle({
+            x: 0,
+            y: HEIGHT - 61,
+            width: WIDTH,
+            height: 12,
+            color: HEADER_BLUE
+        })
+        page.drawRectangle({
+            x: 100,
+            y: HEIGHT - 95,
+            width: 100,
+            height: 80,
+            color: rgb(1, 1, 1)
+        })
+        const logoDims = logoImage.scaleToFit(88, 72)
         page.drawImage(logoImage, {
-            x: 10,
-            y: -5 + height - logoDims.height,
-            width: logoDims.width,
-            height: logoDims.height
+            x: 106 + (88 - logoDims.width) / 2,
+            y: HEIGHT - 91 + (72 - logoDims.height) / 2,
+            ...logoDims
         })
     }
 
     const createPage = (): PDFPage => {
-        const page = pdfDoc.addPage()
-        addCornerLabel(page)
-        const { height } = page.getSize()
-        yPosition = height - 75
+        const page = pdfDoc.addPage([WIDTH, HEIGHT])
+        addHeader(page)
+        yPosition = HEIGHT - 121
         return page
     }
 
@@ -205,7 +220,9 @@ export async function generateAdhesionPdf(
             "Années d'études",
             `${member.annee} (${member.filiere})`
         )
-        addField(memberPage, "Adresse", locationDisplayName(member.adresse))
+        if (member.adresse) {
+            addField(memberPage, "Adresse", locationDisplayName(member.adresse))
+        }
         yPosition -= 20
     }
 

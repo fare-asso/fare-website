@@ -1,5 +1,13 @@
 import { PDFDocument } from "pdf-lib"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
+const h = vi.hoisted(() => ({
+    locationDisplayName: vi.fn((value: string) => value)
+}))
+
+vi.mock("@/helpers/location", () => ({
+    locationDisplayName: h.locationDisplayName
+}))
 
 import type { BureauMember } from "@/schemas/adhesion"
 import { validAdhesionRecord } from "@/test/factories/adhesion"
@@ -29,6 +37,10 @@ const isPdf = (bytes: Uint8Array): boolean =>
     bytes[3] === 0x46
 
 describe("generateAdhesionPdf", () => {
+    beforeEach(() => {
+        h.locationDisplayName.mockClear()
+    })
+
     it("produces a non-empty PDF document", async () => {
         const pdf = await generateAdhesionPdf({
             dateAdhesion: new Date("2026-02-01T00:00:00Z"),
@@ -49,6 +61,32 @@ describe("generateAdhesionPdf", () => {
             bureau: [member]
         })
         expect(isPdf(pdf)).toBe(true)
+        const document = await PDFDocument.load(pdf)
+        expect(document.getPage(0).getWidth()).toBeCloseTo(595.28)
+        expect(document.getPage(0).getHeight()).toBeCloseTo(841.89)
+    })
+
+    it("omits a bureau member's address when it is not provided", async () => {
+        const pdf = await generateAdhesionPdf({
+            dateAdhesion: new Date("2026-02-01T00:00:00Z"),
+            sigle: "FARE",
+            nomComplet: "Federation",
+            college: "A",
+            objetPrincipal: "Representation",
+            adresseAdministrative: "Rennes",
+            siegeSocial: "",
+            numeroSalle: "",
+            dateAG: new Date("2026-01-15T00:00:00Z"),
+            nombreEtudiantsRepresentes: 1000,
+            nombreAdherents: 100,
+            engagementCotisation: true,
+            emailAssociation: "contact@asso.fr",
+            telephonePortable: "0612345678",
+            telephoneFixe: "",
+            bureau: [{ ...member, adresse: undefined }]
+        })
+        expect(isPdf(pdf)).toBe(true)
+        expect(h.locationDisplayName).not.toHaveBeenCalledWith(undefined)
     })
 
     it("renders JSON locations from the location picker", async () => {

@@ -11,7 +11,7 @@ export const bureauMemberSchema = type({
     annee: "string >= 1",
     telephone: frenchPhone,
     email: "string.email >= 1",
-    adresse: "string >= 1"
+    adresse: "string?"
 })
 
 const photosSchema = type(fileSchema({ mimeType: ["image", "pdf"] }))
@@ -48,7 +48,23 @@ export const AdhesionFormSchema = type({
     "telephoneFixe?": frenchPhone,
 
     // Bureau
-    bureau: bureauMemberSchema.array().atLeastLength(1),
+    bureau: bureauMemberSchema
+        .array()
+        .atLeastLength(1)
+        .narrow((members, ctx) => {
+            const total = members.reduce(
+                (acc, m) => (m.isAdmin ? 1 : 0) + acc,
+                0
+            )
+            return (
+                (total >= 1 && total <= 2) ||
+                ctx.reject({
+                    expected: "1 ou 2 administrateurices",
+                    actual: String(total),
+                    path: ["bureau"]
+                })
+            )
+        }),
 
     // Documents
     statuts: fileSchema(),

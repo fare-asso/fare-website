@@ -63,6 +63,64 @@ describe("AdhesionFormSchema", () => {
             isErrors(AdhesionFormSchema(validAdhesionForm({ bureau: [] })))
         ).toBe(true)
     })
+
+    it("rejects a bureau with no administrator", () => {
+        const [member] = validAdhesionForm().bureau
+        expect(
+            isErrors(
+                AdhesionFormSchema(
+                    validAdhesionForm({
+                        bureau: [{ ...member, isAdmin: false }]
+                    })
+                )
+            )
+        ).toBe(true)
+    })
+
+    it("accepts a bureau with two administrators", () => {
+        const [member] = validAdhesionForm().bureau
+        expect(
+            isErrors(
+                AdhesionFormSchema(
+                    validAdhesionForm({
+                        bureau: [
+                            member,
+                            {
+                                ...member,
+                                email: "marie@asso.fr",
+                                prenom: "Marie"
+                            }
+                        ]
+                    })
+                )
+            )
+        ).toBe(false)
+    })
+
+    it("rejects a bureau with more than two administrators", () => {
+        const [member] = validAdhesionForm().bureau
+        expect(
+            isErrors(
+                AdhesionFormSchema(
+                    validAdhesionForm({
+                        bureau: [
+                            member,
+                            {
+                                ...member,
+                                email: "marie@asso.fr",
+                                prenom: "Marie"
+                            },
+                            {
+                                ...member,
+                                email: "alex@asso.fr",
+                                prenom: "Alex"
+                            }
+                        ]
+                    })
+                )
+            )
+        ).toBe(true)
+    })
 })
 
 describe("bureauMemberSchema", () => {

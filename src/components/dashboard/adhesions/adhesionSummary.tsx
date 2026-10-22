@@ -28,7 +28,8 @@ export default function AdhesionSummary({
             label: "En attente",
             value: activeCount,
             icon: InboxIcon,
-            description: `dont ${recentCount} ce mois-ci`
+            description: `dont ${recentCount} ce mois-ci`,
+            alwaysShow: true
         },
         {
             label: "Archivées",
@@ -41,7 +42,12 @@ export default function AdhesionSummary({
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {stats.map((stat) => (
-                <Card key={stat.label}>
+                <Card
+                    key={stat.label}
+                    className={`${
+                        stat.alwaysShow ? "block" : "hidden sm:block"
+                    }`}
+                >
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
                             {stat.label}
