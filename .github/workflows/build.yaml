@@ -33,7 +33,7 @@ jobs:
               id: meta
               uses: docker/metadata-action@v6
               with:
-                  images: atcr.io/fare-asso.fr/fare-website
+                  images: atcr.io/finxol.eu/fare-website
                   tags: |
                       type=raw,value=latest
                       type=sha,prefix=,format=short
