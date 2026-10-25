@@ -1,0 +1,38 @@
+services:
+    web:
+        image: atcr.io/finxol.eu/fare-website:${IMAGE_TAG:-latest}
+        pull_policy: always
+        restart: unless-stopped
+        expose:
+            - "3000"
+        environment:
+            NODE_ENV: production
+            HOST: "0.0.0.0"
+            PORT: "3000"
+            SUPABASE_POSTGRES_PRISMA_URL: ${SUPABASE_POSTGRES_PRISMA_URL}
+            PUBLIC_SUPABASE_URL: ${PUBLIC_SUPABASE_URL}
+            SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+            SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+            PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY: ${PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY}
+            FRIENDLY_CAPTCHA_API_KEY: ${FRIENDLY_CAPTCHA_API_KEY}
+            SMTP_HOST: ${SMTP_HOST}
+            SMTP_PORT: ${SMTP_PORT:-465}
+            SMTP_SECURE: ${SMTP_SECURE:-true}
+            SMTP_USER: ${SMTP_USER}
+            SMTP_PASS: ${SMTP_PASS}
+            SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
+            PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://fare-asso.fr}
+            DOKPLOY_DEPLOY_URL: ${DOKPLOY_DEPLOY_URL:-}
+            PUBLIC_SENTRY_DSN: ${PUBLIC_SENTRY_DSN:-}
+            SENTRY_DSN: ${SENTRY_DSN:-}
+            CRON_SECRET: ${CRON_SECRET:-}
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "curl -fsS http://localhost:3000/api/health || exit 1"
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 15s
