@@ -1132,7 +1132,7 @@ export function AdhesionForm(): React.ReactNode {
                             <FieldLegend>Documents à fournir</FieldLegend>
                             <FieldGroup>
                                 <form.Field
-                                    name="statuts"
+                                    name="extraitPV"
                                     children={(field) => {
                                         const isInvalid =
                                             field.state.meta.isTouched &&
@@ -1142,7 +1142,8 @@ export function AdhesionForm(): React.ReactNode {
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
-                                                    Statuts de l'association
+                                                    Extrait de PV d'élection du
+                                                    bureau
                                                 </FieldLabel>
                                                 <FieldDescription>
                                                     Format PDF. Maximum 2 Mo.
@@ -1209,7 +1210,7 @@ export function AdhesionForm(): React.ReactNode {
                                 />
 
                                 <form.Field
-                                    name="extraitPV"
+                                    name="statuts"
                                     children={(field) => {
                                         const isInvalid =
                                             field.state.meta.isTouched &&
@@ -1219,53 +1220,7 @@ export function AdhesionForm(): React.ReactNode {
                                                 <FieldLabel
                                                     htmlFor={field.name}
                                                 >
-                                                    Extrait de PV d'élection du
-                                                    bureau
-                                                </FieldLabel>
-                                                <FieldDescription>
-                                                    Format PDF. Maximum 2 Mo.
-                                                </FieldDescription>
-                                                <FilePondInput
-                                                    maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
-                                                    acceptedFileTypes={[
-                                                        "application/pdf"
-                                                    ]}
-                                                    onChange={(file) =>
-                                                        field.handleChange(file)
-                                                    }
-                                                />
-                                                {isInvalid && (
-                                                    <FieldError
-                                                        errors={
-                                                            field.state.meta
-                                                                .errors
-                                                        }
-                                                    />
-                                                )}
-                                            </Field>
-                                        )
-                                    }}
-                                />
-
-                                <form.Field
-                                    name="lettreEngagement"
-                                    children={(field) => {
-                                        const isInvalid =
-                                            field.state.meta.isTouched &&
-                                            !field.state.meta.isValid
-                                        return (
-                                            <Field
-                                                data-invalid={isInvalid}
-                                                optional
-                                            >
-                                                <FieldLabel
-                                                    htmlFor={field.name}
-                                                >
-                                                    Lettre d'engagement
-                                                    (première adhésion){" "}
-                                                    <span className="text-muted-foreground">
-                                                        (optionnel)
-                                                    </span>
+                                                    Statuts de l'association
                                                 </FieldLabel>
                                                 <FieldDescription>
                                                     Format PDF. Maximum 2 Mo.
@@ -1307,50 +1262,6 @@ export function AdhesionForm(): React.ReactNode {
                                                     htmlFor={field.name}
                                                 >
                                                     Règlement intérieur{" "}
-                                                    <span className="text-muted-foreground">
-                                                        (optionnel)
-                                                    </span>
-                                                </FieldLabel>
-                                                <FieldDescription>
-                                                    Format PDF. Maximum 2 Mo.
-                                                </FieldDescription>
-                                                <FilePondInput
-                                                    maxFileSize={`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
-                                                    acceptedFileTypes={[
-                                                        "application/pdf"
-                                                    ]}
-                                                    onChange={(file) =>
-                                                        field.handleChange(file)
-                                                    }
-                                                />
-                                                {isInvalid && (
-                                                    <FieldError
-                                                        errors={
-                                                            field.state.meta
-                                                                .errors
-                                                        }
-                                                    />
-                                                )}
-                                            </Field>
-                                        )
-                                    }}
-                                />
-
-                                <form.Field
-                                    name="bilanFinancier"
-                                    children={(field) => {
-                                        const isInvalid =
-                                            field.state.meta.isTouched &&
-                                            !field.state.meta.isValid
-                                        return (
-                                            <Field
-                                                data-invalid={isInvalid}
-                                                optional
-                                            >
-                                                <FieldLabel
-                                                    htmlFor={field.name}
-                                                >
-                                                    Bilan financier{" "}
                                                     <span className="text-muted-foreground">
                                                         (optionnel)
                                                     </span>
