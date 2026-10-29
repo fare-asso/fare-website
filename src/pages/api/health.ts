@@ -2,7 +2,7 @@ import type { APIRoute } from "astro"
 
 import prisma from "@/helpers/db"
 import { createAdminClient } from "@/helpers/supabase/astro"
-import { useLogger, withEvlog } from "@/lib/evlog"
+import { withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
 type HealthStatus = {
@@ -17,7 +17,6 @@ type HealthStatus = {
 }
 
 const handler = withEvlog(async () => {
-    const log = useLogger()
     const errors: string[] = []
     let dbHealthy = false
     let supabaseHealthy = false
@@ -62,8 +61,6 @@ const handler = withEvlog(async () => {
     if (errors.length > 0) {
         response.errors = errors
     }
-
-    log.set({ db: dbHealthy, supabase: supabaseHealthy, healthy: allHealthy })
 
     return Response.json(response, {
         status: allHealthy ? 200 : 503

@@ -95,7 +95,7 @@ describe("downloadFolderAction", () => {
 
     it("downloads the files referenced in the db and appends the PDF", async () => {
         const res = await downloadFolderAction("uuid-fare")
-        if (!res.success) throw new Error("expected success")
+        if (!res.success) throw new Error(res.error)
         expect(res.success).toBe(true)
         expect(res.filename).toBe("uuid-fare.zip")
         expect(res.zipData && isZip(res.zipData)).toBe(true)

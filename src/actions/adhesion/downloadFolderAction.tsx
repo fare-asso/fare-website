@@ -4,7 +4,6 @@ import { zip } from "fflate"
 import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { sanitizeString } from "@/helpers/string"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
 import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
@@ -54,28 +53,31 @@ async function downloadFolderActionImpl(
     }
 
     const filePaths = [
-        adhesion.value.logoPath,
-        adhesion.value.statutsPath,
-        adhesion.value.recepissePath,
-        adhesion.value.extraitPVPath,
-        adhesion.value.lettreEngagementPath,
-        adhesion.value.reglementInterieurPath,
-        adhesion.value.bilanFinancierPath,
-        ...adhesion.value.photosPaths
-    ].filter((path): path is string => Boolean(path))
+        [adhesion.value.logoPath, "logo"],
+        [adhesion.value.statutsPath, "statuts"],
+        [adhesion.value.recepissePath, "recepisse"],
+        [adhesion.value.extraitPVPath, "extrait-pv"],
+        [adhesion.value.lettreEngagementPath, "lettre-engagement"],
+        [adhesion.value.reglementInterieurPath, "reglement-interieur"],
+        [adhesion.value.bilanFinancierPath, "bilan-financier"],
+        ...adhesion.value.photosPaths.map((path, i) => [path, `photo-${i}`])
+    ].filter((path): path is [string, string] => Boolean(path[0]))
 
     const supabase = createClient(context)
 
     // Téléchargement parallèle des fichiers référencés en base
     const downloads = await tryCatch(
         Promise.all(
-            filePaths.map(async (path) => {
+            filePaths.map(async ([path, filename]) => {
                 const { data, error } = await supabase.storage
                     .from("adhesion")
                     .download(path)
                 if (error) throw error
-                const name = path.split("/").pop() ?? path
-                return { name, data: new Uint8Array(await data.arrayBuffer()) }
+                const fileExtension = path.split(".").pop()
+                return {
+                    name: `${filename}.${fileExtension}`,
+                    data: new Uint8Array(await data.arrayBuffer())
+                }
             })
         )
     )
@@ -102,9 +104,7 @@ async function downloadFolderActionImpl(
     for (const file of downloads.value) {
         entries[file.name] = file.data
     }
-    const slug =
-        sanitizeString(adhesion.value.sigle) || `adhesion-${adhesion.value.id}`
-    entries[`formulaire-adhesion-${slug}.pdf`] = pdf.value
+    entries["formulaire-adhesion.pdf"] = pdf.value
 
     const zipBuffer = await tryCatch(
         new Promise<Uint8Array>((resolve, reject) => {
