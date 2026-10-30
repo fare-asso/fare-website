@@ -1,6 +1,6 @@
 services:
     web:
-        image: atcr.io/finxol.eu/fare-website:${IMAGE_TAG:-latest}
+        image: atcr.io/fare-asso.fr/fare-website:${IMAGE_TAG:-latest}
         pull_policy: always
         restart: unless-stopped
         expose:
