@@ -1,53 +1,22 @@
-# Dependencies
-node_modules
+# ignore everything
+*
 
-# Next.js build output
-.next
-out
+# except these files
+!emails
+!migrations
+!prisma
+!public
+!src
+!supabase
+!tools
 
-# Version control
-.git
-.gitignore
-
-# IDE and editor
-.vscode
-.idea
-*.swp
-*.swo
-
-# Environment files
-.env
-.env.*
-!.env.example
-
-# Debug and logs
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Testing
-coverage
-.nyc_output
-
-# Documentation
-README.md
-
-# Docker
-Dockerfile
-docker-compose*.yml
-.dockerignore
-
-# Misc
-.DS_Store
-*.pem
-*.log
-
-# Supabase local
-supabase/.branches
-supabase/.temp
-
-# Prettier and ESLint configs (not needed for build)
-.prettierrc
-.prettierignore
-.eslintrc.json
+!package.json
+!upm.lock
+!pnpm-workspace.yaml
+!astro.config.ts
+!Dockerfile
+!prisma.config.ts
+!schema.prisma
+!sentry.client.config.ts
+!sentry.server.config.ts
+!tsconfig.json
