@@ -4,6 +4,7 @@ import { Image } from "astro:assets"
 import logoBagadAsso from "@/assets/Logo_Bagadasso.png"
 import logoUR2 from "@/assets/univ/Logo_univ-rennes2-2016.png"
 import logoUR from "@/assets/univ/UNIRENNES_LOGOnoir_centre_RVB.png"
+import logoCVEC from "@/assets/CVEC1_signature_rvb.png"
 import FormIsland from "@/components/public/bagadAsso/formIsland.astro"
 import { buttonVariants } from "@/components/ui/button"
 import Public from "@/layouts/Public.astro"
@@ -129,13 +130,19 @@ export const prerender = true
                     src={logoUR}
                     alt="Logo de l'Université de Rennes"
                     class="h-16 w-auto object-contain"
-                    width={175}
+                    height={150}
+                />
+                <Image
+                    src={logoCVEC}
+                    alt="Logo de la CVEC"
+                    class="h-16 w-auto object-contain"
+                    height={150}
                 />
                 <Image
                     src={logoUR2}
                     alt="Logo de l'Université Rennes 2"
                     class="h-16 w-auto object-contain"
-                    width={175}
+                    height={150}
                 />
             </div>
         </section>
