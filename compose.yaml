@@ -1,6 +1,6 @@
 services:
     web:
-        image: atcr.io/fare-asso.fr/fare-website:${IMAGE_TAG:-latest}
+        image: ghcr.io/fare-asso/fare-website:${IMAGE_TAG:-latest}
         platform: linux/amd64
         pull_policy: always
         restart: unless-stopped
