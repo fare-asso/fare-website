@@ -3,6 +3,7 @@
     "entry": [
         "taze.config.ts",
         "prisma/seed.ts",
+        "scripts/healthcheck.ts",
 
         "src/**/*.test.{ts,tsx}",
         "src/test/**",

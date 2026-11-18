@@ -6,6 +6,7 @@
 !migrations
 !prisma
 !public
+!scripts
 !src
 !supabase
 !tools
@@ -14,7 +15,6 @@
 !upm.lock
 !pnpm-workspace.yaml
 !astro.config.ts
-!Dockerfile
 !prisma.config.ts
 !schema.prisma
 !sentry.client.config.ts

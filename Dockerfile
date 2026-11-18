@@ -4,8 +4,6 @@ FROM node:24-alpine AS base
 LABEL maintainer="finxol <contact@finxol.io>"
 LABEL repository="https://github.com/fare-asso/fare-website"
 
-RUN apk add --no-cache libc6-compat curl
-
 ENV HUSKY=0
 ENV NODE_ENV=production
 ENV ASTRO_TELEMETRY_DISABLED=1
@@ -13,14 +11,33 @@ ENV ASTRO_TELEMETRY_DISABLED=1
 WORKDIR /app
 
 #####################
+### DEPS STAGES   ###
+#####################
+FROM registry.access.redhat.com/hi/nodejs:24 AS prod-deps
+
+USER root
+WORKDIR /app
+
+ENV UPM_STORE="/app/.upm-store"
+RUN npm install --global upm@1.5.1
+
+COPY package.json upm.lock pnpm-workspace.yaml ./
+
+RUN --mount=type=cache,id=upm-store,target=/app/.upm-store \
+    upm install --production --frozen-lockfile
+
+#####################
 ### BUILDER STAGE ###
 #####################
 FROM base AS builder
 
 ENV UPM_STORE="/app/.upm-store"
-RUN npm install --global upm@1.4.0
+RUN npm install --global upm@1.5.1
 
 COPY package.json upm.lock pnpm-workspace.yaml ./
+
+RUN apk add --no-cache libc6-compat
+
 RUN --mount=type=cache,id=upm-store,target=/app/.upm-store \
     upm install --frozen-lockfile
 
@@ -52,25 +69,19 @@ RUN --mount=type=secret,id=SUPABASE_POSTGRES_PRISMA_DIRECT_URL,env=SUPABASE_POST
     --mount=type=cache,id=upm-store,target=/app/.upm-store \
     upm exec prisma migrate deploy && upm exec prisma db seed && upm run build
 
-RUN --mount=type=cache,id=upm-store,target=/app/.upm-store \
-    upm install --production --frozen-lockfile
-
 ####################
 ### RUNNER STAGE ###
 ####################
-FROM base AS runner
+FROM registry.access.redhat.com/hi/nodejs:24 AS runner
 
-# Don't run production as root
-RUN addgroup --system --gid 1001 runner
-RUN adduser --system --uid 1001 runner
+WORKDIR /app
+ENV NODE_ENV=production
 
-COPY --from=builder --chown=runner:runner /app/node_modules ./node_modules
-COPY --from=builder --chown=runner:runner /app/dist ./dist
-COPY --from=builder --chown=runner:runner /app/public ./public
-COPY --from=builder --chown=runner:runner /app/src/assets/logo_fare.png ./src/assets/logo_fare.png
-COPY --from=builder --chown=runner:runner /app/package.json ./package.json
-
-USER runner
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src/assets/logo_fare.png ./src/assets/logo_fare.png
+COPY --from=builder /app/scripts/healthcheck.ts ./healthcheck.ts
+COPY --from=builder /app/package.json ./package.json
 
 EXPOSE 3000
 

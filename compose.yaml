@@ -1,6 +1,7 @@
 services:
     web:
         image: atcr.io/fare-asso.fr/fare-website:${IMAGE_TAG:-latest}
+        platform: linux/amd64
         pull_policy: always
         restart: unless-stopped
         expose:
@@ -27,11 +28,7 @@ services:
             SENTRY_DSN: ${SENTRY_DSN:-}
             CRON_SECRET: ${CRON_SECRET:-}
         healthcheck:
-            test:
-                [
-                    "CMD-SHELL",
-                    "curl -fsS http://localhost:3000/api/health || exit 1"
-                ]
+            test: ["CMD", "node", "healthcheck.ts"]
             interval: 30s
             timeout: 10s
             retries: 3
