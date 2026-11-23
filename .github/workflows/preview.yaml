@@ -1,0 +1,193 @@
+name: PR preview
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened, closed]
+
+concurrency:
+    group: pr-preview-${{ github.event.number }}
+    cancel-in-progress: true
+
+env:
+    IMAGE: ghcr.io/${{ github.repository }}
+    APP_NAME: pr-${{ github.event.number }}-fare-website
+    PREVIEW_HOST: pr-${{ github.event.number }}.dev.fare-asso.fr
+    DOKPLOY_API: https://dev.fare-asso.fr/api
+
+jobs:
+    deploy:
+        if: >-
+            github.event.action != 'closed' &&
+            github.event.pull_request.head.repo.fork == false
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+            pull-requests: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                  ref: ${{ github.event.pull_request.head.sha }}
+                  persist-credentials: false
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v4
+
+            - name: Log in to GHCR
+              uses: docker/login-action@v4
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v7
+              with:
+                  context: .
+                  push: true
+                  tags: ${{ env.IMAGE }}:pr-${{ github.event.number }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  build-args: |
+                      PUBLIC_SUPABASE_URL=${{ vars.PREVIEW_PUBLIC_SUPABASE_URL || secrets.PUBLIC_SUPABASE_URL }}
+                      PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY=${{ vars.PREVIEW_PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY || secrets.PUBLIC_FRIENDLY_CAPTCHA_SITE_KEY }}
+                      PUBLIC_SENTRY_DSN=${{ vars.PREVIEW_PUBLIC_SENTRY_DSN || secrets.PUBLIC_SENTRY_DSN }}
+                  secrets: |
+                      SUPABASE_POSTGRES_PRISMA_DIRECT_URL=${{ secrets.PREVIEW_SUPABASE_POSTGRES_PRISMA_DIRECT_URL }}
+
+            - name: Create or update Dokploy service
+              id: dokploy
+              env:
+                  API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+                  ENVIRONMENT_ID: ${{ secrets.DOKPLOY_PREVIEW_ENVIRONMENT_ID }}
+                  PR_NUMBER: ${{ github.event.number }}
+              run: |
+                  set -euo pipefail
+
+                  api() {
+                      local method=$1 endpoint=$2 body=${3:-}
+                      if [ -n "$body" ]; then
+                          curl -sf -X "$method" "$DOKPLOY_API/$endpoint" \
+                              -H "Content-Type: application/json" \
+                              -H "x-api-key: $API_KEY" \
+                              -d "$body"
+                      else
+                          curl -sf -X "$method" "$DOKPLOY_API/$endpoint" \
+                              -H "x-api-key: $API_KEY"
+                      fi
+                  }
+
+                  TAG="pr-$PR_NUMBER"
+                  COMPOSE_FILE=$(jq -Rs '.' < compose-preview.yaml)
+                  PREVIEW_ENV=$(printf 'IMAGE_TAG=%s\nPUBLIC_SITE_URL=https://%s' "$TAG" "$PREVIEW_HOST")
+
+                  existing_id=$(
+                      curl -sf "$DOKPLOY_API/compose.search?appName=$APP_NAME&environmentId=$ENVIRONMENT_ID&limit=100" \
+                          -H "x-api-key: $API_KEY" \
+                          | jq -r --arg app "$APP_NAME" '[.items[] | select(.appName == $app) | .composeId][0] // empty'
+                  )
+
+                  if [ -z "$existing_id" ]; then
+                      compose_id=$(
+                          api POST compose.create "$(jq -n \
+                              --arg name "pr-$PR_NUMBER" \
+                              --arg description "Preview for PR #$PR_NUMBER" \
+                              --arg environmentId "$ENVIRONMENT_ID" \
+                              --arg appName "$APP_NAME" \
+                              --argjson composeFile "$COMPOSE_FILE" \
+                              '{name: $name, description: $description, environmentId: $environmentId, appName: $appName, sourceType: "raw", composeType: "docker-compose", composeFile: $composeFile}')" \
+                              | jq -r '.composeId'
+                      )
+
+                      api POST compose.saveEnvironment "$(jq -n \
+                          --arg composeId "$compose_id" \
+                          --arg env "$PREVIEW_ENV" \
+                          '{composeId: $composeId, env: $env, createEnvFile: true}')"
+
+                      api POST domain.create "$(jq -n \
+                          --arg host "$PREVIEW_HOST" \
+                          --arg composeId "$compose_id" \
+                          '{host: $host, composeId: $composeId, serviceName: "web", https: true, certificateType: "letsencrypt"}')"
+                  else
+                      compose_id=$existing_id
+                      api POST compose.update "$(jq -n \
+                          --arg composeId "$compose_id" \
+                          --argjson composeFile "$COMPOSE_FILE" \
+                          '{composeId: $composeId, composeFile: $composeFile}')"
+                  fi
+
+                  api POST compose.deploy "$(jq -n --arg composeId "$compose_id" '{composeId: $composeId}')"
+
+                  echo "compose_id=$compose_id" >> "$GITHUB_OUTPUT"
+
+            - name: Wait for preview to come up
+              id: wait
+              timeout-minutes: 5
+              continue-on-error: true
+              run: |
+                  for _ in $(seq 1 60); do
+                      code=$(curl -s -o /dev/null -w '%{http_code}' "https://$PREVIEW_HOST" || true)
+                      if [ "$code" = "200" ]; then
+                          echo "live=true" >> "$GITHUB_OUTPUT"
+                          exit 0
+                      fi
+                      sleep 5
+                  done
+                  echo "live=false" >> "$GITHUB_OUTPUT"
+
+            - name: Preview URL comment
+              uses: marocchino/sticky-pull-request-comment@v2
+              with:
+                  header: preview
+                  message: |
+                      Preview for ${{ github.event.pull_request.head.sha }}:
+                      ${{ steps.wait.outputs.live == 'true' && '✅' || '⏳' }} https://${{ env.PREVIEW_HOST }}
+
+    teardown:
+        if: >-
+            github.event.action == 'closed' &&
+            github.event.pull_request.head.repo.fork == false
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - name: Delete Dokploy service
+              env:
+                  API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+                  ENVIRONMENT_ID: ${{ secrets.DOKPLOY_PREVIEW_ENVIRONMENT_ID }}
+                  PR_NUMBER: ${{ github.event.number }}
+              run: |
+                  set -euo pipefail
+
+                  compose_id=$(
+                      curl -sf "$DOKPLOY_API/compose.search?appName=$APP_NAME&environmentId=$ENVIRONMENT_ID&limit=100" \
+                          -H "x-api-key: $API_KEY" \
+                          | jq -r --arg app "$APP_NAME" '[.items[] | select(.appName == $app) | .composeId][0] // empty'
+                  )
+
+                  if [ -n "$compose_id" ]; then
+                      curl -sf -X POST "$DOKPLOY_API/compose.delete" \
+                          -H "Content-Type: application/json" \
+                          -H "x-api-key: $API_KEY" \
+                          -d "$(jq -n --arg id "$compose_id" '{composeId: $id, deleteVolumes: true}')"
+                  fi
+
+            - name: Delete image tag from GHCR
+              continue-on-error: true
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  PR_NUMBER: ${{ github.event.number }}
+              run: |
+                  owner=$(printf '%s' "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
+                  if gh api "/orgs/$owner" >/dev/null 2>&1; then
+                      base="/orgs/$owner"
+                  else
+                      base="/user"
+                  fi
+                  ids=$(gh api --paginate "$base/packages/container/fare-website/versions" \
+                      | jq -r --arg tag "pr-$PR_NUMBER" '.[] | select((.metadata.container_tags // []) | index($tag)) | .id')
+                  for id in $ids; do
+                      gh api -X DELETE "$base/packages/container/fare-website/versions/$id"
+                  done
