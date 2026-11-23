@@ -8,16 +8,16 @@ import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { BTPTutorApplicationSchema } from "@/schemas/bougeTaPrison"
 
 import BtpApplication from "../../../emails/btp-application"
 
-async function submitTutorApplicationImpl(
+export async function submitTutorApplication(
     formData: FormData,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const data: { [key: string]: FormDataEntryValue } = {}
 
@@ -125,8 +125,3 @@ async function submitTutorApplicationImpl(
 
     return { success: true }
 }
-
-export const submitTutorApplication = wrapAction(
-    "submitTutorApplication",
-    submitTutorApplicationImpl
-)

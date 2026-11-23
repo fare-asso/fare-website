@@ -3,13 +3,13 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function declineAssociationActionImpl(
+export async function declineAssociationAction(
     id: number,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -72,8 +72,3 @@ async function declineAssociationActionImpl(
 
     return { success: true }
 }
-
-export const declineAssociationAction = wrapAction(
-    "declineAssociationAction",
-    declineAssociationActionImpl
-)

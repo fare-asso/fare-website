@@ -9,7 +9,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -63,9 +63,9 @@ export async function fetchLinks(): Promise<LinksData | null> {
     }
 }
 
-async function listLinksActionImpl(
+export async function listLinksAction(
     _input: undefined,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult<LinksData>> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -79,8 +79,3 @@ async function listLinksActionImpl(
     }
     return { success: true, value: links }
 }
-
-export const listLinksAction = wrapAction(
-    "listLinksAction",
-    listLinksActionImpl
-)

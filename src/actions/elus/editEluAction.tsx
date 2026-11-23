@@ -4,14 +4,14 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditEluSchema, type TEditElu } from "@/schemas/elu"
 
-async function editEluActionImpl(
+export async function editEluAction(
     input: TEditElu,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -68,5 +68,3 @@ async function editEluActionImpl(
 
     return { success: true }
 }
-
-export const editEluAction = wrapAction("editEluAction", editEluActionImpl)

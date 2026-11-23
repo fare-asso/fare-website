@@ -5,15 +5,15 @@ import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
 import BtpApplicationAck from "../../../emails/btp-application-aknowledgement"
 
-async function sendApprovalEmailImpl(
+export async function sendApprovalEmail(
     id: number,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -72,8 +72,3 @@ async function sendApprovalEmailImpl(
 
     return { success: true }
 }
-
-export const sendApprovalEmail = wrapAction(
-    "sendApprovalEmail",
-    sendApprovalEmailImpl
-)

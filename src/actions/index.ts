@@ -1,6 +1,7 @@
 import type { ActionAPIContext } from "astro:actions"
 import { defineAction } from "astro:actions"
 
+import { instrumentAction } from "@/lib/action"
 import { decodeFormPayload } from "@/lib/formPayload"
 
 import { archiveAdhesionAction } from "./adhesion/archiveAdhesionAction"
@@ -106,14 +107,17 @@ import { updateUserPermissions } from "./users/updateUserPermissions"
 function jsonAction<I, O>(
     handler: (input: I, context: ActionAPIContext) => Promise<O>
 ) {
-    return defineAction({ handler })
+    return defineAction({ handler: instrumentAction(handler) })
 }
 
 // Handler receives raw FormData (legacy FormData-driven actions).
 function formAction<O>(
     handler: (input: FormData, context: ActionAPIContext) => Promise<O>
 ) {
-    return defineAction({ accept: "form", handler })
+    return defineAction({
+        accept: "form",
+        handler: instrumentAction(handler)
+    })
 }
 
 // Handler takes a typed object containing File values; the client sends it
@@ -121,10 +125,11 @@ function formAction<O>(
 function filePayloadAction<I, O>(
     handler: (input: I, context: ActionAPIContext) => Promise<O>
 ) {
+    const instrumented = instrumentAction(handler)
     return defineAction({
         accept: "form",
         handler: (formData: FormData, context: ActionAPIContext) =>
-            handler(decodeFormPayload<I>(formData), context)
+            instrumented(decodeFormPayload<I>(formData), context)
     })
 }
 

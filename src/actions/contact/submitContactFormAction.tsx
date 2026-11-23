@@ -3,7 +3,6 @@ import { isDevelopment } from "std-env"
 
 import { verifyCaptcha } from "@/helpers/captcha/verify"
 import { sendEmail } from "@/helpers/email"
-import { wrapAction } from "@/lib/action"
 import { type Contact, ContactSchema } from "@/schemas/contact"
 
 import ContactTemplate from "../../../emails/contact"
@@ -16,7 +15,9 @@ export type FormState =
           fieldErrors?: Partial<Record<keyof Contact, string[]>>
       }
 
-async function submitContactFormActionImpl(data: Contact): Promise<FormState> {
+export async function submitContactFormAction(
+    data: Contact
+): Promise<FormState> {
     const parsed = ContactSchema.safeParse(data)
 
     if (!parsed.success) {
@@ -75,8 +76,3 @@ async function submitContactFormActionImpl(data: Contact): Promise<FormState> {
 
     return { success: true }
 }
-
-export const submitContactFormAction = wrapAction(
-    "submitContactFormAction",
-    submitContactFormActionImpl
-)

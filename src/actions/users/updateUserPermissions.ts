@@ -3,13 +3,12 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function updateUserPermissionsImpl(
+export async function updateUserPermissions(
     input: { userId: string; permissions: number[] },
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ) {
     const { userId, permissions } = input
     const user = await getUserWithPermissions(context)
@@ -57,8 +56,3 @@ async function updateUserPermissionsImpl(
 
     return { success: true }
 }
-
-export const updateUserPermissions = wrapAction(
-    "updateUserPermissions",
-    updateUserPermissionsImpl
-)

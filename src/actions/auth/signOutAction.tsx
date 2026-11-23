@@ -1,13 +1,13 @@
 import type { ActionAPIContext } from "astro:actions"
 
 import { createClient } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function signOutImpl(
+export async function signOut(
     _input: undefined,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const supabase = createClient(context)
 
@@ -25,5 +25,3 @@ async function signOutImpl(
     console.log("Deconnection réussie")
     return { success: true }
 }
-
-export const signOut = wrapAction("signOut", signOutImpl)

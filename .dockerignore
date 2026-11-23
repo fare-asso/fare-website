@@ -15,6 +15,7 @@
 !upm.lock
 !pnpm-workspace.yaml
 !astro.config.ts
+!evlog.config.ts
 !prisma.config.ts
 !schema.prisma
 !sentry.client.config.ts

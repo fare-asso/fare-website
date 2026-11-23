@@ -154,14 +154,12 @@ export default defineConfig({
         "local/no-try-catch": "error",
         "local/no-non-public-env-in-client": "error",
         "local/no-dashboard-prerender": "error",
-        "local/require-server-action-wrapper": "error",
 
         // All actions now return a discriminated `ActionResult`, so enforce it.
         "local/no-optional-result": "error",
 
         // Further CLAUDE.md conventions kept "off" until opted in.
         "local/no-console-in-actions": "off",
-        "local/require-action-name-matches": "error",
         "local/prefer-safe-parse": "error",
         "local/no-unwrapped-throwing-builtin": "off",
 

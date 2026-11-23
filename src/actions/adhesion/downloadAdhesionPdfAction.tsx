@@ -5,13 +5,12 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function downloadAdhesionPdfActionImpl(
+export async function downloadAdhesionPdfAction(
     adhesionId: number,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<
     | { success: true; pdfData: string; filename: string }
     | { success: false; error: string }
@@ -56,8 +55,3 @@ async function downloadAdhesionPdfActionImpl(
         filename: `formulaire-adhesion-${slug}.pdf`
     }
 }
-
-export const downloadAdhesionPdfAction = wrapAction(
-    "downloadAdhesionPdfAction",
-    downloadAdhesionPdfActionImpl
-)

@@ -3,7 +3,6 @@ import { timingSafeEqual } from "node:crypto"
 import type { APIRoute } from "astro"
 
 import { env } from "@/env"
-import { useLogger, withEvlog } from "@/lib/evlog"
 import { runPurge } from "@/lib/purge"
 
 function isAuthorized(request: Request): boolean {
@@ -16,16 +15,11 @@ function isAuthorized(request: Request): boolean {
     return a.length === b.length && timingSafeEqual(a, b)
 }
 
-const handler = withEvlog(async () => {
-    const log = useLogger()
-    const summary = await runPurge()
-    log.set({ ...summary })
-    return Response.json({ success: true, summary })
-})
-
-export const POST: APIRoute = ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
     if (!isAuthorized(request)) {
         return new Response("Unauthorized", { status: 401 })
     }
-    return handler()
+    const summary = await runPurge()
+    locals.log.set({ ...summary })
+    return Response.json({ success: true, summary })
 }

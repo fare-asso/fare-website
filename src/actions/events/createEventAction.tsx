@@ -6,7 +6,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -22,9 +22,9 @@ interface Event {
     visibility?: boolean
 }
 
-async function createEventActionImpl(
+export async function createEventAction(
     formData: FormData,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
@@ -302,8 +302,3 @@ async function createEventActionImpl(
 
     return { success: true }
 }
-
-export const createEventAction = wrapAction(
-    "createEventAction",
-    createEventActionImpl
-)

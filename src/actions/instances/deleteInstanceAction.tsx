@@ -3,7 +3,6 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -11,9 +10,9 @@ type DeleteInstanceResult =
     | { success: true }
     | { success: false; error: string }
 
-async function deleteInstanceActionImpl(
+export async function deleteInstanceAction(
     id: number,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<DeleteInstanceResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -85,8 +84,3 @@ async function deleteInstanceActionImpl(
 
     return { success: true }
 }
-
-export const deleteInstanceAction = wrapAction(
-    "deleteInstanceAction",
-    deleteInstanceActionImpl
-)

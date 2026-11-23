@@ -4,7 +4,7 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -13,12 +13,12 @@ const ConfigInput = type({
     delay: "string >= 1"
 })
 
-async function updateAssistanceConfigImpl(
+export async function updateAssistanceConfig(
     input: {
         recipientEmail: string
         delay: string
     },
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -74,8 +74,3 @@ async function updateAssistanceConfigImpl(
 
     return { success: true }
 }
-
-export const updateAssistanceConfig = wrapAction(
-    "updateAssistanceConfig",
-    updateAssistanceConfigImpl
-)

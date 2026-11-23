@@ -7,13 +7,13 @@ import {
     createClient,
     getUserWithPermissions
 } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function deleteAssociationActionImpl(
+export async function deleteAssociationAction(
     id: number,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
@@ -93,8 +93,3 @@ async function deleteAssociationActionImpl(
     }
     return { success: true }
 }
-
-export const deleteAssociationAction = wrapAction(
-    "deleteAssociationAction",
-    deleteAssociationActionImpl
-)

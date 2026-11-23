@@ -1,10 +1,16 @@
+import type { APIContext, MiddlewareNext } from "astro"
 import { defineMiddleware } from "astro:middleware"
+import { createRequestLogger, initLogger, toLoggerConfig } from "evlog"
 
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient } from "@/helpers/supabase/astro"
+import { tryCatch } from "@/lib/utils"
 
-import type { Permission } from "../prisma/seed"
+import config from "../evlog.config.ts"
+import type { Permission } from "../prisma/seed.ts"
+
+initLogger(toLoggerConfig(config))
 
 const permissionProtectedRoutes: {
     pathIncludes: string
@@ -28,7 +34,10 @@ const permissionProtectedRoutes: {
     }
 ]
 
-export const onRequest = defineMiddleware(async (context, next) => {
+async function handleRequest(
+    context: APIContext,
+    next: MiddlewareNext
+): Promise<Response> {
     if (!context.url.pathname.startsWith("/dashboard")) {
         context.locals.user = null
         return next()
@@ -72,4 +81,27 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     context.locals.user = user
     return next()
+}
+
+export const onRequest = defineMiddleware(async (context, next) => {
+    const log = createRequestLogger({
+        method: context.request.method,
+        path: context.url.pathname
+    })
+
+    context.locals.log = log
+
+    const response = await tryCatch(handleRequest(context, next))
+    if (!response.success) {
+        log.error(
+            response.error instanceof Error
+                ? response.error
+                : new Error(String(response.error))
+        )
+        log.emit()
+        throw response.error
+    }
+
+    log.emit({ status: response.value.status })
+    return response.value
 })

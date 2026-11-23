@@ -1,5 +1,4 @@
-import type { DrainContext } from "evlog"
-import { createEvlog } from "evlog/next"
+import { defineEvlog, type DrainContext } from "evlog"
 import { createDrainPipeline } from "evlog/pipeline"
 import { createSentryDrain } from "evlog/sentry"
 
@@ -11,7 +10,7 @@ const drain = env.SENTRY_DSN
       })(createSentryDrain({ dsn: env.SENTRY_DSN }))
     : undefined
 
-export const { withEvlog, useLogger, createError } = createEvlog({
+export default defineEvlog({
     service: "fare-website",
     drain
 })

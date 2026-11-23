@@ -4,7 +4,7 @@ import type { Association } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -38,9 +38,9 @@ export async function fetchAssociations(): Promise<
     }))
 }
 
-async function listAssociationsActionImpl(
+export async function listAssociationsAction(
     _input: undefined,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult<AssociationWithLogo[]>> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -54,8 +54,3 @@ async function listAssociationsActionImpl(
     }
     return { success: true, value: associations }
 }
-
-export const listAssociationsAction = wrapAction(
-    "listAssociationsAction",
-    listAssociationsActionImpl
-)

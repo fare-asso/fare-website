@@ -3,7 +3,7 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -12,9 +12,9 @@ interface MemberOrder {
     order: number
 }
 
-async function updateMemberOrderActionImpl(
+export async function updateMemberOrderAction(
     memberOrder: MemberOrder[],
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
@@ -49,8 +49,3 @@ async function updateMemberOrderActionImpl(
 
     return { success: true }
 }
-
-export const updateMemberOrderAction = wrapAction(
-    "updateMemberOrderAction",
-    updateMemberOrderActionImpl
-)

@@ -4,7 +4,7 @@ import type { BTPTutorQuestion } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -23,9 +23,9 @@ export async function fetchTutorQuestions(): Promise<
     return questions.value
 }
 
-async function listTutorQuestionsActionImpl(
+export async function listTutorQuestionsAction(
     _input: undefined,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult<BTPTutorQuestion[]>> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -39,8 +39,3 @@ async function listTutorQuestionsActionImpl(
     }
     return { success: true, value: questions }
 }
-
-export const listTutorQuestionsAction = wrapAction(
-    "listTutorQuestionsAction",
-    listTutorQuestionsActionImpl
-)

@@ -5,7 +5,6 @@ import { generateAdhesionPdfFromRecord } from "@/helpers/adhesion/generatePdf"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -13,9 +12,9 @@ type ActionState =
     | { success: true; zipData: string; filename: string }
     | { success: false; error: string }
 
-async function downloadFolderActionImpl(
+export async function downloadFolderAction(
     folderPath: string,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionState> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
@@ -128,8 +127,3 @@ async function downloadFolderActionImpl(
         filename: `${folderPath}.zip`
     }
 }
-
-export const downloadFolderAction = wrapAction(
-    "downloadFolderAction",
-    downloadFolderActionImpl
-)

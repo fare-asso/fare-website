@@ -5,13 +5,13 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function generateBagadCalendarTokenActionImpl(
+export async function generateBagadCalendarTokenAction(
     _input: undefined,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult<string>> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -40,9 +40,9 @@ async function generateBagadCalendarTokenActionImpl(
     return { success: true, value: token }
 }
 
-async function revokeBagadCalendarTokenActionImpl(
+export async function revokeBagadCalendarTokenAction(
     _input: undefined,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -68,13 +68,3 @@ async function revokeBagadCalendarTokenActionImpl(
 
     return { success: true }
 }
-
-export const generateBagadCalendarTokenAction = wrapAction(
-    "generateBagadCalendarTokenAction",
-    generateBagadCalendarTokenActionImpl
-)
-
-export const revokeBagadCalendarTokenAction = wrapAction(
-    "revokeBagadCalendarTokenAction",
-    revokeBagadCalendarTokenActionImpl
-)

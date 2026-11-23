@@ -1,0 +1,25 @@
+# Compose file for Dokploy PR previews.
+# Runtime secrets come from /etc/fare/preview.env on the Dokploy server (env_file).
+# IMAGE_TAG and PUBLIC_SITE_URL are injected by .github/workflows/preview.yaml.
+services:
+    web:
+        image: ghcr.io/fare-asso/fare-website:${IMAGE_TAG:-latest}
+        platform: linux/amd64
+        pull_policy: always
+        restart: unless-stopped
+        expose:
+            - "3000"
+        env_file:
+            - /etc/fare/preview.env
+        environment:
+            NODE_ENV: production
+            HOST: "0.0.0.0"
+            PORT: "3000"
+            PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+            DOKPLOY_DEPLOY_URL: ${DOKPLOY_DEPLOY_URL:-}
+        healthcheck:
+            test: ["CMD", "node", "healthcheck.ts"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 15s

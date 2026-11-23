@@ -67,7 +67,7 @@ Always use `upm`, never `npm`.
 - **80** col width, **4-space** indent, **no semicolons**, **double quotes** (incl. JSX).
 - **Naming:** camelCase vars/functions, PascalCase components/types, CONSTANT_CASE constants.
 - oxlint checks accessibility (a11y). Tailwind classes auto-sorted by oxfmt (`cn`, `twMerge`, `cva`).
-- Custom local oxlint rules live in `tools/oxlint-rules/` (e.g. `local/no-try-catch`, `local/no-non-public-env-in-client`, `local/require-action-name-matches`, `local/no-dashboard-prerender`).
+- Custom local oxlint rules live in `tools/oxlint-rules/` (e.g. `local/no-try-catch`, `local/no-non-public-env-in-client`, `local/no-dashboard-prerender`).
 
 ### Component Patterns
 
@@ -79,7 +79,6 @@ Always use `upm`, never `npm`.
 ### Error Handling
 
 - **Actions return a discriminated union:** `{ success: true; value: T } | { success: false; error: string }` (drop `value` when there is no payload). Callers narrow on `success` — never optional `success?`/`error?`.
-- **Every entry-point action is wrapped with `wrapAction()`** from `@/lib/action` (see [Server Actions](#server-actions)).
 - **Use `tryCatch` from `@/lib/utils` instead of `try/catch` — everywhere.** Overloaded:
     - `await tryCatch(promise)` — wrap a Promise (DB, fetch, storage…)
     - `await tryCatch(() => asyncOp())` — async thunk (also catches sync throws)
@@ -112,7 +111,7 @@ src/
 │   └── public/, captcha/  # Feature components
 ├── helpers/               # supabase/ (astro client, storage), db.ts, email.ts, permissions.ts, storage.ts
 ├── hooks/                 # Custom React hooks (e.g. useSearchParam)
-├── lib/                   # action.ts (wrapAction), sentry.ts, utils.ts (tryCatch), formPayload.ts, queryClient.ts
+├── lib/                   # action.ts (ActionResult, instrumentAction), sentry.ts, utils.ts (tryCatch), formPayload.ts, queryClient.ts
 ├── schemas/               # Zod/arktype input schemas (+ __tests__)
 ├── assets/                # Local images (optimized by <Image>)
 ├── generated/prisma/      # Generated Prisma client (do not edit)
@@ -156,12 +155,12 @@ Granular permission checks, **never** role checks.
 import type { ActionAPIContext } from "astro:actions"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 
-async function someActionImpl(
+export async function someAction(
     input: TSomeInput,
-    context: ActionAPIContext
-): Promise<{ success: true } | { success: false; error: string }> {
+    context?: ActionAPIContext
+): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
     if (!hasPermission(user, "create:member")) {
@@ -173,8 +172,6 @@ async function someActionImpl(
     // …proceed
     return { success: true }
 }
-
-export const someAction = wrapAction("someAction", someActionImpl)
 ```
 
 **Helpers:**
@@ -218,7 +215,7 @@ model Permission {
 
 ### Server Actions
 
-Actions live in `src/actions/<domain>/` and are registered in `src/actions/index.ts`. **Each action is a private `…Impl(input, context)` function wrapped by `wrapAction()`** (adds a Sentry span + evlog). The registry maps each wrapped action into `export const server = {…}`, which Astro exposes as `actions` to callers.
+Actions live in `src/actions/<domain>/` and are registered in `src/actions/index.ts`. **Each action is an exported `async function`** taking `(input, context?: ActionAPIContext)`. The registry helpers (`jsonAction`, `formAction`, `filePayloadAction`) automatically wrap each registered action with `instrumentAction()` (adds a Sentry span + evlog metadata) into `export const server = {…}`, which Astro exposes as `actions` to callers.
 
 ```typescript
 // src/actions/items/createItemAction.tsx
@@ -227,15 +224,15 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { CreateItemSchema, type TCreateItem } from "@/schemas/items"
 
-async function createItemActionImpl(
+export async function createItemAction(
     input: TCreateItem,
-    context: ActionAPIContext
-): Promise<{ success: true; value: Item } | { success: false; error: string }> {
+    context?: ActionAPIContext
+): Promise<ActionResult<Item>> {
     // 1. Auth + permission guards (early returns — NOT captured by Sentry)
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -261,11 +258,6 @@ async function createItemActionImpl(
 
     return { success: true, value: item.value }
 }
-
-export const createItemAction = wrapAction(
-    "createItemAction",
-    createItemActionImpl
-)
 ```
 
 Register it in `src/actions/index.ts`:
@@ -420,7 +412,7 @@ await sendEmail({ to: "…", subject: "…", html: "…" })
 
 1. Tests live in a `__tests__/` subfolder of the source dir (never siblings; source never moves). Node tests: `.test.ts(x)`; component tests: `.browser.test.tsx`.
 2. Reuse `src/test/mocks.ts` (hoistable mocks for db, supabase astro client, email, sentry…) and `src/test/factories/<domain>.ts`. `src/test/browser.tsx` `renderWithClient` wraps islands in a `QueryClientProvider`.
-3. **Action tests** import the `wrapAction`-wrapped export (the shared sentry/evlog mocks make it a passthrough), call it with **input only** (the context arg is optional in tests), and cover: invalid payload, each auth/permission denial, every IO failure branch, partial-failure cleanup, best-effort continuation, and the happy path with the exact payload.
+3. **Action tests** import the exported action function directly, call it with **input only** (the context arg is optional), and cover: invalid payload, each auth/permission denial, every IO failure branch, partial-failure cleanup, best-effort continuation, and the happy path with the exact payload.
 4. **Component tests** mock the form's `astro:actions` module and the captcha module; the action mock returns `{ data, error }` (Astro's shape), asserting render, client validation (action NOT called), valid submit payload, and success/error UI.
 5. Test env vars are defined in `vitest.config.ts` (`testEnv`, applied to both projects); the browser project also stubs `process.env` in `vitest.browser.setup.ts`.
 

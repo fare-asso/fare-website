@@ -9,7 +9,7 @@ import {
     createAdminClient,
     getUserWithPermissions
 } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
@@ -17,9 +17,9 @@ import {
     type TEditEquipment
 } from "@/schemas/bagadEquipment"
 
-async function editEquipmentActionImpl(
+export async function editEquipmentAction(
     input: TEditEquipment,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -115,8 +115,3 @@ async function editEquipmentActionImpl(
 
     return { success: true }
 }
-
-export const editEquipmentAction = wrapAction(
-    "editEquipmentAction",
-    editEquipmentActionImpl
-)

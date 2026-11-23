@@ -6,7 +6,7 @@ import { NewBagadAssoSuggestion } from "@/../emails/bagadasso/new-suggestion"
 import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
@@ -15,7 +15,7 @@ import {
     type TBagadAssoSuggestion
 } from "@/schemas/bagadAsso"
 
-async function submitSuggestionActionImpl(
+export async function submitSuggestionAction(
     input: TBagadAssoSuggestion
 ): Promise<ActionResult> {
     const data = BagadAssoSuggestionSchema(input)
@@ -81,8 +81,3 @@ async function submitSuggestionActionImpl(
 
     return { success: true }
 }
-
-export const submitSuggestionAction = wrapAction(
-    "submitSuggestionAction",
-    submitSuggestionActionImpl
-)
