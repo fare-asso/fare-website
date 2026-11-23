@@ -572,6 +572,7 @@ export function RemboursementForm(): ReactNode {
                                                 <TextField
                                                     field={field}
                                                     label="Point de départ"
+                                                    description="En Haute-Bretagne uniquement."
                                                     placeholder="Rennes"
                                                     error="Le point de départ est requis."
                                                 />
@@ -584,7 +585,8 @@ export function RemboursementForm(): ReactNode {
                                                 <TextField
                                                     field={field}
                                                     label="Point d'arrivée"
-                                                    placeholder="Paris"
+                                                    description="En Haute-Bretagne uniquement."
+                                                    placeholder="Saint-Malo"
                                                     error="Le point d'arrivée est requis."
                                                 />
                                             )}
