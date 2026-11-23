@@ -3,7 +3,6 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -11,9 +10,9 @@ type DeletePartenaireResult =
     | { success: true }
     | { success: false; error: string }
 
-async function deletePartenaireActionImpl(
+export async function deletePartenaireAction(
     id: number,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<DeletePartenaireResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -68,8 +67,3 @@ async function deletePartenaireActionImpl(
 
     return { success: true }
 }
-
-export const deletePartenaireAction = wrapAction(
-    "deletePartenaireAction",
-    deletePartenaireActionImpl
-)

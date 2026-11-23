@@ -6,14 +6,14 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { EditAssociationSchema } from "@/schemas/associations"
 
-async function editAssociationActionImpl(
+export async function editAssociationAction(
     formData: FormData,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
@@ -149,8 +149,3 @@ async function editAssociationActionImpl(
 
     return { success: true }
 }
-
-export const editAssociationAction = wrapAction(
-    "editAssociationAction",
-    editAssociationActionImpl
-)

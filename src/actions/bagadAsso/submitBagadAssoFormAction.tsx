@@ -13,7 +13,6 @@ import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { locationDisplayName } from "@/helpers/location"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -25,7 +24,7 @@ export type FormState =
           fieldErrors?: Partial<Record<keyof BagadAssoFormData, string[]>>
       }
 
-async function submitBagadAssoFormActionImpl(
+export async function submitBagadAssoFormAction(
     data: BagadAssoFormData
 ): Promise<FormState> {
     // Validate the data using Zod schema
@@ -208,8 +207,3 @@ async function submitBagadAssoFormActionImpl(
 
     return { success: true }
 }
-
-export const submitBagadAssoFormAction = wrapAction(
-    "submitBagadAssoFormAction",
-    submitBagadAssoFormActionImpl
-)

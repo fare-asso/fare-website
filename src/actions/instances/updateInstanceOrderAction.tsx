@@ -4,14 +4,14 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { OrderSchema, type TOrder } from "@/schemas/elu"
 
-async function updateInstanceOrderActionImpl(
+export async function updateInstanceOrderAction(
     instanceOrder: TOrder,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
@@ -55,8 +55,3 @@ async function updateInstanceOrderActionImpl(
 
     return { success: true }
 }
-
-export const updateInstanceOrderAction = wrapAction(
-    "updateInstanceOrderAction",
-    updateInstanceOrderActionImpl
-)

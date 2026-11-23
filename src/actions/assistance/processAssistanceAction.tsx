@@ -7,7 +7,7 @@ import AssistanceAck from "@/../emails/assistance-acknowledgement"
 import { getAssistanceConfig } from "@/helpers/assistanceConfig"
 import { verifyCaptcha } from "@/helpers/captcha/verify"
 import { sendEmail } from "@/helpers/email"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
@@ -19,7 +19,7 @@ import {
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024
 
-async function processAssistanceImpl(
+export async function processAssistance(
     formData: TAssistanceForm
 ): Promise<ActionResult> {
     const data = AssistanceFormSchema(formData)
@@ -119,8 +119,3 @@ async function processAssistanceImpl(
 
     return { success: true }
 }
-
-export const processAssistance = wrapAction(
-    "processAssistance",
-    processAssistanceImpl
-)

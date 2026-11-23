@@ -12,7 +12,7 @@ import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -23,9 +23,9 @@ const SendContractSchema = type({
     "additionalParagraph?": "string"
 })
 
-async function sendContractActionImpl(
+export async function sendContractAction(
     input: typeof SendContractSchema.infer,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -180,8 +180,3 @@ async function sendContractActionImpl(
 
     return saved.value
 }
-
-export const sendContractAction = wrapAction(
-    "sendContractAction",
-    sendContractActionImpl
-)

@@ -3,13 +3,12 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function bulkRestoreUsersImpl(
+export async function bulkRestoreUsers(
     userIds: string[],
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ) {
     const currentUser = await getUserWithPermissions(context)
     if (!currentUser) {
@@ -45,8 +44,3 @@ async function bulkRestoreUsersImpl(
 
     return { success: true, restoredCount: userIds.length }
 }
-
-export const bulkRestoreUsers = wrapAction(
-    "bulkRestoreUsers",
-    bulkRestoreUsersImpl
-)

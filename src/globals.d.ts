@@ -2,6 +2,7 @@
 
 import type { ImportMetaEnvAugmented } from "@arkenv/vite-plugin"
 import type { CellData, RowData, TableFeatures } from "@tanstack/react-table"
+import type { RequestLogger } from "evlog"
 
 import type { EnvSchema } from "./env-schema"
 import type { UserWithPermissions } from "./helpers/supabase/auth"
@@ -9,6 +10,7 @@ import type { UserWithPermissions } from "./helpers/supabase/auth"
 declare global {
     namespace App {
         interface Locals {
+            log: RequestLogger
             user: UserWithPermissions | null
         }
     }

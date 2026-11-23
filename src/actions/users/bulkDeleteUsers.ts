@@ -3,13 +3,12 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission, hasRole } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function bulkDeleteUsersImpl(
+export async function bulkDeleteUsers(
     userIds: string[],
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ) {
     const currentUser = await getUserWithPermissions(context)
     if (!currentUser) {
@@ -55,8 +54,3 @@ async function bulkDeleteUsersImpl(
         skippedSelf: userIds.length !== filteredIds.length
     }
 }
-
-export const bulkDeleteUsers = wrapAction(
-    "bulkDeleteUsers",
-    bulkDeleteUsersImpl
-)

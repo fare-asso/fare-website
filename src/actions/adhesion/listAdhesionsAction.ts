@@ -4,7 +4,7 @@ import type { Adhesion } from "@/generated/prisma/client"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -19,9 +19,9 @@ export async function fetchAdhesions(): Promise<Adhesion[] | null> {
     return adhesions.value
 }
 
-async function listAdhesionsActionImpl(
+export async function listAdhesionsAction(
     _input: undefined,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult<Adhesion[]>> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -35,8 +35,3 @@ async function listAdhesionsActionImpl(
     }
     return { success: true, value: adhesions }
 }
-
-export const listAdhesionsAction = wrapAction(
-    "listAdhesionsAction",
-    listAdhesionsActionImpl
-)

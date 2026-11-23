@@ -8,7 +8,6 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { sanitizeString } from "@/helpers/string"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
@@ -39,9 +38,9 @@ function statusLabel(app: {
     return "En attente"
 }
 
-async function downloadTutorApplicationsZipActionImpl(
+export async function downloadTutorApplicationsZipAction(
     ids: TDownloadTutorApplications,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<DownloadResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -196,8 +195,3 @@ async function downloadTutorApplicationsZipActionImpl(
         missing
     }
 }
-
-export const downloadTutorApplicationsZipAction = wrapAction(
-    "downloadTutorApplicationsZipAction",
-    downloadTutorApplicationsZipActionImpl
-)

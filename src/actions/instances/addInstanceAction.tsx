@@ -6,14 +6,14 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { createClient, getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddInstanceSchema, type TAddInstance } from "@/schemas/instance"
 
-async function addInstanceActionImpl(
+export async function addInstanceAction(
     input: TAddInstance,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -103,8 +103,3 @@ async function addInstanceActionImpl(
 
     return { success: true }
 }
-
-export const addInstanceAction = wrapAction(
-    "addInstanceAction",
-    addInstanceActionImpl
-)

@@ -4,14 +4,14 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AddLinkSchema, type TAddLink } from "@/schemas/link"
 
-async function addLinkActionImpl(
+export async function addLinkAction(
     input: TAddLink,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -60,5 +60,3 @@ async function addLinkActionImpl(
 
     return { success: true }
 }
-
-export const addLinkAction = wrapAction("addLinkAction", addLinkActionImpl)

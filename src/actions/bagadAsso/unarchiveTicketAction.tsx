@@ -3,13 +3,13 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
-async function unarchiveBagadAssoTicketActionImpl(
+export async function unarchiveBagadAssoTicketAction(
     ticketId: number,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
@@ -40,8 +40,3 @@ async function unarchiveBagadAssoTicketActionImpl(
 
     return { success: true }
 }
-
-export const unarchiveBagadAssoTicketAction = wrapAction(
-    "unarchiveBagadAssoTicketAction",
-    unarchiveBagadAssoTicketActionImpl
-)

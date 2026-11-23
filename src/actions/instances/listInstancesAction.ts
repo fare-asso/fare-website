@@ -5,7 +5,7 @@ import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import { StorageUtils } from "@/helpers/supabase/storageUtils"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -34,9 +34,9 @@ export async function fetchInstances(): Promise<InstanceWithLogo[] | null> {
     }))
 }
 
-async function listInstancesActionImpl(
+export async function listInstancesAction(
     _input: undefined,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult<InstanceWithLogo[]>> {
     const user = await getUserWithPermissions(context)
     if (!user) return { success: false, error: "Authentification requise" }
@@ -50,8 +50,3 @@ async function listInstancesActionImpl(
     }
     return { success: true, value: instances }
 }
-
-export const listInstancesAction = wrapAction(
-    "listInstancesAction",
-    listInstancesActionImpl
-)

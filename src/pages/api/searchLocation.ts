@@ -1,11 +1,16 @@
 import { type } from "arktype"
 import type { APIRoute } from "astro"
+import {
+    createError,
+    type ErrorOptions,
+    parseError,
+    type RequestLogger
+} from "evlog"
 
 import type {
     LocationSuggestion,
     SearchLocationResponse
 } from "@/helpers/searchLocation"
-import { createError, useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
 // Géoplateforme geocoding API : https://data.geopf.fr/geocodage/openapi
@@ -24,13 +29,19 @@ const GeocodeResponseSchema = type({
     }).array()
 })
 
-const handler = withEvlog(async (request: Request) => {
-    const log = useLogger()
+function errorResponse(log: RequestLogger, options: ErrorOptions): Response {
+    const error = createError(options)
+    log.error(error)
+    const parsed = parseError(error)
+    return Response.json(parsed, { status: parsed.status })
+}
+
+export const GET: APIRoute = async ({ request, locals }) => {
     const { searchParams } = new URL(request.url)
     const query = searchParams.get("query")?.trim()
 
     if (!query) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 400,
             message: "Erreur: Requête nulle",
             why: "Le paramètre `query` est manquant",
@@ -40,7 +51,7 @@ const handler = withEvlog(async (request: Request) => {
 
     // The minimum length is set to 3 characters to avoid unnecessary requests
     if (query.length < 3) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 400,
             message: "Erreur: Requête trop courte",
             why: "La requête doit contenir au moins 3 caractères",
@@ -48,7 +59,7 @@ const handler = withEvlog(async (request: Request) => {
         })
     }
 
-    log.set({ query })
+    locals.log.set({ query })
 
     const url = new URL(GEOCODING_URL)
     url.searchParams.set("q", query.slice(0, MAX_QUERY_LENGTH))
@@ -58,7 +69,7 @@ const handler = withEvlog(async (request: Request) => {
 
     const fetched = await tryCatch(fetch(url))
     if (!fetched.success) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 502,
             message: "Internal Server Error",
             why: "Le service de géocodage est injoignable",
@@ -68,7 +79,7 @@ const handler = withEvlog(async (request: Request) => {
     }
 
     if (!fetched.value.ok) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 502,
             message: "Internal Server Error",
             why: `Le service de géocodage a répondu ${fetched.value.status}`,
@@ -78,7 +89,7 @@ const handler = withEvlog(async (request: Request) => {
 
     const jsonData = await tryCatch(fetched.value.json() as Promise<unknown>)
     if (!jsonData.success) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 502,
             message: "Internal Server Error",
             why: "Réponse du service de géocodage illisible",
@@ -89,7 +100,7 @@ const handler = withEvlog(async (request: Request) => {
 
     const validated = GeocodeResponseSchema(jsonData.value)
     if (validated instanceof type.errors) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 502,
             message: "Internal Server Error",
             why: "Réponse du service de géocodage dans un format inattendu",
@@ -108,12 +119,10 @@ const handler = withEvlog(async (request: Request) => {
         suggestions.push({ label, lat: String(lat), lon: String(lon) })
     }
 
-    log.set({ resultCount: suggestions.length })
+    locals.log.set({ resultCount: suggestions.length })
     return Response.json({ suggestions } satisfies SearchLocationResponse, {
         headers: {
             "Cache-Control": "public, max-age=86400, s-maxage=86400"
         }
     })
-})
-
-export const GET: APIRoute = (context) => handler(context.request)
+}

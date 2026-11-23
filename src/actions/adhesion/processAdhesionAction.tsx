@@ -10,7 +10,6 @@ import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
 import { sanitizeString } from "@/helpers/string"
 import { createClient } from "@/helpers/supabase/astro"
-import { wrapAction } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { AdhesionFormSchema, type TAdhesionForm } from "@/schemas/adhesion"
@@ -27,9 +26,9 @@ const logoExtensionByMime: Record<string, string> = {
 
 type Result = { success: true } | { success: false; message: string }
 
-async function processAdhesionImpl(
+export async function processAdhesion(
     formData: TAdhesionForm,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<Result> {
     const data = AdhesionFormSchema(formData)
 
@@ -220,8 +219,3 @@ async function processAdhesionImpl(
 
     return { success: true }
 }
-
-export const processAdhesion = wrapAction(
-    "processAdhesion",
-    processAdhesionImpl
-)

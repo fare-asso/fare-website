@@ -4,7 +4,7 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
@@ -12,9 +12,9 @@ import {
     type TSetTicketValidated
 } from "@/schemas/bagadTicket"
 
-async function setTicketValidatedActionImpl(
+export async function setTicketValidatedAction(
     input: TSetTicketValidated,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     // Auth and permission verifications
     const user = await getUserWithPermissions(context)
@@ -53,8 +53,3 @@ async function setTicketValidatedActionImpl(
 
     return { success: true }
 }
-
-export const setTicketValidatedAction = wrapAction(
-    "setTicketValidatedAction",
-    setTicketValidatedActionImpl
-)

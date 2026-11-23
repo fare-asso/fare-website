@@ -6,7 +6,7 @@ import { BtpContact } from "@/../emails/btp-contact"
 import { verifyCaptcha } from "@/helpers/captcha/verify"
 import prisma from "@/helpers/db"
 import { sendEmail } from "@/helpers/email"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import {
@@ -14,7 +14,7 @@ import {
     BTPTutorQuestionSchema
 } from "@/schemas/bougeTaPrison"
 
-async function submitTutorQuestionImpl(
+export async function submitTutorQuestion(
     data: BTPTutorQuestion
 ): Promise<ActionResult> {
     const parsedData = BTPTutorQuestionSchema(data)
@@ -86,8 +86,3 @@ async function submitTutorQuestionImpl(
 
     return { success: true }
 }
-
-export const submitTutorQuestion = wrapAction(
-    "submitTutorQuestion",
-    submitTutorQuestionImpl
-)

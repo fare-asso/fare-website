@@ -5,7 +5,7 @@ import { ticketEquipmentInclude } from "@/helpers/bagadAsso/ticketEquipment"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -16,9 +16,9 @@ const UpdateTicketEquipmentQuantitySchema = type({
     quantity: PositiveInt
 })
 
-async function updateTicketEquipmentQuantityActionImpl(
+export async function updateTicketEquipmentQuantityAction(
     input: typeof UpdateTicketEquipmentQuantitySchema.infer,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult<{ quantity: number }>> {
     const auth = await tryCatch(() => getUserWithPermissions(context))
     if (!auth.success) {
@@ -109,8 +109,3 @@ async function updateTicketEquipmentQuantityActionImpl(
     }
     return saved.value
 }
-
-export const updateTicketEquipmentQuantityAction = wrapAction(
-    "updateTicketEquipmentQuantityAction",
-    updateTicketEquipmentQuantityActionImpl
-)

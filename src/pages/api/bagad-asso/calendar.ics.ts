@@ -1,17 +1,28 @@
 import type { APIRoute } from "astro"
+import {
+    createError,
+    type ErrorOptions,
+    parseError,
+    type RequestLogger
+} from "evlog"
 
 import { buildBagadAssoCalendar } from "@/helpers/bagadAssoCalendar"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
-import { createError, useLogger, withEvlog } from "@/lib/evlog"
 import { tryCatch } from "@/lib/utils"
 
-const handler = withEvlog(async (request: Request) => {
-    const log = useLogger()
+function errorResponse(log: RequestLogger, options: ErrorOptions): Response {
+    const error = createError(options)
+    log.error(error)
+    const parsed = parseError(error)
+    return Response.json(parsed, { status: parsed.status })
+}
+
+export const GET: APIRoute = async ({ request, locals }) => {
     const token = new URL(request.url).searchParams.get("token")?.trim()
 
     if (!token) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 400,
             message: "Bad Request",
             why: "Le paramètre `token` est manquant",
@@ -26,7 +37,7 @@ const handler = withEvlog(async (request: Request) => {
         })
     )
     if (!user.success) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 500,
             message: "Internal Server Error",
             why: "Impossible de vérifier le jeton calendrier",
@@ -36,7 +47,7 @@ const handler = withEvlog(async (request: Request) => {
     }
 
     if (!user.value) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 401,
             message: "Unauthorized",
             why: "Jeton invalide ou révoqué",
@@ -45,7 +56,7 @@ const handler = withEvlog(async (request: Request) => {
     }
 
     if (!hasPermission(user.value, "access:bagad-asso")) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 403,
             message: "Forbidden",
             why: "Accès Bagad'Asso requis",
@@ -60,7 +71,7 @@ const handler = withEvlog(async (request: Request) => {
         })
     )
     if (!tickets.success) {
-        throw createError({
+        return errorResponse(locals.log, {
             status: 500,
             message: "Internal Server Error",
             why: "Impossible de récupérer les tickets Bagad'Asso",
@@ -69,7 +80,7 @@ const handler = withEvlog(async (request: Request) => {
         })
     }
 
-    log.set({ resultCount: tickets.value.length })
+    locals.log.set({ resultCount: tickets.value.length })
 
     return new Response(buildBagadAssoCalendar(tickets.value), {
         headers: {
@@ -78,6 +89,4 @@ const handler = withEvlog(async (request: Request) => {
             "Cache-Control": "private, max-age=3600"
         }
     })
-})
-
-export const GET: APIRoute = (context) => handler(context.request)
+}

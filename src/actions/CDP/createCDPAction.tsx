@@ -8,7 +8,7 @@ import {
     createAdminClient,
     getUserWithPermissions
 } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 
@@ -18,9 +18,9 @@ function isPresseType(value: string): value is PresseType {
     return value === "CDP" || value === "DDP"
 }
 
-async function createCDPActionImpl(
+export async function createCDPAction(
     formData: FormData,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -94,8 +94,3 @@ async function createCDPActionImpl(
 
     return { success: true }
 }
-
-export const createCDPAction = wrapAction(
-    "createCDPAction",
-    createCDPActionImpl
-)

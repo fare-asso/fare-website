@@ -4,14 +4,14 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { OrderSchema, type TOrder } from "@/schemas/elu"
 
-async function updateConseilOrderActionImpl(
+export async function updateConseilOrderAction(
     conseilOrder: TOrder,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -52,8 +52,3 @@ async function updateConseilOrderActionImpl(
 
     return { success: true }
 }
-
-export const updateConseilOrderAction = wrapAction(
-    "updateConseilOrderAction",
-    updateConseilOrderActionImpl
-)

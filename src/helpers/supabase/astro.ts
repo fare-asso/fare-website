@@ -9,7 +9,8 @@ import type { UserWithPermissions } from "./auth"
 
 export type RequestContext = Pick<APIContext, "request" | "cookies">
 
-export function createClient({ request, cookies }: RequestContext) {
+export function createClient(context?: RequestContext) {
+    const { request, cookies } = context as RequestContext
     return createServerClient(env.PUBLIC_SUPABASE_URL, env.SUPABASE_ANON_KEY, {
         cookies: {
             getAll() {
@@ -44,7 +45,7 @@ export function createAdminClient() {
 }
 
 export async function getUserWithPermissions(
-    context: RequestContext
+    context?: RequestContext
 ): Promise<UserWithPermissions | null> {
     const supabase = createClient(context)
     const {

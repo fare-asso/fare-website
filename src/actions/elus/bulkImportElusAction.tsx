@@ -4,14 +4,14 @@ import type { ActionAPIContext } from "astro:actions"
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
-import { wrapAction, type ActionResult } from "@/lib/action"
+import type { ActionResult } from "@/lib/action"
 import { captureActionError } from "@/lib/sentry"
 import { tryCatch } from "@/lib/utils"
 import { BulkImportEluSchema, type TBulkImportElu } from "@/schemas/elu"
 
-async function bulkImportElusActionImpl(
+export async function bulkImportElusAction(
     input: TBulkImportElu,
-    context: ActionAPIContext
+    context?: ActionAPIContext
 ): Promise<ActionResult<{ count: number }>> {
     const user = await getUserWithPermissions(context)
     if (!user) {
@@ -84,8 +84,3 @@ async function bulkImportElusActionImpl(
 
     return { success: true, value: { count: created.value.count } }
 }
-
-export const bulkImportElusAction = wrapAction(
-    "bulkImportElusAction",
-    bulkImportElusActionImpl
-)
