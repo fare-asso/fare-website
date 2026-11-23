@@ -305,6 +305,30 @@ model LinkItem {
   @@index([categoryId])
 }
 
+model Remboursement {
+  id                          Int       @id @default(autoincrement())
+  createdAt                   DateTime  @default(now())
+  archived                    DateTime?
+  demandeur                   String
+  association                 String?
+  prenom                      String
+  nom                         String
+  email                       String
+  telephone                   String
+  type                        String
+  dateVoyage                  DateTime?
+  depart                      String?
+  arrivee                     String?
+  personnes                   String?
+  objet                       String?
+  montantTTC                  String?
+  folderPath                  String
+  ribPath                     String
+  justificatifsPaths          String[]  @default([])
+  piecesMetroBusPaths         String[]  @default([])
+  justificatifsPassagersPaths String[]  @default([])
+}
+
 enum Role {
   ADMIN
 }

@@ -1,0 +1,42 @@
+---
+import { RemboursementForm } from "@/components/public/formulaires/remboursement"
+import Public from "@/layouts/Public.astro"
+
+export const prerender = true
+---
+
+<Public
+    title="Demande de remboursement"
+    description="Demandez le remboursement de vos frais de déplacement ou d'un achat autorisé par la Trésorerie de la FARE."
+>
+    <div class="flex w-full flex-col items-center justify-start">
+        <h1 class="py-12 text-center text-[3rem] font-semibold sm:py-20">
+            Demande de remboursement
+        </h1>
+        <div class="mb-8 w-full max-w-3xl text-left">
+            <p class="mb-4">
+                Vous êtes membre d'un Bureau Territorial ou administrateur·ice
+                de la FARE ? Ce formulaire vous permet de demander le
+                remboursement de vos frais de déplacement (train, voiture, car,
+                métro/bus) ou d'un achat préalablement autorisé par la
+                Trésorerie.
+            </p>
+            <p class="mb-4">
+                Les demandes doivent être envoyées dans un délai d'un mois
+                suivant la ou les dépenses. Le cadrage des remboursements est
+                détaillé dans l'article 30 du règlement intérieur, et le montant
+                des frais de déplacement suit la grille tarifaire votée
+                annuellement, tous deux disponibles dans le drive FARE -
+                Administrateur·ices.
+            </p>
+            <p>
+                En cas de question, contactez la Trésorerie à{" "}
+                <a href="mailto:tresorerie@fare-asso.fr" class="link">
+                    tresorerie@fare-asso.fr
+                </a>.
+            </p>
+        </div>
+
+        <RemboursementForm client:load />
+    </div>
+</Public>

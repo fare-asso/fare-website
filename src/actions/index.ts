@@ -96,6 +96,7 @@ import { addPartenaireAction } from "./partenaires/addPartenaireAction"
 import { deletePartenaireAction } from "./partenaires/deletePartenaireAction"
 import { editPartenaireAction } from "./partenaires/editPartenaireAction"
 import { listPartenairesAction } from "./partenaires/listPartenairesAction"
+import { processRemboursement } from "./remboursement/processRemboursementAction"
 import { bulkDeleteUsers } from "./users/bulkDeleteUsers"
 import { bulkRestoreUsers } from "./users/bulkRestoreUsers"
 import { deleteUser } from "./users/deleteUser"
@@ -203,6 +204,9 @@ export const server = {
         editLinkCategoryAction: jsonAction(editLinkCategoryAction),
         deleteLinkCategoryAction: jsonAction(deleteLinkCategoryAction),
         updateLinkCategoryOrderAction: jsonAction(updateLinkCategoryOrderAction)
+    },
+    remboursement: {
+        processRemboursement: filePayloadAction(processRemboursement)
     },
     users: {
         listUsersAction: jsonAction(listUsersAction),
