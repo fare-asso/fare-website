@@ -20,7 +20,7 @@ export default function FormSuccess({
             // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
             role="status"
             tabIndex={-1}
-            className="w-full outline-none"
+            className="flex w-full justify-center outline-none"
         >
             {children}
         </div>

@@ -328,6 +328,27 @@ const permissions = [
         title: "Supprimer Lien",
         category: "Liens",
         description: "Supprimer des liens"
+    },
+
+    // Trésorerie
+    {
+        name: "access:remboursements",
+        title: "Accès Remboursements",
+        category: "Trésorerie",
+        description: "Voir la page de gestion des demandes de remboursement"
+    },
+    {
+        name: "edit:remboursement",
+        title: "Modifier Remboursement",
+        category: "Trésorerie",
+        description: "Archiver/désarchiver des demandes de remboursement"
+    },
+    {
+        name: "download:remboursement-folder",
+        title: "Télécharger Dossier Remboursement",
+        category: "Trésorerie",
+        description:
+            "Télécharger les justificatifs et le RIB des demandes de remboursement"
     }
 ] as const
 

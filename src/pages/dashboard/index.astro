@@ -15,6 +15,7 @@ const canAccessLinks = hasPermission(user, "access:liens")
 const canAccessBagad = hasPermission(user, "access:bagad-asso")
 const canAccessBtp = hasPermission(user, "access:btp")
 const canAccessAdhesions = hasPermission(user, "access:adhesions")
+const canAccessRemboursements = hasPermission(user, "access:remboursements")
 const canAccessUsers = hasPermission(user, "access:users")
 
 const [
@@ -31,6 +32,7 @@ const [
     btpApplications,
     btpQuestions,
     adhesions,
+    remboursements,
     users
 ] = await Promise.all([
     prisma.association.count(),
@@ -72,6 +74,9 @@ const [
         : Promise.resolve(null),
     canAccessAdhesions
         ? prisma.adhesion.count({ where: { archived: null } })
+        : Promise.resolve(null),
+    canAccessRemboursements
+        ? prisma.remboursement.count({ where: { archived: null } })
         : Promise.resolve(null),
     canAccessUsers
         ? prisma.user.count({ where: { deletedAt: null } })
@@ -153,6 +158,11 @@ const pendingItems = [
         href: "/dashboard/adhesions",
         label: "Adhésions à traiter",
         value: adhesions
+    },
+    remboursements && {
+        href: "/dashboard/remboursements",
+        label: "Remboursements à traiter",
+        value: remboursements
     }
 ].filter((item): item is { href: string; label: string; value: number } =>
     Boolean(item)

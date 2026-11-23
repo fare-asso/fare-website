@@ -13,6 +13,7 @@ import {
     NetworkIcon,
     NewspaperIcon,
     PartyPopperIcon,
+    ReceiptTextIcon,
     ShieldIcon,
     TicketIcon,
     UserIcon,
@@ -158,6 +159,19 @@ const menuGroups: { title?: string; links: SidebarLink[] }[] = [
                         icon: MessageCircleQuestionMarkIcon
                     }
                 ]
+            }
+        ]
+    },
+    {
+        title: "Trésorerie",
+        links: [
+            {
+                href: "/dashboard/remboursements",
+                title: "Remboursements",
+                icon: ReceiptTextIcon,
+                hidden: !user.permissions?.find(
+                    (p) => p.permission.name === "access:remboursements"
+                )
             }
         ]
     },

@@ -237,6 +237,7 @@ export async function processRemboursement(
 
     const ackEmail = await sendEmail({
         to: parsed.email,
+        replyTo: TRESORERIE_EMAIL,
         subject: "Votre demande de remboursement a bien été reçue",
         html: await render(
             <RemboursementAck prenom={parsed.prenom} type={parsed.type} />

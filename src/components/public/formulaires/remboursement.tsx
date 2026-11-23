@@ -211,7 +211,7 @@ export function RemboursementForm(): ReactNode {
     if (isSubmitted) {
         return (
             <FormSuccess>
-                <Card className="w-full sm:max-w-3xl" variant="ghost">
+                <Card className="mx-auto w-full sm:max-w-3xl" variant="ghost">
                     <CardHeader>
                         <CardTitle>Demande bien reçue</CardTitle>
                     </CardHeader>
