@@ -9,7 +9,7 @@ describe("RemboursementAck email", () => {
             <RemboursementAck prenom="Marie" type="voiture" />
         )
         expect(html).toContain("Marie")
-        expect(html).toContain("Déplacement en voiture")
+        expect(html).toContain("un déplacement en voiture")
         expect(html).toContain("tresorerie@fare-asso.fr")
     })
 })
