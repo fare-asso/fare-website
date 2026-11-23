@@ -21,7 +21,7 @@ const nonEmptyString = type("string >= 1").narrow(
 )
 
 export const RemboursementFormSchema = type({
-    demandeur: "'bureauTerritorial' | 'adminFARE'",
+    demandeur: "'bureauTerritorial' | 'equipeTerritoriale' | 'adminFARE'",
     "association?": "string",
     prenom: nonEmptyString,
     nom: nonEmptyString,

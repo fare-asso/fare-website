@@ -99,13 +99,16 @@ describe("RemboursementFormSchema — demandeur & association", () => {
         expect(isErrors(RemboursementFormSchema(input))).toBe(true)
     })
 
-    it("does not require the association for a Bureau Territorial member", () => {
-        const input = validRemboursementForm({
-            demandeur: "bureauTerritorial",
-            association: ""
-        })
-        expect(isErrors(RemboursementFormSchema(input))).toBe(false)
-    })
+    it.each(["bureauTerritorial", "equipeTerritoriale"] as const)(
+        "does not require the association for %s",
+        (demandeur) => {
+            const input = validRemboursementForm({
+                demandeur,
+                association: ""
+            })
+            expect(isErrors(RemboursementFormSchema(input))).toBe(false)
+        }
+    )
 
     it("rejects an unknown demandeur", () => {
         const input = { ...validRemboursementForm(), demandeur: "exterieur" }

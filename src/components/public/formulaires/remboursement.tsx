@@ -293,6 +293,10 @@ export function RemboursementForm(): ReactNode {
                                                             Membre du Bureau
                                                             Territorial
                                                         </SelectItem>
+                                                        <SelectItem value="equipeTerritoriale">
+                                                            Membre de l'Équipe
+                                                            Territoriale
+                                                        </SelectItem>
                                                         <SelectItem value="adminFARE">
                                                             Administrateur·ice
                                                             de la FARE

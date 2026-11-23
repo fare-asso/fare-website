@@ -34,6 +34,8 @@ export function RemboursementTemplate({
                 <strong>Profil :</strong>{" "}
                 {demandeur === "bureauTerritorial" &&
                     "Membre du Bureau Territorial"}
+                {demandeur === "equipeTerritoriale" &&
+                    "Membre de l'Équipe Territoriale"}
                 {demandeur === "adminFARE" && "Administrateur·ice de la FARE"}
                 {demandeur === "adminFARE" && association ? (
                     <>

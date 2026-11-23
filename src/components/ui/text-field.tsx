@@ -54,7 +54,9 @@ export function TextField({
     return (
         <Field data-invalid={isInvalid} optional={optional}>
             <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
-            {description && <FieldDescription>{description}</FieldDescription>}
+            {multiline && description && (
+                <FieldDescription>{description}</FieldDescription>
+            )}
             {multiline ? (
                 <Textarea
                     id={field.name}
@@ -81,6 +83,9 @@ export function TextField({
                     placeholder={placeholder}
                     aria-invalid={isInvalid}
                 />
+            )}
+            {!multiline && description && (
+                <FieldDescription>{description}</FieldDescription>
             )}
             {isInvalid && (
                 <FieldError
