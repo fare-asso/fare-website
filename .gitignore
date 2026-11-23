@@ -46,3 +46,4 @@ __screenshots__/
 # astro
 /.astro/
 /dist/
+.env.prod

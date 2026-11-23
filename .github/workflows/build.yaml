@@ -57,7 +57,7 @@ jobs:
 
             - name: Trigger deployment
               run: |
-                  curl -sf -X POST "https://dev.fare-asso.fr/api/application.deploy" \
+                  curl -sfS -X POST "https://dev.fare-asso.fr/api/compose.deploy" \
                     -H "Content-Type: application/json" \
                     -H "x-api-key: ${{ secrets.DOKPLOY_API_KEY }}" \
-                    -d "{\"applicationId\": \"${{ secrets.DOKPLOY_APPLICATION_ID }}\"}"
+                    -d "{\"composeId\": \"${{ secrets.DOKPLOY_PROD_COMPOSE_ID }}\"}"

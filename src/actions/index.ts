@@ -96,6 +96,11 @@ import { addPartenaireAction } from "./partenaires/addPartenaireAction"
 import { deletePartenaireAction } from "./partenaires/deletePartenaireAction"
 import { editPartenaireAction } from "./partenaires/editPartenaireAction"
 import { listPartenairesAction } from "./partenaires/listPartenairesAction"
+import { archiveRemboursementAction } from "./remboursement/archiveRemboursementAction"
+import { downloadRemboursementFolderAction } from "./remboursement/downloadRemboursementFolderAction"
+import { listRemboursementsAction } from "./remboursement/listRemboursementsAction"
+import { processRemboursement } from "./remboursement/processRemboursementAction"
+import { unarchiveRemboursementAction } from "./remboursement/unarchiveRemboursementAction"
 import { bulkDeleteUsers } from "./users/bulkDeleteUsers"
 import { bulkRestoreUsers } from "./users/bulkRestoreUsers"
 import { deleteUser } from "./users/deleteUser"
@@ -203,6 +208,15 @@ export const server = {
         editLinkCategoryAction: jsonAction(editLinkCategoryAction),
         deleteLinkCategoryAction: jsonAction(deleteLinkCategoryAction),
         updateLinkCategoryOrderAction: jsonAction(updateLinkCategoryOrderAction)
+    },
+    remboursement: {
+        listRemboursementsAction: jsonAction(listRemboursementsAction),
+        processRemboursement: filePayloadAction(processRemboursement),
+        archiveRemboursementAction: jsonAction(archiveRemboursementAction),
+        unarchiveRemboursementAction: jsonAction(unarchiveRemboursementAction),
+        downloadRemboursementFolderAction: jsonAction(
+            downloadRemboursementFolderAction
+        )
     },
     users: {
         listUsersAction: jsonAction(listUsersAction),

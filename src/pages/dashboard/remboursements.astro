@@ -1,0 +1,22 @@
+---
+import { fetchRemboursements } from "@/actions/remboursement/listRemboursementsAction"
+import RemboursementsPage from "@/components/dashboard/remboursements/remboursementsPage"
+import { hasPermission } from "@/helpers/permissions"
+import Dashboard from "@/layouts/Dashboard.astro"
+
+const user = Astro.locals.user!
+if (!hasPermission(user, "access:remboursements")) {
+    return Astro.redirect("/dashboard/unauthorized")
+}
+const remboursements = (await fetchRemboursements()) ?? []
+---
+
+<Dashboard title="Remboursements">
+    <RemboursementsPage
+        client:load
+        initialData={remboursements}
+        canEdit={hasPermission(user, "edit:remboursement")}
+        canDownload={hasPermission(user, "download:remboursement-folder")}
+        thirtyDaysAgo={new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)}
+    />
+</Dashboard>

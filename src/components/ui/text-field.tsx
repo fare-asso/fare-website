@@ -1,19 +1,27 @@
 "use client"
 
 import type { AnyFieldApi } from "@tanstack/react-form"
-import type { ReactNode } from "react"
+import type { ComponentProps, ReactNode } from "react"
 
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
+import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldLabel
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
 interface TextFieldProps {
     field: AnyFieldApi
     label: ReactNode
+    description?: ReactNode
     /** Message shown when the field is touched and invalid. */
     errors?: ({ message?: string } | string | undefined)[]
     error?: ReactNode
     placeholder?: string
+    type?: ComponentProps<typeof Input>["type"]
+    inputMode?: ComponentProps<typeof Input>["inputMode"]
     /** Render a `Textarea` instead of an `Input`. */
     multiline?: boolean
     maxLength?: number
@@ -30,9 +38,12 @@ interface TextFieldProps {
 export function TextField({
     field,
     label,
+    description,
     errors,
     error,
     placeholder,
+    type,
+    inputMode,
     multiline,
     maxLength,
     className,
@@ -43,6 +54,9 @@ export function TextField({
     return (
         <Field data-invalid={isInvalid} optional={optional}>
             <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+            {multiline && description && (
+                <FieldDescription>{description}</FieldDescription>
+            )}
             {multiline ? (
                 <Textarea
                     id={field.name}
@@ -59,6 +73,8 @@ export function TextField({
                 <Input
                     id={field.name}
                     name={field.name}
+                    type={type}
+                    inputMode={inputMode}
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
@@ -67,6 +83,9 @@ export function TextField({
                     placeholder={placeholder}
                     aria-invalid={isInvalid}
                 />
+            )}
+            {!multiline && description && (
+                <FieldDescription>{description}</FieldDescription>
             )}
             {isInvalid && (
                 <FieldError

@@ -31,6 +31,10 @@ const permissionProtectedRoutes: {
     {
         pathIncludes: "/dashboard/adhesions",
         requiredPermission: "access:adhesions"
+    },
+    {
+        pathIncludes: "/dashboard/remboursements",
+        requiredPermission: "access:remboursements"
     }
 ]
 
