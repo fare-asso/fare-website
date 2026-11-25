@@ -4,6 +4,7 @@
         "taze.config.ts",
         "prisma/seed.ts",
         "scripts/healthcheck.ts",
+        "scripts/purge.ts",
 
         "src/**/*.test.{ts,tsx}",
         "src/test/**",

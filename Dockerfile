@@ -81,6 +81,7 @@ COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/assets/logo_fare.png ./src/assets/logo_fare.png
 COPY --from=builder /app/scripts/healthcheck.ts ./healthcheck.ts
+COPY --from=builder /app/scripts/purge.ts ./purge.ts
 COPY --from=builder /app/package.json ./package.json
 
 EXPOSE 3000
