@@ -398,7 +398,7 @@ await sendEmail({ to: "…", subject: "…", html: "…" })
 **Stack:**
 
 - **Vitest** with two projects (config via `getViteConfig` from `astro/config`, so `astro:*` virtual modules resolve). `upm test` runs both.
-- **MSW** mocks outbound HTTP in the node project (`onUnhandledRequest: "error"` — an unmocked request fails the run).
+- **MSW** mocks outbound HTTP in the node project (`onUnhandledFrame: "error"` — an unmocked request fails the run).
 - **Playwright** (`@vitest/browser-playwright`) drives headless Chromium; components render via `vitest-browser-react`.
 
 | Change                        | Required tests                                           |

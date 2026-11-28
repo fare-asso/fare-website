@@ -11,7 +11,7 @@ if (typeof globalThis.FileList === "undefined") {
     Reflect.set(globalThis, "FileList", FileListStub)
 }
 
-beforeAll(() => server.listen({ onUnhandledRequest: "error" }))
+beforeAll(() => server.listen({ onUnhandledFrame: "error" }))
 
 afterEach(() => {
     server.resetHandlers()
