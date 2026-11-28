@@ -153,6 +153,7 @@ Granular permission checks, **never** role checks.
 
 ```typescript
 import type { ActionAPIContext } from "astro:actions"
+
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
 import type { ActionResult } from "@/lib/action"
@@ -221,6 +222,7 @@ Actions live in `src/actions/<domain>/` and are registered in `src/actions/index
 // src/actions/items/createItemAction.tsx
 import { type } from "arktype"
 import type { ActionAPIContext } from "astro:actions"
+
 import prisma from "@/helpers/db"
 import { hasPermission } from "@/helpers/permissions"
 import { getUserWithPermissions } from "@/helpers/supabase/astro"
@@ -321,6 +323,7 @@ Templates live in **`emails/`** (repo root) as react-email components. `react-em
 ```tsx
 // emails/welcome.tsx
 import { Heading, Text } from "react-email"
+
 import BaseTemplate from "./base"
 
 export default function WelcomeEmail({ name }: { name: string }) {
