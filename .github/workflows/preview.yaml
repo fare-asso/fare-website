@@ -17,8 +17,7 @@ env:
 jobs:
     deploy:
         if: >-
-            github.event.action != 'closed' &&
-            github.event.pull_request.head.repo.fork == false
+            github.event.action != 'closed' && github.event.pull_request.head.repo.fork == false
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -137,7 +136,7 @@ jobs:
                   echo "live=false" >> "$GITHUB_OUTPUT"
 
             - name: Preview URL comment
-              uses: marocchino/sticky-pull-request-comment@v2
+              uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88
               with:
                   header: preview
                   message: |
@@ -146,8 +145,7 @@ jobs:
 
     teardown:
         if: >-
-            github.event.action == 'closed' &&
-            github.event.pull_request.head.repo.fork == false
+            github.event.action == 'closed' && github.event.pull_request.head.repo.fork == false
         runs-on: ubuntu-latest
         permissions:
             contents: read
