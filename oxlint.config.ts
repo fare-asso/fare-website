@@ -50,7 +50,7 @@ export default defineConfig({
         },
         {
             // oxlint's type-aware pass resolves the prisma-generated types as
-            // `any` inside ambient .d.ts files; tsgo checks this correctly.
+            // `any` inside ambient .d.ts files; tsc checks this correctly.
             files: ["src/globals.d.ts"],
             rules: {
                 "typescript/no-redundant-type-constituents": "off",

@@ -37,7 +37,7 @@ jobs:
                   node-version: 24
 
             - name: Install UPM
-              run: npm install --global upm@1.4.0
+              run: npm install --global upm@1.5.1
 
             - name: Cache UPM store
               uses: actions/cache@v6
@@ -82,7 +82,7 @@ jobs:
                   node-version: 24
 
             - name: Install UPM
-              run: npm install --global upm@1.4.0
+              run: npm install --global upm@1.5.1
 
             - name: Cache UPM store
               uses: actions/cache@v6

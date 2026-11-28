@@ -25,7 +25,7 @@ upm run dev               # Astro dev server (+ nothing else)
 upm run email:dev         # react-email preview server
 upm run build             # Production build (astro build)
 upm run start             # Run the built server: node ./dist/server/entry.mjs
-upm run check:types       # tsgo --noEmit && astro check
+upm run check:types       # tsc --noEmit --runExternalCode (TS 7.1 + content mapper)
 upm run lint              # oxlint --fix
 upm run check:lint        # oxlint (CI mode, no fixes)
 upm run format            # oxfmt
@@ -41,13 +41,18 @@ Always use `upm`, never `npm`.
 > `build`). If `check:types`/`check:lint` report `astro:*` as `any` or missing,
 > run `upm exec astro sync` first. CI runs it before the type/lint steps.
 
+> **Do not remove the `overrides` block in `package.json`.** It pins the emnapi
+> peers of `@napi-rs/wasm-runtime` to `1.11.3`, without which the
+> `@astrojs/astro2tsx` WASM compiler used by the ts-content-mapper fails to
+> load (known upstream resolution bug, withastro/astro#18642).
+
 ---
 
 ## Code Style & Conventions
 
 ### Type Safety
 
-- **TypeScript strict mode** is enforced (`tsgo` for `.ts/.tsx`, `astro check` for `.astro`).
+- **TypeScript strict mode** is enforced (`tsc --noEmit --runExternalCode`: TypeScript 7.1 native compiler checks `.ts/.tsx` directly and `.astro` files via the `@astrojs/ts-content-mapper` registered in `tsconfig.json`).
 - All functions must have return type annotations.
 - No `any` types; use `unknown` + type guards only when unavoidable.
 - Runtime validation with **arktype**.
@@ -63,7 +68,7 @@ Always use `upm`, never `npm`.
 ### Formatting & Linting
 
 - **oxlint** (lint) + **oxfmt** (format) own `.ts/.tsx/.js/.json/.css` (config: `oxlint.config.ts`, `oxfmt.config.ts`); neither supports `.astro`.
-- **Biome owns `.astro`** (`biome.jsonc`): formatting + a small a11y lint set, scoped to `**/*.astro` via `files.includes` so it never touches the files oxlint/oxfmt own. Astro support is experimental (needs `html.experimentalFullSupportEnabled`); `.astro` type-checking stays with `astro check`. Scripts chain them: `format`/`check:format` run oxfmt then `biome format`; `lint`/`check:lint` run oxlint then `biome lint`. Biome can't parse `{/* */}` template comments — don't use them in `.astro`.
+- **Biome owns `.astro`** (`biome.jsonc`): formatting + a small a11y lint set, scoped to `**/*.astro` via `files.includes` so it never touches the files oxlint/oxfmt own. Astro support is experimental (needs `html.experimentalFullSupportEnabled`); `.astro` type-checking is handled by `tsc` via the ts-content-mapper (see Type Safety). Scripts chain them: `format`/`check:format` run oxfmt then `biome format`; `lint`/`check:lint` run oxlint then `biome lint`. Biome can't parse `{/* */}` template comments — don't use them in `.astro`.
 - **80** col width, **4-space** indent, **no semicolons**, **double quotes** (incl. JSX).
 - **Naming:** camelCase vars/functions, PascalCase components/types, CONSTANT_CASE constants.
 - oxlint checks accessibility (a11y). Tailwind classes auto-sorted by oxfmt (`cn`, `twMerge`, `cva`).
@@ -427,7 +432,7 @@ Also rely on `upm run check:types`, `upm run check:lint`, and manual `upm run de
 
 ```bash
 upm exec astro sync      # generate astro:* types
-upm run check:types      # tsgo + astro check
+upm run check:types      # tsc --noEmit --runExternalCode (TS 7.1 + content mapper)
 upm run check:lint       # oxlint
 upm run check:format     # oxfmt --check
 upm run knip             # unused code/deps
@@ -468,17 +473,17 @@ Both must be green to merge.
 
 ## Useful Commands Reference
 
-| Command               | Purpose                                           |
-| --------------------- | ------------------------------------------------- |
-| `upm run dev`         | Astro dev server                                  |
-| `upm run build`       | Production build                                  |
-| `upm run start`       | Run built server (`node ./dist/server/entry.mjs`) |
-| `upm exec astro sync` | Generate `astro:*` types                          |
-| `upm run check:types` | `tsgo --noEmit && astro check`                    |
-| `upm run lint`        | Fix lint issues (oxlint)                          |
-| `upm run format`      | Format (oxfmt)                                    |
-| `upm run knip`        | Find unused code                                  |
-| `upm run email:dev`   | Preview email templates                           |
+| Command               | Purpose                                                    |
+| --------------------- | ---------------------------------------------------------- |
+| `upm run dev`         | Astro dev server                                           |
+| `upm run build`       | Production build                                           |
+| `upm run start`       | Run built server (`node ./dist/server/entry.mjs`)          |
+| `upm exec astro sync` | Generate `astro:*` types                                   |
+| `upm run check:types` | `tsc --noEmit --runExternalCode` (TS 7.1 + content mapper) |
+| `upm run lint`        | Fix lint issues (oxlint)                                   |
+| `upm run format`      | Format (oxfmt)                                             |
+| `upm run knip`        | Find unused code                                           |
+| `upm run email:dev`   | Preview email templates                                    |
 
 ---
 
