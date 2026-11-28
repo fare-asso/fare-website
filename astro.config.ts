@@ -26,7 +26,7 @@ export default defineConfig({
         actionBodySizeLimit: 100 * 1024 * 1024
     },
     integrations: [
-        react({ babel: { plugins: ["babel-plugin-react-compiler"] } }),
+        react({ compiler: true }),
         sentry({
             sourceMapsUploadOptions: {
                 project: "fare-website",
