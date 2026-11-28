@@ -23,14 +23,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout base branch
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               # Fetch depth 0 is often recommended for create-pull-request
               # to ensure it can correctly determine changes, though not always strictly necessary.
               with:
                   fetch-depth: 0
 
             - name: Setup Node.js
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@v7
               with:
                   node-version: 24
 
@@ -38,7 +38,7 @@ jobs:
               run: npm install --global upm@1.4.0
 
             - name: Cache UPM store
-              uses: actions/cache@v4
+              uses: actions/cache@v6
               with:
                   path: ~/.upm/store
                   key: upm-${{ runner.os }}-${{ hashFiles('upm.lock') }}

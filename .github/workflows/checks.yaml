@@ -27,12 +27,12 @@ jobs:
             PUBLIC_SENTRY_DSN: "https://ci@ci.ingest.sentry.io/0"
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   persist-credentials: false
 
             - name: Install Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v7
               with:
                   node-version: 24
 
@@ -40,7 +40,7 @@ jobs:
               run: npm install --global upm@1.4.0
 
             - name: Cache UPM store
-              uses: actions/cache@v4
+              uses: actions/cache@v6
               with:
                   path: ~/.upm/store
                   key: upm-${{ runner.os }}-${{ hashFiles('upm.lock') }}
@@ -72,12 +72,12 @@ jobs:
             contents: read
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   persist-credentials: false
 
             - name: Install Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v7
               with:
                   node-version: 24
 
@@ -85,7 +85,7 @@ jobs:
               run: npm install --global upm@1.4.0
 
             - name: Cache UPM store
-              uses: actions/cache@v4
+              uses: actions/cache@v6
               with:
                   path: ~/.upm/store
                   key: upm-${{ runner.os }}-${{ hashFiles('upm.lock') }}
