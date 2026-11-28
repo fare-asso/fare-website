@@ -65,7 +65,12 @@ async function fillValidForm(
     await screen.getByRole("option", { name: TYPES_LABELS[type] }).click()
     if (type === "train" || type === "voiture" || type === "car") {
         await screen.getByLabelText("Date du voyage").click()
-        await screen.getByRole("gridcell", { name: "15" }).first().click()
+        // react-day-picker v10 labels each day cell with its full localized
+        // date (e.g. "dimanche 15 novembre 2026") instead of the bare number.
+        await screen
+            .getByRole("gridcell", { name: /\b15\b/ })
+            .first()
+            .click()
         await screen.getByLabelText("Point de départ").fill("Rennes")
         await screen.getByLabelText("Point d'arrivée").fill("Paris")
     }

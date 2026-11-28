@@ -3,8 +3,7 @@ import { fileURLToPath } from "node:url"
 import arkenv from "@arkenv/vite-plugin"
 import node from "@astrojs/node"
 import react from "@astrojs/react"
-// oxlint-disable-next-line import/default
-import sentry from "@sentry/astro"
+import sentry from "@sentry/astro/integration"
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig, fontProviders } from "astro/config"
 
@@ -26,12 +25,11 @@ export default defineConfig({
         actionBodySizeLimit: 100 * 1024 * 1024
     },
     integrations: [
-        react({ babel: { plugins: ["babel-plugin-react-compiler"] } }),
+        react({ compiler: true }),
         sentry({
-            sourceMapsUploadOptions: {
-                project: "fare-website",
-                authToken: process.env.SENTRY_AUTH_TOKEN
-            }
+            project: "fare-website",
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+            telemetry: false
         })
     ],
     image: {

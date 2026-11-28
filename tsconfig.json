@@ -11,6 +11,12 @@
             "#public/*": ["./public/*"]
         }
     },
+    "contentMappers": [
+        {
+            "package": "@astrojs/ts-content-mapper",
+            "extensions": [".astro"]
+        }
+    ],
     "include": [".astro/types.d.ts", "**/*.ts", "**/*.tsx", "**/*.astro"],
     "exclude": ["node_modules", "dist", "src/app"]
 }
